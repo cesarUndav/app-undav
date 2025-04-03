@@ -1,40 +1,65 @@
-import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
-import { useFonts } from 'expo-font';
-import { Stack } from 'expo-router';
-import * as SplashScreen from 'expo-splash-screen';
-import { StatusBar } from 'expo-status-bar';
-import { useEffect } from 'react';
-import 'react-native-reanimated';
+import { Stack, Slot } from "expo-router";
+import { useEffect, useState } from "react";
+import * as SecureStore from "expo-secure-store";
+console.log("layout - Métodos disponibles en SecureStore:", SecureStore);
 
-import { useColorScheme } from '@/hooks/useColorScheme';
-import React from 'react';
 
-// Prevent the splash screen from auto-hiding before asset loading is complete.
-SplashScreen.preventAutoHideAsync();
+import { useRouter } from "expo-router";
+import React from "react";
 
-export default function RootLayout() {
-  const colorScheme = useColorScheme();
-  const [loaded] = useFonts({
-    SpaceMono: require('../assets/fonts/SpaceMono-Regular.ttf'),
-  });
+export default function Layout() {
+
+  const router = useRouter();
+  const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {
-    if (loaded) {
-      SplashScreen.hideAsync();
-    }
-  }, [loaded]);
 
-  if (!loaded) {
-    return null;
+    const checkAuth = async () => {
+      try {
+        console.log("Iniciando checkAuth...");
+        console.log("SecureStore antes de obtener token:", SecureStore);
+        console.log("¿getItemAsync existe?", typeof SecureStore.getItemAsync === "function");
+        const token = await SecureStore.getItemAsync("sessionToken");
+        console.log("Token recuperado:", token);
+        
+        try {
+          const testToken = await SecureStore.getItemAsync("sessionToken");
+          console.log("Prueba manual - Token recuperado:", testToken);
+        } catch (testError) {
+          console.error("Prueba manual - Error al recuperar el token:", testError);
+        }
+        
+        
+        // Verificar si SecureStore está disponible
+        if (!SecureStore.getItemAsync) {
+          throw new Error("SecureStore.getItemAsync no está disponible");
+        }
+    
+    
+        if (token) {
+          router.replace("/");
+        } else {
+          router.replace("/login");
+        }
+      } catch (error) {
+        console.error("Error en checkAuth:", error);
+      } finally {
+        setIsReady(true);
+      }
+    };
+    
+
+    checkAuth();
+  }, []);
+
+  if (!isReady) {
+    return null; // 🔴 Evita renderizar si aún no está listo
   }
 
   return (
-    <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-      <Stack>
-        <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-        <Stack.Screen name="+not-found" />
-      </Stack>
-      <StatusBar style="auto" />
-    </ThemeProvider>
+    <Stack>
+      <Slot /> {/* 🔥 Asegúrate de que esto está presente */}
+    </Stack>
   );
 }
+
