@@ -1,5 +1,6 @@
 {
   "name": "app-undav",
+  "description": "App informativa para estudiantes de la Universidad Nacional de Avellaneda, con inicio de sesión mediante SIU-Guaraní e integración de calendarios y datos académicos.",
   "main": "expo-router/entry",
   "version": "1.0.0",
   "scripts": {
