@@ -1,50 +1,76 @@
-# Welcome to your Expo app 👋
+# 📱 App móvil UNDAV
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+Aplicación móvil informativa desarrollada con **React Native + Expo**, con soporte para Android e iOS. Esta app se conecta con el sistema **SIU-Guaraní** para mostrar información académica de los estudiantes de manera clara y optimizada.
 
-## Get started
+---
 
-1. Install dependencies
+## 🚀 Tecnologías utilizadas
 
-   ```bash
-   npm install
-   ```
+### 🛠️ Base del proyecto
 
-2. Start the app
+- **React Native con Expo**  
+  Desarrollo ágil multiplataforma.
 
-   ```bash
-    npx expo start
-   ```
+- **TypeScript**  
+  Tipado estático para mayor seguridad y mantenimiento del código.
 
-In the output, you'll find options to open the app in a
+---
 
-- [development build](https://docs.expo.dev/develop/development-builds/introduction/)
-- [Android emulator](https://docs.expo.dev/workflow/android-studio-emulator/)
-- [iOS simulator](https://docs.expo.dev/workflow/ios-simulator/)
-- [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
+## 📦 Dependencias instaladas
 
-You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+### 🔧 Expo y módulos integrados
 
-## Get a fresh project
+| Paquete                                 | Descripción                                                    |
+|----------------------------------------|----------------------------------------------------------------|
+| `expo`                                  | Framework base para apps móviles con React Native              |
+| `expo-router`                           | Sistema de navegación basado en rutas tipo Next.js             |
+| `expo-font`                             | Carga y uso de fuentes personalizadas                          |
+| `expo-linear-gradient`                  | Fondos con degradado de color                                  |
+| `expo-secure-store`                     | Almacenamiento seguro de tokens y credenciales                 |
 
-When you're ready, run:
+---
 
-```bash
-npm run reset-project
-```
+### 🎨 Fuentes personalizadas
 
-This command will move the starter code to the **app-example** directory and create a blank **app** directory where you can start developing.
+| Paquete                                 | Descripción                              |
+|----------------------------------------|------------------------------------------|
+| `@expo-google-fonts/montserrat`         | Fuente Montserrat de Google Fonts        |
 
-## Learn more
+> Se cargan los estilos:
+> - `Montserrat_400Regular`
+> - `Montserrat_700Bold`
 
-To learn more about developing your project with Expo, look at the following resources:
+La fuente se aplica globalmente usando un componente personalizado: `CustomText`.
 
-- [Expo documentation](https://docs.expo.dev/): Learn fundamentals, or go into advanced topics with our [guides](https://docs.expo.dev/guides).
-- [Learn Expo tutorial](https://docs.expo.dev/tutorial/introduction/): Follow a step-by-step tutorial where you'll create a project that runs on Android, iOS, and the web.
+---
 
-## Join the community
+### 📡 Red y APIs
 
-Join our community of developers creating universal apps.
+| Paquete   | Descripción                          |
+|-----------|--------------------------------------|
+| `axios`   | Cliente HTTP para consumir APIs REST |
 
-- [Expo on GitHub](https://github.com/expo/expo): View our open source platform and contribute.
-- [Discord community](https://chat.expo.dev): Chat with Expo users and ask questions.
+---
+
+## 🧑‍💻 Estructura del proyecto
+
+| Archivo / Carpeta       | Propósito                                                    |
+|-------------------------|--------------------------------------------------------------|
+| `/components/CustomText.tsx` | Componente global para aplicar la fuente Montserrat        |
+| `/_layout.tsx`               | Controla la navegación y redirecciona según sesión         |
+| `/login.tsx`                 | Pantalla de inicio de sesión para estudiantes               |
+
+---
+
+## ✅ Próximos pasos
+
+- [ ] Conectar el login con SIU-Guaraní vía OAuth2
+- [ ] Mostrar materias y horarios desde la API
+- [ ] Integrar calendario académico y eventos personalizados
+- [ ] Agregar caché local para mejorar rendimiento sin base de datos
+
+---
+
+## 👨‍🎓 Proyecto desarrollado en la Universidad Nacional de Avellaneda
+
+> Desarrollo en curso. Mantente atento a nuevas funcionalidades.
