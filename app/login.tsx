@@ -8,19 +8,20 @@ import {
   Image,
   StyleSheet,
 } from "react-native";
+
 import { useRouter } from "expo-router";
-import axios from "axios";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
-
 import * as SecureStore from "expo-secure-store";
 import CustomText from "@/components/CustomText";
 
-const api = axios.create({
-  baseURL: 'https://academica.undav.edu.ar/g3w',
-  withCredentials: true,
-});
+//import axios from "axios";
+
+// const api = axios.create({
+//   baseURL: 'https://academica.undav.edu.ar/g3w',
+//   withCredentials: true,
+// });
 
 export default function LoginScreen() {
   const [usuario, setUsuario] = useState("");
@@ -37,6 +38,7 @@ export default function LoginScreen() {
       Alert.alert("Error", "Por favor, ingresa usuario y contraseña.");
       return;
     }
+    /*
     try {
       const response = await api.post("/acceso?auth=form", {
         usuario,
@@ -50,6 +52,7 @@ export default function LoginScreen() {
       console.error("Error en el login:", error);
       Alert.alert("Error", "Usuario o contraseña incorrectos.");
     }
+      */
   };
 
   
