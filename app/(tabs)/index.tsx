@@ -1,53 +1,65 @@
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-import { useRouter } from 'expo-router';
-
-import React from 'react';
+// app/index.tsx
+import React from "react";
+import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
+import { useRouter } from "expo-router";
+import CustomText from "@/components/CustomText";
 
 export default function HomeScreen() {
   const router = useRouter();
 
   return (
-    <View style={styles.container}>
-      <Text style={styles.title}>Bienvenido</Text>
-      <View style={styles.buttonContainer}>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('../invitado')}>
-          <Text style={styles.buttonText}>Soy invitado</Text>
+    <LinearGradient colors={["#ffffff", "#989797"]} style={styles.container}>
+      <Image
+        source={require("@/assets/images/logoundav.png")}
+        style={styles.logo}
+        resizeMode="contain"
+      />
+
+      <View style={styles.buttonsContainer}>
+        <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../login")}>
+          <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
         </TouchableOpacity>
-        <TouchableOpacity style={styles.button} onPress={() => router.push('../login')}>
-          <Text style={styles.buttonText}>Soy estudiante</Text>
+
+        <TouchableOpacity style={styles.visitanteBtn} onPress={() => router.push("../visitante")}>
+          <CustomText weight="bold" style={styles.buttonText}>SOY VISITANTE</CustomText>
         </TouchableOpacity>
       </View>
-    </View>
+    </LinearGradient>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor: '#A1CEDC',
+    justifyContent: "center",
+    alignItems: "center",
   },
-  title: {
-    fontSize: 24,
-    fontWeight: 'bold',
-    color: '#fff',
-    marginBottom: 20,
+  logo: {
+    width: 200,
+    height: 200,
+    marginBottom: 80,
   },
-  buttonContainer: {
-    flexDirection: 'column',
-    gap: 10,
+  buttonsContainer: {
+    gap: 16,
   },
-  button: {
-    backgroundColor: '#fff',
-    paddingVertical: 12,
-    paddingHorizontal: 30,
-    borderRadius: 10,
-    alignItems: 'center',
+  estudianteBtn: {
+    backgroundColor: "#1D3557",
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    alignItems: "center",
+  },
+  visitanteBtn: {
+    backgroundColor: "#005BA4",
+    paddingVertical: 14,
+    paddingHorizontal: 40,
+    borderRadius: 12,
+    alignItems: "center",
   },
   buttonText: {
-    color: '#0057b8',
+    color: "white",
     fontSize: 16,
-    fontWeight: 'bold',
+    letterSpacing: 1,
   },
 });

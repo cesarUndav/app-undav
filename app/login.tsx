@@ -29,7 +29,7 @@ export default function LoginScreen() {
   const navigation = useNavigation();
 
   useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: false });
+    navigation.setOptions({ headerShown: true });
   }, [navigation]);
 
   const handleLogin = async () => {
@@ -37,7 +37,6 @@ export default function LoginScreen() {
       Alert.alert("Error", "Por favor, ingresa usuario y contraseña.");
       return;
     }
-
     try {
       const response = await api.post("/acceso?auth=form", {
         usuario,
@@ -53,9 +52,11 @@ export default function LoginScreen() {
     }
   };
 
+  
+
   return (
     <LinearGradient colors={["#ffffff", "#989797"]} style={styles.container}>
-      <Image source={require("../assets/images/icon.png")} style={styles.logo} />
+      <Image source={require("../assets/icons/undav.png")} style={styles.logo} />
       <CustomText style={styles.title}>Iniciar sesión</CustomText>
 
       <View style={styles.inputGroup}>

@@ -1,4 +1,3 @@
-// app/_layout.tsx
 import {
   useFonts,
   Montserrat_400Regular,

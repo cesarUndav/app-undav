@@ -71,6 +71,10 @@ La fuente se aplica globalmente usando un componente personalizado: `CustomText`
 
 ---
 
-## 👨‍🎓 Proyecto desarrollado en la Universidad Nacional de Avellaneda
+## 📁 Manejo de íconos SVG
 
-> Desarrollo en curso. Mantente atento a nuevas funcionalidades.
+Este proyecto permite importar íconos SVG como componentes de React, lo que garantiza calidad visual sin pérdida al escalar.
+
+### 🗂️ Ubicación
+Los íconos SVG están en:
+
