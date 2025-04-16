@@ -15,7 +15,7 @@ export default function BottomBar() {
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.push('/home')}>
+      <TouchableOpacity onPress={() => router.push('/home-estudiante')}>
         <HomeIcon width={28} height={28} fill="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/calendario')}>

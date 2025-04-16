@@ -1,4 +1,3 @@
-// app/index.tsx
 import React from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";

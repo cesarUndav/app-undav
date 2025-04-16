@@ -45,7 +45,7 @@ export default function LoginScreen() {
 
       const inicioResponse = await api.get("/inicio_alumno");
       Alert.alert("Inicio de sesión exitoso", "Bienvenido a la app");
-      router.replace("/home");
+      router.replace("/home-estudiante");
     } catch (error) {
       console.error("Error en el login:", error);
       Alert.alert("Error", "Usuario o contraseña incorrectos.");
@@ -77,8 +77,10 @@ export default function LoginScreen() {
           secureTextEntry
         />
       </View>
+      
+      <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}>
+      {/* <TouchableOpacity style={styles.button} onPress={handleLogin}> */}
 
-      <TouchableOpacity style={styles.button} onPress={handleLogin}>
         <CustomText style={styles.buttonText}>INGRESAR</CustomText>
       </TouchableOpacity>
 
