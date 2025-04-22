@@ -13,12 +13,12 @@ export default function AgendaPreview() {
 
   return (
     <View style={styles.agendaContainer}>
-      <CustomText style={styles.agendaTitle}>AGENDA</CustomText>
+      <CustomText style ={styles.agendaTitle}>AGENDA</CustomText>
 
       {primerosEventos.map((evento) => (
         <View key={evento.id} style={styles.agendaItem}>
           <CustomText
-            style={[
+            style ={[
               styles.agendaLabel,
               { color: evento.color || 'black' },
             ]}
@@ -30,7 +30,7 @@ export default function AgendaPreview() {
       ))}
 
       <TouchableOpacity onPress={() => router.push('/agenda')}>
-        <CustomText style={styles.verMas}>Ver más</CustomText>
+        <CustomText style={styles.verMas}>VER MÁS EVENTOS</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -39,22 +39,23 @@ export default function AgendaPreview() {
 const styles = StyleSheet.create({
   agendaContainer: {
     backgroundColor: '#1c2f4a',
-    margin: 15,
-    padding: 15,
-    borderBottomRightRadius: 12,
+    padding: 10,
+    marginHorizontal: 10,
+    marginVertical: 0,
+    borderBottomRightRadius: 24,
   },
   agendaTitle: {
-    color: '#91c9f7',
+    color: '#ffffff',
     fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginBottom: 10,
-    fontStyle: 'italic',
+    marginVertical: 5
   },
   agendaItem: {
     backgroundColor: '#ccc',
     padding: 8,
     marginVertical: 5,
+    borderBottomRightRadius: 12
   },
   agendaLabel: {
     fontWeight: 'bold',
@@ -69,7 +70,7 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 15,
     alignSelf: 'center',
-    marginTop: 8,
-    textDecorationLine: 'underline',
+    marginTop: 6,
+    textDecorationLine: 'none',
   },
 });

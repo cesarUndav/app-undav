@@ -12,11 +12,21 @@ import ReportesIcon from '../assets/icons/reportes.svg';
 import ContactoIcon from '../assets/icons/contacto.svg';
 import SedesIcon from '../assets/icons/sedes.svg';
 
+import { Tabs } from 'expo-router';
+
 export default function HomeEstudiante() {
   const router = useRouter();
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
+
+      <Tabs.Screen
+        options ={{
+          title: 'inicio',
+          headerShown: true
+        }}
+      />
+
       <LinearGradient colors={['#ffffff', '#989797']} style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
 
@@ -24,8 +34,8 @@ export default function HomeEstudiante() {
           <View style={styles.header}>
             <Image source={require('../assets/images/logo_undav.png')} style={styles.logo} />
             <View style={styles.userInfo}>
-              <CustomText style={styles.userName}>Deniz Undav</CustomText>
-              <CustomText style={styles.userLegajo}>Leg: 11978</CustomText>
+              <CustomText style={styles.userName}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText>
+              <CustomText style={styles.userLegajo}>Legajo: 12345</CustomText>
             </View>
             <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
           </View>
@@ -34,31 +44,37 @@ export default function HomeEstudiante() {
           <AgendaPreview />
 
           {/* BOTONES */}
-          <View style={styles.buttonsGrid}>
-            <Pressable accessible accessibilityLabel="Ir a preguntas frecuentes" style={styles.buttonBox} onPress={() => router.push('/preguntas-frecuentes')}>
-              <PreguntasIcon width={40} height={40} fill="white" />
-              <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
-            </Pressable>
+          <View style={styles.buttonsRowParent}>
 
-            <Pressable accessible accessibilityLabel="Ir a inscripciones" style={[styles.buttonBox, { backgroundColor: '#04764c' }]} onPress={() => router.push('/inscripciones')}>
-              <InscripcionesIcon width={40} height={40} fill="white" />
-              <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
-            </Pressable>
+            <View style={styles.buttonsRow}>
+              <Pressable accessible accessibilityLabel="Ir a preguntas frecuentes" style={styles.buttonBox} onPress={() => router.push('/preguntas-frecuentes')}>
+                <PreguntasIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
+              </Pressable>
 
-            <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={[styles.buttonBox, { backgroundColor: '#0b254a' }]} onPress={() => router.push('/certificados')}>
-              <ReportesIcon width={40} height={40} fill="white" />
-              <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-            </Pressable>
+              <Pressable accessible accessibilityLabel="Ir a inscripciones" style={[styles.buttonBox, { backgroundColor: '#04764c' }]} onPress={() => router.push('/inscripciones')}>
+                <InscripcionesIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
+              </Pressable>
+            </View>
+            
+            <View style={styles.buttonsRow}>
+              <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={[styles.buttonBox, { backgroundColor: '#0b254a' }]} onPress={() => router.push('/certificados')}>
+                <ReportesIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
+              </Pressable>
 
-            <Pressable accessible accessibilityLabel="Ir a contacto" style={[styles.buttonBox, { backgroundColor: '#2396dd' }]} onPress={() => router.push('/contacto')}>
-              <ContactoIcon width={40} height={40} fill="white" />
-              <CustomText style={styles.buttonText}>CONTACTO</CustomText>
-            </Pressable>
+              <Pressable accessible accessibilityLabel="Ir a contacto" style={[styles.buttonBox, { backgroundColor: '#2396dd' }]} onPress={() => router.push('/contacto')}>
+                <ContactoIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>CONTACTO</CustomText>
+              </Pressable>
 
-            <Pressable accessible accessibilityLabel="Ir a sedes" style={[styles.buttonBox, { backgroundColor: '#a56dd0' }]} onPress={() => router.push('/sedes')}>
-              <SedesIcon width={40} height={40} fill="white" />
-              <CustomText style={styles.buttonText}>SEDES</CustomText>
-            </Pressable>
+              <Pressable accessible accessibilityLabel="Ir a sedes" style={[styles.buttonBox, { backgroundColor: '#a56dd0' }]} onPress={() => router.push('/sedes')}>
+                <SedesIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>SEDES</CustomText>
+              </Pressable>
+            </View>
+            
           </View>
         </ScrollView>
 
@@ -74,60 +90,68 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    paddingBottom: 80,
+    paddingBottom: 0,
   },
   header: {
     flexDirection: 'row',
-    paddingHorizontal: 20,
-    paddingVertical: 15,
-    alignItems: 'center',
+    paddingHorizontal: 10,
+    paddingBottom: 15,
+    alignItems: 'flex-start',
     justifyContent: 'space-between',
+    
   },
   logo: {
-    width: 50,
+    width: 57,
     height: 70,
-    resizeMode: 'contain',
+    resizeMode: 'contain'
   },
   userInfo: {
     flex: 1,
     marginHorizontal: 15,
   },
   userName: {
-    fontSize: 16,
+    fontSize: 18,
     fontWeight: '600',
     textAlign: 'right',
   },
   userLegajo: {
-    fontSize: 14,
+    fontSize: 18,
+    fontWeight: '600',
     color: '#444',
     textAlign: 'right',
+    marginTop: 5
   },
   profileIcon: {
-    width: 40,
-    height: 40,
-    tintColor: '#0b254a',
+    width: 70,
+    height: 70,
+    tintColor: '#444',
+    borderBottomRightRadius: 12
   },
-  buttonsGrid: {
+  buttonsRowParent: {
+    padding: 10,
+    paddingBottom: 0
+  },
+  buttonsRow: {
+    flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    justifyContent: 'space-between',
-    margin: 10,
+    gap: 10,
+    marginBottom: 10
   },
   buttonBox: {
-    width: '48%',
+    height: "calc((100vh - 500px) / 2)", /* altura del celu - altura de demás elementos de la pantalla = espacio disponible */
+    flex: 1,
     aspectRatio: 1,
-    backgroundColor: '#444',
-    borderBottomRightRadius: 10,
-    padding: 10,
-    marginBottom: 10,
     justifyContent: 'center',
     alignItems: 'center',
+    borderBottomRightRadius: 12,
+    backgroundColor: '#444',
   },
   buttonText: {
     textAlign: 'center',
     fontWeight: 'bold',
     color: 'white',
     fontSize: 13,
-    fontStyle: 'italic',
+    fontStyle: 'italic'
   },
 });

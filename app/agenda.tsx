@@ -49,7 +49,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#e0e0e0',
     padding: 12,
     marginBottom: 10,
-    borderBottomRightRadius: 10,
+    borderBottomRightRadius: 12,
   },
   eventTitle: {
     fontSize: 17,

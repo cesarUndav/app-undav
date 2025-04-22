@@ -8,7 +8,6 @@ import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import React from "react";
-import { View } from "react-native";
 
 export default function Layout() {
   const router = useRouter();
