@@ -36,9 +36,9 @@ Aplicación móvil informativa desarrollada con **React Native + Expo**, con sop
 |----------------------------------------|------------------------------------------|
 | `@expo-google-fonts/montserrat`         | Fuente Montserrat de Google Fonts        |
 
-> Se cargan los estilos:
-> - `Montserrat_400Regular`
-> - `Montserrat_700Bold`
+> Se cargan los estilos:  
+> `Montserrat_400Regular`  
+> `Montserrat_700Bold`
 
 La fuente se aplica globalmente usando un componente personalizado: `CustomText`.
 
@@ -52,13 +52,24 @@ La fuente se aplica globalmente usando un componente personalizado: `CustomText`
 
 ---
 
+### 📂 UI y componentes
+
+| Paquete                    | Descripción                                        |
+|----------------------------|----------------------------------------------------|
+| `react-native-collapsible` | Acordeones dinámicos para la sección de carreras  |
+
+---
+
 ## 🧑‍💻 Estructura del proyecto
 
-| Archivo / Carpeta       | Propósito                                                    |
-|-------------------------|--------------------------------------------------------------|
-| `/components/CustomText.tsx` | Componente global para aplicar la fuente Montserrat        |
-| `/_layout.tsx`               | Controla la navegación y redirecciona según sesión         |
-| `/login.tsx`                 | Pantalla de inicio de sesión para estudiantes               |
+| Archivo / Carpeta             | Propósito                                                    |
+|-------------------------------|--------------------------------------------------------------|
+| `/components/CustomText.tsx` | Componente global para aplicar la fuente Montserrat          |
+| `/login.tsx`                 | Pantalla de inicio de sesión para estudiantes                 |
+| `/sedes.tsx`                 | Información de las sedes con imágenes y enlaces a mapas       |
+| `/oferta-academica.tsx`      | Menú acordeón con departamentos y carreras                    |
+| `/carreras/[nombre].tsx`     | Pantallas individuales para cada carrera                      |
+| `/_layout.tsx`               | Controla la navegación y redirecciona según sesión            |
 
 ---
 
@@ -77,4 +88,3 @@ Este proyecto permite importar íconos SVG como componentes de React, lo que gar
 
 ### 🗂️ Ubicación
 Los íconos SVG están en:
-
