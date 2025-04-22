@@ -23,7 +23,7 @@ export default function HomeEstudiante() {
       <Tabs.Screen
         options ={{
           title: 'inicio',
-          headerShown: true
+          headerShown: false
         }}
       />
 
@@ -47,22 +47,27 @@ export default function HomeEstudiante() {
           <View style={styles.buttonsRowParent}>
 
             <View style={styles.buttonsRow}>
-              <Pressable accessible accessibilityLabel="Ir a preguntas frecuentes" style={styles.buttonBox} onPress={() => router.push('/preguntas-frecuentes')}>
-                <PreguntasIcon width={40} height={40} fill="white" />
-                <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
+
+              <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
+                <ReportesIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
               </Pressable>
 
               <Pressable accessible accessibilityLabel="Ir a inscripciones" style={[styles.buttonBox, { backgroundColor: '#04764c' }]} onPress={() => router.push('/inscripciones')}>
                 <InscripcionesIcon width={40} height={40} fill="white" />
                 <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
               </Pressable>
+
+
+            <Pressable accessible accessibilityLabel="Ir a preguntas frecuentes" style={[styles.buttonBox, { backgroundColor: '#0b254a' }]} onPress={() => router.push('/preguntas-frecuentes')}>
+                <PreguntasIcon width={40} height={40} fill="white" />
+                <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
+              </Pressable>
+              
             </View>
             
             <View style={styles.buttonsRow}>
-              <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={[styles.buttonBox, { backgroundColor: '#0b254a' }]} onPress={() => router.push('/certificados')}>
-                <ReportesIcon width={40} height={40} fill="white" />
-                <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-              </Pressable>
+
 
               <Pressable accessible accessibilityLabel="Ir a contacto" style={[styles.buttonBox, { backgroundColor: '#2396dd' }]} onPress={() => router.push('/contacto')}>
                 <ContactoIcon width={40} height={40} fill="white" />
@@ -98,10 +103,10 @@ const styles = StyleSheet.create({
     paddingBottom: 15,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    
+    marginTop: 20
   },
   logo: {
-    width: 57,
+    width: 58,
     height: 70,
     resizeMode: 'contain'
   },
@@ -113,6 +118,7 @@ const styles = StyleSheet.create({
     fontSize: 18,
     fontWeight: '600',
     textAlign: 'right',
+    paddingTop: -2
   },
   userLegajo: {
     fontSize: 18,
@@ -151,7 +157,7 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: 'bold',
     color: 'white',
-    fontSize: 13,
+    fontSize: 14,
     fontStyle: 'italic'
   },
 });

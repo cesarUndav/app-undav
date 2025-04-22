@@ -7,6 +7,8 @@ import { Tabs } from 'expo-router';
 import {ImageBackground} from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
+//import imagenFondo from '../assets/images/sedes/espana.png';
+//const imagenFondo = 'assets/images/sedes/espana.png';
 const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'};
 
 export default function HomeScreen()

@@ -30,7 +30,7 @@ export default function AgendaPreview() {
       ))}
 
       <TouchableOpacity onPress={() => router.push('/agenda')}>
-        <CustomText style={styles.verMas}>VER MÁS EVENTOS</CustomText>
+        <CustomText style={styles.verMasBtn}>VER MÁS</CustomText>
       </TouchableOpacity>
     </View>
   );
@@ -58,19 +58,26 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 12
   },
   agendaLabel: {
-    fontWeight: 'bold',
-    fontSize: 16,
+    fontWeight: '800',
+    fontSize: 17,
+    paddingBottom: 5
   },
   agendaDate: {
-    fontSize: 15,
+    fontSize: 18,
     fontWeight: '600',
   },
-  verMas: {
-    color: '#00d3ff',
+  verMasBtn: {
+    backgroundColor: "#005BA4",
+    paddingVertical: 8,
+    paddingHorizontal: 50,
+    borderRadius: 0,
+    borderBottomRightRadius: 12,
+    alignItems: "center",
+    color: '#ffffff',
     fontWeight: 'bold',
-    fontSize: 15,
+    fontSize: 18,
     alignSelf: 'center',
-    marginTop: 6,
+    marginTop: 5,
     textDecorationLine: 'none',
-  },
+  }
 });
