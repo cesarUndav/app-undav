@@ -5,12 +5,20 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
+import { Tabs } from 'expo-router';
 
 export default function HomeInvitados() {
   const router = useRouter();
 
   return (
+    
     <View style={styles.container}>
+            <Tabs.Screen
+              options ={{
+                title: 'inicio',
+                headerShown: true
+              }}
+            />
       <CustomText style={styles.title}>Bienvenido a la UNDAV</CustomText>
 
       <View style={styles.grid}>

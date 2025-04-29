@@ -1,13 +1,21 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity, Linking } from "react-native";
+import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
-import { router } from "expo-router";
+import { useRouter } from "expo-router";
 
 export default function CienciasAmbientales() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
+  const router = useRouter();
 
   const toggleSection = (index: number) => {
     setActiveSection(prevIndex => (prevIndex === index ? null : index));
+  };
+
+  const openPDF = (fileName: string) => {
+    router.push({
+      pathname: "/pdf-viewer",
+      params: { file: fileName }
+    });
   };
 
   const secciones = [
@@ -15,15 +23,9 @@ export default function CienciasAmbientales() {
       titulo: "🎓 Títulos y Duración",
       contenido: (
         <View>
-          <Text style={styles.texto}>
-            • Título de grado: Licenciado/a en Ciencias Ambientales
-          </Text>
-          <Text style={styles.texto}>
-            • Título intermedio: Técnico/a en Ciencias Ambientales
-          </Text>
-          <Text style={styles.texto}>
-            • Duración: 4 años y medio
-          </Text>
+          <Text style={styles.texto}>• Título de grado: Licenciado/a en Ciencias Ambientales</Text>
+          <Text style={styles.texto}>• Título intermedio: Técnico/a en Ciencias Ambientales</Text>
+          <Text style={styles.texto}>• Duración: 4 años y medio</Text>
         </View>
       ),
     },
@@ -31,7 +33,7 @@ export default function CienciasAmbientales() {
       titulo: "📘 Acerca de la carrera",
       contenido: (
         <Text style={styles.texto}>
-          El objetivo de esta carrera es formar especialistas comprometidos y competentes, con conocimientos sólidos, para que entiendan el medio ambiente de manera integral. La UNDAV se compromete en la temática ambiental formando profesionales que contribuyan en forma positiva al bienestar social, lo que requiere un abordaje sistémico de los conflictos ambientales para afrontar el desafío de alcanzar el desarrollo individual y comunitario sin comprometer los recursos naturales o el ambiente.
+          El objetivo de esta carrera es formar especialistas comprometidos y competentes, con conocimientos sólidos...
         </Text>
       ),
     },
@@ -39,27 +41,27 @@ export default function CienciasAmbientales() {
       titulo: "🎯 Objetivos de la carrera",
       contenido: (
         <View>
-          <Text style={styles.texto}>El objetivo de la carrera es formar profesionales capaces de:</Text>
-          <Text style={styles.texto}>a) Investigar los procesos e interacciones bióticas y abióticas del medio ambiente.</Text>
-          <Text style={styles.texto}>b) Evaluar los factores que modifican el medio ambiente y sus consecuencias.</Text>
-          <Text style={styles.texto}>c) Gestionar la biodiversidad a través del desarrollo sostenible.</Text>
-          <Text style={styles.texto}>d) Planificar y gestionar el territorio de manera sostenible.</Text>
+          <Text style={styles.texto}>a) Investigar los procesos...</Text>
+          <Text style={styles.texto}>b) Evaluar los factores...</Text>
+          <Text style={styles.texto}>c) Gestionar la biodiversidad...</Text>
+          <Text style={styles.texto}>d) Planificar y gestionar el territorio...</Text>
         </View>
       ),
     },
     {
-      titulo: "📄 Plan de estudios",
+      titulo: "📄 Planes y recursos",
       contenido: (
-        <Text style={styles.texto}>
-          Podés descargar el plan de estudios desde el sitio oficial de la UNDAV:
-          {"\n"}
-          <Text
-            style={styles.link}
-            onPress={() => Linking.openURL("https://undav.edu.ar/index.php?idcateg=279")}
-          >
-            https://undav.edu.ar/index.php?idcateg=279
-          </Text>
-        </Text>
+        <View>
+          <TouchableOpacity onPress={() => openPDF("ciencias-ambientales-plan-estudios.pdf")}>
+            <Text style={styles.link}>📘 Plan de estudios</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openPDF("ciencias-ambientales-plan-creditos.pdf")}>
+            <Text style={styles.link}>📗 Plan de créditos</Text>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => openPDF("ciencias-ambientales-postal-digital.pdf")}>
+            <Text style={styles.link}>📨 Postal digital</Text>
+          </TouchableOpacity>
+        </View>
       ),
     },
     {
@@ -69,7 +71,7 @@ export default function CienciasAmbientales() {
           <Text style={styles.texto}>Departamento de Ambiente y Turismo</Text>
           <Text style={styles.texto}>Decana: Dra. Natalia Cappelletti</Text>
           <Text style={styles.texto}>Vicedecana: Mg. Leticia Estévez</Text>
-          <Text style={styles.texto}>Director de la Licenciatura: Ing. Sergio Cataldo </Text>
+          <Text style={styles.texto}>Director: Ing. Sergio Cataldo</Text>
         </View>
       ),
     },
@@ -102,13 +104,15 @@ export default function CienciasAmbientales() {
 const styles = StyleSheet.create({
   container: {
     padding: 16,
+    flex: 1,
+    justifyContent: "space-evenly",
   },
   seccion: {
     marginBottom: 10,
   },
   boton: {
     backgroundColor: "#9fa521",
-    padding: 12,
+    padding: 16,
     borderBottomRightRadius: 10,
   },
   botonExpandido: {
@@ -117,6 +121,7 @@ const styles = StyleSheet.create({
   titulo: {
     color: "white",
     fontWeight: "bold",
+    fontSize: 16,
   },
   contenido: {
     backgroundColor: "#e0dede",
@@ -130,5 +135,7 @@ const styles = StyleSheet.create({
   link: {
     color: "#1b9ba6",
     textDecorationLine: "underline",
+    marginBottom: 8,
+    fontWeight: "bold",
   },
 });
