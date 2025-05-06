@@ -82,9 +82,11 @@ const styles = StyleSheet.create({
   card: {
     backgroundColor: '#fff',
     marginBottom: 15,
-    borderRadius: 12,
+    borderBottomRightRadius: 30,
     overflow: 'hidden',
     elevation: 2,
+    borderColor: '#0b5085',
+    borderWidth: 4
   },
   image: {
     width: '100%',
