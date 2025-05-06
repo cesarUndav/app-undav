@@ -7,7 +7,7 @@ const departamentos = [
   {
     nombre: "Departamento de Ambiente y Turismo",
     colorDepto: "#909b1b",
-    colorCarrera: "#9fa521",
+    colorCarrera: "#b8bf30",
     carreras: [
       { nombre: "Ciencias ambientales", ruta: "ciencias-ambientales" },
       { nombre: "Conservación de la Naturaleza y Áreas Naturales Protegidas", ruta: "conservacion-naturaleza" },
@@ -18,7 +18,7 @@ const departamentos = [
   {
     nombre: "Departamento de Arquitectura, Diseño y Urbanismo",
     colorDepto: "#a6398a",
-    colorCarrera: "#b2469b",
+    colorCarrera: "#bf55a8",
     carreras: [
       { nombre: "Arquitectura", ruta: "arquitectura" },
       { nombre: "Diseño Industrial", ruta: "diseno-industrial" },
@@ -31,7 +31,7 @@ const departamentos = [
   {
     nombre: "Departamento de Ciencias Sociales",
     colorDepto: "#ca2627",
-    colorCarrera: "#db2c3d",
+    colorCarrera: "#ee3b4d",
     carreras: [
       { nombre: "Abogacía", ruta: "abogacia" },
       { nombre: "Economía", ruta: "economia" },
@@ -41,7 +41,7 @@ const departamentos = [
   {
     nombre: "Departamento de Cultura, Arte y Comunicación",
     colorDepto: "#158d9e",
-    colorCarrera: "#1b9ba6",
+    colorCarrera: "#30b7c4",
     carreras: [
       { nombre: "Artes Audiovisuales", ruta: "artes-audiovisuales" },
       { nombre: "Gestión Cultural", ruta: "gestion-cultural" },
@@ -58,7 +58,7 @@ const departamentos = [
   {
     nombre: "Departamento de Salud y Actividad Física",
     colorDepto: "#f47d21",
-    colorCarrera: "#ff8b3d",
+    colorCarrera: "#fd934b",
     carreras: [
       { nombre: "Enfermería", ruta: "enfermeria" },
       { nombre: "Actividad Física y Deporte", ruta: "actividad-fisica" },
@@ -69,7 +69,7 @@ const departamentos = [
   {
     nombre: "Departamento de Tecnología y Administración",
     colorDepto: "#e3a400",
-    colorCarrera: "#f7b91d",
+    colorCarrera: "#fdc128",
     carreras: [
       { nombre: "Ingeniería en Informática", ruta: "ingenieria-informatica" },
       { nombre: "Ingeniería en Materiales", ruta: "ingenieria-materiales" },
@@ -133,7 +133,7 @@ const styles = StyleSheet.create({
   deptoHeader: {
     padding: 12,
     borderBottomRightRadius: 12,
-    marginBottom: 5,
+    marginBottom: 0,
   },
   deptoText: {
     color: "white",
@@ -142,7 +142,9 @@ const styles = StyleSheet.create({
   botonCarrera: {
     padding: 12,
     borderRadius: 0,
-    marginBottom: 1,
+    borderTopWidth: 1,
+    borderTopColor: "white",
+    marginBottom: 0,
   },
   textoCarrera: {
     color: "white",
@@ -152,3 +154,5 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 12,
   },
 });
+
+//Se está descargando Andoid Studio. Mientras tanto quiero pedirte ayuda en otra parte del proyecto. La app tiene como objetivo 2 tipos de usuarios, los estudiantes y los no estudiantes (o visitantes/invitados, todavía no he decidido el nombre). Los no estudiantes tienen acceso a ver la oferta académica, que hemos desarrollado recientemente, pero al igual que lso estudiantes tienen una pantalla de home (home-estudiantes.tsx) con un layout de todos los botones, sitios y acciones que pueden realizar los estudiantes, también necesito un layout para el home de los no estudiantes.  Los no estudiantes 

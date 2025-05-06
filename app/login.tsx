@@ -71,8 +71,16 @@ export default function LoginScreen() {
 
       <Tabs.Screen
         options ={{
-          title: 'iniciar sesión',
-          headerShown: true
+          title: 'Iniciar sesión',
+          headerShown: true,
+          headerTitleAlign: 'center',
+          headerTitleStyle: {
+            fontWeight: 'bold',
+            fontSize: 20,
+          },
+          headerTransparent: true,
+          headerTintColor: '#1a2b50'
+
         }}
       />
 

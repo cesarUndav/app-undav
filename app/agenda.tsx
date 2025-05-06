@@ -1,4 +1,3 @@
-// app-undav/app/agenda.tsx
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
