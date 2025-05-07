@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { router } from "expo-router";
+import { AntDesign } from '@expo/vector-icons';
 
 const departamentos = [
   {
@@ -96,9 +97,17 @@ export default function OfertaAcademica() {
           <View key={index} style={{ marginBottom: 5 }}>
             <TouchableOpacity
               onPress={() => toggleCollapse(index)}
-              style={[styles.deptoHeader, { backgroundColor: depto.colorDepto }]}
+              style={[
+                styles.deptoHeader,
+                { backgroundColor: depto.colorDepto, borderBottomRightRadius: isCollapsed ? 12 : 0 }
+              ]}
             >
               <Text style={styles.deptoText}>{depto.nombre}</Text>
+              <AntDesign
+                name={isCollapsed ? "down" : "up"}
+                size={16}
+                color="white"
+              />
             </TouchableOpacity>
 
             <Collapsible collapsed={isCollapsed}>
@@ -111,7 +120,7 @@ export default function OfertaAcademica() {
                     style={[
                       styles.botonCarrera,
                       { backgroundColor: depto.colorCarrera },
-                      esUltima && styles.ultimaCarrera, // <-- estilo extra para la última
+                      esUltima && styles.ultimaCarrera,
                     ]}
                   >
                     <Text style={styles.textoCarrera}>{carrera.nombre}</Text>
@@ -132,8 +141,10 @@ const styles = StyleSheet.create({
   },
   deptoHeader: {
     padding: 12,
-    borderBottomRightRadius: 12,
     marginBottom: 0,
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
   },
   deptoText: {
     color: "white",
@@ -154,5 +165,3 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 12,
   },
 });
-
-//Se está descargando Andoid Studio. Mientras tanto quiero pedirte ayuda en otra parte del proyecto. La app tiene como objetivo 2 tipos de usuarios, los estudiantes y los no estudiantes (o visitantes/invitados, todavía no he decidido el nombre). Los no estudiantes tienen acceso a ver la oferta académica, que hemos desarrollado recientemente, pero al igual que lso estudiantes tienen una pantalla de home (home-estudiantes.tsx) con un layout de todos los botones, sitios y acciones que pueden realizar los estudiantes, también necesito un layout para el home de los no estudiantes.  Los no estudiantes 
