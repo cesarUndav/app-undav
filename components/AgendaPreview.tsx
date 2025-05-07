@@ -1,33 +1,31 @@
 // components/AgendaPreview.tsx
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText';
-import { agendaMock } from '../data/agenda';
+import { listaFuturo, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
+import { eventoAgendaStyles } from '@/app/agenda';
 
 export default function AgendaPreview() {
   const router = useRouter();
 
-  // Tomamos los primeros 3 eventos del mock
-  const primerosEventos = agendaMock.slice(0, 3);
+  //const primerosEventos = listaFuturo.slice(0, 3); // los primeros N elementos
+  const primerosEventos = listaFuturo;
 
   return (
     <View style={styles.agendaContainer}>
       <CustomText style ={styles.agendaTitle}>AGENDA</CustomText>
-
-      {primerosEventos.map((evento) => (
-        <View key={evento.id} style={styles.agendaItem}>
-          <CustomText
-            style ={[
-              styles.agendaLabel,
-              { color: evento.color || 'black' },
-            ]}
-          >
-            {evento.titulo}
-          </CustomText>
-          <CustomText style={styles.agendaDate}>{evento.fecha}</CustomText>
-        </View>
-      ))}
+      
+      <ScrollView contentContainerStyle={styles.listaScrollContainer}>
+        {primerosEventos.map((evento) => (
+          <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
+            <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
+                  {evento.titulo}
+                </CustomText>
+                <CustomText style={[eventoAgendaStyles.eventDate, {color: eventoAgendaProximidadColor(evento)} ]}>{eventoAgendaToFechaString(evento)}</CustomText>
+          </View>
+        ))}
+      </ScrollView>
 
       <TouchableOpacity onPress={() => router.push('/agenda')}>
         <CustomText style={styles.verMasBtn}>VER MÁS</CustomText>
@@ -37,9 +35,16 @@ export default function AgendaPreview() {
 }
 
 const styles = StyleSheet.create({
+  listaScrollContainer: {
+    padding: 0
+  },
   agendaContainer: {
+    // height: "calc(60vh - 120px)"
+    flex: 1,
     backgroundColor: '#1c2f4a',
-    padding: 10,
+    paddingHorizontal: 10,
+    paddingVertical: 10,
+
     marginHorizontal: 10,
     marginVertical: 0,
     borderBottomRightRadius: 24,
@@ -49,22 +54,7 @@ const styles = StyleSheet.create({
     fontSize: 20,
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginVertical: 5
-  },
-  agendaItem: {
-    backgroundColor: '#ccc',
-    padding: 8,
-    marginVertical: 5,
-    borderBottomRightRadius: 12
-  },
-  agendaLabel: {
-    fontWeight: '800',
-    fontSize: 17,
-    paddingBottom: 5
-  },
-  agendaDate: {
-    fontSize: 18,
-    fontWeight: '600',
+    marginBottom: 5
   },
   verMasBtn: {
     backgroundColor: "#005BA4",
@@ -77,7 +67,8 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     fontSize: 18,
     alignSelf: 'center',
-    marginTop: 5,
+    marginTop: 10,
+    marginBottom: -2,
     textDecorationLine: 'none',
   }
 });
