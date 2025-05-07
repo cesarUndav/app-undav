@@ -116,6 +116,9 @@ export default function LoginScreen() {
       <TouchableOpacity>
         <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
       </TouchableOpacity>
+      <TouchableOpacity>
+        <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
+      </TouchableOpacity>
 
 </View>    
 </ImageBackground>

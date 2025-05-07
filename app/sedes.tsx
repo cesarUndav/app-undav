@@ -62,7 +62,7 @@ export default function Sedes() {
                 <CustomText style={styles.text}>Tel: {sede.telefono}</CustomText>
               )}
               <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>
-                <CustomText style={styles.link}>Ver en mapa</CustomText>
+                <CustomText style={styles.link}>Cómo llegar</CustomText>
               </TouchableOpacity>
             </View>
           </View>
@@ -111,7 +111,7 @@ const styles = StyleSheet.create({
     fontSize: 14,
     fontWeight: 'bold',
     color: '#0b5085',
-    textDecorationLine: 'underline',
+    // textDecorationLine: 'underline',
   },
   page: {
     flex: 1,
