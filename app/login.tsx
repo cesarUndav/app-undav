@@ -13,56 +13,86 @@ import { useRouter, Tabs } from "expo-router";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useLayoutEffect } from "react";
-import * as SecureStore from "expo-secure-store";
 import CustomText from "@/components/CustomText";
 
 import {ImageBackground} from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 //import imagenFondo from '../assets/images/sedes/espana.png';
-//const imagenFondo = 'assets/images/sedes/espana.png';
 const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'};
 
-//import axios from "axios";
-
-// const api = axios.create({
-//   baseURL: 'https://academica.undav.edu.ar/g3w',
-//   withCredentials: true,
-// });
 
 export default function LoginScreen() {
-  const [usuario, setUsuario] = useState("");
-  const [contrasena, setContrasena] = useState("");
-  const router = useRouter();
-  const navigation = useNavigation();
 
-  useLayoutEffect(() => {
-    navigation.setOptions({ headerShown: true });
-  }, [navigation]);
+const router = useRouter();
+const navigation = useNavigation();
 
-  const handleLogin = async () => {
-    if (!usuario || !contrasena) {
-      Alert.alert("Error", "Por favor, ingresa usuario y contraseña.");
-      return;
-    }
-    /*
-    try {
-      const response = await api.post("/acceso?auth=form", {
-        usuario,
-        contrasena,
-      });
+useLayoutEffect(() => {
+  navigation.setOptions({ headerShown: true });
+}, [navigation]);
 
-      const inicioResponse = await api.get("/inicio_alumno");
-      Alert.alert("Inicio de sesión exitoso", "Bienvenido a la app");
-      router.replace("/home-estudiante");
-    } catch (error) {
-      console.error("Error en el login:", error);
-      Alert.alert("Error", "Usuario o contraseña incorrectos.");
-    }
-      */
-  };
+// login  
+const [usuario, setUsuario] = useState("");
+const [contrasena, setContrasena] = useState("");
+const urlDocumentoBase = "http://172.16.1.43/guarani/3.17/rest/v2/alumnos?tipo_documento=0&numero_documento="
 
-  return (
+const [resultadoPeticion, setResultadoPeticion] = useState(null);
+//console.log(resultado);
+
+
+const login = async (usuarioX, contrasenaX) => {
+  try {
+    const response = await fetch('http://172.16.1.43/guarani/3.17/rest/token', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({
+        username: usuarioX,
+        password: contrasenaX,
+      }),
+    });
+
+    if (!response.ok) throw new Error("Error al autenticar");
+
+    const data = await response.json();
+    return data.access_token; // Ajustar según la estructura real de respuesta
+  } catch (error) {
+    console.error("Error en login:", error);
+    return null;
+  }
+};
+const obtenerDatos = async (token, numeroDocumento) => {
+  try {
+    const url = `http://172.16.1.43/guarani/3.17/rest/v2/alumnos?tipo_documento=0&numero_documento=${numeroDocumento}`;
+
+    const response = await fetch(url, {
+      method: 'GET',
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json',
+      },
+    });
+
+    if (!response.ok) throw new Error("Error al obtener datos");
+
+    const data = await response.json();
+    setResultadoPeticion(data);
+    console.log("Respuesta JSON:", data);
+  } catch (error) {
+    console.error("Error al obtener datos:", error);
+  }
+};
+
+const ingresar = async () => {
+  // const token = await login('app_undav', 'app123456');
+  // if (token) {
+  //   await obtenerDatos(token, '43877860');
+  // }
+  router.push('/home-estudiante')
+};
+
+return (
 
 <SafeAreaProvider>
 <SafeAreaView style={styles.containerImagenFondo} edges={['left', 'right']}>
@@ -80,7 +110,6 @@ export default function LoginScreen() {
           },
           headerTransparent: true,
           headerTintColor: '#1a2b50'
-
         }}
       />
 
@@ -90,6 +119,7 @@ export default function LoginScreen() {
       <View style={styles.inputGroup}>
         {/* <CustomText style={styles.inlineLabel}>Usuario</CustomText> */}
         <TextInput
+          id={"user"}
           style={styles.inlineInputField}
           value={usuario}
           placeholder={"DNI"}
@@ -100,6 +130,7 @@ export default function LoginScreen() {
       <View style={styles.inputGroup}>
         {/* <CustomText style={styles.inlineLabel}>Contraseña</CustomText> */}
         <TextInput
+          id={"password"}
           style={styles.inlineInputField}
           value={contrasena}
           placeholder={"Contraseña"}
@@ -108,17 +139,18 @@ export default function LoginScreen() {
         />
       </View>
       
-      <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}>
-      {/* <TouchableOpacity style={styles.button} onPress={handleLogin}> */}
+      {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
+      <TouchableOpacity style={styles.button} onPress={ingresar}>
         <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
       </TouchableOpacity>
 
       <TouchableOpacity>
         <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
       </TouchableOpacity>
-      <TouchableOpacity>
+
+      {/* <TouchableOpacity>
         <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
-      </TouchableOpacity>
+      </TouchableOpacity> */}
 
 </View>    
 </ImageBackground>
@@ -147,7 +179,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "contain",
     marginBottom: 40,
-    marginTop: 50
+    marginTop: 70
   },
   title: {
     fontSize: 24,

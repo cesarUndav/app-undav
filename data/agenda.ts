@@ -198,10 +198,10 @@ export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   const diasPrioridadDos = 7;
   const diasPrioridadTres = 15;
   const colorPasado = "#4a4a4a";
-  const colorPrioridadUno = '#8c1500';
-  const colorPrioridadDos = "#d12a00";
-  const colorPrioridadTres = "#f75b00";
-  const colorPrioridadCuatro = "#334a00";
+  const colorPrioridadUno = '#cc0000';
+  const colorPrioridadDos = "#e83000";
+  const colorPrioridadTres = "#e88200";
+  const colorPrioridadCuatro = "#3e8800";
 
   const diasHastaFin = diasHastaFechaActual(evento.fechaFin);
 

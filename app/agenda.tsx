@@ -9,9 +9,8 @@ import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProxim
 
 export default function Agenda() {
   return (
-    <LinearGradient colors={['#ffffff', '#989797']} style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
           <CustomText style={styles.title}>PRÓXIMO</CustomText>
           {listaFuturo.map((evento) => (
             <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
@@ -34,7 +33,6 @@ export default function Agenda() {
 
         </ScrollView>
         <BottomBar />
-      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -42,16 +40,17 @@ export default function Agenda() {
 export const eventoAgendaStyles = StyleSheet.create({
   agendaItem: {
     backgroundColor: '#fff',
-    padding: 8,
-    marginBottom: 8,
-    borderBottomRightRadius: 16
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderBottomRightRadius: 16,
+    elevation: 4 // verificar esto
   },
   eventTitle: {
-    fontSize: 17, 
+    fontSize: 16,
     fontWeight: 'bold',
   },
   eventDate: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     marginTop: 2
   }
@@ -62,15 +61,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    paddingBottom: 80,
-    paddingHorizontal: 20,
-    paddingTop: 0,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+    gap: 8
   },
   title: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0b254a',
     alignSelf: 'center',
-    marginVertical: 12
+    marginVertical: 0
   }
 });

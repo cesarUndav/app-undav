@@ -17,7 +17,6 @@ export default function Contacto() {
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <CustomText style={styles.titulo}>Contacto</CustomText>
 
           <View style={styles.bloque}>
             <CustomText style={styles.subtitulo}>Secretaría Académica</CustomText>
@@ -58,24 +57,19 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scroll: {
-    padding: 20,
-    paddingBottom: 100,
-  },
-  titulo: {
-    fontSize: 22,
-    fontWeight: 'bold',
-    alignSelf: 'center',
-    color: '#0b254a',
-    marginBottom: 20,
+    padding: 15,
+    gap: 15
   },
   bloque: {
-    backgroundColor: '#e3f0fb',
-    borderRadius: 12,
-    padding: 15,
-    marginBottom: 15,
+    //backgroundColor: '#e3f0fb',
+    backgroundColor: '#fff',
+    borderBottomRightRadius: 20,
+    paddingVertical: 10,
+    paddingHorizontal: 15,
+    elevation: 6
   },
   subtitulo: {
-    fontSize: 17,
+    fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
     color: '#0b5085',

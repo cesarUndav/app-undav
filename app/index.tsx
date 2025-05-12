@@ -74,7 +74,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "contain",
     marginBottom: 40,
-    marginTop: 0
+    marginTop: -50
   },
   buttonsContainer: {
     gap: 12,

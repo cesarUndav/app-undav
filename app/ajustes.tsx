@@ -17,7 +17,7 @@ interface ConfigSection {
 
 export default function Configuracion() {
   // Datos de usuario (reemplazar con datos reales del contexto de la app)
-  const usuario = { nombre: "Nombre Apellido", email: "usuario@undav.edu.ar" };
+  const usuario = { nombre: "Gonzalo Gerardo García Gutierrez", legajo: "Legajo: 12345", email: "usuario@undav.edu.ar" };
   const [notifsOn, setNotifsOn] = useState(false);
   const appVersion = "1.0.0";
 
@@ -25,18 +25,19 @@ export default function Configuracion() {
     {
       data: [
         { type: "text", label: usuario.nombre },
+        { type: "text", label: usuario.legajo },
         { type: "text", label: usuario.email },
-      ],
+      ]
     },
     {
       data: [
         {
           type: "toggle",
-          label: "Activar notificaciones",
+          label: "Recibir notificaciones",
           value: notifsOn,
           onValueChange: (val) => setNotifsOn(val),
-        },
-      ],
+        }
+      ]
     },
     {
       data: [
@@ -45,27 +46,17 @@ export default function Configuracion() {
           label: "Preguntas frecuentes",
           onPress: () => router.push("/preguntas-frecuentes"),
         },
+        // {
+        //   type: "link",
+        //   label: "Contacto",
+        //   onPress: () => router.push("/contacto"),
+        // },
         {
           type: "link",
-          label: "Contacto",
-          onPress: () => router.push("/contacto"),
-        },
-        {
-          type: "link",
-          label: "Enviar Feedback",
+          label: "Envianos tus sugerencias",
           onPress: () => Linking.openURL("mailto:feedback@undav.edu.ar"),
-        },
-      ],
-    },
-    {
-      data: [
-        { type: "text", label: `Versión ${appVersion}` },
-        {
-          type: "link",
-          label: "Términos y privacidad",
-          onPress: () => router.push("/terminos-privacidad"),
-        },
-      ],
+        }
+      ]
     },
     {
       data: [
@@ -74,10 +65,10 @@ export default function Configuracion() {
           label: "Cerrar sesión",
           onPress: () => {
             // Lógica de logout
-            router.replace("/login");
+            router.replace("/"); // va a la pantalla inicial, "index.tsx"
           },
-        },
-      ],
+        }
+      ]
     },
   ];
 

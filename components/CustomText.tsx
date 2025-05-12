@@ -8,6 +8,7 @@ interface CustomTextProps extends TextProps {
 }
 
 const CustomText: React.FC<CustomTextProps> = ({ children, weight = "regular", style, ...rest }) => {
+  //const fontFamily = weight === "bold" ? "Montserrat_700Bold" : "Montserrat_400Regular";
   const fontFamily = weight === "bold" ? "Montserrat_700Bold" : "Montserrat_400Regular";
 
   return (

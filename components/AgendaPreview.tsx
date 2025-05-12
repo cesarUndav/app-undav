@@ -9,7 +9,7 @@ import { eventoAgendaStyles } from '@/app/agenda';
 export default function AgendaPreview() {
   const router = useRouter();
 
-  //const primerosEventos = listaFuturo.slice(0, 3); // los primeros N elementos
+  // const primerosEventos = listaFuturo.slice(0, 3); // los primeros N elementos
   const primerosEventos = listaFuturo;
 
   return (
@@ -27,48 +27,67 @@ export default function AgendaPreview() {
         ))}
       </ScrollView>
 
-      <TouchableOpacity onPress={() => router.push('/agenda')}>
-        <CustomText style={styles.verMasBtn}>VER MÁS</CustomText>
+      <View style={styles.agendaBtnContainer}>
+      
+      <TouchableOpacity style={[styles.agendaBtn, {backgroundColor: "clear"}]}>
       </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 2.5}]}>
+        <CustomText style={styles.agendaBtnText}>DETALLES</CustomText>
+      </TouchableOpacity>
+      
+      <TouchableOpacity style={[styles.agendaBtn, {backgroundColor: "green"}]}>
+        <CustomText style={styles.agendaBtnText}>+</CustomText>
+      </TouchableOpacity>
+      
+      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
   listaScrollContainer: {
-    padding: 0
+    gap: 6,
+    paddingTop: -4
   },
   agendaContainer: {
     // height: "calc(60vh - 120px)"
     flex: 1,
     backgroundColor: '#1c2f4a',
     paddingHorizontal: 10,
-    paddingVertical: 10,
+    paddingTop: 10,
 
-    marginHorizontal: 10,
     marginVertical: 0,
     borderBottomRightRadius: 24,
+    elevation: 4
   },
   agendaTitle: {
     color: '#ffffff',
-    fontSize: 20,
+    fontSize: 15,
     fontWeight: 'bold',
     alignSelf: 'center',
-    marginBottom: 5
+    paddingBottom: 8
   },
-  verMasBtn: {
-    backgroundColor: "#005BA4",
-    paddingVertical: 8,
-    paddingHorizontal: 50,
-    borderRadius: 0,
-    borderBottomRightRadius: 12,
+  agendaBtnContainer: {
+    paddingVertical: 10,
+    gap: 10,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  agendaBtn: {
+    flex: 1,
+    height: "100%",
+    textAlign: "center",
     alignItems: "center",
+    backgroundColor: "#005BA4",
+    borderRadius: 0,
+    borderBottomRightRadius: 16,
+    elevation: 2
+  },
+  agendaBtnText: {
     color: '#ffffff',
     fontWeight: 'bold',
-    fontSize: 18,
-    alignSelf: 'center',
-    marginTop: 10,
-    marginBottom: -2,
-    textDecorationLine: 'none',
+    fontSize: 15,
+    paddingVertical: 8
   }
 });

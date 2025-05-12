@@ -6,6 +6,7 @@ import BottomBar from '../components/BottomBar';
 import CustomText from '../components/CustomText';
 import AgendaPreview from '../components/AgendaPreview';
 
+import LinksIcon from '../assets/icons/links.svg';
 import PreguntasIcon from '../assets/icons/preguntas.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ReportesIcon from '../assets/icons/reportes.svg';
@@ -14,7 +15,6 @@ import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
 
-const iconSize = 64;
 
 export default function HomeEstudiante() {
   const router = useRouter();
@@ -25,125 +25,127 @@ export default function HomeEstudiante() {
       <Tabs.Screen
         options ={{
           title: 'inicio',
-          headerShown: false
+          headerShown: false,
+          animation: "none"
         }}
       />
 
-      <LinearGradient colors={['#ffffff', '#989797']} style={styles.container}>
-        <View style={styles.container}>
+      <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
 
-          {/* CABECERA CON DATOS Y LOGO */}
+          {/* HEADER CON LOGO Y DATOS */}
           <View style={styles.header}>
-            <Image source={require('../assets/images/logo_undav.png')} style={styles.logo} />
-            <View style={styles.userInfo}>
-              <CustomText style={styles.userName}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText>
-              <CustomText style={styles.userLegajo}>Legajo: 12345</CustomText>
-            </View>
             <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-          </View>
+            <View style={styles.userInfo}>
+              <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText>
+              <CustomText style={[styles.userText, {color: '#444'}]}>Legajo: 12345</CustomText>
+            </View>
+            <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
+            </View>
 
           {/* AGENDA */}
           <AgendaPreview />
 
-          {/* BOTONES */}
-          <View style={styles.buttonsRowParent}> {/*CAJA DE BOTONES*/}
-
+          {/*CAJA DE BOTONES*/}
+          <View style={styles.buttonsRowParent}> 
             <View style={styles.buttonsRow}> {/*FILA 1 DE BOTONES*/}
-
               <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
-                <ReportesIcon width={iconSize} height={iconSize} fill="white" />
+                <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
                 <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
               </Pressable>
 
-              <Pressable accessible accessibilityLabel="Ir a inscripciones" style={[styles.buttonBox, { backgroundColor: '#04764c' }]} onPress={() => router.push('/inscripciones')}>
-                <InscripcionesIcon width={iconSize} height={iconSize} fill="white" />
+              <Pressable accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
+                <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
                 <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
               </Pressable>
-
             </View>
-            
             <View style={styles.buttonsRow}> {/*FILA 2 DE BOTONES*/}
-
-            <Pressable accessible accessibilityLabel="Ir a preguntas frecuentes" style={[styles.buttonBox, { backgroundColor: '#0b254a' }]} onPress={() => router.push('/preguntas-frecuentes')}>
-                <PreguntasIcon width={iconSize} height={iconSize} fill="white" />
+              {/* <TouchableOpacity accessible accessibilityLabel="Ir a preguntas frecuentes" style={styles.buttonBox} onPress={() => router.push('/preguntas-frecuentes')}>
+                <PreguntasIcon width={iconSize} height={iconSize} fill={iconColor} />
                 <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
-              </Pressable>
+              </TouchableOpacity> */}
               
-              <Pressable accessible accessibilityLabel="Ir a sedes" style={[styles.buttonBox, { backgroundColor: '#a56dd0' }]} onPress={() => router.push('/sedes')}>
-                <SedesIcon width={iconSize} height={iconSize} fill="white" />
+              <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
+                <LinksIcon width={iconSize} height={iconSize} fill={iconColor} />
+                <CustomText style={styles.buttonText}>VÍNCULOS</CustomText>
+              </TouchableOpacity>
+
+              <TouchableOpacity accessible accessibilityLabel="Ir a sedes" style={styles.buttonBox} onPress={() => router.push('/sedes')}>
+                <SedesIcon width={iconSize} height={iconSize} fill={iconColor} />
                 <CustomText style={styles.buttonText}>SEDES</CustomText>
-              </Pressable>
+              </TouchableOpacity>
 
-              <Pressable accessible accessibilityLabel="Ir a contacto" style={[styles.buttonBox, { backgroundColor: '#2396dd' }]} onPress={() => router.push('/contacto')}>
-                <ContactoIcon width={iconSize} height={iconSize} fill="white" />
+              <TouchableOpacity accessible accessibilityLabel="Ir a contacto" style={styles.buttonBox} onPress={() => router.push('/contacto')}>
+                <ContactoIcon width={iconSize} height={iconSize} fill={iconColor} />
                 <CustomText style={styles.buttonText}>CONTACTO</CustomText>
-              </Pressable>
-
+              </TouchableOpacity>
             </View>
-            
           </View>
-        </View>
 
-        {/* BARRA INFERIOR */}
-        <BottomBar />
       </LinearGradient>
+    
+    <BottomBar />
     </SafeAreaView>
   );
 }
 
+const iconSize = "40%";
+const iconColor = "#fff";
+//const iconColor = "#1c2f4a";
+
 const styles = StyleSheet.create({
-  container: {
+  containerGradient: {
     flex: 1,
+    paddingHorizontal: 10,
+    gap: 12,
+    paddingVertical: 12
   },
   header: { //header
     flexDirection: 'row',
-    paddingHorizontal: 10,
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    marginTop: 10,
-    marginBottom: 0,
-    paddingBottom: 0,
-    height: 80
+    height: 60,
+    //marginVertical: 10,
+    //backgroundColor: "red"
   },
-  logo: {
-    width: 58,
-    height: 70,
-    resizeMode: 'contain'
+  logoUndav: {
+    height: "100%",
+    aspectRatio: "1 / 1.22",
+    width: "auto",
+    resizeMode: "contain"
   },
   userInfo: {
+    //backgroundColor: "green",
+    flexDirection: "column",
+    height: "100%",
     flex: 1,
-    marginHorizontal: 15,
+    paddingLeft: 10
   },
-  userName: {
-    fontSize: 17,
-    fontWeight: '600',
-    textAlign: 'right',
-    paddingTop: -2
-  },
-  userLegajo: {
-    fontSize: 17,
-    fontWeight: '600',
-    color: '#444',
-    textAlign: 'right',
-    margin: 0,
-    //position: 'relative'
+  userText: {
+    fontSize: 14,
+    fontWeight: '600',    
+    textAlign: 'left'
   },
   profileIcon: {
-    width: 70,
-    height: 70,
+    height: "100%",
+    aspectRatio: "1 / 1",
+    width: "auto",
     tintColor: '#444',
     borderBottomRightRadius: 12
   },
   buttonsRowParent: { //buttons
-    flex: 0.7, // tamaño de botones con respecto a lista
+    flex: 0.6, // tamaño de botones con respecto a lista
+    gap: 10,
     padding: 10,
-    gap: 10
+    borderBottomRightRadius: 24,
+    backgroundColor: '#1c2f4a',
+    //marginVertical: 12,
+    elevation: 4
   },
   buttonsRow: {
     flex: 1,
     flexDirection: 'row',
     flexWrap: 'wrap',
-    gap: 8
+    gap: 10
   },
   buttonBox: {
     //height: "calc((40vh - 50px) / 2)", /* altura del celu - altura de demás elementos de la pantalla = espacio disponible */
@@ -153,13 +155,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomRightRadius: 20,
-    backgroundColor: '#444'
+    //backgroundColor: 'white'
+    //backgroundColor: #005BA4'#1c2f4a'
+    backgroundColor:"#005BA4"
   },
   buttonText: {
     textAlign: 'center',
     fontWeight: "bold",
-    color: 'white',
-    fontSize: 14,
-    fontStyle: 'italic'
+    color: iconColor,
+    fontSize: 12,
+    //fontStyle: 'italic'
   },
 });

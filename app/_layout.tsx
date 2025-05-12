@@ -1,13 +1,13 @@
-import {
-  useFonts,
-  Montserrat_400Regular,
-  Montserrat_700Bold,
-} from "@expo-google-fonts/montserrat";
 import { Stack, Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import * as SecureStore from "expo-secure-store";
 import { useRouter } from "expo-router";
 import React from "react";
+import {
+  useFonts,
+  Montserrat_400Regular,
+  Montserrat_700Bold,
+} from "@expo-google-fonts/montserrat";
 
 export default function Layout() {
   const router = useRouter();
@@ -15,7 +15,7 @@ export default function Layout() {
 
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
-    Montserrat_700Bold,
+    Montserrat_700Bold
   });
 
   useEffect(() => {
@@ -33,8 +33,9 @@ export default function Layout() {
         setIsReady(true);
       }
     };
+    //checkAuth();
 
-    checkAuth();
+    setIsReady(true); // lo puse acá para no usar checkAuth()
   }, []);
 
   // Esperar a que se carguen las fuentes Y el estado de autenticación

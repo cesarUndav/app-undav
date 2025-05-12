@@ -16,29 +16,31 @@ export default function BottomBar() {
   return (
     <View style={styles.container}>
       <TouchableOpacity onPress={() => router.push('/home-estudiante')}>
-        <HomeIcon width={28} height={28} fill="white" />
+        <HomeIcon width={iconSize} height={iconSize} fill="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/calendario')}>
-        <CalendarIcon width={28} height={28} fill="white" />
+        <CalendarIcon width={iconSize} height={iconSize} fill="white" />
       </TouchableOpacity>
       <TouchableOpacity onPress={() => router.push('/comunidad')}>
-        <CommunityIcon width={28} height={28} fill="white" />
+        <CommunityIcon width={iconSize} height={iconSize} fill="white" />
       </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/vinculos')}>
-        <LinksIcon width={28} height={28} fill="white" />
-      </TouchableOpacity>
+      {/* <TouchableOpacity onPress={() => router.push('/vinculos')}>
+        <LinksIcon width={iconSize} height={iconSize} fill="white" />
+      </TouchableOpacity> */}
       <TouchableOpacity onPress={() => router.push('/ajustes')}>
-        <SettingsIcon width={28} height={28} fill="white" />
+        <SettingsIcon width={iconSize} height={iconSize} fill="white" />
       </TouchableOpacity>
     </View>
   );
 }
+
+const iconSize = 30;
 
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#173c68',
     justifyContent: 'space-around',
-    paddingVertical: 10,
+    paddingVertical: 12,
   },
 });
