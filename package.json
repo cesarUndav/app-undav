@@ -4,7 +4,8 @@
   "description": "Aplicación móvil informativa desarrollada con **React Native + Expo**, con soporte para Android e iOS. Esta app se conecta con el sistema **SIU-Guaraní** para mostrar información académica de los estudiantes de manera clara y optimizada.",
   "main": "expo-router/entry",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "postinstall": "patch-package"
   },
   "repository": {
     "type": "git",
@@ -29,6 +30,7 @@
     "expo-secure-store": "~14.2.3",
     "expo-splash-screen": "~0.30.8",
     "expo-symbols": "~0.4.4",
+    "js-md5": "^0.8.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
     "react-native": "^0.79.2",
@@ -38,8 +40,10 @@
     "react-native-web": "^0.20.0"
   },
   "devDependencies": {
+    "@react-native-community/cli": "latest",
     "@types/react": "~19.0.10",
     "babel-preset-expo": "^13.1.11",
+    "patch-package": "^8.0.0",
     "typescript": "~5.8.3"
   }
 }

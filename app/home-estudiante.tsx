@@ -15,6 +15,8 @@ import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
 
+import { usuarioActual } from '../data/datosDeUsuario';
+
 
 export default function HomeEstudiante() {
   const router = useRouter();
@@ -32,54 +34,47 @@ export default function HomeEstudiante() {
 
       <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
 
-          {/* HEADER CON LOGO Y DATOS */}
-          <View style={styles.header}>
-            <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-            <View style={styles.userInfo}>
-              <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText>
-              <CustomText style={[styles.userText, {color: '#444'}]}>Legajo: 12345</CustomText>
-            </View>
-            <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-            </View>
-
-          {/* AGENDA */}
-          <AgendaPreview />
-
-          {/*CAJA DE BOTONES*/}
-          <View style={styles.buttonsRowParent}> 
-            <View style={styles.buttonsRow}> {/*FILA 1 DE BOTONES*/}
-              <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
-                <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
-                <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-              </Pressable>
-
-              <Pressable accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
-                <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
-                <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
-              </Pressable>
-            </View>
-            <View style={styles.buttonsRow}> {/*FILA 2 DE BOTONES*/}
-              {/* <TouchableOpacity accessible accessibilityLabel="Ir a preguntas frecuentes" style={styles.buttonBox} onPress={() => router.push('/preguntas-frecuentes')}>
-                <PreguntasIcon width={iconSize} height={iconSize} fill={iconColor} />
-                <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
-              </TouchableOpacity> */}
-              
-              <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
-                <LinksIcon width={iconSize} height={iconSize} fill={iconColor} />
-                <CustomText style={styles.buttonText}>VÍNCULOS</CustomText>
-              </TouchableOpacity>
-
-              <TouchableOpacity accessible accessibilityLabel="Ir a sedes" style={styles.buttonBox} onPress={() => router.push('/sedes')}>
-                <SedesIcon width={iconSize} height={iconSize} fill={iconColor} />
-                <CustomText style={styles.buttonText}>SEDES</CustomText>
-              </TouchableOpacity>
-
-              <TouchableOpacity accessible accessibilityLabel="Ir a contacto" style={styles.buttonBox} onPress={() => router.push('/contacto')}>
-                <ContactoIcon width={iconSize} height={iconSize} fill={iconColor} />
-                <CustomText style={styles.buttonText}>CONTACTO</CustomText>
-              </TouchableOpacity>
-            </View>
+        <View style={styles.header}>
+          <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
+          <View style={styles.userInfo}>
+            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{"Bienvenido de vuelta,\n"+usuarioActual.nombreCompleto}</CustomText>
+            {/* <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText> */}
+            <CustomText style={[styles.userText, {color: '#444'}]}>{"ID: "+usuarioActual.idPersona}</CustomText>
           </View>
+          <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
+          </View>
+          
+        <AgendaPreview />
+
+        <View style={styles.buttonsRowParent}> 
+          <View style={styles.buttonsRow}>
+            <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
+              <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
+              <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
+            </Pressable>
+
+            <Pressable accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
+              <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
+              <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
+            </Pressable>
+          </View>
+          <View style={styles.buttonsRow}>
+            <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
+              <LinksIcon width={iconSize} height={iconSize} fill={iconColor} />
+              <CustomText style={styles.buttonText}>VÍNCULOS</CustomText>
+            </TouchableOpacity>
+
+            <TouchableOpacity accessible accessibilityLabel="Ir a sedes" style={styles.buttonBox} onPress={() => router.push('/sedes')}>
+              <SedesIcon width={iconSize} height={iconSize} fill={iconColor} />
+              <CustomText style={styles.buttonText}>SEDES</CustomText>
+            </TouchableOpacity>
+
+            <TouchableOpacity accessible accessibilityLabel="Ir a contacto" style={styles.buttonBox} onPress={() => router.push('/contacto')}>
+              <ContactoIcon width={iconSize} height={iconSize} fill={iconColor} />
+              <CustomText style={styles.buttonText}>CONTACTO</CustomText>
+            </TouchableOpacity>
+          </View>
+        </View>
 
       </LinearGradient>
     
@@ -148,7 +143,6 @@ const styles = StyleSheet.create({
     gap: 10
   },
   buttonBox: {
-    //height: "calc((40vh - 50px) / 2)", /* altura del celu - altura de demás elementos de la pantalla = espacio disponible */
     flex: 1,
     height: "100%",
     flexDirection: "column",

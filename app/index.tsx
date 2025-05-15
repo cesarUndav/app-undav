@@ -21,7 +21,6 @@ export default function HomeScreen()
       <ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
         <View style={styles.container}>
 
-          {/* esto es para ocultar barra de titulo "index" */}
           <Tabs.Screen
             name = "index"
             options ={{
@@ -29,15 +28,15 @@ export default function HomeScreen()
               headerShown: false
             }}
           />
-          {/* LOGO UNDAV */}
+
           <Image
             source={require("@/assets/images/logoundav.png")}
             style={styles.logo}
             resizeMode="contain"
           />
-          {/* BOTONES */}
+
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../login")}>
+            <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../loginPrueba2")}>
               <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
             </TouchableOpacity>
 
