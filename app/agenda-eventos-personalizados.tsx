@@ -99,7 +99,7 @@ export default function EventosPersonalizados() {
       </ScrollView>
 
       {/* MODAL EDITAR*/}
-      <Modal visible={modalVisible} animationType="slide" transparent>
+      <Modal visible={modalVisible} animationType="fade" transparent>
         <View style={styles.modalOverlay}>
           <View style={styles.modalContainer}>
             <CustomText style={styles.modalTitle}>{tituloModal}</CustomText>

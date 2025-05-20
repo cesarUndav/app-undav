@@ -40,7 +40,7 @@ export default function HomeScreen()
               <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.visitanteBtn} onPress={() => router.push("../home-invitados")}>
+            <TouchableOpacity style={styles.visitanteBtn} onPress={() => router.push("../home-visitante")}>
               <CustomText weight="bold" style={styles.buttonText}>SOY VISITANTE</CustomText>
             </TouchableOpacity>
           </View>
