@@ -11,21 +11,16 @@ type TextItem = { type: "text"; label: string };
 type ToggleItem = { type: "toggle"; label: string; value: boolean; onValueChange: (val: boolean) => void };
 type LinkItem = { type: "link"; label: string; onPress: () => void };
 type ActionItem = { type: "action"; label: string; onPress: () => void };
+type SeparatorItem = {type: "separator"; };
 
-type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem;
+type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem | SeparatorItem;
 interface ConfigSection {
   data: ConfigItem[];
 }
 
+const appVersion = "1.0.0";
 export default function Configuracion() {
-  // Datos de usuario (reemplazar con datos reales del contexto de la app)
-  // const usuario = {
-  //   nombre: "Gonzalo Gerardo García Gutierrez",
-  //   legajo: "Legajo: 12345",
-  //   email: "usuario@undav.edu.ar"
-  // };
   const [notifsOn, setNotifsOn] = useState(false);
-  const appVersion = "1.0.0";
 
   const sections: ConfigSection[] = [
     {
@@ -34,6 +29,7 @@ export default function Configuracion() {
         { type: "text", label: "ID: "+usuarioActual.idPersona },
         { type: "text", label: usuarioActual.email },
         { type: "text", label: "Teléfono: "+usuarioActual.tel },
+        { type: "separator" }
       ]
     },
     {
@@ -43,7 +39,8 @@ export default function Configuracion() {
           label: "Recibir notificaciones",
           value: notifsOn,
           onValueChange: (val) => setNotifsOn(val),
-        }
+        },
+        { type: "separator" }
       ]
     },
     {
@@ -53,16 +50,22 @@ export default function Configuracion() {
           label: "Preguntas frecuentes",
           onPress: () => router.push("/preguntas-frecuentes"),
         },
-        // {
-        //   type: "link",
-        //   label: "Contacto",
-        //   onPress: () => router.push("/contacto"),
-        // },
+        {
+          type: "link",
+          label: "Sedes",
+          onPress: () => router.push("/sedes"),
+        },
+        {
+          type: "link",
+          label: "Contacto",
+          onPress: () => router.push("/contacto"),
+        },
         {
           type: "link",
           label: "Envianos tus sugerencias",
           onPress: () => Linking.openURL("mailto:feedback@undav.edu.ar"),
-        }
+        },
+        { type: "separator" }
       ]
     },
     {
@@ -84,7 +87,7 @@ export default function Configuracion() {
       <SectionList
         sections={sections}
         keyExtractor={(item, index) => `${item.type}-${index}`}
-        renderItem={({ item }) => {
+        renderItem={ ({ item }) => {
           switch (item.type) {
             case "text":
               return (
@@ -111,11 +114,17 @@ export default function Configuracion() {
                   <CustomText style={styles.actionItem}>{item.label}</CustomText>
                 </TouchableOpacity>
               );
+              
+            case "separator":
+              return (
+              <View style={styles.separator}/>
+              );
+            
             default:
               return null;
           }
         }}
-        ItemSeparatorComponent={() => <View style={styles.separator} />}
+        //ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={styles.list}
       />
 
@@ -130,14 +139,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#ffffff",
   },
   list: {
-    padding: 16,
-    paddingBottom: 100,
+    padding: 16
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 12,
+    paddingVertical: 10,
   },
   textItem: {
     fontSize: 16,
@@ -153,6 +161,7 @@ const styles = StyleSheet.create({
   },
   separator: {
     height: 1,
+    marginVertical: 0,
     backgroundColor: "#DDD",
   },
 });

@@ -1,42 +1,52 @@
-// components/AgendaPreview.tsx
-import React from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-import { useRouter } from 'expo-router';
+import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
-import { listaFuturo, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
+import { listaCompleta, eventoAgendaProximidadColor, eventoAgendaToFechaString, EventoAgenda } from '../data/agenda';
 import { eventoAgendaStyles } from '@/app/agenda';
+
 
 export default function AgendaPreview() {
   const router = useRouter();
-
   // const primerosEventos = listaFuturo.slice(0, 3); // los primeros N elementos
-  const primerosEventos = listaFuturo;
+  //const primerosEventos = listaFuturo; 
+  
+  const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
+
+  useFocusEffect(
+    // This runs every time the screen is focused (entered)
+    useCallback(() => {
+      setListaEventos(listaCompleta);
+    }, [])
+  );
 
   return (
     <View style={styles.agendaContainer}>
       <CustomText style ={styles.agendaTitle}>AGENDA</CustomText>
       
       <ScrollView contentContainerStyle={styles.listaScrollContainer}>
-        {primerosEventos.map((evento) => (
+        {listaEventos.map((evento) => (
           <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
             <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
-                  {evento.titulo}
-                </CustomText>
-                <CustomText style={[eventoAgendaStyles.eventDate, {color: eventoAgendaProximidadColor(evento)} ]}>{eventoAgendaToFechaString(evento)}</CustomText>
+              {evento.titulo}
+            </CustomText>
+            <CustomText style={[eventoAgendaStyles.eventDate, {color: eventoAgendaProximidadColor(evento)}]}>
+              {eventoAgendaToFechaString(evento)}
+            </CustomText>
           </View>
         ))}
       </ScrollView>
 
       <View style={styles.agendaBtnContainer}>
       
-      <View style={[styles.agendaBtn, {backgroundColor: "#1c2f4a", elevation: 0}]}>
-      </View>
+      {/*Boton invisible, para que el flex quede bien*/}
+      <View style={[styles.agendaBtn, {backgroundColor: "#1c2f4a", elevation: 0}]}></View>
 
       <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 2.5}]}>
         <CustomText style={styles.agendaBtnText}>DETALLES</CustomText>
       </TouchableOpacity>
       
-      <TouchableOpacity style={[styles.agendaBtn, {backgroundColor: "green"}]}>
+      <TouchableOpacity onPress={() => router.push('/agenda-eventos-personalizados')}style={[styles.agendaBtn, {backgroundColor: "green"}]}>
         <CustomText style={styles.agendaBtnText}>+</CustomText>
       </TouchableOpacity>
       

@@ -36,7 +36,7 @@ export default function HomeScreen()
           />
 
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../loginPrueba2")}>
+            <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../loginAutenticado")}>
               <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
             </TouchableOpacity>
 

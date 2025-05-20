@@ -1,18 +1,28 @@
 // app-undav/app/agenda.tsx
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '../components/CustomText';
 import BottomBar from '../components/BottomBar';
-import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProximidadColor} from '../data/agenda';
+import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProximidadColor, EventoAgenda, listaCompleta} from '../data/agenda';
+import { useFocusEffect } from 'expo-router';
 
 export default function Agenda() {
+  const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
+
+  useFocusEffect(
+    // This runs every time the screen is focused (entered)
+    useCallback(() => {
+      setListaEventos(listaCompleta);
+    }, [])
+  );
+  
   return (
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
       <ScrollView contentContainerStyle={styles.scrollContainer}>
           <CustomText style={styles.title}>PRÓXIMO</CustomText>
-          {listaFuturo.map((evento) => (
+          {listaEventos.map((evento) => (
             <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
               <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
                 {evento.titulo}

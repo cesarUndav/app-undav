@@ -19,6 +19,9 @@ export function UrlObtenerDatosPersona(persona:string) {
 export function UrlObtenerMailTel(numero_documento:string, tipo_documento:number=0) {
   return urlBase+"alumnos?tipo_documento="+tipo_documento+"&numero_documento="+numero_documento;
 }
+export function UrlObtenerAgenda(persona:string, fecha:string) {
+  return urlBase+"personas/"+persona+"/agenda?fecha="+fecha;
+}
 
 export function JsonStringAObjeto(jsonString:string) {
   return JSON.parse(jsonString);
