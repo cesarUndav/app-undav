@@ -38,7 +38,8 @@
     "react-native-svg": "^15.11.2",
     "react-native-svg-transformer": "^1.5.1",
     "react-native-web": "^0.20.0",
-    "@react-native-community/datetimepicker": "8.3.0"
+    "@react-native-community/datetimepicker": "8.3.0",
+    "expo-system-ui": "~5.0.7"
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",

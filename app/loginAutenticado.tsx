@@ -1,7 +1,4 @@
-import { DigestClient } from './DigestClient';
-import '../data/datosDeUsuario';
-
-import React, { useActionState, useEffect, useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   //Text,
@@ -19,63 +16,31 @@ import { useLayoutEffect } from "react";
 import CustomText from "@/components/CustomText";
 
 import {ImageBackground} from 'react-native';
-import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
-import '../data/datosDeUsuario';
-import { UrlObtenerIdPersona, usuarioActual, UrlObtenerMailTel, JsonACampo, UrlObtenerDatosPersona, JsonStringAObjeto } from '../data/datosDeUsuario';
+import { SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+
+import { ObtenerDatosUsuarioActual } from '@/data/DatosUsuarioGuarani';
 
 //import imagenFondo from '../assets/images/sedes/espana.png';
 const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'};
 
-// auth y requests
-
-const client = new DigestClient("app_undav", "app123456");
-export async function ObtenerJsonString(url:string) {
-  const res = await client.fetchWithDigest(url);
-  const data = await res.json();
-  return JSON.stringify(data);
-}
-// function capitalizeWords(str: string): string {
-//   return str.replace(/\b\w/g, char => char.toUpperCase());
-// }
-function capitalizeWords(str: string): string {
-  return str
-    .toLowerCase()
-    .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
-}
-
 // funcion principal:
 export default function LoginScreen() {
 
-// AUTH:
-const getAuthData = async (documentoUsuario:string) => {
-  console.log("iniciando auth:");
-  // obtener id "persona" a partir de DNI:
-  const jsonPersona = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerIdPersona(documentoUsuario, 0, 0)));
-  usuarioActual.idPersona = jsonPersona.persona;
-  // obtener datos personales a partir de id Persona:
-  const jsonDatosPersonales = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerDatosPersona(usuarioActual.idPersona)));
-  //aplicar datos:
-  usuarioActual.nombreCompleto = capitalizeWords((jsonDatosPersonales.nombres+" "+jsonDatosPersonales.apellido).toLowerCase());
-  usuarioActual.legajo = jsonDatosPersonales.legajo;
-  usuarioActual.email = jsonDatosPersonales.mail;
-  usuarioActual.tel = jsonDatosPersonales.telefono_celular;
-  usuarioActual.documento = (jsonDatosPersonales.documento).slice(4);
-  // DEBUG LOG
-  console.log("USUARIO:");
-  console.log(usuarioActual);
-  //console.log("Datos personales:\n" + JSON.stringify(jsonDatosPersonales));
-};
 // login
-const [usuarioLogin, setUsuarioLogin] = useState("");
+const [esperandoRespuesta, setEsperandoRespuesta] = useState(false); // Habría que poner un límite de tiempo de espera también.
+const [documentoLogin, setDocumentoLogin] = useState("");
 const [contrasena, setContrasena] = useState("");
 
 const botonIngresar = async (documentoUsuario:string) => {
-  console.log(getAuthData(documentoUsuario)); // QUITAR
-  await getAuthData(documentoUsuario);
+  setEsperandoRespuesta(true);
+  await ObtenerDatosUsuarioActual(documentoUsuario);
+  setEsperandoRespuesta(false);
   router.push('/home-estudiante')
 };
+function botonDesactivado():Boolean {
+  if (esperandoRespuesta || documentoLogin.trim().length === 0) return true;
+  else return false;
+}
 
 // declaraciones de Expo
 const router = useRouter();
@@ -112,9 +77,9 @@ return (
         <TextInput
           id={"user"}
           style={styles.inlineInputField}
-          value={usuarioLogin}
+          value={documentoLogin}
           placeholder={"DNI"}
-          onChangeText={setUsuarioLogin}
+          onChangeText={setDocumentoLogin}
         />
       </View>
 
@@ -131,7 +96,8 @@ return (
       </View>
       
       {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
-      <TouchableOpacity style={styles.button} onPress={() => botonIngresar(usuarioLogin)}>
+      <TouchableOpacity onPress={() => botonIngresar(documentoLogin)}
+        disabled={botonDesactivado() as boolean} style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" }]}>
         <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
       </TouchableOpacity>
 

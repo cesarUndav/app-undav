@@ -4,7 +4,7 @@ import { LinearGradient } from 'expo-linear-gradient';
 import CustomText from '../components/CustomText';
 import BottomBar from '../components/BottomBar';
 
-export default function Comunidad() {  
+export default function CmabiarNombre() {  
   return (
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={{flex: 1}}>
       <View style={styles.container}>

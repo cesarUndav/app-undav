@@ -47,8 +47,8 @@ export default function EventosPersonalizados() {
   };
 
   const confirmarAgregarEvento = () => {
-    if (modoEdicion) editarEventoPersonalizado(idEventoAbierto, titulo, fechaInicio.toISOString(), fechaFin.toISOString());
-    else agregarEventoPersonalizado(titulo, fechaInicio.toISOString(), fechaFin.toISOString());
+    if (modoEdicion) editarEventoPersonalizado(idEventoAbierto, titulo.trim(), fechaInicio.toISOString(), fechaFin.toISOString());
+    else agregarEventoPersonalizado(titulo.trim(), fechaInicio.toISOString(), fechaFin.toISOString());
     setListaEventos([...listaEventosPersonalizados]);
     setModalVisible(false);
     limpiarVariablesModal();

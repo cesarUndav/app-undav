@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import CustomText from "../components/CustomText";
 import BottomBar from "../components/BottomBar";
 
-import { usuarioActual } from "@/data/datosDeUsuario";
+import { usuarioActual } from "@/data/DatosUsuarioGuarani";
 
 // Definición de tipos para los ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -59,6 +59,11 @@ export default function Configuracion() {
           type: "link",
           label: "Contacto",
           onPress: () => router.push("/contacto"),
+        },
+        {
+          type: "link",
+          label: "Historia Académica",
+          onPress: () => router.push("/historia-academica"),
         },
         {
           type: "link",

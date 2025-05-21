@@ -1,13 +1,13 @@
-import { Stack, Slot } from "expo-router";
+import { Stack, Slot, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
-import * as SecureStore from "expo-secure-store";
-import { useRouter } from "expo-router";
 import React from "react";
 import {
   useFonts,
   Montserrat_400Regular,
   Montserrat_700Bold,
 } from "@expo-google-fonts/montserrat";
+import { Platform, StatusBar } from "react-native";
+import { setBackgroundColorAsync } from "expo-system-ui";
 
 export default function Layout() {
   const router = useRouter();
@@ -19,23 +19,11 @@ export default function Layout() {
   });
 
   useEffect(() => {
-    const checkAuth = async () => {
-      try {
-        const token = await SecureStore.getItemAsync("sessionToken");
-        if (token) {
-          router.replace("/");
-        } else {
-          router.replace("/login");
-        }
-      } catch (error) {
-        console.error("Error en checkAuth:", error);
-      } finally {
-        setIsReady(true);
-      }
-    };
-    //checkAuth();
-
-    setIsReady(true); // lo puse acá para no usar checkAuth()
+    if (Platform.OS === 'android') {
+      // cambia barra inferior del sistema a azul.
+      setBackgroundColorAsync('#173c68');
+    }
+    setIsReady(true);
   }, []);
 
   // Esperar a que se carguen las fuentes Y el estado de autenticación
@@ -44,8 +32,13 @@ export default function Layout() {
   }
 
   return (
-    <Stack>
-      <Slot />
-    </Stack>
+    <>
+      {/* GLOBAL: barra superior blanca */}
+      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
+
+      <Stack screenOptions={{animation: "none"}}>
+        <Slot />
+      </Stack>
+    </>
   );
 }

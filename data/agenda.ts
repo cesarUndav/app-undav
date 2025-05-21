@@ -226,8 +226,8 @@ function diasHastaFechaActual(targetDate: Date): number {
   const diffDays = Math.floor(diffMs / 86400000); // 1000 * 60 * 60 * 24
   return diffDays;
 }
-function DateToFechaString(fecha: Date): string {
-  return `${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}`;
+export function DateToFechaString(fecha: Date, separador: string = "/"): string {
+  return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${separador}${fecha.getFullYear()}`;
 }
 function charPlural(plural:string, valorAEvaluar:number) {
   if (valorAEvaluar > 1 || valorAEvaluar < -1) return plural;

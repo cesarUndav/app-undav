@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, Pressable, AccessibilityInfo } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import BottomBar from '../components/BottomBar';
@@ -15,10 +15,10 @@ import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
 
-import { usuarioActual } from '../data/datosDeUsuario';
-
+import { usuarioActual } from '../data/DatosUsuarioGuarani';
 
 export default function HomeEstudiante() {
+
   const router = useRouter();
 
   return (
@@ -27,8 +27,7 @@ export default function HomeEstudiante() {
       <Tabs.Screen
         options ={{
           title: 'inicio',
-          headerShown: false,
-          animation: "none"
+          headerShown: false
         }}
       />
 
@@ -37,7 +36,8 @@ export default function HomeEstudiante() {
         <View style={styles.header}>
           <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
           <View style={styles.userInfo}>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{"Bienvenido de vuelta,\n"+usuarioActual.nombreCompleto}</CustomText>
+            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{"Bienvenido de vuelta,"}</CustomText>
+            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{usuarioActual.nombreCompleto}</CustomText>
             {/* <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText> */}
             <CustomText style={[styles.userText, {color: '#444'}]}>{"ID: "+usuarioActual.idPersona}</CustomText>
           </View>
@@ -48,15 +48,15 @@ export default function HomeEstudiante() {
 
         <View style={styles.buttonsRowParent}> 
           <View style={styles.buttonsRow}>
-            <Pressable accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
+            <TouchableOpacity accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
               <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
               <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-            </Pressable>
+            </TouchableOpacity>
 
-            <Pressable accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
+            <TouchableOpacity accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
               <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
               <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
-            </Pressable>
+            </TouchableOpacity>
           </View>
           <View style={styles.buttonsRow}>
             <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
@@ -116,6 +116,7 @@ const styles = StyleSheet.create({
     paddingLeft: 10
   },
   userText: {
+    lineHeight: 18,
     fontSize: 14,
     fontWeight: '600',    
     textAlign: 'left'
