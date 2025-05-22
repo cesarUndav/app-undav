@@ -1,11 +1,11 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, Pressable, AccessibilityInfo } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import BottomBar from '../components/BottomBar';
+import BottomBarVisitante from '../components/BottomBarVisitante';
 import CustomText from '../components/CustomText';
-import AgendaPreview from '../components/AgendaPreview';
 
+import {Ionicons } from '@expo/vector-icons';
 import LinksIcon from '../assets/icons/links.svg';
 import PreguntasIcon from '../assets/icons/preguntas.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
@@ -15,10 +15,7 @@ import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
 
-import { usuarioActual } from '../data/DatosUsuarioGuarani';
-
 export default function HomeEstudiante() {
-
   const router = useRouter();
 
   return (
@@ -26,36 +23,35 @@ export default function HomeEstudiante() {
 
       <Tabs.Screen
         options ={{
-          title: 'inicio',
-          headerShown: false
+          title: 'visitante',
+          headerShown: false,
+          animation: "none"
         }}
       />
 
       <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
 
         <View style={styles.header}>
-          <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-          <View style={styles.userInfo}>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{"Bienvenido de vuelta,"}</CustomText>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{usuarioActual.nombreCompleto}</CustomText>
-            {/* <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText> */}
-            <CustomText style={[styles.userText, {color: '#444'}]}>{"ID: "+usuarioActual.idPersona}</CustomText>
-          </View>
           <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-          </View>
-          
-        <AgendaPreview />
+          <CustomText style={styles.bannerText}>{"Ingreso 2do Cuatrimestre 2025:\n31/3/25 - 30/5/2025"}</CustomText>
+        </View>
 
         <View style={styles.buttonsRowParent}> 
+          <TouchableOpacity accessible accessibilityLabel="Ir a oferta académica" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
+            <Ionicons name="school-outline" size={80} color={iconColor} />
+            <CustomText style={styles.buttonText}>OFERTA ACADÉMICA</CustomText>
+          </TouchableOpacity>
+        </View>
+        
+        <View style={styles.buttonsRowParent}> 
           <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
-              <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-            </TouchableOpacity>
-
             <TouchableOpacity accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
               <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
+              <CustomText style={styles.buttonText}>TUTORIAL DE{"\n"}PREINSCRIPCIÓN</CustomText>
+            </TouchableOpacity>
+            <TouchableOpacity accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/preguntas-frecuentes')}>
+              <PreguntasIcon width={iconSize} height={iconSize} fill={iconColor} />
+              <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
             </TouchableOpacity>
           </View>
           <View style={styles.buttonsRow}>
@@ -78,7 +74,7 @@ export default function HomeEstudiante() {
 
       </LinearGradient>
     
-    <BottomBar />
+    <BottomBarVisitante />
     </SafeAreaView>
   );
 }
@@ -108,25 +104,15 @@ const styles = StyleSheet.create({
     width: "auto",
     resizeMode: "contain"
   },
-  userInfo: {
-    //backgroundColor: "green",
-    flexDirection: "column",
-    height: "100%",
+  bannerText: {
     flex: 1,
-    paddingLeft: 10
-  },
-  userText: {
-    lineHeight: 18,
-    fontSize: 14,
-    fontWeight: '600',    
-    textAlign: 'left'
-  },
-  profileIcon: {
-    height: "100%",
-    aspectRatio: "1 / 1",
-    width: "auto",
-    tintColor: '#444',
-    borderBottomRightRadius: 12
+    paddingLeft: 15,
+    alignSelf: "flex-start",
+    justifyContent: "flex-start",
+    color: "black",
+    fontWeight: "bold",
+    fontSize: 15
+    //backgroundColor: "red"
   },
   buttonsRowParent: { //buttons
     flex: 0.6, // tamaño de botones con respecto a lista

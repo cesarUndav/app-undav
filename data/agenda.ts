@@ -1,139 +1,208 @@
-// data/agenda.ts
-
+// la declaracion de fecha debería ser:
+// fechaInicio: new Date('2025-3-1'); // RESPETAR FORMATO: AÑO-MES-DIA
+// por cuestiones de DEV se está haciendo con:
+// fechaInicio: devHoyMasDias(n);
 export type EventoAgenda = {
-  id: number;
+  id: string;
   titulo: string;
   fechaInicio: Date;
   fechaFin: Date;
   color?: string;
 };
+// vars dev
 let devDiaActual = hoyMasDias(0);
+let devUltimoId = 3;
+// func dev
+function diasAMilisegundos(dias:number) {return 86400000 * dias; }
+function hoyMasDias(dias:number) { return new Date(Date.now() + diasAMilisegundos(dias)); }
+function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.getTime() + diasAMilisegundos(dias)); }
 
-// declaracion de fecha-> fechaInicio: new Date('2025-3-1') // RESPETAR FORMATO: AÑO-MES-DIA
-
+// listas
 export const listaEventosAgenda: EventoAgenda[] = [
   {
-    id: 21,
+    id: "21",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },
   {
-    id: 1,
-    titulo: 'Desarrollo de actividades de verano',
+    id: "1",
+    titulo: 'Evento de prueba 2 lineas ----------------------',
     fechaInicio: new Date('2025-3-1'), 
     fechaFin: new Date('2025-3-28')
   },
   {
-    id: 2,
-    titulo: 'Inscripción a Arquitectura de Sistemas de Elaboración de Datos II',
-    fechaInicio: devHoyMasDias(-2),
-    fechaFin: devHoyMasDias(2)
-  },
-  {
-    id: 3,
-    titulo: 'Evento hoy',
-    fechaInicio: devHoyMasDias(0),
-    fechaFin: devHoyMasDias(0)
-  },
-  {
-    id: 4,
-    titulo: 'Evento último día',
-    fechaInicio: devHoyMasDias(-1),
-    fechaFin: devHoyMasDias(0)
-  },
-  {
-    id: 5,
+    id: "2",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(-5),
-    fechaFin: devHoyMasDias(3)
+    fechaInicio: devHoyMasDiasPermanente(-2),
+    fechaFin: devHoyMasDiasPermanente(2)
+  },
+  {
+    id: "3",
+    titulo: 'Evento de prueba 2 lineas ----------------------',
+    fechaInicio: devHoyMasDiasPermanente(0),
+    fechaFin: devHoyMasDiasPermanente(0)
+  },
+  {
+    id: "4",
+    titulo: 'Evento de prueba',
+    fechaInicio: devHoyMasDiasPermanente(-1),
+    fechaFin: devHoyMasDiasPermanente(0)
+  },
+  {
+    id: "5",
+    titulo: 'Evento de prueba',
+    fechaInicio: devHoyMasDiasPermanente(-5),
+    fechaFin: devHoyMasDiasPermanente(3)
   },{
-    id: 6,
+    id: "6",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(7),
-    fechaFin: devHoyMasDias(7)
+    fechaInicio: devHoyMasDiasPermanente(7),
+    fechaFin: devHoyMasDiasPermanente(7)
   }
   ,{
-    id: 7,
+    id: "7",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(10),
-    fechaFin: devHoyMasDias(10)
+    fechaInicio: devHoyMasDiasPermanente(10),
+    fechaFin: devHoyMasDiasPermanente(10)
   },{
-    id: 8,
+    id: "8",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(15),
-    fechaFin: devHoyMasDias(15)
+    fechaInicio: devHoyMasDiasPermanente(15),
+    fechaFin: devHoyMasDiasPermanente(15)
   },{
-    id: 9,
+    id: "9",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(20),
-    fechaFin: devHoyMasDias(20)
+    fechaInicio: devHoyMasDiasPermanente(20),
+    fechaFin: devHoyMasDiasPermanente(20)
   },{
-    id: 10,
+    id: "10",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(25),
-    fechaFin: devHoyMasDias(25)
+    fechaInicio: devHoyMasDiasPermanente(25),
+    fechaFin: devHoyMasDiasPermanente(25)
   },{
-    id: 11,
+    id: "11",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 12,
+    id: "12",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 13,
+    id: "13",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 14,
+    id: "14",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 15,
+    id: "15",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 16,
+    id: "16",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 17,
+    id: "17",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 18,
+    id: "18",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 19,
+    id: "19",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   },{
-    id: 20,
+    id: "20",
     titulo: 'Evento de prueba',
-    fechaInicio: devHoyMasDias(30),
-    fechaFin: devHoyMasDias(35)
+    fechaInicio: devHoyMasDiasPermanente(30),
+    fechaFin: devHoyMasDiasPermanente(35)
   }
 ];
-// aux dev
-function hoyMasDias(dias:number) { return new Date(Date.now() + 86400000 * dias); }
-function devHoyMasDias(dias:number) { return new Date(devDiaActual.getTime() + 86400000 * dias); }
+export let listaEventosPersonalizados: EventoAgenda[] = [
+  {
+  id: "p0",
+    titulo: 'Evento Personalizado ',
+    fechaInicio: devHoyMasDiasPermanente(1),
+    fechaFin: devHoyMasDiasPermanente(1)
+  },{
+    id: "p1",
+    titulo: 'Evento Personalizado ------------------------------------',
+    fechaInicio: devHoyMasDiasPermanente(3),
+    fechaFin: devHoyMasDiasPermanente(3)
+  },
+    {
+  id: "p2",
+    titulo: 'Evento Personalizado ----------------------------------------------------------------------',
+    fechaInicio: devHoyMasDiasPermanente(10),
+    fechaFin: devHoyMasDiasPermanente(15)
+  }
+];
 
-// export listas
-export const listaFuturo: EventoAgenda[] = ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false));
-export const listaPasado: EventoAgenda[] = listaEventosAgenda.filter((evento) => eventoFinalizado(evento) == true);
+// funciones
+export function agregarEventoPersonalizado(titulo:string, fechainicio:string, fechaFin:string):void {
+  
+  let fi = new Date(fechainicio);
+  let ff = new Date(fechaFin);
+  if (ff < fi) {
+    const aux = ff;
+    ff = fi;
+    fi = aux;
+  }
+  const nuevoEvento:EventoAgenda =
+  {
+    id: "p"+devUltimoId,
+    titulo: titulo,
+    fechaInicio: fi,
+    fechaFin: ff
+  };
+  devUltimoId += 1;
+  listaEventosPersonalizados.push(nuevoEvento);
+  console.log("Agregando evento. Len: "+listaEventosPersonalizados.length);
+}
+export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:string, fechaFin:string):void {
+  let fi = new Date(fechainicio);
+  let ff = new Date(fechaFin);
+  if (ff < fi) {
+    const aux = ff;
+    ff = fi;
+    fi = aux;
+  }
+  const eventoEditado:EventoAgenda = obtenerEventoConId(id);
+  eventoEditado.titulo = titulo;
+  eventoEditado.fechaInicio = fi;
+  eventoEditado.fechaFin = ff;
+  console.log("Editando evento: "+eventoEditado);
+}
+export function quitarEventoPersonalizado(id:string):void {
+  const indice = listaEventosPersonalizados.findIndex((evento) => evento.id == id);
+  listaEventosPersonalizados.splice(indice, 1);
+  console.log("Quitando evento. Len: "+listaEventosPersonalizados.length);
+}
+export function obtenerEventoConId(id:string): EventoAgenda {
+  const evento = listaEventosPersonalizados.find((evento) => evento.id === id);
+  if (!evento) throw new Error("Evento no encontrado");
+  return evento;
+}
 
 // aux listas
+function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): EventoAgenda[] {
+  const lista = lista1.concat(lista2);
+  return ordenarEventosPorFechaFin(lista);
+}
 function ordenarEventosPorFechaFin(listaEventos: EventoAgenda[]) {
   return listaEventos.sort((a,b) => a.fechaFin.getTime() - b.fechaFin.getTime());
 }
@@ -157,14 +226,20 @@ function diasHastaFechaActual(targetDate: Date): number {
   const diffDays = Math.floor(diffMs / 86400000); // 1000 * 60 * 60 * 24
   return diffDays;
 }
-function DateToFechaString(fecha: Date): string {
-  return `${fecha.getDate()}/${fecha.getMonth()+1}/${fecha.getFullYear()}`;
+export function DateToFechaString(fecha: Date, separador: string = "/"): string {
+  return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${separador}${fecha.getFullYear()}`;
 }
 function charPlural(plural:string, valorAEvaluar:number) {
   if (valorAEvaluar > 1 || valorAEvaluar < -1) return plural;
   else return "";
 }
-// exports
+
+// export listas
+export const listaFuturo: EventoAgenda[] = ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false));
+export const listaPasado: EventoAgenda[] = listaEventosAgenda.filter((evento) => eventoFinalizado(evento) == true);
+export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaFuturo, listaEventosPersonalizados); };
+
+// export funcs
 export function eventoAgendaToFechaString(evento:EventoAgenda): string {
   let intervaloFechaStr = "";
   const duraUnDia = eventoDuraUnDia(evento);
@@ -198,10 +273,10 @@ export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   const diasPrioridadDos = 7;
   const diasPrioridadTres = 15;
   const colorPasado = "#4a4a4a";
-  const colorPrioridadUno = '#8c1500';
-  const colorPrioridadDos = "#d12a00";
-  const colorPrioridadTres = "#f75b00";
-  const colorPrioridadCuatro = "#334a00";
+  const colorPrioridadUno = '#cc0000';
+  const colorPrioridadDos = "#e83000";
+  const colorPrioridadTres = "#e88200";
+  const colorPrioridadCuatro = "#3e8800";
 
   const diasHastaFin = diasHastaFechaActual(evento.fechaFin);
 

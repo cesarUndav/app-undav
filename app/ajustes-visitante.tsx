@@ -2,9 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking } from "react-native";
 import { router } from "expo-router";
 import CustomText from "../components/CustomText";
-import BottomBar from "../components/BottomBar";
-
-import { usuarioActual } from "@/data/DatosUsuarioGuarani";
+import BottomBarVisitante from "../components/BottomBarVisitante";
 
 // Definición de tipos para los ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -25,10 +23,6 @@ export default function Configuracion() {
   const sections: ConfigSection[] = [
     {
       data: [
-        { type: "text", label: usuarioActual.nombreCompleto },
-        { type: "text", label: "ID: "+usuarioActual.idPersona },
-        { type: "text", label: usuarioActual.email },
-        { type: "text", label: "Teléfono: "+usuarioActual.tel },
         { type: "separator" }
       ]
     },
@@ -47,26 +41,6 @@ export default function Configuracion() {
       data: [
         {
           type: "link",
-          label: "Preguntas frecuentes",
-          onPress: () => router.push("/preguntas-frecuentes"),
-        },
-        {
-          type: "link",
-          label: "Sedes",
-          onPress: () => router.push("/sedes"),
-        },
-        {
-          type: "link",
-          label: "Contacto",
-          onPress: () => router.push("/contacto"),
-        },
-        {
-          type: "link",
-          label: "Historia Académica",
-          onPress: () => router.push("/historia-academica"),
-        },
-        {
-          type: "link",
           label: "Envianos tus sugerencias",
           onPress: () => Linking.openURL("mailto:feedback@undav.edu.ar"),
         },
@@ -77,7 +51,7 @@ export default function Configuracion() {
       data: [
         {
           type: "action",
-          label: "Cerrar sesión",
+          label: "Ingresar como estudiante",
           onPress: () => {
             // Lógica de logout
             router.replace("/"); // va a la pantalla inicial, "index.tsx"
@@ -133,7 +107,7 @@ export default function Configuracion() {
         contentContainerStyle={styles.list}
       />
 
-      <BottomBar />
+      <BottomBarVisitante />
     </View>
   );
 }

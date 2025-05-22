@@ -1,19 +1,28 @@
 // app-undav/app/agenda.tsx
-import React from 'react';
+import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import CustomText from '../components/CustomText';
 import BottomBar from '../components/BottomBar';
-import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProximidadColor} from '../data/agenda';
+import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProximidadColor, EventoAgenda, listaCompleta} from '../data/agenda';
+import { useFocusEffect } from 'expo-router';
 
 export default function Agenda() {
+  const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
+
+  useFocusEffect(
+    // This runs every time the screen is focused (entered)
+    useCallback(() => {
+      setListaEventos(listaCompleta);
+    }, [])
+  );
+  
   return (
-    <LinearGradient colors={['#ffffff', '#989797']} style={styles.container}>
-      <SafeAreaView style={{ flex: 1 }}>
-        <ScrollView contentContainerStyle={styles.scrollContainer}>
+    <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
           <CustomText style={styles.title}>PRÓXIMO</CustomText>
-          {listaFuturo.map((evento) => (
+          {listaEventos.map((evento) => (
             <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
               <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
                 {evento.titulo}
@@ -34,7 +43,6 @@ export default function Agenda() {
 
         </ScrollView>
         <BottomBar />
-      </SafeAreaView>
     </LinearGradient>
   );
 }
@@ -42,16 +50,17 @@ export default function Agenda() {
 export const eventoAgendaStyles = StyleSheet.create({
   agendaItem: {
     backgroundColor: '#fff',
-    padding: 8,
-    marginBottom: 8,
-    borderBottomRightRadius: 16
+    paddingVertical: 6,
+    paddingHorizontal: 10,
+    borderBottomRightRadius: 16,
+    elevation: 4 // verificar esto
   },
   eventTitle: {
-    fontSize: 17, 
+    fontSize: 16,
     fontWeight: 'bold',
   },
   eventDate: {
-    fontSize: 16,
+    fontSize: 13,
     fontWeight: 'bold',
     marginTop: 2
   }
@@ -62,15 +71,16 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scrollContainer: {
-    paddingBottom: 80,
-    paddingHorizontal: 20,
-    paddingTop: 0,
+    paddingTop: 10,
+    paddingBottom: 10,
+    paddingHorizontal: 10,
+    gap: 8
   },
   title: {
-    fontSize: 22,
+    fontSize: 16,
     fontWeight: 'bold',
     color: '#0b254a',
     alignSelf: 'center',
-    marginVertical: 12
+    marginVertical: 0
   }
 });

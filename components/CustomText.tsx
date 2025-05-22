@@ -1,10 +1,10 @@
 // components/CustomText.tsx
 import React from "react";
-import { Text as RNText, TextProps, TextStyle } from "react-native";
+import { Text as RNText, TextProps, TextStyle, StyleProp } from "react-native";
 
 interface CustomTextProps extends TextProps {
   weight?: "regular" | "bold";
-  style?: TextStyle;
+  style?: StyleProp<TextStyle>; // Updated type to support array or single style
 }
 
 const CustomText: React.FC<CustomTextProps> = ({ children, weight = "regular", style, ...rest }) => {

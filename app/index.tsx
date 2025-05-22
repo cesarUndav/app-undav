@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import CustomText from "@/components/CustomText";
@@ -21,7 +21,6 @@ export default function HomeScreen()
       <ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
         <View style={styles.container}>
 
-          {/* esto es para ocultar barra de titulo "index" */}
           <Tabs.Screen
             name = "index"
             options ={{
@@ -29,19 +28,19 @@ export default function HomeScreen()
               headerShown: false
             }}
           />
-          {/* LOGO UNDAV */}
+
           <Image
             source={require("@/assets/images/logoundav.png")}
             style={styles.logo}
             resizeMode="contain"
           />
-          {/* BOTONES */}
+
           <View style={styles.buttonsContainer}>
-            <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../login")}>
+            <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../loginAutenticado")}>
               <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={styles.visitanteBtn} onPress={() => router.push("../home-invitados")}>
+            <TouchableOpacity style={styles.visitanteBtn} onPress={() => router.push("../home-visitante")}>
               <CustomText weight="bold" style={styles.buttonText}>SOY VISITANTE</CustomText>
             </TouchableOpacity>
           </View>
@@ -74,7 +73,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "contain",
     marginBottom: 40,
-    marginTop: 0
+    marginTop: -50
   },
   buttonsContainer: {
     gap: 12,

@@ -1,8 +1,9 @@
 import React from 'react';
-import { View, Image, StyleSheet, TouchableOpacity, Linking, ScrollView } from 'react-native';
+import { View, Image, StyleSheet, TouchableOpacity, Linking, ScrollView, SafeAreaView } from 'react-native';
 import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
 import BottomBar from '../components/BottomBar';
+import { LinearGradient } from 'expo-linear-gradient';
 
 
 const sedes = [
@@ -11,38 +12,38 @@ const sedes = [
     direccion: 'España 350 esq. Colón, Avellaneda',
     telefono: '5436-7553',
     imagen: require('../assets/images/sedes/espana.png'),
-    maps: 'https://maps.google.com/?q=España+350+Avellaneda',
+    maps: 'https://maps.app.goo.gl/DhdRoZ6zAWa7kuzw7',
   },
   {
     nombre: 'Sede Piñeyro',
     direccion: 'Mario Bravo 1460 esq. Isleta, Piñeyro',
     imagen: require('../assets/images/sedes/pineyro.png'),
-    maps: 'https://maps.google.com/?q=Mario+Bravo+1460+Piñeyro',
+    maps: 'https://maps.app.goo.gl/4mJxbwrwD9WPGrjx6',
   },
   {
     nombre: 'Sede 12 de Octubre',
     direccion: '12 de Octubre 463, Avellaneda',
     imagen: require('../assets/images/sedes/12octubre.png'),
-    maps: 'https://maps.google.com/?q=12+de+Octubre+463+Avellaneda',
+    maps: 'https://maps.app.goo.gl/vMXto5voyPzwVtiv9',
   },
   {
     nombre: 'Sede Arenales',
     direccion: 'Arenales 320, Avellaneda',
     imagen: require('../assets/images/sedes/arenales.png'),
-    maps: 'https://maps.google.com/?q=Arenales+320+Avellaneda',
+    maps: 'https://maps.app.goo.gl/K1xMeRZacUcayq368',
   },
   {
     nombre: 'Sede Constitución',
     direccion: 'Constitución 627, Avellaneda',
     imagen: require('../assets/images/sedes/constitucion.png'),
-    maps: 'https://maps.google.com/?q=Constitución+627+Avellaneda',
+    maps: 'https://maps.app.goo.gl/ggNC4GSgoZVsQuX29',
   },
   {
     nombre: 'Escuela Secundaria Técnica UNDAV',
     direccion: 'Av. Ramón Franco 6475, Wilde',
     telefono: '(54 11) 2142-4477',
     imagen: require('../assets/images/sedes/escuela.png'),
-    maps: 'https://maps.google.com/?q=Av+Ramón+Franco+6475+Wilde',
+    maps: 'https://maps.app.goo.gl/TAxU7qpSueUMzTNZ9',
   },
 ];
 
@@ -50,10 +51,13 @@ export default function Sedes() {
   const router = useRouter();
 
   return (
+    <SafeAreaView style={{flex: 1}}>  
     <View style={styles.page}>
+      <LinearGradient colors={['#ffffff', '#91c9f7']}>
       <ScrollView contentContainerStyle={styles.container}>
         {sedes.map((sede, index) => (
           <View key={index} style={styles.card}>
+              <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>
             <Image source={sede.imagen} style={styles.image} />
             <View style={styles.info}>
               <CustomText style={styles.title}>{sede.nombre}</CustomText>
@@ -61,27 +65,36 @@ export default function Sedes() {
               {sede.telefono && (
                 <CustomText style={styles.text}>Tel: {sede.telefono}</CustomText>
               )}
-              <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>
-                <CustomText style={styles.link}>Cómo llegar</CustomText>
-              </TouchableOpacity>
+                <CustomText style={styles.link}>Toca para ver en Google Maps</CustomText>
             </View>
+              </TouchableOpacity>
           </View>
         ))}
       </ScrollView>
-      <BottomBar />
+      </LinearGradient>
+
     </View>
+    <BottomBar />
+    </SafeAreaView>
   );
   
 }
 
 const styles = StyleSheet.create({
   container: {
-    padding: 10,
-    paddingBottom: 40,
+    paddingHorizontal: 15,
+    paddingVertical: 15,
+    gap: 15
+    //backgroundColor: "#1c2f4a"
   },
   card: {
     backgroundColor: '#fff',
-    marginBottom: 15,
+    borderBottomRightRadius: 30,
+    overflow: 'hidden',
+    elevation: 6
+  },
+  cardOLD: {
+    backgroundColor: '#fff',
     borderBottomRightRadius: 30,
     overflow: 'hidden',
     elevation: 2,
@@ -103,14 +116,14 @@ const styles = StyleSheet.create({
     color: '#0b254a',
   },
   text: {
-    fontSize: 14,
+    fontSize: 16,
     color: '#444',
   },
   link: {
-    marginTop: 8,
+    marginTop: 6,
     fontSize: 14,
-    fontWeight: 'bold',
     color: '#0b5085',
+    //fontWeight: 'bold',
     // textDecorationLine: 'underline',
   },
   page: {
