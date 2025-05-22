@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
 import BottomBar from '../components/BottomBar';
@@ -15,7 +15,8 @@ import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
 
-import { usuarioActual } from '../data/DatosUsuarioGuarani';
+import { usuarioActual, UsuarioAutenticado } from '../data/DatosUsuarioGuarani';
+import BotonIconoTexto from '@/components/BotonIconoTexto';
 
 export default function HomeEstudiante() {
 
@@ -36,10 +37,8 @@ export default function HomeEstudiante() {
         <View style={styles.header}>
           <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
           <View style={styles.userInfo}>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{"Bienvenido de vuelta,"}</CustomText>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{usuarioActual.nombreCompleto}</CustomText>
-            {/* <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText> */}
-            <CustomText style={[styles.userText, {color: '#444'}]}>{"ID: "+usuarioActual.idPersona}</CustomText>
+            <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioAutenticado() ? usuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
+            <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioAutenticado() ? usuarioActual.idPersona : "12345")}</CustomText>
           </View>
           <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
           </View>
@@ -48,31 +47,47 @@ export default function HomeEstudiante() {
 
         <View style={styles.buttonsRowParent}> 
           <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
-              <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-            </TouchableOpacity>
 
-            <TouchableOpacity accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
-              <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
-            </TouchableOpacity>
+            <BotonIconoTexto
+              label={"CERTIFICADOS\nY REPORTES"}
+              funcionOnPress={() => router.push('/certificados')}
+              Icon={ReportesIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
+            <BotonIconoTexto
+              label={"INSCRIPCIONES"}
+              funcionOnPress={() => router.push('/inscripciones')}
+              Icon={InscripcionesIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
           </View>
           <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
-              <LinksIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>VÍNCULOS</CustomText>
-            </TouchableOpacity>
+            
+            <BotonIconoTexto
+              label={"REDES"}
+              funcionOnPress={() => router.push('/vinculos')}
+              Icon={LinksIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
 
-            <TouchableOpacity accessible accessibilityLabel="Ir a sedes" style={styles.buttonBox} onPress={() => router.push('/sedes')}>
-              <SedesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>SEDES</CustomText>
-            </TouchableOpacity>
+            <BotonIconoTexto
+              label={"SIU GUARANÍ"}
+              funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
+              Icon={LinksIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
 
-            <TouchableOpacity accessible accessibilityLabel="Ir a contacto" style={styles.buttonBox} onPress={() => router.push('/contacto')}>
-              <ContactoIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>CONTACTO</CustomText>
-            </TouchableOpacity>
+            <BotonIconoTexto
+              label={"CAMPUS\nVIRTUAL"}
+              funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
+              Icon={LinksIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
           </View>
         </View>
 
@@ -83,7 +98,7 @@ export default function HomeEstudiante() {
   );
 }
 
-const iconSize = "40%";
+const iconSize = 44;
 const iconColor = "#fff";
 //const iconColor = "#1c2f4a";
 
@@ -119,7 +134,8 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontSize: 14,
     fontWeight: '600',    
-    textAlign: 'left'
+    textAlign: 'left',
+    alignContent: "flex-end"
   },
   profileIcon: {
     height: "100%",
@@ -142,23 +158,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10
-  },
-  buttonBox: {
-    flex: 1,
-    height: "100%",
-    flexDirection: "column",
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomRightRadius: 20,
-    //backgroundColor: 'white'
-    //backgroundColor: #005BA4'#1c2f4a'
-    backgroundColor:"#005BA4"
-  },
-  buttonText: {
-    textAlign: 'center',
-    fontWeight: "bold",
-    color: iconColor,
-    fontSize: 12,
-    //fontStyle: 'italic'
-  },
+  }
 });

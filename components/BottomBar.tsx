@@ -56,17 +56,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#173c68',
-    justifyContent: 'space-around', // you can keep or remove this
-    paddingVertical: 12,
+    justifyContent: 'space-around'
   },
   btn: {
-    //flex: 1,              // take equal space in row
-    alignItems: 'center', // center horizontally inside button
-    justifyContent: 'center', // center vertically too,
-    width: 80,
+    //flex: 1,
+    paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
     //backgroundColor: "green",
   },
   icon: {
-    // no need for alignSelf here anymore
+    
   },
 });

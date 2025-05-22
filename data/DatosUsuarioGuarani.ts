@@ -9,7 +9,7 @@ interface User {
   legajo: string;
 }
 export const usuarioActual: User={idPersona: "", documento: "", nombreCompleto: "", email: "", tel: "", legajo: "" };
-
+export function UsuarioAutenticado():Boolean {return usuarioActual.idPersona != "";}
 // auth y requests
 
 const client = new DigestClient("app_undav", "app123456");

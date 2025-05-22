@@ -16,12 +16,6 @@ export default function Contacto() {
           <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://undav.edu.ar/index.php')}>
             <CustomText style={styles.subtitulo}>Web UNDAV</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://ead.undav.edu.ar/')}>
-            <CustomText style={styles.subtitulo}>Campus Virtual</CustomText>
-          </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://academica.undav.edu.ar/g3w/')}>
-            <CustomText style={styles.subtitulo}>SIU Guaraní</CustomText>
-          </TouchableOpacity>
           <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://www.youtube.com/@UNDAVOficial/featured')}>
             <CustomText style={styles.subtitulo}>Youtube</CustomText>
           </TouchableOpacity>

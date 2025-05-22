@@ -25,6 +25,7 @@ export type Actividad = {
   id:number,
   title:string,
   body:string,
+  nota:number,
   fecha:string
 }
 
@@ -32,6 +33,8 @@ export default function HistoriaAcademica() {
   const [loading, setLoading] = useState(true);
   const [listaActividades, setListaActividades] = useState<Actividad[]>([]);
   const [tituloPagina, setTituloPagina] = useState("");
+  const [cantMaterias, setCantMaterias] = useState(0);
+  const [promedio, setPromedio] = useState(0);
 
   useEffect(() => {
 
@@ -47,17 +50,33 @@ export default function HistoriaAcademica() {
         }
         else { // transformar actividades JSON a actividades Actividad:
           setTituloPagina("Historia Académica");
+
+          let cantMateriasAprobadas:number = 0;
+          let sumaNotas:number = 0;
+
           json.forEach((elem: any, index: number) => {
-            if (elem.nota > 3) { // FILTROS!!!!!!!!!!!!!!!!!!!!!
+
+            const nota:number = Number(elem.nota);
+
+            if (nota > 0) { // FILTROS!!!!!!!!!!!!!!!!!!!!!
               const nuevaActividad:Actividad = {
                 id: index,
                 title: `${elem.actividad_nombre}`,
-                body: `Nota: ${elem.nota}\n${elem.resultado}: ${elem.fecha}`,
-                fecha: convertToISODateFormat(elem.fecha)
+                body: `Nota: ${nota}\n${elem.resultado}: ${elem.fecha}`,
+                fecha: convertToISODateFormat(elem.fecha),
+                nota: nota
               };
               listaActividad.push(nuevaActividad);
             }
+            if (nota >= 4) {
+              cantMateriasAprobadas += 1;
+              sumaNotas = Number(sumaNotas) + Number(nota);
+            }
           });
+          
+          setCantMaterias(cantMateriasAprobadas);
+          cantMateriasAprobadas == 0 ? setPromedio(0) : setPromedio(sumaNotas/cantMateriasAprobadas);
+          
           listaActividad.sort((b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
           setListaActividades(listaActividad);
         }
@@ -92,6 +111,10 @@ export default function HistoriaAcademica() {
       <ScrollView contentContainerStyle={styles.container}>
       
         {loading && (<CustomText style={styles.title} >{"Cargando..."}</CustomText>)}
+
+          <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
+            {"Estadísticas:\nMaterias aprobadas: "+cantMaterias+"\nPromedio: "+promedio+"\n"}
+          </CustomText>
 
         {listaActividades.map((evento) => (
         <View key={evento.id} style={eventoAgendaStyles.agendaItem}>

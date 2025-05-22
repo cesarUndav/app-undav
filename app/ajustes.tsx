@@ -4,7 +4,7 @@ import { router } from "expo-router";
 import CustomText from "../components/CustomText";
 import BottomBar from "../components/BottomBar";
 
-import { usuarioActual } from "@/data/DatosUsuarioGuarani";
+import { usuarioActual, UsuarioAutenticado } from "@/data/DatosUsuarioGuarani";
 
 // Definición de tipos para los ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -25,10 +25,10 @@ export default function Configuracion() {
   const sections: ConfigSection[] = [
     {
       data: [
-        { type: "text", label: usuarioActual.nombreCompleto },
-        { type: "text", label: "ID: "+usuarioActual.idPersona },
-        { type: "text", label: usuarioActual.email },
-        { type: "text", label: "Teléfono: "+usuarioActual.tel },
+        { type: "text", label: (UsuarioAutenticado() ? usuarioActual.nombreCompleto : "Nombre Nombre Apellido") },
+        { type: "text", label: (UsuarioAutenticado() ? "ID: "+usuarioActual.idPersona : "ID: 12345") },
+        { type: "text", label: (UsuarioAutenticado() ? usuarioActual.email : "nombreapellido@email.com") },
+        { type: "text", label: "Teléfono: "+ (UsuarioAutenticado() ? usuarioActual.tel : "(11) 12345678") },
         { type: "separator" }
       ]
     },
@@ -47,13 +47,8 @@ export default function Configuracion() {
       data: [
         {
           type: "link",
-          label: "Preguntas frecuentes",
-          onPress: () => router.push("/preguntas-frecuentes"),
-        },
-        {
-          type: "link",
-          label: "Sedes",
-          onPress: () => router.push("/sedes"),
+          label: "Historia Académica",
+          onPress: () => router.push("/historia-academica"),
         },
         {
           type: "link",
@@ -62,8 +57,13 @@ export default function Configuracion() {
         },
         {
           type: "link",
-          label: "Historia Académica",
-          onPress: () => router.push("/historia-academica"),
+          label: "Preguntas frecuentes",
+          onPress: () => router.push("/preguntas-frecuentes"),
+        },
+        {
+          type: "link",
+          label: "Sedes",
+          onPress: () => router.push("/sedes"),
         },
         {
           type: "link",
@@ -102,7 +102,7 @@ export default function Configuracion() {
               );
             case "toggle":
               return (
-                <View style={styles.item}>
+                <View style={[styles.item, {marginVertical: -10}]}>
                   <CustomText style={styles.textItem}>{item.label}</CustomText>
                   <Switch value={item.value} onValueChange={item.onValueChange} />
                 </View>
@@ -141,16 +141,17 @@ export default function Configuracion() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: "#ffffff",
+    backgroundColor: "#ffffff"
   },
   list: {
-    padding: 16
+    paddingVertical: 6,
+    paddingHorizontal: 15
   },
   item: {
     flexDirection: "row",
     alignItems: "center",
     justifyContent: "space-between",
-    paddingVertical: 10,
+    paddingVertical: 8,
   },
   textItem: {
     fontSize: 16,
@@ -162,11 +163,11 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     fontSize: 16,
-    color: "#d9534f",
+    color: "#d9534f"
   },
   separator: {
     height: 1,
-    marginVertical: 0,
-    backgroundColor: "#DDD",
+    marginVertical: 6,
+    backgroundColor: "#BBB",
   },
 });

@@ -65,6 +65,7 @@ export default function Calendario() {
   return (
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={{ flex: 1 }}>
       <View style={styles.container}>
+      {loading && (<CustomText style={styles.title} >{"Cargando..."}</CustomText>)}
       <CustomText style={styles.title} >{tituloPagina}</CustomText>
         {listaActividades.map((evento) => (
         <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
