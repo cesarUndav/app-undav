@@ -148,14 +148,14 @@ export default function EventosPersonalizados() {
               </TouchableOpacity>
               
               { modoEdicion && (
-                  <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[styles.modalBtn, { backgroundColor: "red" }]}>
+                  <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[styles.modalBtn, { backgroundColor: "#c91800" }]}>
                     <CustomText style={styles.modalBtnText}>ELIMINAR</CustomText>
                   </TouchableOpacity>
                 )
               }
 
               <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalBtn, { backgroundColor: "white" }]}>
-                <CustomText style={[styles.modalBtnText,{color: "red"}]}>CANCELAR</CustomText>
+                <CustomText style={[styles.modalBtnText,{color: "gray"}]}>CANCELAR</CustomText>
               </TouchableOpacity>
             </View>
             {/* <Button title="Agregar" onPress={confirmarAgregarEvento} />

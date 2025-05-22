@@ -109,13 +109,12 @@ export default function HistoriaAcademica() {
         }}
       />
       <ScrollView contentContainerStyle={styles.container}>
-      
+
         {loading && (<CustomText style={styles.title} >{"Cargando..."}</CustomText>)}
-
-          <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
-            {"Estadísticas:\nMaterias aprobadas: "+cantMaterias+"\nPromedio: "+promedio+"\n"}
-          </CustomText>
-
+        {!loading && <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
+          {"Materias aprobadas: "+cantMaterias+"\nPromedio: "+promedio.toFixed(2)+"\n"}
+        </CustomText>
+        }
         {listaActividades.map((evento) => (
         <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
           <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 

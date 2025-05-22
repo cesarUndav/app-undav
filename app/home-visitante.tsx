@@ -9,11 +9,15 @@ import {Ionicons } from '@expo/vector-icons';
 import LinksIcon from '../assets/icons/links.svg';
 import PreguntasIcon from '../assets/icons/preguntas.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
-import ReportesIcon from '../assets/icons/reportes.svg';
+
 import ContactoIcon from '../assets/icons/contacto.svg';
 import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
+import BotonIconoTexto from '@/components/BotonIconoTexto';
+
+const iconSize = 44;
+const iconColor = "#fff";
 
 export default function HomeEstudiante() {
   const router = useRouter();
@@ -36,8 +40,8 @@ export default function HomeEstudiante() {
           <CustomText style={styles.bannerText}>{"Ingreso 2do Cuatrimestre 2025:\n31/3/25 - 30/5/2025"}</CustomText>
         </View>
 
-        <View style={styles.buttonsRowParent}> 
-          <TouchableOpacity accessible accessibilityLabel="Ir a oferta académica" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
+        <View style={[styles.buttonsRowParent,{flex: 1}]}>
+          <TouchableOpacity style={styles.buttonBox} onPress={() => router.push('/inscripciones')} accessible accessibilityLabel="Ir a oferta académica" >
             <Ionicons name="school-outline" size={80} color={iconColor} />
             <CustomText style={styles.buttonText}>OFERTA ACADÉMICA</CustomText>
           </TouchableOpacity>
@@ -45,30 +49,45 @@ export default function HomeEstudiante() {
         
         <View style={styles.buttonsRowParent}> 
           <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
-              <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>TUTORIAL DE{"\n"}PREINSCRIPCIÓN</CustomText>
-            </TouchableOpacity>
-            <TouchableOpacity accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/preguntas-frecuentes')}>
-              <PreguntasIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>PREGUNTAS{"\n"}FRECUENTES</CustomText>
-            </TouchableOpacity>
+            
+            <BotonIconoTexto
+              label={"TUTORIAL DE\nPREINSCRIPCIÓN"}
+              funcionOnPress={() => router.push('/inscripciones')}
+              Icon={InscripcionesIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
+            <BotonIconoTexto
+              label={"PREGUNTAS\nFRECUENTES"}
+              funcionOnPress={() => router.push('/preguntas-frecuentes')}
+              Icon={PreguntasIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
           </View>
           <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
-              <LinksIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>VÍNCULOS</CustomText>
-            </TouchableOpacity>
 
-            <TouchableOpacity accessible accessibilityLabel="Ir a sedes" style={styles.buttonBox} onPress={() => router.push('/sedes')}>
-              <SedesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>SEDES</CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity accessible accessibilityLabel="Ir a contacto" style={styles.buttonBox} onPress={() => router.push('/contacto')}>
-              <ContactoIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>CONTACTO</CustomText>
-            </TouchableOpacity>
+            <BotonIconoTexto
+              label={"REDES"}
+              funcionOnPress={() => router.push('/vinculos')}
+              Icon={LinksIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
+            <BotonIconoTexto
+              label={"SEDES"}
+              funcionOnPress={() => router.push('/sedes')}
+              Icon={SedesIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
+            <BotonIconoTexto
+              label={"CONTACTO"}
+              funcionOnPress={() => router.push('/contacto')}
+              Icon={ContactoIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
           </View>
         </View>
 
@@ -79,9 +98,7 @@ export default function HomeEstudiante() {
   );
 }
 
-const iconSize = "40%";
-const iconColor = "#fff";
-//const iconColor = "#1c2f4a";
+
 
 const styles = StyleSheet.create({
   containerGradient: {

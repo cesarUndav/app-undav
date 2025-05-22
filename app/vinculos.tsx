@@ -13,22 +13,22 @@ export default function Contacto() {
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
       <SafeAreaView style={styles.safeArea}>
         <ScrollView contentContainerStyle={styles.scroll}>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://undav.edu.ar/index.php')}>
-            <CustomText style={styles.subtitulo}>Web UNDAV</CustomText>
+          <TouchableOpacity style = {[styles.bloque, {backgroundColor: "#173c68"}]} onPress={() => abrirEnNavegador('https://undav.edu.ar/index.php')}>
+            <CustomText style={styles.subtitulo} >Web UNDAV</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://www.youtube.com/@UNDAVOficial/featured')}>
-            <CustomText style={styles.subtitulo}>Youtube</CustomText>
+          <TouchableOpacity style = {[styles.bloque, {backgroundColor: "#c4302b"}]} onPress={() => abrirEnNavegador('https://www.youtube.com/@UNDAVOficial/featured')}>
+            <CustomText style={styles.subtitulo} >Youtube</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://www.instagram.com/undav_oficial/?hl=es')}>
+          <TouchableOpacity style = {[styles.bloque, {backgroundColor: "#C13584"}]} onPress={() => abrirEnNavegador('https://www.instagram.com/undav_oficial/?hl=es')}>
             <CustomText style={styles.subtitulo}>Instagram</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://www.facebook.com/UNDAV2011')}>
+          <TouchableOpacity style = {[styles.bloque, {backgroundColor: "#3b5998"}]} onPress={() => abrirEnNavegador('https://www.facebook.com/UNDAV2011')}>
             <CustomText style={styles.subtitulo}>Facebook</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://x.com/UNDAVOFICIAL')}>
+          <TouchableOpacity style = {[styles.bloque, {backgroundColor: "#000"}]} onPress={() => abrirEnNavegador('https://x.com/UNDAVOFICIAL')}>
             <CustomText style={styles.subtitulo}>X / Twitter</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity style = {styles.bloque} onPress={() => abrirEnNavegador('https://www.linkedin.com/school/universidad-nacional-de-avellaneda-undav-/')}>
+          <TouchableOpacity style = {[styles.bloque, {backgroundColor: "#0e76a8"}]}  onPress={() => abrirEnNavegador('https://www.linkedin.com/school/universidad-nacional-de-avellaneda-undav-/')}>
             <CustomText style={styles.subtitulo}>LinkedIn</CustomText>
           </TouchableOpacity>
           
@@ -65,7 +65,8 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 5,
-    color: '#0b5085',
+    color: 'white',
+    //color: '#0b5085',
   },
   link: {
     fontSize: 15,

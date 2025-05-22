@@ -7,6 +7,12 @@ import CustomText from '../components/CustomText';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
+import BotonIconoTexto from '@/components/BotonIconoTexto';
+import PreguntasIcon from '../assets/icons/preguntas.svg';
+import ContactoIcon from '../assets/icons/contacto.svg';
+import SedesIcon from '../assets/icons/sedes.svg';
+const iconSize = 44;
+
 export default function HomeInvitados() {
   const router = useRouter();
 
@@ -27,10 +33,13 @@ export default function HomeInvitados() {
           <CustomText style={styles.cardText}>Oferta Académica</CustomText>
         </TouchableOpacity>
 
-        <TouchableOpacity style={styles.card} onPress={() => router.push('/sedes')}>
-          <MaterialCommunityIcons name="office-building-marker-outline" size={32} color="#2E86AB" />
-          <CustomText style={styles.cardText}>Sedes</CustomText>
-        </TouchableOpacity>
+        <BotonIconoTexto
+          label={"SEDES"}
+          funcionOnPress={() => router.push('/sedes')}
+          Icon={SedesIcon}
+          iconSize={iconSize}
+          iconColor="white"
+        />
 
         <TouchableOpacity style={styles.card} onPress={() => router.push('/preguntas-frecuentes')}>
           <Ionicons name="help-circle-outline" size={32} color="#2E86AB" />

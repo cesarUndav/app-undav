@@ -7,11 +7,8 @@ import CustomText from '../components/CustomText';
 import AgendaPreview from '../components/AgendaPreview';
 
 import LinksIcon from '../assets/icons/links.svg';
-import PreguntasIcon from '../assets/icons/preguntas.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ReportesIcon from '../assets/icons/reportes.svg';
-import ContactoIcon from '../assets/icons/contacto.svg';
-import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
 

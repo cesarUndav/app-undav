@@ -1,4 +1,6 @@
-import { Stack, Slot, useRouter } from "expo-router";
+// app/_layout.tsx
+
+import { Slot } from "expo-router";
 import { useEffect, useState } from "react";
 import React from "react";
 import {
@@ -8,37 +10,31 @@ import {
 } from "@expo-google-fonts/montserrat";
 import { Platform, StatusBar } from "react-native";
 import { setBackgroundColorAsync } from "expo-system-ui";
+import { SafeAreaView } from "react-native-safe-area-context";
 
 export default function Layout() {
-  const router = useRouter();
   const [isReady, setIsReady] = useState(false);
 
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
-    Montserrat_700Bold
+    Montserrat_700Bold,
   });
 
   useEffect(() => {
-    if (Platform.OS === 'android') {
-      // cambia barra inferior del sistema a azul.
-      setBackgroundColorAsync('#173c68');
+    if (Platform.OS === "android") {
+      setBackgroundColorAsync("#173c68");
     }
     setIsReady(true);
   }, []);
 
-  // Esperar a que se carguen las fuentes Y el estado de autenticación
   if (!isReady || !fontsLoaded) {
     return null;
   }
 
   return (
-    <>
-      {/* GLOBAL: barra superior blanca */}
-      <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
-
-      <Stack screenOptions={{animation: "none"}}>
-        <Slot />
-      </Stack>
-    </>
+    <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
+      <StatusBar barStyle="dark-content" />
+      <Slot />
+    </SafeAreaView>
   );
 }
