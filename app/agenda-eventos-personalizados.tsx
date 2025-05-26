@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Button, Modal, Platform, TextInput } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity, Button, Modal, Platform, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomText from '../components/CustomText';
-import BottomBar from '../components/BottomBar';
 import { EventoAgenda, listaEventosPersonalizados, eventoAgendaToFechaString, eventoAgendaProximidadColor, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
-import { router, Tabs } from 'expo-router';
 import SettingsIcon from '../assets/icons/settings.svg';
 import { eventoAgendaStyles } from './agenda';
 import {agregarEventoPersonalizado, quitarEventoPersonalizado} from '../data/agenda';
@@ -69,7 +67,6 @@ export default function EventosPersonalizados() {
 
   return (
     <LinearGradient colors={['#fff', '#91c9f7']} style={styles.container}>
-      <Tabs.Screen options={{ title: 'eventos personalizados' }} />
 
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         <TouchableOpacity onPress={abrirModalAgregarEvento} style={styles.agregarBtn}>
@@ -98,74 +95,74 @@ export default function EventosPersonalizados() {
         ))}
       </ScrollView>
 
-      {/* MODAL EDITAR*/}
+      {/* MODAL */}
       <Modal visible={modalVisible} animationType="fade" transparent>
-        <View style={styles.modalOverlay}>
-          <View style={styles.modalContainer}>
-            <CustomText style={styles.modalTitle}>{tituloModal}</CustomText>
-            <TextInput
-              style={styles.input}
-              multiline
-              placeholder="Título"
-              value={titulo}
-              onChangeText={setTitulo}
-            />
-
-            <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={styles.dateButton}>
-              <CustomText>Inicio: {fechaInicio.toLocaleDateString()}</CustomText>
-            </TouchableOpacity>
-            {showInicioPicker && (
-              <DateTimePicker
-                value={fechaInicio}
-                mode="date"
-                display="default"
-                onChange={(_, date) => {
-                  if (date) setFechaInicio(date);
-                  setShowInicioPicker(Platform.OS === 'ios');
-                }}
+        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+          <View style={styles.modalOverlay}>
+            <View style={styles.modalContainer}>
+              <CustomText style={styles.modalTitle}>{tituloModal}</CustomText>
+              <TextInput
+                style={styles.input}
+                multiline
+                placeholder="Título"
+                value={titulo}
+                onChangeText={setTitulo}
               />
-            )}
 
-            <TouchableOpacity onPress={() => setShowFinPicker(true)} style={styles.dateButton}>
-              <CustomText>Fin: {fechaFin.toLocaleDateString()}</CustomText>
-            </TouchableOpacity>
-            {showFinPicker && (
-              <DateTimePicker
-                value={fechaFin}
-                mode="date"
-                display="default"
-                onChange={(_, date) => {
-                  if (date) setFechaFin(date);
-                  setShowFinPicker(Platform.OS === 'ios');
-                }}
-              />
-            )}
-            <View style={[{gap: 10}]}>
-              <TouchableOpacity onPress={confirmarAgregarEvento}
-                disabled={titulo.trim().length === 0}
-                style={[styles.modalBtn, { backgroundColor: titulo.trim().length > 0 ? "#1c2f4a" : "gray" }]}>
-                <CustomText style={styles.modalBtnText}>ACEPTAR</CustomText>
+              <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={styles.dateButton}>
+                <CustomText>Inicio: {fechaInicio.toLocaleDateString()}</CustomText>
               </TouchableOpacity>
-              
-              { modoEdicion && (
-                  <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[styles.modalBtn, { backgroundColor: "#c91800" }]}>
-                    <CustomText style={styles.modalBtnText}>ELIMINAR</CustomText>
-                  </TouchableOpacity>
-                )
-              }
+              {showInicioPicker && (
+                <DateTimePicker
+                  value={fechaInicio}
+                  mode="date"
+                  display="default"
+                  onChange={(_, date) => {
+                    if (date) setFechaInicio(date);
+                    setShowInicioPicker(Platform.OS === 'ios');
+                  }}
+                />
+              )}
 
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalBtn, { backgroundColor: "white" }]}>
-                <CustomText style={[styles.modalBtnText,{color: "gray"}]}>CANCELAR</CustomText>
+              <TouchableOpacity onPress={() => setShowFinPicker(true)} style={styles.dateButton}>
+                <CustomText>Fin: {fechaFin.toLocaleDateString()}</CustomText>
               </TouchableOpacity>
+              {showFinPicker && (
+                <DateTimePicker
+                  value={fechaFin}
+                  mode="date"
+                  display="default"
+                  onChange={(_, date) => {
+                    if (date) setFechaFin(date);
+                    setShowFinPicker(Platform.OS === 'ios');
+                  }}
+                />
+              )}
+              <View style={[{gap: 10}]}>
+                <TouchableOpacity onPress={confirmarAgregarEvento}
+                  disabled={titulo.trim().length === 0}
+                  style={[styles.modalBtn, { backgroundColor: titulo.trim().length > 0 ? "#1c2f4a" : "gray" }]}>
+                  <CustomText style={styles.modalBtnText}>ACEPTAR</CustomText>
+                </TouchableOpacity>
+                
+                { modoEdicion && (
+                    <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[styles.modalBtn, { backgroundColor: "#c91800" }]}>
+                      <CustomText style={styles.modalBtnText}>ELIMINAR</CustomText>
+                    </TouchableOpacity>
+                  )
+                }
+
+                <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalBtn, { backgroundColor: "white" }]}>
+                  <CustomText style={[styles.modalBtnText,{color: "gray"}]}>CANCELAR</CustomText>
+                </TouchableOpacity>
+              </View>
+              {/* <Button title="Agregar" onPress={confirmarAgregarEvento} />
+              <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} /> */}
+
             </View>
-            {/* <Button title="Agregar" onPress={confirmarAgregarEvento} />
-            <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} /> */}
-
           </View>
-        </View>
+        </TouchableWithoutFeedback>
       </Modal>
-
-      <BottomBar />
     </LinearGradient>
   );
 }

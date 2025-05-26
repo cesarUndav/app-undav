@@ -1,4 +1,5 @@
-import { DigestClient } from "@/app/DigestClient";
+import { DigestClient } from "@/app/lib/DigestClient";
+import { Platform } from "react-native";
 
 interface User {
   idPersona: string;
@@ -8,9 +9,11 @@ interface User {
   tel: string;
   legajo: string;
 }
-export const usuarioActual: User={idPersona: "", documento: "", nombreCompleto: "", email: "", tel: "", legajo: "" };
+export let usuarioActual: User={idPersona: "", documento: "", nombreCompleto: "", email: "", tel: "", legajo: "" };
 export function UsuarioAutenticado():Boolean {return usuarioActual.idPersona != "";}
 // auth y requests
+
+export let visitante:Boolean = true;
 
 const client = new DigestClient("app_undav", "app123456");
 export async function ObtenerJsonString(url:string) {
@@ -53,18 +56,30 @@ function capitalizeWords(str: string): string {
 // AUTENTICACIÓN:
 export async function ObtenerDatosUsuarioActual(documentoUsuario:string) {
   console.log("iniciando auth:");
-  // obtener id "persona" a partir de DNI:
-  const jsonPersona = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerIdPersona(documentoUsuario, 0, 0)));
-  usuarioActual.idPersona = jsonPersona.persona;
-  // obtener datos personales a partir de id Persona:
-  const jsonDatosPersonales = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerDatosPersona(usuarioActual.idPersona)));
-  //aplicar datos:
-  usuarioActual.nombreCompleto = capitalizeWords((jsonDatosPersonales.nombres+" "+jsonDatosPersonales.apellido).toLowerCase());
-  usuarioActual.legajo = jsonDatosPersonales.legajo;
-  usuarioActual.email = jsonDatosPersonales.mail;
-  usuarioActual.tel = jsonDatosPersonales.telefono_celular;
-  usuarioActual.documento = ((jsonDatosPersonales.documento).split(/\s+/)[1]);
-  // DEBUG LOG
-  console.log(usuarioActual);
-  //console.log("Datos personales:\n" + JSON.stringify(jsonDatosPersonales));
+  if (Platform.OS == "android") {
+    // obtener id "persona" a partir de DNI:
+    const jsonPersona = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerIdPersona(documentoUsuario, 0, 0)));
+    usuarioActual.idPersona = jsonPersona.persona;
+    // obtener datos personales a partir de id Persona:
+    const jsonDatosPersonales = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerDatosPersona(usuarioActual.idPersona)));
+    //aplicar datos:
+    usuarioActual.nombreCompleto = capitalizeWords((jsonDatosPersonales.nombres+" "+jsonDatosPersonales.apellido).toLowerCase());
+    usuarioActual.legajo = jsonDatosPersonales.legajo;
+    usuarioActual.email = jsonDatosPersonales.mail;
+    usuarioActual.tel = jsonDatosPersonales.telefono_celular;
+    usuarioActual.documento = ((jsonDatosPersonales.documento).split(/\s+/)[1]);
+    // DEBUG LOG
+    console.log(usuarioActual);
+    
+    visitante = false;
+    
+    //console.log("Datos personales:\n" + JSON.stringify(jsonDatosPersonales));
+  } else {
+    console.log("salteando auth en IOS");
+  }
 };
+
+export function Logout() {
+  visitante = true;
+  usuarioActual = {idPersona: "", documento: "", nombreCompleto: "", email: "", tel: "", legajo: "" };
+}

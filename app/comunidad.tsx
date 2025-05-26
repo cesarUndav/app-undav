@@ -1,8 +1,6 @@
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import CustomText from '../components/CustomText';
-import BottomBar from '../components/BottomBar';
 
 export default function Comunidad() {  
   return (
@@ -10,7 +8,6 @@ export default function Comunidad() {
       <View style={styles.container}>
 
       </View>
-      <BottomBar />
     </LinearGradient>
   );
 }

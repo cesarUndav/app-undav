@@ -25,13 +25,13 @@ export default function HomeEstudiante() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
-      <Tabs.Screen
+      {/* <Tabs.Screen
         options ={{
           title: 'visitante',
           headerShown: false,
           animation: "none"
         }}
-      />
+      /> */}
 
       <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
 
@@ -41,7 +41,7 @@ export default function HomeEstudiante() {
         </View>
 
         <View style={[styles.buttonsRowParent,{flex: 1}]}>
-          <TouchableOpacity style={styles.buttonBox} onPress={() => router.push('/inscripciones')} accessible accessibilityLabel="Ir a oferta académica" >
+          <TouchableOpacity style={styles.buttonBox} onPress={() => router.push('/oferta-academica')} accessible accessibilityLabel="Ir a oferta académica" >
             <Ionicons name="school-outline" size={80} color={iconColor} />
             <CustomText style={styles.buttonText}>OFERTA ACADÉMICA</CustomText>
           </TouchableOpacity>
@@ -69,7 +69,7 @@ export default function HomeEstudiante() {
 
             <BotonIconoTexto
               label={"REDES"}
-              funcionOnPress={() => router.push('/vinculos')}
+              funcionOnPress={() => router.push('/redes')}
               Icon={LinksIcon}
               iconSize={iconSize}
               iconColor="white"
@@ -92,8 +92,6 @@ export default function HomeEstudiante() {
         </View>
 
       </LinearGradient>
-    
-    <BottomBarVisitante />
     </SafeAreaView>
   );
 }
@@ -111,9 +109,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    height: 60,
-    //marginVertical: 10,
-    //backgroundColor: "red"
+    height: 60
   },
   logoUndav: {
     height: "100%",

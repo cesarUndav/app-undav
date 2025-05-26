@@ -7,14 +7,14 @@ import {
   //Alert,
   Image,
   StyleSheet,
+  TouchableWithoutFeedback,
+  Keyboard,
 } from "react-native";
 
 import { useRouter, Tabs } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
 import CustomText from "@/components/CustomText";
 
+import { Ionicons } from '@expo/vector-icons';
 import {ImageBackground} from 'react-native';
 import { SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
@@ -27,6 +27,7 @@ const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/unda
 export default function LoginScreen() {
 
 // login
+const router = useRouter();
 const [esperandoRespuesta, setEsperandoRespuesta] = useState(false); // Habría que poner un límite de tiempo de espera también.
 const [documentoLogin, setDocumentoLogin] = useState("");
 const [contrasena, setContrasena] = useState("");
@@ -35,81 +36,78 @@ const botonIngresar = async (documentoUsuario:string) => {
   setEsperandoRespuesta(true);
   await ObtenerDatosUsuarioActual(documentoUsuario);
   setEsperandoRespuesta(false);
-  router.push('/home-estudiante')
+  router.replace('/home-estudiante')
 };
 function botonDesactivado():Boolean {
   if (esperandoRespuesta || documentoLogin.trim().length === 0) return true;
   else return false;
 }
 
-// declaraciones de Expo
-const router = useRouter();
-const navigation = useNavigation();
-useLayoutEffect(() => {
-navigation.setOptions({ headerShown: true });
-}, [navigation]);
-
 return (
 
 <SafeAreaProvider>
+
 <SafeAreaView style={styles.containerImagenFondo} edges={['left', 'right']}>
 <ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
-<View style={styles.container}>
-      <Tabs.Screen
-        options ={{
-          title: 'Iniciar sesión',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
-          headerTransparent: true,
-          headerTintColor: '#1a2b50'
-        }}
+
+{/* Header */}
+<View style={headerStyles.container}>
+  <View style={headerStyles.side}>
+    <TouchableOpacity onPress={() => router.replace("/")}>
+      <Ionicons name="arrow-back" size={24} color="#1a2b50" />
+    </TouchableOpacity>
+  </View>
+
+  <View style={headerStyles.titleContainer}>
+    <CustomText style={headerStyles.title}>{"Iniciar Sesión"}</CustomText>
+  </View>
+</View>
+
+<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+  <View style={styles.container}>
+
+    <Image source={require("../assets/icons/undav.png")} style={styles.logo} />
+
+    <View style={styles.inputGroup}>
+      {/* <CustomText style={styles.inlineLabel}>Usuario</CustomText> */}
+      <TextInput
+        id={"user"}
+        style={styles.inlineInputField}
+        value={documentoLogin}
+        placeholder={"DNI"}
+        onChangeText={setDocumentoLogin}
       />
+    </View>
 
-      <Image source={require("../assets/icons/undav.png")} style={styles.logo} />
-      {/* <CustomText style={styles.title}>Iniciar sesión</CustomText> */}
+    <View style={styles.inputGroup}>
+      {/* <CustomText style={styles.inlineLabel}>Contraseña</CustomText> */}
+      <TextInput
+        id={"password"}
+        style={styles.inlineInputField}
+        value={contrasena}
+        placeholder={"Contraseña"}
+        onChangeText={setContrasena}
+        secureTextEntry
+      />
+    </View>
+    
+    {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
+    <TouchableOpacity onPress={() => botonIngresar(documentoLogin)}
+      disabled={botonDesactivado() as boolean} style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" }]}>
+      <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
+    </TouchableOpacity>
 
-      <View style={styles.inputGroup}>
-        {/* <CustomText style={styles.inlineLabel}>Usuario</CustomText> */}
-        <TextInput
-          id={"user"}
-          style={styles.inlineInputField}
-          value={documentoLogin}
-          placeholder={"DNI"}
-          onChangeText={setDocumentoLogin}
-        />
-      </View>
+    <TouchableOpacity>
+      <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
+    </TouchableOpacity>
 
-      <View style={styles.inputGroup}>
-        {/* <CustomText style={styles.inlineLabel}>Contraseña</CustomText> */}
-        <TextInput
-          id={"password"}
-          style={styles.inlineInputField}
-          value={contrasena}
-          placeholder={"Contraseña"}
-          onChangeText={setContrasena}
-          secureTextEntry
-        />
-      </View>
-      
-      {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
-      <TouchableOpacity onPress={() => botonIngresar(documentoLogin)}
-        disabled={botonDesactivado() as boolean} style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" }]}>
-        <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
-      </TouchableOpacity>
+    {/* <TouchableOpacity>
+      <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
+    </TouchableOpacity> */}
 
-      <TouchableOpacity>
-        <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
-      </TouchableOpacity>
+  </View>
+</TouchableWithoutFeedback>
 
-      {/* <TouchableOpacity>
-        <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
-      </TouchableOpacity> */}
-
-</View>    
 </ImageBackground>
 </SafeAreaView>
 </SafeAreaProvider>
@@ -136,7 +134,7 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "contain",
     marginBottom: 40,
-    marginTop: 70
+    marginTop: 22
   },
   title: {
     fontSize: 24,
@@ -175,5 +173,34 @@ const styles = StyleSheet.create({
     color: "#1a2b50",
     fontSize: 17,
     marginTop: 16,
+  },
+});
+
+const headerStyles = StyleSheet.create({
+  container: {
+    height: 56,
+    backgroundColor: '#ffff',
+    flexDirection: 'row',
+    alignItems: 'center',
+    position: 'relative',
+    paddingHorizontal: 8,
+  },
+  side: {
+    width: 50,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  titleContainer: {
+    position: 'absolute',
+    left: 0,
+    right: 0,
+    alignItems: 'center',
+    justifyContent: 'center',
+    height: '100%',
+  },
+  title: {
+    fontSize: 18,
+    fontWeight: 'bold',
+    color: '#1a2b50',
   },
 });

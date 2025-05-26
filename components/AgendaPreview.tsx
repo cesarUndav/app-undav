@@ -8,7 +8,7 @@ import { eventoAgendaStyles } from '@/app/agenda';
 
 export default function AgendaPreview() {
   const router = useRouter();
-  // const primerosEventos = listaFuturo.slice(0, 3); // los primeros N elementos
+  //const primerosEventos = listaFuturo.slice(0, 3); // los primeros N elementos
   //const primerosEventos = listaFuturo; 
   
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);

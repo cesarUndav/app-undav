@@ -37,8 +37,6 @@ export default function PreguntasFrecuentes() {
   return (
     <View style={styles.container}>
       <ScrollView contentContainerStyle={styles.scroll}>
-        <CustomText style={styles.titulo}>Preguntas Frecuentes</CustomText>
-
         {faqs.map((faq, index) => {
           const isCollapsed = expandedIndex !== index;
           const esUltima = index === faqs.length - 1;
@@ -73,8 +71,6 @@ export default function PreguntasFrecuentes() {
           );
         })}
       </ScrollView>
-
-      <BottomBar />
     </View>
   );
 }

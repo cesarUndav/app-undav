@@ -2,7 +2,6 @@ import React, { useEffect } from "react";
 import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
 import { useRouter } from "expo-router";
 import CustomText from "@/components/CustomText";
-import { Tabs } from 'expo-router';
 
 import {ImageBackground} from 'react-native';
 import {SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
@@ -21,13 +20,13 @@ export default function HomeScreen()
       <ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
         <View style={styles.container}>
 
-          <Tabs.Screen
+          {/* <Tabs.Screen
             name = "index"
             options ={{
               title: '',
               headerShown: false
             }}
-          />
+          /> */}
 
           <Image
             source={require("@/assets/images/logoundav.png")}

@@ -1,8 +1,7 @@
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, Linking } from 'react-native';
+import { View, StyleSheet, Image, SafeAreaView, Linking } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import BottomBar from '../components/BottomBar';
 import CustomText from '../components/CustomText';
 import AgendaPreview from '../components/AgendaPreview';
 
@@ -50,24 +49,24 @@ export default function HomeEstudiante() {
               funcionOnPress={() => router.push('/certificados')}
               Icon={ReportesIcon}
               iconSize={iconSize}
-              iconColor="white"
+              iconColor={iconColor}
             />
             <BotonIconoTexto
               label={"INSCRIPCIONES"}
               funcionOnPress={() => router.push('/inscripciones')}
               Icon={InscripcionesIcon}
               iconSize={iconSize}
-              iconColor="white"
+              iconColor={iconColor}
             />
           </View>
           <View style={styles.buttonsRow}>
             
             <BotonIconoTexto
               label={"REDES"}
-              funcionOnPress={() => router.push('/vinculos')}
+              funcionOnPress={() => router.push('/redes')}
               Icon={LinksIcon}
               iconSize={iconSize}
-              iconColor="white"
+              iconColor={iconColor}
             />
 
             <BotonIconoTexto
@@ -75,7 +74,7 @@ export default function HomeEstudiante() {
               funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
               Icon={LinksIcon}
               iconSize={iconSize}
-              iconColor="white"
+              iconColor={iconColor}
             />
 
             <BotonIconoTexto
@@ -83,21 +82,18 @@ export default function HomeEstudiante() {
               funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
               Icon={LinksIcon}
               iconSize={iconSize}
-              iconColor="white"
+              iconColor={iconColor}
             />
           </View>
         </View>
 
       </LinearGradient>
-    
-    <BottomBar />
     </SafeAreaView>
   );
 }
 
 const iconSize = 44;
 const iconColor = "#fff";
-//const iconColor = "#1c2f4a";
 
 const styles = StyleSheet.create({
   containerGradient: {

@@ -5,7 +5,6 @@ import { View, TouchableOpacity, StyleSheet } from 'react-native';
 // Íconos SVG como componentes
 import HomeIcon from '../assets/icons/home.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
-import CommunityIcon from '../assets/icons/community.svg';
 import LinksIcon from '../assets/icons/links.svg';
 import SettingsIcon from '../assets/icons/settings.svg';
 import { useRouter, usePathname } from 'expo-router';
@@ -13,7 +12,6 @@ import { useRouter, usePathname } from 'expo-router';
 const routes = [
   "/home-visitante",
   "/calendario",
-  "/comunidad",
   "/ajustes-visitante",
 ] as const;  // <-- "as const" to make these literal types
 
@@ -26,7 +24,6 @@ export default function BottomBarVisitante() {
   const buttons: { route: Route; Icon: React.FC<any> }[] = [
     { route: "/home-visitante", Icon: HomeIcon },
     { route: "/calendario", Icon: CalendarIcon },
-    { route: "/comunidad", Icon: CommunityIcon },
     { route: "/ajustes-visitante", Icon: SettingsIcon },
   ];
 

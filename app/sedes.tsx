@@ -2,7 +2,6 @@ import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Linking, ScrollView, SafeAreaView } from 'react-native';
 import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
-import BottomBar from '../components/BottomBar';
 import { LinearGradient } from 'expo-linear-gradient';
 
 
@@ -74,7 +73,6 @@ export default function Sedes() {
       </LinearGradient>
 
     </View>
-    <BottomBar />
     </SafeAreaView>
   );
   

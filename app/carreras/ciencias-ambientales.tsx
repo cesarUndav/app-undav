@@ -1,7 +1,8 @@
 import React, { useState } from "react";
-import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { useRouter } from "expo-router";
+import CustomText from "@/components/CustomText";
 
 export default function CienciasAmbientales() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
@@ -23,28 +24,28 @@ export default function CienciasAmbientales() {
       titulo: "🎓 Títulos y Duración",
       contenido: (
         <View>
-          <Text style={styles.texto}>• Título de grado: Licenciado/a en Ciencias Ambientales</Text>
-          <Text style={styles.texto}>• Título intermedio: Técnico/a en Ciencias Ambientales</Text>
-          <Text style={styles.texto}>• Duración: 4 años y medio</Text>
+          <CustomText style={styles.oracion}>• Título de grado: Licenciado/a en Ciencias Ambientales</CustomText>
+          <CustomText style={styles.oracion}>• Título intermedio: Técnico/a en Ciencias Ambientales</CustomText>
+          <CustomText style={styles.oracion}>• Duración: 4 años y medio</CustomText>
         </View>
       ),
     },
     {
       titulo: "📘 Acerca de la carrera",
       contenido: (
-        <Text style={styles.texto}>
+        <CustomText style={styles.oracion}>
           El objetivo de esta carrera es formar especialistas comprometidos y competentes, con conocimientos sólidos...
-        </Text>
+        </CustomText>
       ),
     },
     {
       titulo: "🎯 Objetivos de la carrera",
       contenido: (
         <View>
-          <Text style={styles.texto}>a) Investigar los procesos...</Text>
-          <Text style={styles.texto}>b) Evaluar los factores...</Text>
-          <Text style={styles.texto}>c) Gestionar la biodiversidad...</Text>
-          <Text style={styles.texto}>d) Planificar y gestionar el territorio...</Text>
+          <CustomText style={styles.oracion}>a) Investigar los procesos...</CustomText>
+          <CustomText style={styles.oracion}>b) Evaluar los factores...</CustomText>
+          <CustomText style={styles.oracion}>c) Gestionar la biodiversidad...</CustomText>
+          <CustomText style={styles.oracion}>d) Planificar y gestionar el territorio...</CustomText>
         </View>
       ),
     },
@@ -53,13 +54,13 @@ export default function CienciasAmbientales() {
       contenido: (
         <View>
           <TouchableOpacity onPress={() => openPDF("ciencias-ambientales-plan-estudios.pdf")}>
-            <Text style={styles.link}>📘 Plan de estudios</Text>
+            <CustomText style={styles.link}>📘 Plan de estudios</CustomText>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => openPDF("ciencias-ambientales-plan-creditos.pdf")}>
-            <Text style={styles.link}>📗 Plan de créditos</Text>
+            <CustomText style={styles.link}>📗 Plan de créditos</CustomText>
           </TouchableOpacity>
           <TouchableOpacity onPress={() => openPDF("ciencias-ambientales-postal-digital.pdf")}>
-            <Text style={styles.link}>📨 Postal digital</Text>
+            <CustomText style={styles.link}>📨 Postal digital</CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -68,10 +69,10 @@ export default function CienciasAmbientales() {
       titulo: "📍 Departamento y autoridades",
       contenido: (
         <View>
-          <Text style={styles.texto}>Departamento de Ambiente y Turismo</Text>
-          <Text style={styles.texto}>Decana: Dra. Natalia Cappelletti</Text>
-          <Text style={styles.texto}>Vicedecana: Mg. Leticia Estévez</Text>
-          <Text style={styles.texto}>Director: Ing. Sergio Cataldo</Text>
+          <CustomText style={styles.oracion}>Departamento de Ambiente y Turismo</CustomText>
+          <CustomText style={styles.oracion}>Decana: Dra. Natalia Cappelletti</CustomText>
+          <CustomText style={styles.oracion}>Vicedecana: Mg. Leticia Estévez</CustomText>
+          <CustomText style={styles.oracion}>Director: Ing. Sergio Cataldo</CustomText>
         </View>
       ),
     },
@@ -88,7 +89,7 @@ export default function CienciasAmbientales() {
               activeSection === index && styles.botonExpandido
             ]}
           >
-            <Text style={styles.titulo}>{seccion.titulo}</Text>
+            <CustomText style={styles.titulo}>{seccion.titulo}</CustomText>
           </TouchableOpacity>
           <Collapsible collapsed={activeSection !== index}>
             <View style={styles.contenido}>
@@ -103,17 +104,19 @@ export default function CienciasAmbientales() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
     flex: 1,
-    justifyContent: "space-evenly",
+    padding: 15,
+    gap: 8
+    //justifyContent: "space-evenly",
   },
   seccion: {
-    marginBottom: 10,
+    elevation: 4
   },
   boton: {
     backgroundColor: "#9fa521",
     padding: 16,
-    borderBottomRightRadius: 10,
+    height: 64,
+    borderBottomRightRadius: 20,
   },
   botonExpandido: {
     borderBottomRightRadius: 0,
@@ -125,10 +128,10 @@ const styles = StyleSheet.create({
   },
   contenido: {
     backgroundColor: "#e0dede",
-    padding: 12,
-    borderBottomRightRadius: 20,
+    padding: 16,
+    borderBottomRightRadius: 20
   },
-  texto: {
+  oracion: {
     marginBottom: 8,
     color: "#333",
   },

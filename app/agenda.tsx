@@ -3,7 +3,6 @@ import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomText from '../components/CustomText';
-import BottomBar from '../components/BottomBar';
 import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProximidadColor, EventoAgenda, listaCompleta} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
 
@@ -41,7 +40,6 @@ export default function Agenda() {
           ))}
 
         </ScrollView>
-        <BottomBar />
     </LinearGradient>
   );
 }

@@ -4,7 +4,8 @@ import { router } from "expo-router";
 import CustomText from "../components/CustomText";
 import BottomBar from "../components/BottomBar";
 
-import { usuarioActual, UsuarioAutenticado } from "@/data/DatosUsuarioGuarani";
+import { Logout, usuarioActual, UsuarioAutenticado } from "@/data/DatosUsuarioGuarani";
+//import { resetToLogin } from "./lib/navigation";
 
 // Definición de tipos para los ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -19,6 +20,7 @@ interface ConfigSection {
 }
 
 const appVersion = "1.0.0";
+
 export default function Configuracion() {
   const [notifsOn, setNotifsOn] = useState(false);
 
@@ -80,6 +82,7 @@ export default function Configuracion() {
           label: "Cerrar sesión",
           onPress: () => {
             // Lógica de logout
+            Logout();
             router.replace("/"); // va a la pantalla inicial, "index.tsx"
           },
         }
@@ -132,8 +135,6 @@ export default function Configuracion() {
         //ItemSeparatorComponent={() => <View style={styles.separator} />}
         contentContainerStyle={styles.list}
       />
-
-      <BottomBar />
     </View>
   );
 }

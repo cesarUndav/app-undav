@@ -3,6 +3,7 @@ import { View, Text, StyleSheet, ScrollView, TouchableOpacity } from "react-nati
 import Collapsible from "react-native-collapsible";
 import { router } from "expo-router";
 import { AntDesign } from '@expo/vector-icons';
+import CustomText from "@/components/CustomText";
 
 const departamentos = [
   {
@@ -94,23 +95,28 @@ export default function OfertaAcademica() {
         const isCollapsed = expandedIndex !== index;
 
         return (
-          <View key={index} style={{ marginBottom: 5 }}>
+          <View key={index} >
             <TouchableOpacity
               onPress={() => toggleCollapse(index)}
               style={[
                 styles.deptoHeader,
-                { backgroundColor: depto.colorDepto, borderBottomRightRadius: isCollapsed ? 12 : 0 }
+                { backgroundColor: depto.colorDepto, borderBottomRightRadius: isCollapsed ? 20 : 0 }
               ]}
             >
-              <Text style={styles.deptoText}>{depto.nombre}</Text>
-              <AntDesign
-                name={isCollapsed ? "down" : "up"}
-                size={16}
-                color="white"
-              />
+              <View style={{ flex: 1}}>
+                <CustomText style={styles.deptoText}>{depto.nombre}</CustomText>
+              </View>
+              <View style={{flex: 0.07, justifyContent: 'center', alignItems: 'flex-end', marginLeft: 20, marginRight: 5}}>
+                <AntDesign
+                  name={isCollapsed ? "down" : "up"}
+                  size={22}
+                  color="white"
+                />
+              </View>
+
             </TouchableOpacity>
 
-            <Collapsible collapsed={isCollapsed}>
+            <Collapsible collapsed={isCollapsed} style={{gap: 0, marginTop: 4, paddingBottom: 5}}>
               {depto.carreras.map((carrera, i) => {
                 const esUltima = i === depto.carreras.length - 1;
                 return (
@@ -122,7 +128,7 @@ export default function OfertaAcademica() {
                       { backgroundColor: depto.colorCarrera },
                       esUltima && styles.ultimaCarrera,
                     ]}
-                  >
+                    >
                     <Text style={styles.textoCarrera}>{carrera.nombre}</Text>
                   </TouchableOpacity>
                 );
@@ -137,31 +143,33 @@ export default function OfertaAcademica() {
 
 const styles = StyleSheet.create({
   container: {
-    padding: 16,
+    padding: 15,
+    gap: 8
   },
   deptoHeader: {
-    padding: 12,
-    marginBottom: 0,
+    paddingHorizontal: 15,
+    height: 64,
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
+    elevation: 4
   },
   deptoText: {
     color: "white",
     fontWeight: "bold",
+    fontSize: 15
   },
   botonCarrera: {
-    padding: 12,
-    borderRadius: 0,
+    paddingVertical: 16,
+    paddingHorizontal: 12,
     borderTopWidth: 1,
-    borderTopColor: "white",
-    marginBottom: 0,
+    borderTopColor: "white"
   },
   textoCarrera: {
     color: "white",
     fontWeight: "bold",
   },
   ultimaCarrera: {
-    borderBottomRightRadius: 12,
+    borderBottomRightRadius: 20,
   },
 });
