@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView, Pressable, AccessibilityInfo } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import { useRouter } from 'expo-router';
-import BottomBarVisitante from '../components/BottomBarVisitante';
 import CustomText from '../components/CustomText';
 
 import {Ionicons } from '@expo/vector-icons';
@@ -13,7 +12,6 @@ import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ContactoIcon from '../assets/icons/contacto.svg';
 import SedesIcon from '../assets/icons/sedes.svg';
 
-import { Tabs } from 'expo-router';
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 
 const iconSize = 44;
@@ -24,14 +22,6 @@ export default function HomeEstudiante() {
 
   return (
     <SafeAreaView style={{ flex: 1 }}>
-
-      {/* <Tabs.Screen
-        options ={{
-          title: 'visitante',
-          headerShown: false,
-          animation: "none"
-        }}
-      /> */}
 
       <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
 
@@ -52,7 +42,7 @@ export default function HomeEstudiante() {
             
             <BotonIconoTexto
               label={"TUTORIAL DE\nPREINSCRIPCIÓN"}
-              funcionOnPress={() => router.push('/inscripciones')}
+              funcionOnPress={() => router.push('/preinscripcion')}
               Icon={InscripcionesIcon}
               iconSize={iconSize}
               iconColor="white"

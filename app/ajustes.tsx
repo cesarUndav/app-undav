@@ -75,7 +75,7 @@ export default function Configuracion() {
         {
           type: "link",
           label: "Envianos tus sugerencias",
-          onPress: () => Linking.openURL("mailto:feedback@undav.edu.ar"),
+          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
         },
         { type: "separator" }
       ]

@@ -43,7 +43,7 @@ export default function ListaItem({
   return (
     <View style={[styles.itemContainer, containerStyle]}>
       <CustomText style={[styles.title, titleStyle]}>{title}</CustomText>
-      <CustomText style={[styles.subtitle, subtitleStyle]}>{subtitle}</CustomText>
+      {subtitle && <CustomText style={[styles.subtitle, subtitleStyle]}>{subtitle}</CustomText>}
     </View>
   );
 }

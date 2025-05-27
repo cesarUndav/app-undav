@@ -15,7 +15,7 @@ export default function BotonTextoLink({
   label,
   url,
   color = '#173c68',
-  verticalPadding = 15,
+  verticalPadding = 12,
   fontSize = 16,
   fontColor = 'white',
 }: BotonTextoProps) {
@@ -27,8 +27,8 @@ export default function BotonTextoLink({
 
   const dynamicContainerStyle: ViewStyle = {
     backgroundColor: color,
-    paddingTop: verticalPadding,
-    paddingBottom: verticalPadding - 2,
+    paddingTop: verticalPadding + 2,
+    paddingBottom: verticalPadding,
   };
 
   const dynamicTextStyle: TextStyle = {

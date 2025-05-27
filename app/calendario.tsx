@@ -12,6 +12,7 @@ import {
 } from '@/data/DatosUsuarioGuarani';
 import ListaItem from '@/components/ListaItem';
 import BotonTextoLink from '@/components/BotonTextoLink';
+import BarraSemanal from './BarraSemanal';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -41,27 +42,35 @@ export function IndexToDiaString(index: number): string {
 
 export default function Calendario() {
   const [loading, setLoading] = useState(true);
-  const [listaActividades, setListaActividades] = useState<Actividad[]>([]);
+  const [listaActividadesUnDia, setListaActividadesUnDia] = useState<Actividad[]>([]);
   const [tituloPagina, setTituloPagina] = useState("");
   const [numDias, setNumDias] = useState(0);
+  const [actividadesPorDia, setActividadesPorDia] = useState<number[]>();
 
   useEffect(() => {
     const fetchAgenda = async () => {
       try {
         setLoading(true);
+
+        let auxActividadesPorDia:number[] = [1,1,1,1,1,2,0];
         const hoy = hoyMasDias(0);
         const fecha = hoyMasDias(numDias);
-        const diaString = IndexToDiaString(fecha.getDay());
+
+        const primerDiaDeEstaSemana = 7 - hoyMasDias(0).getDay();
+
+        // hacer esto para cada dia de la semana actual
         const url = UrlObtenerAgenda(usuarioActual.idPersona, DateToISOStringNoTime(fecha));
         const json = JsonStringAObjeto(await ObtenerJsonString(url));
+        const diaNombreString = IndexToDiaString(fecha.getDay());
+        const diaMensajeString = diaNombreString + " "+ fecha.getDate();
 
         const listaActividad: Actividad[] = [];
         if (json.error != null) {
-          setTituloPagina("No hay actividades " + (numDias === 0 ? `hoy, ${diaString}` : `el ${diaString}`));
-          setListaActividades([]);
+          setTituloPagina("No hay actividades " + (numDias === 0 ? `hoy, ${diaMensajeString}` : `el ${diaMensajeString}`) );
+          setListaActividadesUnDia([]);
         } else {
           const esHoy = fecha.toDateString() === hoy.toDateString();
-          setTituloPagina("Actividades " + (esHoy ? "de hoy, " : "del ") + diaString);
+          setTituloPagina("Actividades " + (esHoy ? "de hoy, " : "del ") + diaMensajeString);
           json.forEach((elem: any, index: number) => {
             const nuevaActividad: Actividad = {
               id: index,
@@ -70,9 +79,11 @@ export default function Calendario() {
             };
             listaActividad.push(nuevaActividad);
           });
-          setListaActividades(listaActividad);
+          setListaActividadesUnDia(listaActividad);
+          setActividadesPorDia(auxActividadesPorDia);
         }
-      } catch (error) {
+      }
+      catch (error) {
         console.error('Error al obtener agenda:', error);
       } finally {
         setLoading(false);
@@ -84,6 +95,9 @@ export default function Calendario() {
 
   return (
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
+      
+      <BarraSemanal actividadesPorDia={actividadesPorDia ?? [0, 0, 0, 0, 0, 0, 0]} />
+      
       <View style={styles.headerButtons}>
         <TouchableOpacity onPress={() => setNumDias(numDias - 1)} style={styles.navButton}>
           <Ionicons name="arrow-back" size={24} color="#1a2b50" />
@@ -97,15 +111,19 @@ export default function Calendario() {
           <Ionicons name="arrow-forward" size={24} color="#1a2b50" />
         </TouchableOpacity>
       </View>
-
-      {listaActividades.map((evento) => (
+      
+      {listaActividadesUnDia.map((evento) => (
         <ListaItem
           key={evento.id}
           title={evento.title}
           subtitle={evento.body}
         />
       ))}
-      <BotonTextoLink label={'Calendario Académico'} url={'https://undav.edu.ar/index.php?idcateg=129'}></BotonTextoLink>
+
+      <View style={{flex: 1, justifyContent: "flex-end"}}>
+        <BotonTextoLink label={'Calendario Académico'} url={'https://undav.edu.ar/index.php?idcateg=129'}></BotonTextoLink>
+      </View>
+
     </LinearGradient>
   );
 }
