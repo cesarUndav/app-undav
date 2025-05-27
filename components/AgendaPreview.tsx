@@ -3,7 +3,7 @@ import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { listaCompleta, eventoAgendaProximidadColor, eventoAgendaToFechaString, EventoAgenda } from '../data/agenda';
-import { eventoAgendaStyles } from '@/app/agenda';
+import AgendaItem from './AgendaItem';
 
 
 export default function AgendaPreview() {
@@ -26,14 +26,7 @@ export default function AgendaPreview() {
       
       <ScrollView contentContainerStyle={styles.listaScrollContainer}>
         {listaEventos.map((evento) => (
-          <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
-            <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
-              {evento.titulo}
-            </CustomText>
-            <CustomText style={[eventoAgendaStyles.eventDate, {color: eventoAgendaProximidadColor(evento)}]}>
-              {eventoAgendaToFechaString(evento)}
-            </CustomText>
-          </View>
+          <AgendaItem key={evento.id} evento={evento} />
         ))}
       </ScrollView>
 

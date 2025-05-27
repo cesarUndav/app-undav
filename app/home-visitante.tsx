@@ -14,7 +14,7 @@ import ContactoIcon from '../assets/icons/contacto.svg';
 import SedesIcon from '../assets/icons/sedes.svg';
 
 import { Tabs } from 'expo-router';
-import BotonIconoTexto from '@/components/BotonIconoTexto';
+import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 
 const iconSize = 44;
 const iconColor = "#fff";

@@ -10,7 +10,8 @@ import {
   UrlObtenerAgenda,
   usuarioActual
 } from '@/data/DatosUsuarioGuarani';
-import { eventoAgendaStyles } from './agenda';
+import ListaItem from '@/components/ListaItem';
+import BotonTextoLink from '@/components/BotonTextoLink';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -98,19 +99,13 @@ export default function Calendario() {
       </View>
 
       {listaActividades.map((evento) => (
-        <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
-          <CustomText style={[eventoAgendaStyles.eventTitle, { color: '#000' }]}>
-            {evento.title}
-          </CustomText>
-          <CustomText style={[eventoAgendaStyles.eventDate, { color: "#000" }]}>
-            {evento.body}
-          </CustomText>
-        </View>
+        <ListaItem
+          key={evento.id}
+          title={evento.title}
+          subtitle={evento.body}
+        />
       ))}
-
-      <TouchableOpacity style = {styles.bloque} onPress={() => Linking.openURL("https://undav.edu.ar/index.php?idcateg=129")}>
-        <CustomText style={styles.subtitulo} >Calendario Académico</CustomText>
-      </TouchableOpacity>
+      <BotonTextoLink label={'Calendario Académico'} url={'https://undav.edu.ar/index.php?idcateg=129'}></BotonTextoLink>
     </LinearGradient>
   );
 }

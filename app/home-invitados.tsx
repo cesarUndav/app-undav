@@ -7,7 +7,7 @@ import CustomText from '../components/CustomText';
 import { Ionicons, MaterialCommunityIcons, FontAwesome5 } from '@expo/vector-icons';
 import { Tabs } from 'expo-router';
 
-import BotonIconoTexto from '@/components/BotonIconoTexto';
+import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import PreguntasIcon from '../assets/icons/preguntas.svg';
 import ContactoIcon from '../assets/icons/contacto.svg';
 import SedesIcon from '../assets/icons/sedes.svg';

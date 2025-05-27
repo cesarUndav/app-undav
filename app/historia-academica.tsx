@@ -8,8 +8,7 @@ import {
   ObtenerJsonString,
   usuarioActual
 } from '@/data/DatosUsuarioGuarani';
-import { eventoAgendaStyles } from './agenda';
-import { Tabs } from 'expo-router';
+import ListaItem from '@/components/ListaItem';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -90,35 +89,23 @@ export default function HistoriaAcademica() {
   return (
     
     <LinearGradient colors={['#ffffff', '#91c9f7']} style={{ flex: 1 }}>
-      <Tabs.Screen
-        options ={{
-          title: 'Historia Académica',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
-          
-          headerTransparent: false,
-          headerTintColor: '#1a2b50'
-        }}
-      />
+
       <ScrollView contentContainerStyle={styles.container}>
 
         {loading && (<CustomText style={styles.title} >{"Cargando..."}</CustomText>)}
-        {!loading && <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
+        {!loading && <CustomText style={styles.estadisticas}> 
           {"Materias aprobadas: "+cantMaterias+"\nPromedio: "+promedio.toFixed(2)}
         </CustomText>
         }
-        {listaActividades.map((evento) => (
-        <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
-          <CustomText style={[eventoAgendaStyles.eventTitle, {color: '#000'} ]}> 
-            {evento.title}
-          </CustomText>
-          <CustomText style={[eventoAgendaStyles.eventDate, {color: "#000"} ]}>{evento.body}</CustomText>
-        </View>
-      ))}
+        
+        {listaActividades.map((actividad) => (
+          <ListaItem
+            key={actividad.id}
+            title={actividad.title}
+            subtitle={actividad.body}
+          />
+        ))}
+
       </ScrollView>
     </LinearGradient>
   );
@@ -138,5 +125,13 @@ const styles = StyleSheet.create({
     alignSelf: 'center',
     marginVertical: 0,
     marginBottom: 10
+  },
+  estadisticas: {
+    fontSize: 17,
+    lineHeight: 24,
+    fontWeight: 'bold',
+    color: '#0b254a',
+    marginVertical: 8,
+    marginHorizontal: 20
   }
 });

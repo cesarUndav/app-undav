@@ -12,7 +12,7 @@ import ReportesIcon from '../assets/icons/reportes.svg';
 import { Tabs } from 'expo-router';
 
 import { usuarioActual, UsuarioAutenticado } from '../data/DatosUsuarioGuarani';
-import BotonIconoTexto from '@/components/BotonIconoTexto';
+import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 
 export default function HomeEstudiante() {
 

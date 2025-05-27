@@ -2,12 +2,11 @@ import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Button, Modal, Platform, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
 import CustomText from '../components/CustomText';
-import { EventoAgenda, listaEventosPersonalizados, eventoAgendaToFechaString, eventoAgendaProximidadColor, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
-import SettingsIcon from '../assets/icons/settings.svg';
-import { eventoAgendaStyles } from './agenda';
+import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
+
 import {agregarEventoPersonalizado, quitarEventoPersonalizado} from '../data/agenda';
 import DateTimePicker from '@react-native-community/datetimepicker';
-
+import AgendaItemEditable from '@/components/AgendaItemEditable';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -74,25 +73,13 @@ export default function EventosPersonalizados() {
         </TouchableOpacity>
 
         {listaEventos.map((evento) => (
-          <View key={evento.id} style={eventoAgendaStyles.agendaItem}>
-            <View style={styles.itemParent}>
-              <View style={styles.itemChildLeft}>
-                <CustomText style={[eventoAgendaStyles.eventTitle, { color: '#000' }]}>{evento.titulo}</CustomText>
-                <CustomText style={[eventoAgendaStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
-                  {eventoAgendaToFechaString(evento)}
-                </CustomText>
-              </View>
-              <TouchableOpacity
-                style={styles.itemChildRight}
-                onPress={() => abrirModalEditarEvento(evento.id)}
-                accessible
-                accessibilityLabel="Quitar Evento"
-              >
-                <SettingsIcon width={30} height={30} fill={"#1c2f4a"} />
-              </TouchableOpacity>
-            </View>
-          </View>
+          <AgendaItemEditable
+            key={evento.id}
+            evento={evento}
+            onPressEdit={abrirModalEditarEvento}
+          />
         ))}
+
       </ScrollView>
 
       {/* MODAL */}

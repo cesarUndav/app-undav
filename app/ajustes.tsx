@@ -54,6 +54,11 @@ export default function Configuracion() {
         },
         {
           type: "link",
+          label: "Bienestar",
+          onPress: () => router.push("/bienestar"),
+        },
+        {
+          type: "link",
           label: "Contacto",
           onPress: () => router.push("/contacto"),
         },

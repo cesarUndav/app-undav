@@ -1,7 +1,5 @@
-// components/BotonTexto.tsx
-
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Linking, ViewStyle } from 'react-native';
+import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle } from 'react-native';
 import CustomText from './CustomText';
 
 type BotonTextoProps = {
@@ -9,13 +7,17 @@ type BotonTextoProps = {
   url: string;
   color?: string;
   verticalPadding?: number;
+  fontSize?: number;
+  fontColor?: string;
 };
 
-export default function BotonTexto({
+export default function BotonTextoLink({
   label,
   url,
   color = '#173c68',
   verticalPadding = 15,
+  fontSize = 16,
+  fontColor = 'white',
 }: BotonTextoProps) {
   const openLink = () => {
     Linking.openURL(url).catch(() =>
@@ -23,15 +25,22 @@ export default function BotonTexto({
     );
   };
 
-  const dynamicStyle: ViewStyle = {
+  const dynamicContainerStyle: ViewStyle = {
     backgroundColor: color,
     paddingTop: verticalPadding,
-    paddingBottom: verticalPadding,
+    paddingBottom: verticalPadding - 2,
+  };
+
+  const dynamicTextStyle: TextStyle = {
+    fontSize,
+    color: fontColor,
   };
 
   return (
-    <TouchableOpacity style={[styles.bloque, dynamicStyle]} onPress={openLink}>
-      <CustomText style={styles.subtitulo}>{label}</CustomText>
+    <TouchableOpacity style={[styles.bloque, dynamicContainerStyle]} onPress={openLink}>
+      <CustomText style={[styles.texto, dynamicTextStyle]}>
+        {label}
+      </CustomText>
     </TouchableOpacity>
   );
 }
@@ -39,13 +48,12 @@ export default function BotonTexto({
 const styles = StyleSheet.create({
   bloque: {
     borderBottomRightRadius: 20,
-    paddingHorizontal: 15,
+    paddingHorizontal: 20,
     elevation: 6,
+    justifyContent: 'center',
   },
-  subtitulo: {
-    fontSize: 16,
+  texto: {
     fontWeight: 'bold',
     marginBottom: 5,
-    color: 'white',
   },
 });
