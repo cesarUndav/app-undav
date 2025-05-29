@@ -1,11 +1,12 @@
 // app-undav/app/agenda.tsx
 import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import CustomText from '../components/CustomText';
 import { listaPasado, listaFuturo, eventoAgendaToFechaString, eventoAgendaProximidadColor, EventoAgenda, listaCompleta} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
+import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 
 export default function Agenda() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -18,34 +19,21 @@ export default function Agenda() {
   );
   
   return (
-    <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
-          
-          <CustomText style={styles.title}>PRÓXIMO</CustomText>
-          {listaEventos.map((evento) => (
-            <AgendaItem key={evento.id} evento={evento} />
-          ))}
+    <FondoScrollGradiente>
+      <CustomText style={styles.title}>PRÓXIMO</CustomText>
+      {listaEventos.map((evento) => (
+        <AgendaItem key={evento.id} evento={evento} />
+      ))}
 
-          <CustomText style={styles.title}>FINALIZADO</CustomText>
-          {listaPasado.map((evento) => (
-            <AgendaItem key={evento.id} evento={evento} />
-          ))}
-
-        </ScrollView>
-    </LinearGradient>
+      <CustomText style={styles.title}>FINALIZADO</CustomText>
+      {listaPasado.map((evento) => (
+        <AgendaItem key={evento.id} evento={evento} />
+      ))}
+    </FondoScrollGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scrollContainer: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 10,
-    gap: 8
-  },
   title: {
     fontSize: 16,
     fontWeight: 'bold',

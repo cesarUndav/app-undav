@@ -2,7 +2,6 @@ import React, { useState } from "react";
 import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking } from "react-native";
 import { router } from "expo-router";
 import CustomText from "../components/CustomText";
-import BottomBarVisitante from "../components/BottomBarVisitante";
 
 // Definición de tipos para los ítems de configuración
 type TextItem = { type: "text"; label: string };

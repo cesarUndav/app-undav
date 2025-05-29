@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity, Button, Modal, Platform, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
 import CustomText from '../components/CustomText';
 import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
 
 import {agregarEventoPersonalizado, quitarEventoPersonalizado} from '../data/agenda';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
+import FondoGradiente from '@/components/FondoGradiente';
+import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -65,9 +66,8 @@ export default function EventosPersonalizados() {
   }
 
   return (
-    <LinearGradient colors={['#fff', '#91c9f7']} style={styles.container}>
+    <FondoScrollGradiente>
 
-      <ScrollView contentContainerStyle={styles.scrollContainer}>
         <TouchableOpacity onPress={abrirModalAgregarEvento} style={styles.agregarBtn}>
           <CustomText style={styles.agregarBtnText}>CREAR EVENTO</CustomText>
         </TouchableOpacity>
@@ -79,8 +79,6 @@ export default function EventosPersonalizados() {
             onPressEdit={abrirModalEditarEvento}
           />
         ))}
-
-      </ScrollView>
 
       {/* MODAL */}
       <Modal visible={modalVisible} animationType="fade" transparent>
@@ -150,7 +148,8 @@ export default function EventosPersonalizados() {
           </View>
         </TouchableWithoutFeedback>
       </Modal>
-    </LinearGradient>
+      
+    </FondoScrollGradiente>
   );
 }
 const styles = StyleSheet.create({

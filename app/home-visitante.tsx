@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import { useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
 
@@ -13,6 +13,7 @@ import ContactoIcon from '../assets/icons/contacto.svg';
 import SedesIcon from '../assets/icons/sedes.svg';
 
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
+import FondoGradiente from '@/components/FondoGradiente';
 
 const iconSize = 44;
 const iconColor = "#fff";
@@ -23,7 +24,7 @@ export default function HomeEstudiante() {
   return (
     <SafeAreaView style={{ flex: 1 }}>
 
-      <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
+      <FondoGradiente>
 
         <View style={styles.header}>
           <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
@@ -81,7 +82,7 @@ export default function HomeEstudiante() {
           </View>
         </View>
 
-      </LinearGradient>
+      </FondoGradiente>
     </SafeAreaView>
   );
 }

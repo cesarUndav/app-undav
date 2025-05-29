@@ -1,26 +1,53 @@
 import React from 'react';
-import { View, Text, StyleSheet } from 'react-native';
+import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
 type BarraSemanalProps = {
-  actividadesPorDia: number[]; // e.g. [0, 2, 1, 0, 3, 1, 0]
+  actividadesPorDia: number[];
+  diaActual: number;
+  diaHoy: number;
+  onSelectDay?: (dayIndex: number) => void;
 };
+const hoyColor = "#2280ba";
+const selectedColor = "#c62a2b";
+const actividadesColor = "#173c68";
+const noActividadesColor = "#b1b2b1";
 
-const dias = ['D', 'L', 'M', 'M', 'J', 'V', 'S'];
+const dias = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
 
-export default function BarraSemanal({ actividadesPorDia }: BarraSemanalProps) {
+export default function BarraSemanal({ actividadesPorDia, diaActual, diaHoy, onSelectDay }: BarraSemanalProps) {
   return (
     <View style={styles.container}>
       {dias.map((dia, index) => {
         const count = actividadesPorDia[index] || 0;
-        const isActive = count > 0;
+        const isSelected = index === diaActual;
+        const isToday = index === diaHoy;
+
+        // Determine background color
+        let backgroundColor = noActividadesColor;
+
+        if (isSelected) {
+          backgroundColor = selectedColor;
+        } else if (isToday) {
+          backgroundColor = hoyColor;
+        } else if (count > 0) {
+          backgroundColor = actividadesColor;
+        }
+
+        let textColor = '#333';
+        if (isToday) textColor = hoyColor;
 
         return (
-          <View key={index} style={styles.segmentWrapper}>
-            <Text style={styles.diaText}>{dia}</Text>
-            <View style={[styles.segment, isActive && styles.activeSegment]}>
+          <TouchableOpacity
+            key={index}
+            style={styles.segmentWrapper}
+            onPress={() => onSelectDay && onSelectDay(index)}
+            activeOpacity={0.7}
+          >
+            <Text style={[styles.diaText, {color: textColor} ,isSelected && styles.selectedDiaText]}>{dia}</Text>
+            <View style={[styles.segment, { backgroundColor }]}>
               <Text style={styles.countText}>{count}</Text>
             </View>
-          </View>
+          </TouchableOpacity>
         );
       })}
     </View>
@@ -30,32 +57,30 @@ export default function BarraSemanal({ actividadesPorDia }: BarraSemanalProps) {
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    marginTop: 10,
     justifyContent: 'space-between',
     alignItems: 'flex-start',
-    paddingHorizontal: 10
+    paddingHorizontal: 0,
   },
   segmentWrapper: {
     alignItems: 'center',
     flex: 1,
-    gap: 2
+    gap: 2,
   },
   diaText: {
     fontSize: 14,
     fontWeight: 'bold',
-    color: '#333',
     marginBottom: 4,
   },
+    selectedDiaText: {
+    color: selectedColor,
+    fontWeight: 'bold',
+    },
   segment: {
     width: '90%',
-    aspectRatio: 1, // makes it a square
-    borderRadius: 4,
-    backgroundColor: '#d3d3d3',
+    aspectRatio: 1,
+    borderBottomRightRadius: 12,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  activeSegment: {
-    backgroundColor: '#1c3fa8',
   },
   countText: {
     fontSize: 13,

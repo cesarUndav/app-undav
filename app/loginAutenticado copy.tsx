@@ -1,15 +1,17 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
+  //Text,
   TextInput,
   TouchableOpacity,
+  //Alert,
   Image,
   StyleSheet,
   TouchableWithoutFeedback,
   Keyboard,
 } from "react-native";
 
-import { useRouter, Tabs } from "expo-router";
+import { useRouter } from "expo-router";
 import CustomText from "@/components/CustomText";
 
 import { Ionicons } from '@expo/vector-icons';
@@ -17,6 +19,7 @@ import {ImageBackground} from 'react-native';
 import { SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 import { ObtenerDatosUsuarioActual } from '@/data/DatosUsuarioGuarani';
+import EnviarCorreoButton from "./correo";
 
 //import imagenFondo from '../assets/images/sedes/espana.png';
 const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'};
@@ -49,7 +52,7 @@ return (
 <ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
 
 {/* Header */}
-<View style={[headerStyles.container, {backgroundColor:"#fff"}]}>
+<View style={headerStyles.container}>
   <View style={headerStyles.side}>
     <TouchableOpacity onPress={() => router.replace("/")}>
       <Ionicons name="arrow-back" size={24} color="#1a2b50" />
@@ -89,19 +92,7 @@ return (
       />
     </View>
     
-    {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
-    <TouchableOpacity onPress={() => botonIngresar(documentoLogin)}
-      disabled={botonDesactivado() as boolean} style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" }]}>
-      <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
-    </TouchableOpacity>
-
-    <TouchableOpacity>
-      <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
-    </TouchableOpacity>
-
-    {/* <TouchableOpacity>
-      <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
-    </TouchableOpacity> */}
+    <EnviarCorreoButton direccion="magreda@undav.edu.ar"/>
 
   </View>
 </TouchableWithoutFeedback>

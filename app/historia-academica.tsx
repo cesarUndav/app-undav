@@ -1,6 +1,6 @@
 import React, { act, useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import CustomText from '../components/CustomText';
 
 import {
@@ -9,6 +9,7 @@ import {
   usuarioActual
 } from '@/data/DatosUsuarioGuarani';
 import ListaItem from '@/components/ListaItem';
+import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -87,11 +88,8 @@ export default function HistoriaAcademica() {
   }, []);
 
   return (
-    
-    <LinearGradient colors={['#ffffff', '#91c9f7']} style={{ flex: 1 }}>
 
-      <ScrollView contentContainerStyle={styles.container}>
-
+    <FondoScrollGradiente>
         {loading && (<CustomText style={styles.title} >{"Cargando..."}</CustomText>)}
         {!loading && <CustomText style={styles.estadisticas}> 
           {"Materias aprobadas: "+cantMaterias+"\nPromedio: "+promedio.toFixed(2)}
@@ -105,19 +103,12 @@ export default function HistoriaAcademica() {
             subtitle={actividad.body}
           />
         ))}
-
-      </ScrollView>
-    </LinearGradient>
+    </FondoScrollGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    paddingTop: 10,
-    paddingBottom: 10,
-    paddingHorizontal: 10,
-    gap: 8
-  },
+
   title: {
     fontSize: 16,
     fontWeight: 'bold',
@@ -131,7 +122,7 @@ const styles = StyleSheet.create({
     lineHeight: 24,
     fontWeight: 'bold',
     color: '#0b254a',
-    marginVertical: 8,
-    marginHorizontal: 20
+    marginVertical: 0,
+    marginHorizontal: 15
   }
 });

@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
 import CustomText from "../components/CustomText";
-import BottomBar from "../components/BottomBar";
+import FondoScrollGradiente from "@/components/FondoScrollGradiente";
 
 const faqs = [
   {
@@ -34,15 +34,14 @@ export default function PreguntasFrecuentes() {
     setExpandedIndex((prev) => (prev === index ? null : index));
   };
 
-  return (
-    <View style={styles.container}>
-      <ScrollView contentContainerStyle={styles.scroll}>
+return (
+      <FondoScrollGradiente>
         {faqs.map((faq, index) => {
           const isCollapsed = expandedIndex !== index;
           const esUltima = index === faqs.length - 1;
 
           return (
-            <View key={index} style={{ marginBottom: 5 }}>
+            <View key={index} style={{ }}>
               <TouchableOpacity
                 onPress={() => toggleCollapse(index)}
                 style={[
@@ -70,20 +69,12 @@ export default function PreguntasFrecuentes() {
             </View>
           );
         })}
-      </ScrollView>
-    </View>
+    </FondoScrollGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    backgroundColor: "#ffffff",
-  },
-  scroll: {
-    padding: 16,
-    paddingBottom: 100,
-  },
+
   titulo: {
     fontSize: 22,
     fontWeight: "bold",

@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import CustomText from '../components/CustomText';
 import BotonTextoLink from '../components/BotonTextoLink';
 import ListaItem from '@/components/ListaItem';
+import FondoGradiente from '@/components/FondoGradiente';
 
 export default function Certificados() {
   return (
-    <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
+    <FondoGradiente>
       <ScrollView contentContainerStyle={styles.scroll}>
 
         <CustomText style={styles.title}>Autogestión</CustomText>
@@ -37,7 +38,7 @@ export default function Certificados() {
         />
 
       </ScrollView>
-    </LinearGradient>
+    </FondoGradiente>
   );
 }
 

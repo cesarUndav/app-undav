@@ -1,13 +1,14 @@
 import React from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import CustomText from '../components/CustomText';
 import BotonTextoLink from '../components/BotonTextoLink'; // ✅ renamed import
 import ListaItem from '@/components/ListaItem';
+import FondoGradiente from '@/components/FondoGradiente';
 
 export default function Bienestar() {
   return (
-    <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.container}>
+    <FondoGradiente>
       <ScrollView contentContainerStyle={styles.scroll}>
 
         <BotonTextoLink label="Instagram" url="instagram.com/bienestarundav" color="#C13584" />
@@ -36,7 +37,7 @@ export default function Bienestar() {
         />
 
       </ScrollView>
-    </LinearGradient>
+    </FondoGradiente>
   );
 }
 
@@ -45,14 +46,12 @@ const styles = StyleSheet.create({
     flex: 1,
   },
   scroll: {
-    padding: 15,
     gap: 10,
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
     color: '#0b254a',
-    alignSelf: 'center',
-    marginVertical: 0,
+    alignSelf: 'center'
   },
 });

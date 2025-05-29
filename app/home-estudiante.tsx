@@ -1,6 +1,6 @@
 import React from 'react';
-import { View, StyleSheet, Image, SafeAreaView, Linking } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import { View, StyleSheet, Image, Linking } from 'react-native';
+
 import { useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
 import AgendaPreview from '../components/AgendaPreview';
@@ -9,86 +9,75 @@ import LinksIcon from '../assets/icons/links.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ReportesIcon from '../assets/icons/reportes.svg';
 
-import { Tabs } from 'expo-router';
 
 import { usuarioActual, UsuarioAutenticado } from '../data/DatosUsuarioGuarani';
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
+import FondoGradiente from '@/components/FondoGradiente';
 
 export default function HomeEstudiante() {
 
   const router = useRouter();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <FondoGradiente style={styles.containerGradient}>
 
-      <Tabs.Screen
-        options ={{
-          title: 'inicio',
-          headerShown: false
-        }}
-      />
-
-      <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
-
-        <View style={styles.header}>
-          <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-          <View style={styles.userInfo}>
-            <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioAutenticado() ? usuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
-            <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioAutenticado() ? usuarioActual.idPersona : "12345")}</CustomText>
-          </View>
-          <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-          </View>
-          
-        <AgendaPreview />
-
-        <View style={styles.buttonsRowParent}> 
-          <View style={styles.buttonsRow}>
-
-            <BotonIconoTexto
-              label={"CERTIFICADOS\nY REPORTES"}
-              funcionOnPress={() => router.push('/certificados')}
-              Icon={ReportesIcon}
-              iconSize={iconSize}
-              iconColor={iconColor}
-            />
-            <BotonIconoTexto
-              label={"INSCRIPCIONES"}
-              funcionOnPress={() => router.push('/inscripciones')}
-              Icon={InscripcionesIcon}
-              iconSize={iconSize}
-              iconColor={iconColor}
-            />
-          </View>
-          <View style={styles.buttonsRow}>
-            
-            <BotonIconoTexto
-              label={"REDES"}
-              funcionOnPress={() => router.push('/redes')}
-              Icon={LinksIcon}
-              iconSize={iconSize}
-              iconColor={iconColor}
-            />
-
-            <BotonIconoTexto
-              label={"SIU GUARANÍ"}
-              funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
-              Icon={LinksIcon}
-              iconSize={iconSize}
-              iconColor={iconColor}
-            />
-
-            <BotonIconoTexto
-              label={"CAMPUS\nVIRTUAL"}
-              funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
-              Icon={LinksIcon}
-              iconSize={iconSize}
-              iconColor={iconColor}
-            />
-          </View>
+      <View style={styles.header}>
+        <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
+        <View style={styles.userInfo}>
+          <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioAutenticado() ? usuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
+          <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioAutenticado() ? usuarioActual.idPersona : "12345")}</CustomText>
         </View>
+        <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
+      </View>
+        
+      <AgendaPreview />
 
-      </LinearGradient>
-    </SafeAreaView>
+      <View style={styles.buttonsRowParent}> 
+        <View style={styles.buttonsRow}>
+
+          <BotonIconoTexto
+            label={"CERTIFICADOS\nY REPORTES"}
+            funcionOnPress={() => router.push('/certificados')}
+            Icon={ReportesIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+          />
+          <BotonIconoTexto
+            label={"INSCRIPCIONES"}
+            funcionOnPress={() => router.push('/inscripciones')}
+            Icon={InscripcionesIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+          />
+        </View>
+        <View style={styles.buttonsRow}>
+          
+          <BotonIconoTexto
+            label={"REDES"}
+            funcionOnPress={() => router.push('/redes')}
+            Icon={LinksIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+          />
+
+          <BotonIconoTexto
+            label={"SIU GUARANÍ"}
+            funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
+            Icon={LinksIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+          />
+
+          <BotonIconoTexto
+            label={"CAMPUS\nVIRTUAL"}
+            funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
+            Icon={LinksIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+          />
+        </View>
+      </View>
+    </FondoGradiente>
   );
 }
 
@@ -97,10 +86,9 @@ const iconColor = "#fff";
 
 const styles = StyleSheet.create({
   containerGradient: {
-    flex: 1,
-    paddingHorizontal: 10,
     gap: 12,
-    paddingVertical: 12
+    paddingHorizontal: 15,
+    paddingVertical: 10
   },
   header: { //header
     flexDirection: 'row',

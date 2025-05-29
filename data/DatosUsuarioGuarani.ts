@@ -1,6 +1,7 @@
 import { DigestClient } from "@/app/lib/DigestClient";
 import { Platform } from "react-native";
 
+
 interface User {
   idPersona: string;
   documento: string;
@@ -14,6 +15,18 @@ export function UsuarioAutenticado():Boolean {return usuarioActual.idPersona != 
 // auth y requests
 
 export let visitante:Boolean = true;
+
+
+const celeste:string = '#91c9f7';
+const gris:string = '#b1b2b1';
+
+export let colorFondo:string = "#b1b2b1";
+export let fondoEsCeleste:boolean = false;
+
+export function setColorFondoCeleste(esCeleste:boolean) {
+  fondoEsCeleste = esCeleste;
+  esCeleste ? colorFondo = celeste : colorFondo = gris;
+}
 
 const client = new DigestClient("app_undav", "app123456");
 export async function ObtenerJsonString(url:string) {

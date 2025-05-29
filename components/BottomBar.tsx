@@ -59,12 +59,12 @@ const styles = StyleSheet.create({
     justifyContent: 'space-around'
   },
   btn: {
-    //flex: 1,
     paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: 70,
     //backgroundColor: "green",
+    //flex: 1,
   },
   icon: {
     

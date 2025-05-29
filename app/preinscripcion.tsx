@@ -1,15 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+
 import BotonTextoLink from '@/components/BotonTextoLink';
+import FondoGradiente from '@/components/FondoGradiente';
 
 export default function Preinscripcion() {  
   return (
-    <LinearGradient colors={['#ffffff', '#91c9f7']} style={{flex: 1}}>
+    <FondoGradiente>
       <ScrollView style={styles.container}>
         <BotonTextoLink label="Tutorial Preinscripción" url="https://undav.edu.ar/index.php?idcateg=5" />
       </ScrollView>
-    </LinearGradient>
+    </FondoGradiente>
   );
 }
 
