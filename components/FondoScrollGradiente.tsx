@@ -8,7 +8,6 @@ interface FondoScrollGradienteProps {
   colorTop?: ColorValue;
   colorBottom?: ColorValue;
   style?: StyleProp<ViewStyle>;
-  ignorePadding?: Boolean;
 }
 
 const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({

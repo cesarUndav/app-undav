@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 
 import { Ionicons } from '@expo/vector-icons';
 
@@ -12,7 +12,7 @@ import {
   JsonStringAObjeto,
   ObtenerJsonString,
   UrlObtenerAgenda,
-  usuarioActual
+  infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
 import FondoGradiente from '@/components/FondoGradiente';
 
@@ -50,7 +50,7 @@ export default function Calendario() {
   const [numDiaSeleccionado, setNumDiaSeleccionado] = useState(numDiaHoy);
 
   useEffect(() => {
-    console.log("FETCH AGENDA");
+    //console.log("FETCH AGENDA");
     const fetchAgenda = async () => {
       setLoading(true);
 
@@ -60,7 +60,7 @@ export default function Calendario() {
 
         for (let i = 0; i < 7; i++) {
           const fecha = fechaSumarDias(i, fechaInicioSemana);
-          const url = UrlObtenerAgenda(usuarioActual.idPersona, DateToISOStringNoTime(fecha));
+          const url = UrlObtenerAgenda(infoBaseUsuarioActual.idPersona, DateToISOStringNoTime(fecha));
           const json = JsonStringAObjeto(await ObtenerJsonString(url));
 
           const actividades: Actividad[] = (json.error ? [] : json.map((elem: any, index: number) => ({
@@ -85,7 +85,7 @@ export default function Calendario() {
   }, []);
 
   useEffect(() => {
-    console.log("DRAW AGENDA");
+    //console.log("DRAW AGENDA");
 
     const actividadesDelDia = listaActividadesSemanal[numDiaSeleccionado];
     if (!actividadesDelDia) return;
@@ -113,7 +113,7 @@ export default function Calendario() {
       { loading ? (
         <CustomText style={styles.title}>Cargando...</CustomText>
       ) : (
-        <>
+        <ScrollView contentContainerStyle={styles.container}>
           <BarraSemanal
             actividadesPorDia={listaCantidadActividadesSemanal ?? [0, 0, 0, 0, 0, 0, 0]}
             diaActual={numDiaSeleccionado}
@@ -136,7 +136,7 @@ export default function Calendario() {
           {listaActividadesDiaSeleccionado.map((evento) => (
             <ListaItem key={evento.id} title={evento.title} subtitle={evento.body} />
           ))}
-        </>
+        </ScrollView>
       )}
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>

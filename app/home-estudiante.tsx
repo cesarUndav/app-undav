@@ -10,7 +10,7 @@ import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ReportesIcon from '../assets/icons/reportes.svg';
 
 
-import { usuarioActual, UsuarioAutenticado } from '../data/DatosUsuarioGuarani';
+import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '../data/DatosUsuarioGuarani';
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 
@@ -22,12 +22,12 @@ export default function HomeEstudiante() {
     <FondoGradiente style={styles.containerGradient}>
 
       <View style={styles.header}>
-        <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-        <View style={styles.userInfo}>
-          <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioAutenticado() ? usuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
-          <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioAutenticado() ? usuarioActual.idPersona : "12345")}</CustomText>
-        </View>
         <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
+        <View style={styles.userInfo}>
+          <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
+          <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.idPersona : "12345")}</CustomText>
+        </View>
+        <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
       </View>
         
       <AgendaPreview />
@@ -41,6 +41,7 @@ export default function HomeEstudiante() {
             Icon={ReportesIcon}
             iconSize={iconSize}
             iconColor={iconColor}
+            backgroundColor={iconBgColor}
           />
           <BotonIconoTexto
             label={"INSCRIPCIONES"}
@@ -48,6 +49,7 @@ export default function HomeEstudiante() {
             Icon={InscripcionesIcon}
             iconSize={iconSize}
             iconColor={iconColor}
+            backgroundColor={iconBgColor}
           />
         </View>
         <View style={styles.buttonsRow}>
@@ -58,6 +60,7 @@ export default function HomeEstudiante() {
             Icon={LinksIcon}
             iconSize={iconSize}
             iconColor={iconColor}
+            backgroundColor={iconBgColor}
           />
 
           <BotonIconoTexto
@@ -66,6 +69,7 @@ export default function HomeEstudiante() {
             Icon={LinksIcon}
             iconSize={iconSize}
             iconColor={iconColor}
+            backgroundColor={iconBgColor}
           />
 
           <BotonIconoTexto
@@ -74,6 +78,7 @@ export default function HomeEstudiante() {
             Icon={LinksIcon}
             iconSize={iconSize}
             iconColor={iconColor}
+            backgroundColor={iconBgColor}
           />
         </View>
       </View>
@@ -83,10 +88,11 @@ export default function HomeEstudiante() {
 
 const iconSize = 44;
 const iconColor = "#fff";
+const iconBgColor = "#005BA4";
 
 const styles = StyleSheet.create({
   containerGradient: {
-    gap: 12,
+    gap: 10,
     paddingHorizontal: 15,
     paddingVertical: 10
   },
@@ -108,14 +114,14 @@ const styles = StyleSheet.create({
     //backgroundColor: "green",
     flexDirection: "column",
     height: "100%",
-    flex: 1,
-    paddingLeft: 10
+    flex: 1
   },
   userText: {
     lineHeight: 18,
     fontSize: 14,
     fontWeight: '600',    
-    textAlign: 'left',
+    textAlign: 'right',
+    paddingRight: 12,
     alignContent: "flex-end"
   },
   profileIcon: {
@@ -131,7 +137,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomRightRadius: 24,
     backgroundColor: '#1c2f4a',
-    //marginVertical: 12,
     elevation: 4
   },
   buttonsRow: {

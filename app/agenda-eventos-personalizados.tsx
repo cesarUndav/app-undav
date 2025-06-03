@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView, TouchableOpacity, Button, Modal, Platform, TextInput, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, Platform, TextInput } from 'react-native';
 import CustomText from '../components/CustomText';
 import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
 
@@ -8,6 +8,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
 import FondoGradiente from '@/components/FondoGradiente';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+import OcultadorTeclado from '@/components/OcultadorTeclado';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -82,7 +83,7 @@ export default function EventosPersonalizados() {
 
       {/* MODAL */}
       <Modal visible={modalVisible} animationType="fade" transparent>
-        <TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+        <OcultadorTeclado>
           <View style={styles.modalOverlay}>
             <View style={styles.modalContainer}>
               <CustomText style={styles.modalTitle}>{tituloModal}</CustomText>
@@ -146,7 +147,7 @@ export default function EventosPersonalizados() {
 
             </View>
           </View>
-        </TouchableWithoutFeedback>
+        </OcultadorTeclado>
       </Modal>
       
     </FondoScrollGradiente>

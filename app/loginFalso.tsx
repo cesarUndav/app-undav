@@ -1,25 +1,22 @@
 import React, { useEffect, useState } from "react";
 import {
   View,
-  //Text,
   TextInput,
   TouchableOpacity,
-  //Alert,
   Image,
-  StyleSheet,
-  TouchableWithoutFeedback,
-  Keyboard,
+  StyleSheet
 } from "react-native";
 
-import { useRouter } from "expo-router";
+import { useRouter, Tabs } from "expo-router";
 import CustomText from "@/components/CustomText";
 
-import { Ionicons } from '@expo/vector-icons';
 import {ImageBackground} from 'react-native';
 import { SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
 
 import { ObtenerDatosUsuarioActual } from '@/data/DatosUsuarioGuarani';
-import EnviarCorreoButton from "./correo";
+import OcultadorTeclado from "@/components/OcultadorTeclado";
+import FondoGradiente from "@/components/FondoGradiente";
+import NavigationHeader from "@/components/NavigationHeader";
 
 //import imagenFondo from '../assets/images/sedes/espana.png';
 const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'};
@@ -51,20 +48,12 @@ return (
 <SafeAreaView style={styles.containerImagenFondo} edges={['left', 'right']}>
 <ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
 
-{/* Header */}
-<View style={headerStyles.container}>
-  <View style={headerStyles.side}>
-    <TouchableOpacity onPress={() => router.replace("/")}>
-      <Ionicons name="arrow-back" size={24} color="#1a2b50" />
-    </TouchableOpacity>
-  </View>
+<NavigationHeader
+  title="Iniciar Sesión"
+  onBackPress={() => router.replace('/')}
+/>
 
-  <View style={headerStyles.titleContainer}>
-    <CustomText style={headerStyles.title}>{"Iniciar Sesión"}</CustomText>
-  </View>
-</View>
-
-<TouchableWithoutFeedback onPress={Keyboard.dismiss} accessible={false}>
+<OcultadorTeclado>
   <View style={styles.container}>
 
     <Image source={require("../assets/icons/undav.png")} style={styles.logo} />
@@ -92,11 +81,22 @@ return (
       />
     </View>
     
-    <EnviarCorreoButton direccion="magreda@undav.edu.ar"/>
+    {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
+    <TouchableOpacity onPress={() => botonIngresar(documentoLogin)}
+      disabled={botonDesactivado() as boolean} style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" }]}>
+      <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
+    </TouchableOpacity>
+
+    <TouchableOpacity>
+      <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
+    </TouchableOpacity>
+
+    {/* <TouchableOpacity>
+      <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
+    </TouchableOpacity> */}
 
   </View>
-</TouchableWithoutFeedback>
-
+</OcultadorTeclado>
 </ImageBackground>
 </SafeAreaView>
 </SafeAreaProvider>
@@ -162,34 +162,5 @@ const styles = StyleSheet.create({
     color: "#1a2b50",
     fontSize: 17,
     marginTop: 16,
-  },
-});
-
-const headerStyles = StyleSheet.create({
-  container: {
-    height: 56,
-    backgroundColor: '#ffff',
-    flexDirection: 'row',
-    alignItems: 'center',
-    position: 'relative',
-    paddingHorizontal: 8,
-  },
-  side: {
-    width: 50,
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  titleContainer: {
-    position: 'absolute',
-    left: 0,
-    right: 0,
-    alignItems: 'center',
-    justifyContent: 'center',
-    height: '100%',
-  },
-  title: {
-    fontSize: 18,
-    fontWeight: 'bold',
-    color: '#1a2b50',
   },
 });

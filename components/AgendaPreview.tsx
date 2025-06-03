@@ -33,9 +33,8 @@ export default function AgendaPreview() {
       <View style={styles.agendaBtnContainer}>
       
       {/*Boton invisible, para que el flex quede bien*/}
-      <View style={[styles.agendaBtn, {backgroundColor: "#1c2f4a", elevation: 0}]}></View>
 
-      <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 2.5}]}>
+      <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 3.3}]}>
         <CustomText style={styles.agendaBtnText}>DETALLES</CustomText>
       </TouchableOpacity>
       

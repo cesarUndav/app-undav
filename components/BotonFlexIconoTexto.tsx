@@ -11,6 +11,7 @@ type BotonIconoTextoProps = {
   funcionOnPress: () => void;
   iconSize?: number;
   iconColor?: string;
+  backgroundColor?: string;
 };
 
 export default function BotonIconoTexto({
@@ -18,7 +19,8 @@ export default function BotonIconoTexto({
   funcionOnPress,
   Icon,
   iconSize = 40,
-  iconColor = 'white'
+  iconColor = 'white',
+  backgroundColor = "#005BA4"
 }: BotonIconoTextoProps) {
   const router = useRouter();
 
@@ -26,7 +28,7 @@ export default function BotonIconoTexto({
     <TouchableOpacity
       accessible
       accessibilityLabel={"Ir a " + label}
-      style={styles.buttonBox}
+      style={[styles.buttonBox,{backgroundColor: backgroundColor}]}
       onPress={funcionOnPress}
     >
       <View style={styles.buttonBoxIconParent}>

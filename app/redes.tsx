@@ -5,7 +5,7 @@ import BotonTextoLink from '../components/BotonTextoLink';
 import FondoGradiente from '@/components/FondoGradiente';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 
-const verticalPadding = 20;
+const verticalPadding = 18;
 const fontSize = 16;
 export default function Contacto() {
   return (

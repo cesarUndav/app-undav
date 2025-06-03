@@ -1,7 +1,7 @@
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 
-export interface User {
+interface User {
   idPersona: string;
   documento: string;
   nombreCompleto: string;
@@ -10,7 +10,7 @@ export interface User {
   legajo: string;
 }
 
-export let infoBaseUsuarioActual: User = {
+export let usuarioActual: User = {
   idPersona: "",
   documento: "",
   nombreCompleto: "",
@@ -25,8 +25,8 @@ export function setVisitante(v: boolean): void {
   visitante = v;
 }
 
-export function UsuarioEsAutenticado(): boolean {
-  return infoBaseUsuarioActual.idPersona !== "";
+export function UsuarioAutenticado(): boolean {
+  return usuarioActual.idPersona !== "";
 }
 
 const celeste: string = "#91c9f7";
@@ -50,13 +50,8 @@ function capitalizeWords(str: string): string {
     .join(" ");
 }
 
-// Para actualizar infoBaseUsuarioActual desde fuera si hace falta
-export function setUsuarioActual(user: User) {
-  infoBaseUsuarioActual = { ...user };
-}
-
-// Función para loguear usuario y obtener token + "persona" (idPersona)
-export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, idPersona: number }> {
+// Función para loguear usuario y obtener token + persona_id
+export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, personaId: number }> {
   const url = `${URL_BASE}/persona/validuser`;
 
   const response = await fetch(url, {
@@ -71,52 +66,57 @@ export async function validarPersonaYTraerData(usuario: string, clave: string): 
   }
 
   const data = await response.json();
-  if (!data.token || !data.persona) {
+
+  if (!data.token || !data.persona_id) {
     throw new Error("Respuesta incompleta del servidor");
   }
 
   return {
     token: data.token,
-    idPersona: data.persona
+    personaId: data.persona_id
   };
 }
 
-// Obtener datos personales con token JWT (para iOS y Android)
+// Obtener datos personales con token JWT
 export async function ObtenerDatosUsuarioConToken(personaId: number, token: string): Promise<void> {
-  const url = `${URL_BASE}/persona/${personaId}`;
+  if (Platform.OS === "android") {
+    const url = `${URL_BASE}/persona/${personaId}`;
 
-  const response = await fetch(url, {
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+    const response = await fetch(url, {
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${token}`
+      }
+    });
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
     }
-  });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
+    const datos = await response.json();
+
+    usuarioActual = {
+      idPersona: personaId.toString(),
+      documento: datos.documento,
+      nombreCompleto: capitalizeWords(`${datos.nombres} ${datos.apellido}`),
+      email: datos.mail,
+      tel: datos.telefono_celular,
+      legajo: datos.legajo
+    };
+
+    visitante = false;
+
+    console.log("Usuario cargado:", usuarioActual);
+  } else {
+    console.log("Plataforma iOS: autenticación deshabilitada.");
   }
-
-  const datos = await response.json();
-
-  infoBaseUsuarioActual = {
-    idPersona: personaId.toString(),
-    documento: datos.documento,
-    nombreCompleto: capitalizeWords(`${datos.nombres} ${datos.apellido}`),
-    email: datos.mail,
-    tel: datos.telefono_celular,
-    legajo: datos.legajo
-  };
-
-  visitante = false;
-
-  console.log("Usuario cargado:", infoBaseUsuarioActual);
 }
 
 // Logout
 export function Logout() {
   visitante = true;
-  infoBaseUsuarioActual = {
+  usuarioActual = {
     idPersona: "",
     documento: "",
     nombreCompleto: "",
@@ -125,5 +125,7 @@ export function Logout() {
     legajo: ""
   };
   AsyncStorage.removeItem("token");
-  AsyncStorage.removeItem("idPersona");
+  AsyncStorage.removeItem("persona_id");
 }
+
+

@@ -6,7 +6,7 @@ import CustomText from '../components/CustomText';
 import {
   JsonStringAObjeto,
   ObtenerJsonString,
-  usuarioActual
+  infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
 import ListaItem from '@/components/ListaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
@@ -38,7 +38,7 @@ export default function HistoriaAcademica() {
 
     const fetchAgenda = async () => {
       try {
-        const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/"+usuarioActual.idPersona+"/datosanalitico";
+        const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/"+infoBaseUsuarioActual.idPersona+"/datosanalitico";
         const json = JsonStringAObjeto(await ObtenerJsonString(url));
         
         const listaActividad: Actividad[] = [];

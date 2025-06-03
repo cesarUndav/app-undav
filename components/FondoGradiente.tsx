@@ -8,7 +8,6 @@ interface FondoGradienteProps {
   colorTop?: ColorValue;
   colorBottom?: ColorValue;
   style?: StyleProp<ViewStyle>;
-  ignorePadding?: Boolean;
 }
 
 const FondoGradiente: React.FC<FondoGradienteProps> = ({

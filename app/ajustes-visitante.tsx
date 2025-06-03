@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking } from "react-native";
 import { router } from "expo-router";
 import CustomText from "../components/CustomText";
+import { Logout } from "@/data/DatosUsuarioGuarani";
 
 // Definición de tipos para los ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -52,7 +53,7 @@ export default function Configuracion() {
           type: "action",
           label: "Ingresar como estudiante",
           onPress: () => {
-            // Lógica de logout
+            Logout();
             router.replace("/"); // va a la pantalla inicial, "index.tsx"
           },
         }

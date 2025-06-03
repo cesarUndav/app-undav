@@ -1,36 +1,57 @@
 import React, { useState } from "react";
-import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking } from "react-native";
+import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking, Alert } from "react-native";
 import { router } from "expo-router";
 import CustomText from "../components/CustomText";
-
-import { fondoEsCeleste, Logout, setColorFondoCeleste, usuarioActual, UsuarioAutenticado } from "@/data/DatosUsuarioGuarani";
 import FondoGradiente from "@/components/FondoGradiente";
+import {
+  fondoEsCeleste,
+  Logout,
+  setColorFondoCeleste,
+  UsuarioEsAutenticado,
+  infoBaseUsuarioActual
+} from "@/data/DatosUsuarioGuarani";
 
-// Definición de tipos para los ítems de configuración
+// Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
 type ToggleItem = { type: "toggle"; label: string; value: boolean; onValueChange: (val: boolean) => void };
 type LinkItem = { type: "link"; label: string; onPress: () => void };
 type ActionItem = { type: "action"; label: string; onPress: () => void };
-type SeparatorItem = {type: "separator"; };
+type SeparatorItem = { type: "separator" };
 
 type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem | SeparatorItem;
 interface ConfigSection {
   data: ConfigItem[];
 }
 
-const appVersion = "1.0.0";
-
 export default function Configuracion() {
   const [notifsOn, setNotifsOn] = useState(false);
   const [fondoCeleste, setFondoCeleste] = useState(fondoEsCeleste);
 
+  const handleLogout = () => {
+    Alert.alert(
+      "Cerrar sesión",
+      "¿Estás seguro de que querés cerrar sesión?",
+      [
+        { text: "Cancelar", style: "cancel" },
+        {
+          text: "Sí, cerrar sesión",
+          style: "destructive",
+          onPress: () => {
+            Logout();
+            router.replace("/"); // redirige a index.tsx
+          }
+        }
+      ]
+    );
+  };
+
   const sections: ConfigSection[] = [
     {
       data: [
-        { type: "text", label: (UsuarioAutenticado() ? usuarioActual.nombreCompleto : "Nombre Nombre Apellido") },
-        { type: "text", label: (UsuarioAutenticado() ? "ID: "+usuarioActual.idPersona : "ID: 12345") },
-        { type: "text", label: (UsuarioAutenticado() ? usuarioActual.email : "nombreapellido@email.com") },
-        { type: "text", label: "Teléfono: "+ (UsuarioAutenticado() ? usuarioActual.tel : "(11) 12345678") },
+        { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido" },
+        { type: "text", label: UsuarioEsAutenticado() ? "ID: " + infoBaseUsuarioActual.idPersona : "ID: 12345" },
+        { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.email : "nombreapellido@email.com" },
+        { type: "text", label: "Teléfono: " + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.tel : "(11) 12345678") },
         { type: "separator" }
       ]
     },
@@ -46,7 +67,10 @@ export default function Configuracion() {
           type: "toggle",
           label: "DEV - Fondo celeste",
           value: fondoCeleste,
-          onValueChange: (val) => (setFondoCeleste(val), setColorFondoCeleste(val)),
+          onValueChange: (val) => {
+            setFondoCeleste(val);
+            setColorFondoCeleste(val);
+          },
         },
         { type: "separator" }
       ]
@@ -91,14 +115,10 @@ export default function Configuracion() {
         {
           type: "action",
           label: "Cerrar sesión",
-          onPress: () => {
-            // Lógica de logout
-            Logout();
-            router.replace("/"); // va a la pantalla inicial, "index.tsx"
-          },
+          onPress: handleLogout
         }
       ]
-    },
+    }
   ];
 
   return (
@@ -107,7 +127,7 @@ export default function Configuracion() {
         <SectionList
           sections={sections}
           keyExtractor={(item, index) => `${item.type}-${index}`}
-          renderItem={ ({ item }) => {
+          renderItem={({ item }) => {
             switch (item.type) {
               case "text":
                 return (
@@ -117,7 +137,7 @@ export default function Configuracion() {
                 );
               case "toggle":
                 return (
-                  <View style={[styles.item, {marginVertical: -10}]}>
+                  <View style={[styles.item, { marginVertical: -10 }]}>
                     <CustomText style={styles.textItem}>{item.label}</CustomText>
                     <Switch value={item.value} onValueChange={item.onValueChange} />
                   </View>
@@ -134,17 +154,12 @@ export default function Configuracion() {
                     <CustomText style={styles.actionItem}>{item.label}</CustomText>
                   </TouchableOpacity>
                 );
-                
               case "separator":
-                return (
-                <View style={styles.separator}/>
-                );
-              
+                return <View style={styles.separator} />;
               default:
                 return null;
             }
           }}
-          //ItemSeparatorComponent={() => <View style={styles.separator} />}
           contentContainerStyle={styles.list}
         />
       </View>
@@ -160,9 +175,7 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     elevation: 6
   },
-  list: {
-
-  },
+  list: {},
   item: {
     flexDirection: "row",
     alignItems: "center",
