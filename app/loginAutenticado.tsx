@@ -1,131 +1,142 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import {
   View,
-  //Text,
   TextInput,
   TouchableOpacity,
-  //Alert,
   Image,
   StyleSheet,
+  Alert,
+  Linking,
 } from "react-native";
 
-import { useRouter, Tabs } from "expo-router";
-import { LinearGradient } from "expo-linear-gradient";
-import { useNavigation } from "@react-navigation/native";
-import { useLayoutEffect } from "react";
+import { useRouter } from "expo-router";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomText from "@/components/CustomText";
+import OcultadorTeclado from "@/components/OcultadorTeclado";
+import NavigationHeader from "@/components/NavigationHeader";
+import FondoGradiente from "@/components/FondoGradiente";
 
-import {ImageBackground} from 'react-native';
-import { SafeAreaView, SafeAreaProvider} from 'react-native-safe-area-context';
+import {
+  validarPersonaYTraerData,
+  setVisitante,
+  ObtenerDatosUsuarioConToken,
+  infoBaseUsuarioActual,
+} from "@/data/DatosUsuarioGuarani";
 
-import { ObtenerDatosUsuarioActual } from '@/data/DatosUsuarioGuarani';
-
-//import imagenFondo from '../assets/images/sedes/espana.png';
-const imagenFondo = {uri: 'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'};
-
-// funcion principal:
 export default function LoginScreen() {
+  const router = useRouter();
+  const [esperandoRespuesta, setEsperandoRespuesta] = useState(false);
+  const [documentoLogin, setDocumentoLogin] = useState("");
+  const [contrasena, setContrasena] = useState("");
 
-// login
-const [esperandoRespuesta, setEsperandoRespuesta] = useState(false); // Habría que poner un límite de tiempo de espera también.
-const [documentoLogin, setDocumentoLogin] = useState("");
-const [contrasena, setContrasena] = useState("");
+  const botonDesactivado = (): boolean => {
+    return (
+      esperandoRespuesta ||
+      documentoLogin.trim().length === 0 ||
+      contrasena.trim().length === 0
+    );
+  };
 
-const botonIngresar = async (documentoUsuario:string) => {
+  const guardarSesion = async (token: string, personaId: number) => {
+    try {
+      await AsyncStorage.setItem("token", token);
+      await AsyncStorage.setItem("idPersona", personaId.toString());
+    } catch (err) {
+      console.error("Error guardando sesión:", err);
+    }
+  };
+
+const botonIngresar = async () => {
   setEsperandoRespuesta(true);
-  await ObtenerDatosUsuarioActual(documentoUsuario);
-  setEsperandoRespuesta(false);
-  router.push('/home-estudiante')
+  try {
+    console.log("Intentando login con", documentoLogin, contrasena);
+    const { token, idPersona } = await validarPersonaYTraerData(documentoLogin, contrasena);
+    console.log("Login exitoso, token y personaId recibidos", token, idPersona);
+
+    await guardarSesion(token, idPersona);
+
+    await ObtenerDatosUsuarioConToken(idPersona, token);
+    console.log("Datos usuario cargados:", infoBaseUsuarioActual.idPersona);
+
+    setVisitante(false);
+    router.replace("/home-estudiante");
+  } catch (error: any) {
+    console.error("Error login:", error);
+    Alert.alert("Error", error.message || "Error al iniciar sesión");
+  } finally {
+    setEsperandoRespuesta(false);
+  }
 };
-function botonDesactivado():Boolean {
-  if (esperandoRespuesta || documentoLogin.trim().length === 0) return true;
-  else return false;
-}
 
-// declaraciones de Expo
-const router = useRouter();
-const navigation = useNavigation();
-useLayoutEffect(() => {
-navigation.setOptions({ headerShown: true });
-}, [navigation]);
+  return (
+    <>
+      <NavigationHeader title="Iniciar Sesión" onBackPress={() => router.replace("/")} />
+      <OcultadorTeclado>
+        <FondoGradiente style={styles.container}>
+          <Image
+            source={require("../assets/icons/undav.png")}
+            style={styles.logo}
+          />
 
-return (
+          <View style={styles.inputGroup}>
+            <TextInput
+              style={styles.inlineInputField}
+              value={documentoLogin}
+              placeholder="DNI"
+              onChangeText={setDocumentoLogin}
+              keyboardType="numeric"
+              autoCapitalize="none"
+              autoComplete="off"
+              editable={!esperandoRespuesta}
+            />
+          </View>
 
-<SafeAreaProvider>
-<SafeAreaView style={styles.containerImagenFondo} edges={['left', 'right']}>
-<ImageBackground source={imagenFondo} resizeMode="cover" style={styles.imagenFondo}>
-<View style={styles.container}>
-      <Tabs.Screen
-        options ={{
-          title: 'Iniciar sesión',
-          headerShown: true,
-          headerTitleAlign: 'center',
-          headerTitleStyle: {
-            fontWeight: 'bold',
-            fontSize: 20,
-          },
-          headerTransparent: true,
-          headerTintColor: '#1a2b50'
-        }}
-      />
+          <View style={styles.inputGroup}>
+            <TextInput
+              style={styles.inlineInputField}
+              value={contrasena}
+              placeholder="Contraseña"
+              onChangeText={setContrasena}
+              secureTextEntry
+              autoCapitalize="none"
+              autoComplete="off"
+              editable={!esperandoRespuesta}
+            />
+          </View>
 
-      <Image source={require("../assets/icons/undav.png")} style={styles.logo} />
-      {/* <CustomText style={styles.title}>Iniciar sesión</CustomText> */}
+          <TouchableOpacity
+            onPress={botonIngresar}
+            disabled={botonDesactivado()}
+            style={[
+              styles.button,
+              { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" },
+            ]}
+          >
+            <CustomText weight="bold" style={styles.buttonText}>
+              {esperandoRespuesta ? "CARGANDO..." : "INGRESAR"}
+            </CustomText>
+          </TouchableOpacity>
 
-      <View style={styles.inputGroup}>
-        {/* <CustomText style={styles.inlineLabel}>Usuario</CustomText> */}
-        <TextInput
-          id={"user"}
-          style={styles.inlineInputField}
-          value={documentoLogin}
-          placeholder={"DNI"}
-          onChangeText={setDocumentoLogin}
-        />
-      </View>
-
-      <View style={styles.inputGroup}>
-        {/* <CustomText style={styles.inlineLabel}>Contraseña</CustomText> */}
-        <TextInput
-          id={"password"}
-          style={styles.inlineInputField}
-          value={contrasena}
-          placeholder={"Contraseña"}
-          onChangeText={setContrasena}
-          secureTextEntry
-        />
-      </View>
-      
-      {/* <TouchableOpacity style={styles.button} onPress={() => router.push('/home-estudiante')}> */}
-      <TouchableOpacity onPress={() => botonIngresar(documentoLogin)}
-        disabled={botonDesactivado() as boolean} style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" }]}>
-        <CustomText weight="bold" style={styles.buttonText}>INGRESAR</CustomText>
-      </TouchableOpacity>
-
-      <TouchableOpacity>
-        <CustomText style={styles.forgotPassword}>Olvidé mi contraseña</CustomText>
-      </TouchableOpacity>
-
-      {/* <TouchableOpacity>
-        <CustomText style={styles.forgotPassword}>Ingresar sin iniciar sesión</CustomText>
-      </TouchableOpacity> */}
-
-</View>    
-</ImageBackground>
-</SafeAreaView>
-</SafeAreaProvider>
-);
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL(
+                "https://academica.undav.edu.ar/g3w/acceso/recuperar"
+              )
+            }
+            disabled={esperandoRespuesta}
+          >
+            <CustomText style={styles.forgotPassword}>
+              Olvidé mi contraseña
+            </CustomText>
+          </TouchableOpacity>
+        </FondoGradiente>
+      </OcultadorTeclado>
+    </>
+  );
 }
 
 const styles = StyleSheet.create({
-  containerImagenFondo: {
-    flex: 1
-  },
-  imagenFondo: {
-    flex: 1,
-    justifyContent: 'center',
-  },
   container: {
-    backgroundColor: 'rgba(200, 200, 200, 0.7)', // NECESARIO PARA IMG FONDO (MARCA DE AGUA)
     flex: 1,
     padding: 24,
     justifyContent: "center",
@@ -136,18 +147,13 @@ const styles = StyleSheet.create({
     height: 200,
     resizeMode: "contain",
     marginBottom: 40,
-    marginTop: 70
-  },
-  title: {
-    fontSize: 24,
-    fontWeight: "600",
-    color: "#1a2b50",
-    marginBottom: 32,
+    marginTop: 22,
   },
   inputGroup: {
     flexDirection: "row",
     alignItems: "center",
-    marginBottom: 12
+    width: 240,
+    marginBottom: 12,
   },
   inlineInputField: {
     flex: 1,
@@ -155,14 +161,13 @@ const styles = StyleSheet.create({
     backgroundColor: "#fff",
     borderBottomRightRadius: 12,
     fontSize: 18,
-    width: 240
+    width: 240,
   },
   button: {
-    backgroundColor: "#1a2b50",
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderBottomRightRadius: 12,
-    marginTop: 28, //16
+    marginTop: 28,
     width: 240,
     alignItems: "center",
   },
@@ -175,5 +180,6 @@ const styles = StyleSheet.create({
     color: "#1a2b50",
     fontSize: 17,
     marginTop: 16,
+    textDecorationLine: "underline",
   },
 });

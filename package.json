@@ -21,6 +21,8 @@
   "homepage": "https://github.com/cesarUndav/app-undav#readme",
   "dependencies": {
     "@expo-google-fonts/montserrat": "^0.3.0",
+    "@react-native-async-storage/async-storage": "^2.1.2",
+    "@react-native-community/datetimepicker": "8.3.0",
     "expo": "^53.0.9",
     "expo-blur": "~14.1.4",
     "expo-font": "^13.3.1",
@@ -30,6 +32,7 @@
     "expo-secure-store": "~14.2.3",
     "expo-splash-screen": "~0.30.8",
     "expo-symbols": "~0.4.4",
+    "expo-system-ui": "~5.0.7",
     "js-md5": "^0.8.3",
     "react": "19.0.0",
     "react-dom": "19.0.0",
@@ -37,9 +40,7 @@
     "react-native-collapsible": "^1.6.2",
     "react-native-svg": "^15.11.2",
     "react-native-svg-transformer": "^1.5.1",
-    "react-native-web": "^0.20.0",
-    "@react-native-community/datetimepicker": "8.3.0",
-    "expo-system-ui": "~5.0.7"
+    "react-native-web": "^0.20.0"
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",

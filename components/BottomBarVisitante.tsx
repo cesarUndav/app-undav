@@ -1,35 +1,51 @@
 // components/BottomBar.tsx
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-import { useRouter } from 'expo-router';
 
 // Íconos SVG como componentes
 import HomeIcon from '../assets/icons/home.svg';
 import CalendarIcon from '../assets/icons/calendar.svg';
-import CommunityIcon from '../assets/icons/community.svg';
 import LinksIcon from '../assets/icons/links.svg';
 import SettingsIcon from '../assets/icons/settings.svg';
+import { useRouter, usePathname } from 'expo-router';
 
-export default function BottomBar() {
+const routes = [
+  "/home-visitante",
+  "/calendario",
+  "/ajustes-visitante",
+] as const;  // <-- "as const" to make these literal types
+
+type Route = typeof routes[number];  // Union of route string literals
+
+export default function BottomBarVisitante() {
   const router = useRouter();
+  const pathname = usePathname();
+
+  const buttons: { route: Route; Icon: React.FC<any> }[] = [
+    { route: "/home-visitante", Icon: HomeIcon },
+    { route: "/calendario", Icon: CalendarIcon },
+    { route: "/ajustes-visitante", Icon: SettingsIcon },
+  ];
 
   return (
     <View style={styles.container}>
-      <TouchableOpacity onPress={() => router.push('/home-visitante')}>
-        <HomeIcon width={iconSize} height={iconSize} fill="white" />
-      </TouchableOpacity>
-      <TouchableOpacity onPress={() => router.push('/calendario')}>
-        <CalendarIcon width={iconSize} height={iconSize} fill="white" />
-      </TouchableOpacity>
-      {/* <TouchableOpacity onPress={() => router.push('/vinculos')}>
-        <LinksIcon width={iconSize} height={iconSize} fill="white" />
-      </TouchableOpacity> */}
-      <TouchableOpacity onPress={() => router.push('/ajustes-visitante')}>
-        <SettingsIcon width={iconSize} height={iconSize} fill="white" />
-      </TouchableOpacity>
+      {buttons.map(({ route, Icon }) => {
+        const disabled = pathname === route;
+        return (
+          <TouchableOpacity
+            key={route}
+            style={[styles.btn, disabled && { opacity: 0.5 }]}
+            onPress={() => !disabled && router.push(route)}
+            disabled={disabled}
+          >
+            <Icon width={iconSize} height={iconSize} fill="white" />
+          </TouchableOpacity>
+        );
+      })}
     </View>
   );
 }
+
 
 const iconSize = 30;
 
@@ -37,7 +53,17 @@ const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: '#173c68',
-    justifyContent: 'space-around',
+    justifyContent: 'space-around'
+  },
+  btn: {
+    //flex: 1,
     paddingVertical: 12,
+    alignItems: 'center',
+    justifyContent: 'center',
+    width: 70,
+    //backgroundColor: "green",
+  },
+  icon: {
+    
   },
 });

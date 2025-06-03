@@ -171,7 +171,6 @@ export function agregarEventoPersonalizado(titulo:string, fechainicio:string, fe
   };
   devUltimoId += 1;
   listaEventosPersonalizados.push(nuevoEvento);
-  console.log("Agregando evento. Len: "+listaEventosPersonalizados.length);
 }
 export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:string, fechaFin:string):void {
   let fi = new Date(fechainicio);
@@ -185,12 +184,10 @@ export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:
   eventoEditado.titulo = titulo;
   eventoEditado.fechaInicio = fi;
   eventoEditado.fechaFin = ff;
-  console.log("Editando evento: "+eventoEditado);
 }
 export function quitarEventoPersonalizado(id:string):void {
   const indice = listaEventosPersonalizados.findIndex((evento) => evento.id == id);
   listaEventosPersonalizados.splice(indice, 1);
-  console.log("Quitando evento. Len: "+listaEventosPersonalizados.length);
 }
 export function obtenerEventoConId(id:string): EventoAgenda {
   const evento = listaEventosPersonalizados.find((evento) => evento.id === id);

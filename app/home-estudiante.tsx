@@ -1,98 +1,100 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
-import { LinearGradient } from 'expo-linear-gradient';
+import React from 'react';
+import { View, StyleSheet, Image, Linking } from 'react-native';
+
 import { useRouter } from 'expo-router';
-import BottomBar from '../components/BottomBar';
 import CustomText from '../components/CustomText';
 import AgendaPreview from '../components/AgendaPreview';
 
 import LinksIcon from '../assets/icons/links.svg';
-import PreguntasIcon from '../assets/icons/preguntas.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ReportesIcon from '../assets/icons/reportes.svg';
-import ContactoIcon from '../assets/icons/contacto.svg';
-import SedesIcon from '../assets/icons/sedes.svg';
 
-import { Tabs } from 'expo-router';
 
-import { usuarioActual } from '../data/DatosUsuarioGuarani';
+import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '../data/DatosUsuarioGuarani';
+import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
+import FondoGradiente from '@/components/FondoGradiente';
 
 export default function HomeEstudiante() {
 
   const router = useRouter();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <FondoGradiente style={styles.containerGradient}>
 
-      <Tabs.Screen
-        options ={{
-          title: 'inicio',
-          headerShown: false
-        }}
-      />
-
-      <LinearGradient colors={['#ffffff', '#91c9f7']} style={styles.containerGradient}>
-
-        <View style={styles.header}>
-          <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-          <View style={styles.userInfo}>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{"Bienvenido de vuelta,"}</CustomText>
-            <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>{usuarioActual.nombreCompleto}</CustomText>
-            {/* <CustomText style={[styles.userText, {alignContent: "flex-end"}]}>Gonzalo Gerardo{"\n"}García Gutierrez</CustomText> */}
-            <CustomText style={[styles.userText, {color: '#444'}]}>{"ID: "+usuarioActual.idPersona}</CustomText>
-          </View>
-          <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-          </View>
-          
-        <AgendaPreview />
-
-        <View style={styles.buttonsRowParent}> 
-          <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a certificados y reportes" style={styles.buttonBox } onPress={() => router.push('/certificados')}>
-              <ReportesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>CERTIFICADOS{"\n"}Y REPORTES</CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity accessible accessibilityLabel="Ir a inscripciones" style={styles.buttonBox} onPress={() => router.push('/inscripciones')}>
-              <InscripcionesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>INSCRIPCIONES</CustomText>
-            </TouchableOpacity>
-          </View>
-          <View style={styles.buttonsRow}>
-            <TouchableOpacity accessible accessibilityLabel="Ir a vínculos" style={styles.buttonBox} onPress={() => router.push('/vinculos')}>
-              <LinksIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>VÍNCULOS</CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity accessible accessibilityLabel="Ir a sedes" style={styles.buttonBox} onPress={() => router.push('/sedes')}>
-              <SedesIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>SEDES</CustomText>
-            </TouchableOpacity>
-
-            <TouchableOpacity accessible accessibilityLabel="Ir a contacto" style={styles.buttonBox} onPress={() => router.push('/contacto')}>
-              <ContactoIcon width={iconSize} height={iconSize} fill={iconColor} />
-              <CustomText style={styles.buttonText}>CONTACTO</CustomText>
-            </TouchableOpacity>
-          </View>
+      <View style={styles.header}>
+        <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
+        <View style={styles.userInfo}>
+          <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
+          <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.idPersona : "12345")}</CustomText>
         </View>
+        <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
+      </View>
+        
+      <AgendaPreview />
 
-      </LinearGradient>
-    
-    <BottomBar />
-    </SafeAreaView>
+      <View style={styles.buttonsRowParent}> 
+        <View style={styles.buttonsRow}>
+
+          <BotonIconoTexto
+            label={"CERTIFICADOS\nY REPORTES"}
+            funcionOnPress={() => router.push('/certificados')}
+            Icon={ReportesIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+          <BotonIconoTexto
+            label={"INSCRIPCIONES"}
+            funcionOnPress={() => router.push('/inscripciones')}
+            Icon={InscripcionesIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+        </View>
+        <View style={styles.buttonsRow}>
+          
+          <BotonIconoTexto
+            label={"REDES"}
+            funcionOnPress={() => router.push('/redes')}
+            Icon={LinksIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+
+          <BotonIconoTexto
+            label={"SIU GUARANÍ"}
+            funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
+            Icon={LinksIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+
+          <BotonIconoTexto
+            label={"CAMPUS\nVIRTUAL"}
+            funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
+            Icon={LinksIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+        </View>
+      </View>
+    </FondoGradiente>
   );
 }
 
-const iconSize = "40%";
+const iconSize = 44;
 const iconColor = "#fff";
-//const iconColor = "#1c2f4a";
+const iconBgColor = "#005BA4";
 
 const styles = StyleSheet.create({
   containerGradient: {
-    flex: 1,
-    paddingHorizontal: 10,
-    gap: 12,
-    paddingVertical: 12
+    gap: 10,
+    paddingHorizontal: 15,
+    paddingVertical: 10
   },
   header: { //header
     flexDirection: 'row',
@@ -112,14 +114,15 @@ const styles = StyleSheet.create({
     //backgroundColor: "green",
     flexDirection: "column",
     height: "100%",
-    flex: 1,
-    paddingLeft: 10
+    flex: 1
   },
   userText: {
     lineHeight: 18,
     fontSize: 14,
     fontWeight: '600',    
-    textAlign: 'left'
+    textAlign: 'right',
+    paddingRight: 12,
+    alignContent: "flex-end"
   },
   profileIcon: {
     height: "100%",
@@ -134,7 +137,6 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomRightRadius: 24,
     backgroundColor: '#1c2f4a',
-    //marginVertical: 12,
     elevation: 4
   },
   buttonsRow: {
@@ -142,23 +144,5 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap',
     gap: 10
-  },
-  buttonBox: {
-    flex: 1,
-    height: "100%",
-    flexDirection: "column",
-    justifyContent: 'center',
-    alignItems: 'center',
-    borderBottomRightRadius: 20,
-    //backgroundColor: 'white'
-    //backgroundColor: #005BA4'#1c2f4a'
-    backgroundColor:"#005BA4"
-  },
-  buttonText: {
-    textAlign: 'center',
-    fontWeight: "bold",
-    color: iconColor,
-    fontSize: 12,
-    //fontStyle: 'italic'
-  },
+  }
 });

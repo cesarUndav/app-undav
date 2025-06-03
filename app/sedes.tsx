@@ -2,8 +2,8 @@ import React from 'react';
 import { View, Image, StyleSheet, TouchableOpacity, Linking, ScrollView, SafeAreaView } from 'react-native';
 import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
-import BottomBar from '../components/BottomBar';
-import { LinearGradient } from 'expo-linear-gradient';
+import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+
 
 
 const sedes = [
@@ -51,10 +51,7 @@ export default function Sedes() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={{flex: 1}}>  
-    <View style={styles.page}>
-      <LinearGradient colors={['#ffffff', '#91c9f7']}>
-      <ScrollView contentContainerStyle={styles.container}>
+    <FondoScrollGradiente style={{padding:15, gap: 15}}>
         {sedes.map((sede, index) => (
           <View key={index} style={styles.card}>
               <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>
@@ -65,17 +62,12 @@ export default function Sedes() {
               {sede.telefono && (
                 <CustomText style={styles.text}>Tel: {sede.telefono}</CustomText>
               )}
-                <CustomText style={styles.link}>Toca para ver en Google Maps</CustomText>
+                {/* <CustomText style={styles.link}>Toca para ver en Google Maps</CustomText> */}
             </View>
               </TouchableOpacity>
           </View>
         ))}
-      </ScrollView>
-      </LinearGradient>
-
-    </View>
-    <BottomBar />
-    </SafeAreaView>
+    </FondoScrollGradiente>
   );
   
 }
@@ -83,23 +75,16 @@ export default function Sedes() {
 const styles = StyleSheet.create({
   container: {
     paddingHorizontal: 15,
-    paddingVertical: 15,
+    paddingVertical: 10,
     gap: 15
     //backgroundColor: "#1c2f4a"
+    //color = '#173c68',
   },
   card: {
-    backgroundColor: '#fff',
+    backgroundColor: '#1c2f4a',
     borderBottomRightRadius: 30,
     overflow: 'hidden',
     elevation: 6
-  },
-  cardOLD: {
-    backgroundColor: '#fff',
-    borderBottomRightRadius: 30,
-    overflow: 'hidden',
-    elevation: 2,
-    borderColor: '#0b5085',
-    borderWidth: 4
   },
   image: {
     width: '100%',
@@ -107,22 +92,23 @@ const styles = StyleSheet.create({
     resizeMode: 'cover',
   },
   info: {
-    padding: 10,
+    paddingVertical: 10,
+    paddingHorizontal: 16
   },
   title: {
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 6,
-    color: '#0b254a',
+    color: "#fff" //'#0b254a',
   },
   text: {
     fontSize: 16,
-    color: '#444',
+    color: "#fff" //'#444',
   },
   link: {
     marginTop: 6,
     fontSize: 14,
-    color: '#0b5085',
+    color: "#fff" //'#0b5085',
     //fontWeight: 'bold',
     // textDecorationLine: 'underline',
   },
