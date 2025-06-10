@@ -4,6 +4,7 @@ import { StyleSheet } from 'react-native';
 import CustomText from '../components/CustomText';
 import BotonTextoLink from '../components/BotonTextoLink';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+import { celesteSIU, negroAzulado } from '@/constants/Colors';
 
 export default function Inscripciones() {
   return (
@@ -11,10 +12,10 @@ export default function Inscripciones() {
     
       <BotonTextoLink label="Tutorial de Inscripcion a Carreras" url="https://undav.edu.ar/index.php?idcateg=5" />
       <CustomText style={styles.title}>Autogestión</CustomText>
-      <BotonTextoLink label="Inscripción a Materias" url="https://academica.undav.edu.ar/g3w/cursada" color="#4b9ec9"/>
-      <BotonTextoLink label="Inscripción a Exámen" url="https://academica.undav.edu.ar/g3w/examen" color="#4b9ec9"/>
-      <BotonTextoLink label="Horarios de Cursada" url="https://academica.undav.edu.ar/g3w/horarios_cursadas" color="#4b9ec9"/>
-      <BotonTextoLink label="Fechas de Exámen" url="https://academica.undav.edu.ar/g3w/fecha_examen" color="#4b9ec9"/>
+      <BotonTextoLink label="Inscripción a Materias" url="https://academica.undav.edu.ar/g3w/cursada" color={celesteSIU}/>
+      <BotonTextoLink label="Inscripción a Exámen" url="https://academica.undav.edu.ar/g3w/examen" color={celesteSIU}/>
+      <BotonTextoLink label="Horarios de Cursada" url="https://academica.undav.edu.ar/g3w/horarios_cursadas" color={celesteSIU}/>
+      <BotonTextoLink label="Fechas de Exámen" url="https://academica.undav.edu.ar/g3w/fecha_examen" color={celesteSIU}/>
 
       <CustomText style={styles.title}>Consultas</CustomText>
     
@@ -29,7 +30,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0b254a',
+    color: negroAzulado,
     alignSelf: 'center',
     marginVertical: 0,
   },

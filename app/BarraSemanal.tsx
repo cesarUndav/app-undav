@@ -1,3 +1,4 @@
+import { azulMedioUndav } from '@/constants/Colors';
 import React from 'react';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -9,7 +10,7 @@ type BarraSemanalProps = {
 };
 const hoyColor = "#2280ba";
 const selectedColor = "#c62a2b";
-const actividadesColor = "#173c68";
+const actividadesColor = azulMedioUndav;
 const noActividadesColor = "#b1b2b1";
 
 const dias = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];

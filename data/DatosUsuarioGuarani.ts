@@ -1,13 +1,14 @@
 import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { grisUndav } from "@/constants/Colors";
 
 export interface User {
   idPersona: string;
   documento: string;
   nombreCompleto: string;
   email: string;
-  tel: string;
   legajo: string;
+  propuestas: Propuesta[]
 }
 
 export let infoBaseUsuarioActual: User = {
@@ -15,9 +16,21 @@ export let infoBaseUsuarioActual: User = {
   documento: "",
   nombreCompleto: "",
   email: "",
-  tel: "",
-  legajo: ""
+  legajo: "",
+  propuestas: []
 };
+
+export interface Propuesta {
+  alumno: number;
+  propuesta: number;
+  nombre: string;
+  nombre_abreviado: string;
+  regular: "S" | "N"; // o solo "S" si no hay otros valores
+}
+
+export interface RespuestaPropuestas {
+  propuestas: Propuesta[];
+}
 
 export let visitante: boolean = true;
 
@@ -30,14 +43,13 @@ export function UsuarioEsAutenticado(): boolean {
 }
 
 const celeste: string = "#91c9f7";
-const gris: string = "#b1b2b1";
 
-export let colorFondo: string = gris;
+export let colorFondo: string = grisUndav;
 export let fondoEsCeleste: boolean = false;
 
 export function setColorFondoCeleste(esCeleste: boolean) {
   fondoEsCeleste = esCeleste;
-  colorFondo = esCeleste ? celeste : gris;
+  colorFondo = esCeleste ? celeste : grisUndav;
 }
 
 const URL_BASE = "http://172.16.1.43/api/appundav";
@@ -58,7 +70,7 @@ export function setUsuarioActual(user: User) {
 // Función para loguear usuario y obtener token + "persona" (idPersona)
 export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, idPersona: number }> {
   const url = `${URL_BASE}/persona/validuser`;
-
+  
   const response = await fetch(url, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
@@ -80,9 +92,26 @@ export async function validarPersonaYTraerData(usuario: string, clave: string): 
     idPersona: data.persona
   };
 }
+async function guardarSesion(token: string, personaId: number):Promise<void> {
+  try {
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("idPersona", personaId.toString());
+  } catch (err) {
+    console.error("Error guardando sesión:", err);
+  }
+};
+
+export async function validarPersona(usuario: string, clave: string) {
+  const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
+  await guardarSesion(token, idPersona);
+  setVisitante(false);
+  await ObtenerDatosBaseUsuarioConToken(token, idPersona);
+  return {token, idPersona};
+}
 
 // Obtener datos personales con token JWT (para iOS y Android)
-export async function ObtenerDatosUsuarioConToken(personaId: number, token: string): Promise<void> {
+
+export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: number): Promise<void> {
   const url = `${URL_BASE}/persona/${personaId}`;
 
   const response = await fetch(url, {
@@ -91,6 +120,7 @@ export async function ObtenerDatosUsuarioConToken(personaId: number, token: stri
       Authorization: `Bearer ${token}`
     }
   });
+  console.log("RESPONSE:", response);
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -98,14 +128,15 @@ export async function ObtenerDatosUsuarioConToken(personaId: number, token: stri
   }
 
   const datos = await response.json();
-
+  //const prop = datos.propuestas;
   infoBaseUsuarioActual = {
     idPersona: personaId.toString(),
-    documento: datos.documento,
-    nombreCompleto: capitalizeWords(`${datos.nombres} ${datos.apellido}`),
-    email: datos.mail,
-    tel: datos.telefono_celular,
-    legajo: datos.legajo
+    legajo: datos.legajo,
+    nombreCompleto: capitalizeWords(`${datos.nombres_elegido? datos.nombres_elegido:datos.nombres} ${datos.apellido_elegido?datos.apellido_elegido:datos.apellido}`),
+    documento: datos.nro_documento,
+    email: datos.email,
+    //tel: datos.telefono_celular,
+    propuestas: datos.propuestas
   };
 
   visitante = false;
@@ -121,8 +152,8 @@ export function Logout() {
     documento: "",
     nombreCompleto: "",
     email: "",
-    tel: "",
-    legajo: ""
+    legajo: "",
+    propuestas: []
   };
   AsyncStorage.removeItem("token");
   AsyncStorage.removeItem("idPersona");

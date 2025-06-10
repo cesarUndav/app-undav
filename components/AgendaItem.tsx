@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TextStyle } from 'react-native';
 import CustomText from './CustomText';
-import { EventoAgenda } from '../data/agenda';
+import { EventoAgenda, eventoAgendaTituloColor } from '../data/agenda';
 import { eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 
 type AgendaItemProps = {
@@ -11,7 +11,7 @@ type AgendaItemProps = {
 export default function AgendaItem({ evento }: AgendaItemProps) {
   return (
     <View style={AgendaItemStyles.agendaItem}>
-      <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>
+      <CustomText style={[AgendaItemStyles.eventTitle, { color: eventoAgendaTituloColor(evento) }]}>
         {evento.titulo}
       </CustomText>
       <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
@@ -27,7 +27,8 @@ export const AgendaItemStyles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderBottomRightRadius: 16,
-    elevation: 4
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   eventTitle: {
     fontSize: 16,

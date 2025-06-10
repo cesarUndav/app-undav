@@ -5,6 +5,7 @@ import CustomText from '../components/CustomText';
 import BotonTextoLink from '../components/BotonTextoLink'; // ✅ renamed import
 import ListaItem from '@/components/ListaItem';
 import FondoGradiente from '@/components/FondoGradiente';
+import { negroAzulado } from '@/constants/Colors';
 
 export default function Bienestar() {
   return (
@@ -25,7 +26,7 @@ export default function Bienestar() {
         <CustomText style={styles.title}>{"Atención Presencial"}</CustomText>
         <ListaItem
           title={`Lunes a viernes, 9 a 20 hs.`}
-          titleColor='#0b254a'
+          titleColor={negroAzulado}
         />
         <BotonTextoLink
           label={`Oficina Sede España (España 350)`}
@@ -51,7 +52,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0b254a',
+    color: negroAzulado,
     alignSelf: 'center'
   },
 });

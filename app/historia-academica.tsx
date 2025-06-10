@@ -1,15 +1,20 @@
 import React, { act, useEffect, useState } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 import CustomText from '../components/CustomText';
 
 import {
   JsonStringAObjeto,
-  ObtenerJsonString,
+  ObtenerJsonString
+} from '@/data/DatosUsuarioGuarani Backup'
+
+import {
   infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
 import ListaItem from '@/components/ListaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+import LoadingWrapper from '@/components/LoadingWrapper';
+import { azulClaro, negroAzulado } from '@/constants/Colors';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -30,9 +35,12 @@ export type Actividad = {
 export default function HistoriaAcademica() {
   const [loading, setLoading] = useState(true);
   const [listaActividades, setListaActividades] = useState<Actividad[]>([]);
-  const [tituloPagina, setTituloPagina] = useState("");
+  const [listaActividadesAprobadas, setListaActividadesAprobadas] = useState<Actividad[]>([]);
+  const [hayHistoria, setHayHistoria] = useState(false);
   const [cantMaterias, setCantMaterias] = useState(0);
   const [promedio, setPromedio] = useState(0);
+  const [promedioConAplazos, setPromedioConAplazos] = useState(0);
+  const [conAplazos, setConAplazos] = useState(false);
 
   useEffect(() => {
 
@@ -44,15 +52,16 @@ export default function HistoriaAcademica() {
         const listaActividad: Actividad[] = [];
         const listaActividadAprobadas: Actividad[] = [];
 
-        if (json.error != null) { // si hay error, es decir, no hay actividades en la fecha:
-          setTituloPagina("No hay Historia Académica");
+        if (json.error != null) { // si hay error, es decir, no hay actividades en la fecha: 
           setListaActividades([]);
+          setListaActividadesAprobadas([]);
         }
         else { // transformar actividades JSON a actividades Actividad:
-          setTituloPagina("Historia Académica");
-
           let cantMateriasAprobadas:number = 0;
           let sumaNotasAprobadas:number = 0;
+
+          let cantMateriasTotal:number = 0;
+          let sumaNotasTotal:number = 0;
 
           json.forEach((elem: any, index: number) => {
             const nota:number = Number(elem.nota);
@@ -69,12 +78,20 @@ export default function HistoriaAcademica() {
 
           cantMateriasAprobadas = listaActividadAprobadas.length;
           sumaNotasAprobadas = listaActividadAprobadas.reduce((acc, curr) => acc + curr.nota, 0);
-          
-          setCantMaterias(cantMateriasAprobadas);
           cantMateriasAprobadas == 0 ? setPromedio(0) : setPromedio(sumaNotasAprobadas/cantMateriasAprobadas);
+          setCantMaterias(cantMateriasAprobadas);
+
+          cantMateriasTotal = listaActividad.length;
+          sumaNotasTotal = listaActividad.reduce((acc, curr) => acc + curr.nota, 0);
+          cantMaterias == 0 ? setPromedioConAplazos(0) : setPromedioConAplazos(sumaNotasTotal/cantMateriasTotal);
+
           
           listaActividad.sort((b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
           setListaActividades(listaActividad);
+
+          listaActividadAprobadas.sort((b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+          setListaActividadesAprobadas(listaActividadAprobadas);
+          setHayHistoria(true);
         }
       }
       catch (error) {
@@ -85,43 +102,60 @@ export default function HistoriaAcademica() {
     };
 
     fetchAgenda();
-  }, []);
+  }, [conAplazos]);
 
   return (
 
     <FondoScrollGradiente>
-        {loading && (<CustomText style={styles.title} >{"Cargando..."}</CustomText>)}
-        {!loading && <CustomText style={styles.estadisticas}> 
-          {"Materias aprobadas: "+cantMaterias+"\nPromedio: "+promedio.toFixed(2)}
+      <LoadingWrapper loading={loading}>
+        <CustomText style={styles.estadisticas}> 
+          {hayHistoria ? 
+          "Materias Aprobadas: "+cantMaterias+
+          (conAplazos ?
+            "\nPromedio con Aplazos: "+promedioConAplazos.toFixed(2)
+            : "\nPromedio: "+promedio.toFixed(2))
+          : "No hay historia académica."}
         </CustomText>
-        }
         
-        {listaActividades.map((actividad) => (
+        <TouchableOpacity onPress={() => setConAplazos(!conAplazos)}>
+          <CustomText style={[styles.estadisticas, {color: azulClaro}]}>{conAplazos ? "Ocultar Aplazos" : "Mostrar Aplazos" }</CustomText>
+        </TouchableOpacity>
+
+        {conAplazos ? listaActividades.map((actividad) => (
           <ListaItem
             key={actividad.id}
             title={actividad.title}
             subtitle={actividad.body}
           />
-        ))}
+        ))
+        :
+        listaActividadesAprobadas.map((actividad) => (
+          <ListaItem
+            key={actividad.id}
+            title={actividad.title}
+            subtitle={actividad.body}
+          />
+        ))
+        }
+      </LoadingWrapper>
     </FondoScrollGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0b254a',
+    color: negroAzulado,
     alignSelf: 'center',
     marginVertical: 0,
     marginBottom: 10
   },
   estadisticas: {
-    fontSize: 17,
-    lineHeight: 24,
+    fontSize: 16,
+    lineHeight: 22,
     fontWeight: 'bold',
-    color: '#0b254a',
+    color: negroAzulado,
     marginVertical: 0,
     marginHorizontal: 15
   }

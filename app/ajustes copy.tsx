@@ -174,8 +174,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     backgroundColor: "#fff",
-    elevation: 6, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    elevation: 6
   },
   list: {},
   item: {

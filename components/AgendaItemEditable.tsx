@@ -4,6 +4,7 @@ import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 import SettingsIcon from '../assets/icons/settings.svg';
+import { azulLogoUndav } from '@/constants/Colors';
 
 type AgendaItemEditableProps = {
   evento: EventoAgenda;
@@ -29,7 +30,7 @@ export default function AgendaItemEditable({ evento, onPressEdit }: AgendaItemEd
           accessible
           accessibilityLabel="Editar Evento"
         >
-          <SettingsIcon width={30} height={30} fill="#1c2f4a" />
+          <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
         </TouchableOpacity>
       </View>
     </View>
@@ -42,7 +43,8 @@ const styles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderBottomRightRadius: 16,
-    elevation: 4,
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   itemParent: {
     flexDirection: 'row',

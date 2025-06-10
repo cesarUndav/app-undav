@@ -6,17 +6,21 @@ import CustomText from './CustomText';
 
 interface HeaderProps {
   title: string;
+  hideBackButton?: boolean,
   onBackPress: () => void;
   backgroundColor?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, onBackPress, backgroundColor = '#fff' }) => {
+const Header: React.FC<HeaderProps> = ({ title, hideBackButton, onBackPress, backgroundColor = '#fff' }) => {
   return (
     <View style={[headerStyles.container, { backgroundColor }]}>
       <View style={headerStyles.side}>
-        <TouchableOpacity onPress={onBackPress}>
-          <Ionicons name="arrow-back" size={24} color="#1a2b50" />
-        </TouchableOpacity>
+        {
+        !hideBackButton && 
+          <TouchableOpacity onPress={onBackPress}>
+            <Ionicons name="arrow-back" size={24} color="#1a2b50" />
+          </TouchableOpacity>
+        }
       </View>
 
       <View style={headerStyles.titleContainer}>

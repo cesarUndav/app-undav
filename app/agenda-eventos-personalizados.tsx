@@ -6,9 +6,9 @@ import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEve
 import {agregarEventoPersonalizado, quitarEventoPersonalizado} from '../data/agenda';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
-import FondoGradiente from '@/components/FondoGradiente';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
+import { azulLogoUndav } from '@/constants/Colors';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -127,7 +127,7 @@ export default function EventosPersonalizados() {
               <View style={[{gap: 10}]}>
                 <TouchableOpacity onPress={confirmarAgregarEvento}
                   disabled={titulo.trim().length === 0}
-                  style={[styles.modalBtn, { backgroundColor: titulo.trim().length > 0 ? "#1c2f4a" : "gray" }]}>
+                  style={[styles.modalBtn, { backgroundColor: titulo.trim().length > 0 ? azulLogoUndav : "gray" }]}>
                   <CustomText style={styles.modalBtnText}>ACEPTAR</CustomText>
                 </TouchableOpacity>
                 
@@ -142,9 +142,6 @@ export default function EventosPersonalizados() {
                   <CustomText style={[styles.modalBtnText,{color: "gray"}]}>CANCELAR</CustomText>
                 </TouchableOpacity>
               </View>
-              {/* <Button title="Agregar" onPress={confirmarAgregarEvento} />
-              <Button title="Cancelar" color="red" onPress={() => setModalVisible(false)} /> */}
-
             </View>
           </View>
         </OcultadorTeclado>
@@ -162,22 +159,16 @@ const styles = StyleSheet.create({
     paddingHorizontal: 10,
     gap: 8
   },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: '#0b254a',
-    alignSelf: 'center',
-    marginVertical: 0
-  },
   agregarBtn: {
-    backgroundColor: "#1c2f4a",
+    backgroundColor: azulLogoUndav,
     flex: 1,
     height: "100%",
     textAlign: "center",
     alignItems: "center",
     borderRadius: 0,
     borderBottomRightRadius: 16,
-    elevation: 2,
+    elevation: 2, // Android sombra
+    shadowColor: '#000' // IOS sombra
     //marginHorizontal: 10
   },
   agregarBtnText: {
@@ -243,7 +234,8 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignItems: "center",
     borderBottomRightRadius: 16,
-    elevation: 2,
+    elevation: 2, // Android sombra
+    shadowColor: '#000' // IOS sombra
     //marginHorizontal: 10
   },
   modalBtnText: {

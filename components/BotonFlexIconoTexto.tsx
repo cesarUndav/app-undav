@@ -3,6 +3,7 @@ import { TouchableOpacity, View, StyleProp, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { StyleSheet } from 'react-native';
+import { azulClaro } from '@/constants/Colors';
 
 
 type BotonIconoTextoProps = {
@@ -20,7 +21,7 @@ export default function BotonIconoTexto({
   Icon,
   iconSize = 40,
   iconColor = 'white',
-  backgroundColor = "#005BA4"
+  backgroundColor = azulClaro
 }: BotonIconoTextoProps) {
   const router = useRouter();
 
@@ -50,7 +51,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomRightRadius: 20,
-    backgroundColor:"#005BA4"
+    backgroundColor:azulClaro
   },
     buttonBoxIconParent: {
     height: "60%",

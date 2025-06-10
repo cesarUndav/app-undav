@@ -51,7 +51,8 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    elevation: 6
+    elevation: 6, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   subtitulo: {
     fontSize: 16,

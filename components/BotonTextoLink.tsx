@@ -1,6 +1,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle } from 'react-native';
 import CustomText from './CustomText';
+import { azulMedioUndav } from '@/constants/Colors';
 
 type BotonTextoProps = {
   label: string;
@@ -14,7 +15,7 @@ type BotonTextoProps = {
 export default function BotonTextoLink({
   label,
   url,
-  color = '#173c68',
+  color = azulMedioUndav,
   verticalPadding = 12,
   fontSize = 16,
   fontColor = 'white',
@@ -49,8 +50,9 @@ const styles = StyleSheet.create({
   bloque: {
     borderBottomRightRadius: 20,
     paddingHorizontal: 20,
-    elevation: 6,
     justifyContent: 'center',
+    elevation: 6, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   texto: {
     fontWeight: 'bold',

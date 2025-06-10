@@ -110,7 +110,8 @@ const styles = StyleSheet.create({
     //justifyContent: "space-evenly",
   },
   seccion: {
-    elevation: 4
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   boton: {
     backgroundColor: "#9fa521",

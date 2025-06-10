@@ -2,8 +2,9 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
-import { listaCompleta, eventoAgendaProximidadColor, eventoAgendaToFechaString, EventoAgenda } from '../data/agenda';
+import { listaCompleta, EventoAgenda } from '../data/agenda';
 import AgendaItem from './AgendaItem';
+import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 
 
 export default function AgendaPreview() {
@@ -55,13 +56,14 @@ const styles = StyleSheet.create({
   agendaContainer: {
     // height: "calc(60vh - 120px)"
     flex: 1,
-    backgroundColor: '#1c2f4a',
+    backgroundColor: azulLogoUndav,
     paddingHorizontal: 10,
     paddingTop: 10,
 
     marginVertical: 0,
     borderBottomRightRadius: 24,
-    elevation: 4
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   agendaTitle: {
     color: '#ffffff',
@@ -81,13 +83,14 @@ const styles = StyleSheet.create({
     height: "100%",
     textAlign: "center",
     alignItems: "center",
-    backgroundColor: "#005BA4",
+    backgroundColor: azulClaro,
     borderRadius: 0,
     borderBottomRightRadius: 16,
-    elevation: 2
+    elevation: 2, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   agendaBtnText: {
-    color: '#ffffff',
+    color: '#fff',
     fontWeight: 'bold',
     fontSize: 15,
     paddingVertical: 8
