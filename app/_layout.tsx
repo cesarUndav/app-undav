@@ -16,7 +16,8 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import HistoryHeader, { PathToTitle } from "@/components/NavigationHistoryHeader";
 import BottomBar from "@/components/BottomBar";
 import BottomBarVisitante from "@/components/BottomBarVisitante";
-import { visitante, setVisitante, ObtenerDatosUsuarioConToken } from "@/data/DatosUsuarioGuarani";
+import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from "@/data/DatosUsuarioGuarani";
+import { azulMedioUndav } from "@/constants/Colors";
 
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
@@ -38,7 +39,7 @@ export default function Layout() {
   useEffect(() => {
     const prepararApp = async () => {
       if (Platform.OS === "android") {
-        await setBackgroundColorAsync("#173c68");
+        await setBackgroundColorAsync(azulMedioUndav);
       }
 
       // Verificar sesión
@@ -48,7 +49,7 @@ export default function Layout() {
 
         if (token && personaIdStr) {
           const personaId = parseInt(personaIdStr, 10);
-          await ObtenerDatosUsuarioConToken(personaId, token);
+          await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
 
           if (pathName === '/' || pathName.startsWith('/login')) {
@@ -85,22 +86,25 @@ export default function Layout() {
 
   const usandoStackNavigator: boolean = false;
 
-  if (usandoStackNavigator) {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
-        <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
-        <Stack screenOptions={{ animation: Platform.OS === "android" ? "none" : "default" }}>
-          <Slot />
-        </Stack>
-      </SafeAreaView>
-    );
-  } else {
+  if (!usandoStackNavigator)
+  {
     return (
       <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
         {showHeader && <HistoryHeader title={headerHistoryTitle} />}
         <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
         <Slot />
         {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)}
+      </SafeAreaView>
+    );
+  }
+  else
+  {
+    return (
+      <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
+        <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
+        <Stack screenOptions={{ animation: Platform.OS === "android" ? "none" : "default" }}>
+          <Slot />
+        </Stack>
       </SafeAreaView>
     );
   }

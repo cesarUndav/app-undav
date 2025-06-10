@@ -51,7 +51,8 @@ export default function ListaItem({
 const styles = StyleSheet.create({
   itemContainer: {
     borderBottomRightRadius: 16,
-    elevation: 4,
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   title: {
     fontWeight: 'bold',

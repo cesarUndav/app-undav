@@ -5,20 +5,18 @@
 # @hostname = localhost/api/appundav
 @hostname = "172.16.1.43/api/appundav"
 
-### ESTUDIANTE DE PRUEBA
+### ESTUDIANTES DE PRUEBA
 
 # @USUARIO = "0-23156651"
 # @PASSWORD = "Desarrollo2025+"
+# @PERSONA_ID = 6451
 
 @USUARIO = "43877860"
 @PASSWORD = "abc123"
-
-
-### TOKEN Y PERSONA_ID
-# @PERSONA_ID = 6451
 @PERSONA_ID = 57481
-@TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Mzg3Nzg2MCIsImlhdCI6MTc0ODk3MjMwMSwiZXhwIjoxNzQ4OTc1OTAxfQ.2Y9ivKm7W3m0f84M-6uF_7I7hBDnbynbCjtXbE3ynFo
-#####################################################################
+
+@TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Mzg3Nzg2MCIsImlhdCI6MTc0OTEzODIwNywiZXhwIjoxNzQ5MTQxODA3fQ.VJroEmw9ieQrUdZ2SgOYlasSy0bIGFSjoqiiD6HEU0U
+
 ###
 ### OBTIENE TOKEN (login)
 ###
@@ -32,12 +30,6 @@ Content-Type: application/json
 
 #####################################################################
 ### PERSONA 
-#####################################################################
-### ENVIA MAIL AL ESTUDIANTE/PERSONA (PREVIO DEFINIR TOKEN)
-###
-GET http://172.16.1.43/api/appundav/persona/{{PERSONA_ID}}/sendmail HTTP/1.1
-Content-Type: application/json
-Authorization: Bearer {{TOKEN}}
 
 ###
 ### SHOW PERSONA
@@ -108,5 +100,12 @@ Authorization: Bearer {{TOKEN}}
 ### DELETE logico - actualiza fecha de borrado. deleted_at
 ###
 DELETE http://172.16.1.43/api/appundav/anotaciones/{{PERSONA_ID}}/6 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
+#####################################################################
+### ENVIA MAIL AL ESTUDIANTE/PERSONA (PREVIO DEFINIR TOKEN)
+###
+GET http://172.16.1.43/api/appundav/persona/{{PERSONA_ID}}/sendmail HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

@@ -7,14 +7,16 @@ import CustomText from '../components/CustomText';
 import ListaItem from '@/components/ListaItem';
 import BotonTextoLink from '@/components/BotonTextoLink';
 import BarraSemanal from './BarraSemanal';
+import FondoGradiente from '@/components/FondoGradiente';
 
 import {
   JsonStringAObjeto,
   ObtenerJsonString,
   UrlObtenerAgenda,
-  infoBaseUsuarioActual
-} from '@/data/DatosUsuarioGuarani';
-import FondoGradiente from '@/components/FondoGradiente';
+} from '@/data/DatosUsuarioGuarani Backup'
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import LoadingWrapper from '@/components/LoadingWrapper';
+import { negroAzulado } from '@/constants/Colors';
 
 export type Actividad = {
   id: number;
@@ -54,13 +56,18 @@ export default function Calendario() {
     const fetchAgenda = async () => {
       setLoading(true);
 
+      const personaIdStr = await AsyncStorage.getItem("idPersona");
+      if (!personaIdStr) return;
+
       try {
         const fechaInicioSemana = fechaSumarDias(-numDiaHoy);
         const semana: Actividad[][] = [];
 
         for (let i = 0; i < 7; i++) {
           const fecha = fechaSumarDias(i, fechaInicioSemana);
-          const url = UrlObtenerAgenda(infoBaseUsuarioActual.idPersona, DateToISOStringNoTime(fecha));
+          
+          //const url = UrlObtenerAgenda(infoBaseUsuarioActual.idPersona, DateToISOStringNoTime(fecha));
+          const url = UrlObtenerAgenda(personaIdStr, DateToISOStringNoTime(fecha));
           const json = JsonStringAObjeto(await ObtenerJsonString(url));
 
           const actividades: Actividad[] = (json.error ? [] : json.map((elem: any, index: number) => ({
@@ -110,9 +117,7 @@ export default function Calendario() {
 
   return (
     <FondoGradiente>
-      { loading ? (
-        <CustomText style={styles.title}>Cargando...</CustomText>
-      ) : (
+      <LoadingWrapper loading={loading}>
         <ScrollView contentContainerStyle={styles.container}>
           <BarraSemanal
             actividadesPorDia={listaCantidadActividadesSemanal ?? [0, 0, 0, 0, 0, 0, 0]}
@@ -137,7 +142,7 @@ export default function Calendario() {
             <ListaItem key={evento.id} title={evento.title} subtitle={evento.body} />
           ))}
         </ScrollView>
-      )}
+      </LoadingWrapper>
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <BotonTextoLink label="Calendario Académico" url="https://undav.edu.ar/index.php?idcateg=129" />
@@ -154,7 +159,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: '#0b254a',
+    color: negroAzulado,
     marginHorizontal: 10,
     textAlign: 'center',
     flex: 1,

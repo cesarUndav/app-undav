@@ -1,69 +1,63 @@
 import React from "react";
-import { View, Image, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Image, TouchableOpacity, StyleSheet, Button } from "react-native";
 import { useRouter } from "expo-router";
 import CustomText from "@/components/CustomText";
-import FondoImagenTinte from "@/components/FondoImagenTinte";
-
-//import imagenFondo from '../assets/images/sedes/espana.png';
-//const imagenFondo = 'assets/images/sedes/espana.png';
+import FondoGradiente from "@/components/FondoGradiente";
+import NavigationHeader from "@/components/NavigationHeader";
+import { azulClaro } from "@/constants/Colors";
 
 export default function HomeScreen()
 {
   const router = useRouter();
   return (
-    <FondoImagenTinte tinte={'rgba(200, 200, 200, 0.7)'}
-      imagen={'https://infocielo.com/wp-content/uploads/2024/11/undav-1jpg-4.jpg'}>
-      
-      <Image
-        source={require("@/assets/images/logoundav.png")}
-        style={styles.logo}
-        resizeMode="contain"
-      />
+    <View style={{flex:1}}>
+      <NavigationHeader title="" hideBackButton onBackPress={() => router.replace("/")} />
+        <FondoGradiente style={styles.container}>
 
-      <View style={styles.buttonsContainer}>
-        <TouchableOpacity style={styles.estudianteBtn} onPress={() => router.push("../loginAutenticado")}>
-          <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
-        </TouchableOpacity>
+          <View style={{flex: 1, justifyContent:"flex-end"}}>
+            <Image
+              source={require("../assets/icons/undav.png")}
+              style={styles.logo}
+            />
+          </View>
 
-        <TouchableOpacity style={styles.visitanteBtn} onPress={() => router.push("../home-visitante")}>
-          <CustomText weight="bold" style={styles.buttonText}>SOY VISITANTE</CustomText>
-        </TouchableOpacity>
-      </View>
-    </FondoImagenTinte>
+          <View style={{gap: 10, flex: 1, justifyContent:"flex-start"}}>
+            <TouchableOpacity style={[styles.button, {backgroundColor: "#1D3557"}]} onPress={() => router.push("../loginAutenticado")}>
+              <CustomText weight="bold" style={styles.buttonText}>SOY ESTUDIANTE</CustomText>
+            </TouchableOpacity>
+
+            <TouchableOpacity style={[styles.button, {backgroundColor: azulClaro}]} onPress={() => router.push("../home-visitante")}>
+              <CustomText weight="bold" style={styles.buttonText}>SOY VISITANTE</CustomText>
+            </TouchableOpacity>
+          </View>         
+
+        </FondoGradiente>
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-
+  container: {
+    flex: 1,
+    justifyContent: "center",
+    alignItems: "center",
+  },
   logo: {
     width: 200,
     height: 200,
     resizeMode: "contain",
-    marginBottom: 40,
-    marginTop: -50
+    marginBottom: 32
   },
-  buttonsContainer: {
-    gap: 12,
-  },
-  estudianteBtn: {
-    backgroundColor: "#1D3557",
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 0,
+  button: {
+    paddingVertical: 12,
+    paddingHorizontal: 0,
     borderBottomRightRadius: 12,
-    alignItems: "center",
-  },
-  visitanteBtn: {
-    backgroundColor: "#005BA4",
-    paddingVertical: 14,
-    paddingHorizontal: 40,
-    borderRadius: 0,
-    borderBottomRightRadius: 12,
+    width: 240,
     alignItems: "center",
   },
   buttonText: {
-    color: "white",
-    fontSize: 16,
-    letterSpacing: 1,
-  },
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+  }
 });

@@ -3,6 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Linking, ScrollView, SafeAre
 import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+import { azulLogoUndav } from '@/constants/Colors';
 
 
 
@@ -77,14 +78,15 @@ const styles = StyleSheet.create({
     paddingHorizontal: 15,
     paddingVertical: 10,
     gap: 15
-    //backgroundColor: "#1c2f4a"
-    //color = '#173c68',
+    //backgroundColor: azulLogoUndav
+    //color = azulMedioUndav,
   },
   card: {
-    backgroundColor: '#1c2f4a',
+    backgroundColor: azulLogoUndav,
     borderBottomRightRadius: 30,
     overflow: 'hidden',
-    elevation: 6
+    elevation: 6, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   image: {
     width: '100%',
@@ -99,7 +101,7 @@ const styles = StyleSheet.create({
     fontSize: 16,
     fontWeight: 'bold',
     marginBottom: 6,
-    color: "#fff" //'#0b254a',
+    color: "#fff" //negroAzulado,
   },
   text: {
     fontSize: 16,

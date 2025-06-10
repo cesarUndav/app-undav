@@ -10,135 +10,125 @@ import {
 } from "react-native";
 
 import { useRouter } from "expo-router";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import CustomText from "@/components/CustomText";
 import OcultadorTeclado from "@/components/OcultadorTeclado";
 import NavigationHeader from "@/components/NavigationHeader";
 import FondoGradiente from "@/components/FondoGradiente";
+import { Ionicons } from '@expo/vector-icons';
 
 import {
-  validarPersonaYTraerData,
-  setVisitante,
-  ObtenerDatosUsuarioConToken,
-  infoBaseUsuarioActual,
+  ObtenerDatosBaseUsuarioConToken,
+  validarPersona,
 } from "@/data/DatosUsuarioGuarani";
+import { azulLogoUndav } from "@/constants/Colors";
 
 export default function LoginScreen() {
+
   const router = useRouter();
   const [esperandoRespuesta, setEsperandoRespuesta] = useState(false);
-  const [documentoLogin, setDocumentoLogin] = useState("");
-  const [contrasena, setContrasena] = useState("");
+  const [documentoIngresado, setDocumentoIngresado] = useState("");
+  const [contrasenaIngresada, setContrasenaIngresada] = useState("");
+  const [contrasenaVisible, setContrasenaVisible] = useState(false);
 
   const botonDesactivado = (): boolean => {
     return (
       esperandoRespuesta ||
-      documentoLogin.trim().length === 0 ||
-      contrasena.trim().length === 0
+      documentoIngresado.trim().length === 0 ||
+      contrasenaIngresada.trim().length === 0
     );
   };
 
-  const guardarSesion = async (token: string, personaId: number) => {
-    try {
-      await AsyncStorage.setItem("token", token);
-      await AsyncStorage.setItem("idPersona", personaId.toString());
-    } catch (err) {
-      console.error("Error guardando sesión:", err);
+  // OPCION 1: INTENTAR SIN CERO; LUEGO CON CERO.
+  // OPCION 2: teclado alfanumerico hasta que se ingresa "-", luego es solo numerico
+  // OPCION 3: boton "0-"
+
+  const botonIngresar = async () => {
+    setEsperandoRespuesta(true);
+    
+    try
+    {
+      const {token, idPersona} = await validarPersona(documentoIngresado, contrasenaIngresada);
+      router.replace("/home-estudiante");
+    }
+    catch (error: any) {
+      console.error("Error login:", error);
+      //Alert.alert("Error", error.message || "Error al iniciar sesión");
+      Alert.alert("Error al iniciar sesión", "Asegurate de ingresar el formato correcto de tu usuario. Este puede ser:\n\"0-DNI\" o \"DNI\".");
+    } finally {
+      setEsperandoRespuesta(false);
     }
   };
 
-const botonIngresar = async () => {
-  setEsperandoRespuesta(true);
-  try {
-    console.log("Intentando login con", documentoLogin, contrasena);
-    const { token, idPersona } = await validarPersonaYTraerData(documentoLogin, contrasena);
-    console.log("Login exitoso, token y personaId recibidos", token, idPersona);
-
-    await guardarSesion(token, idPersona);
-
-    await ObtenerDatosUsuarioConToken(idPersona, token);
-    console.log("Datos usuario cargados:", infoBaseUsuarioActual.idPersona);
-
-    setVisitante(false);
-    router.replace("/home-estudiante");
-  } catch (error: any) {
-    console.error("Error login:", error);
-    Alert.alert("Error", error.message || "Error al iniciar sesión");
-  } finally {
-    setEsperandoRespuesta(false);
-  }
-};
-
   return (
-    <>
+  <OcultadorTeclado>
+    <View style={{flex:1}}>
       <NavigationHeader title="Iniciar Sesión" onBackPress={() => router.replace("/")} />
-      <OcultadorTeclado>
         <FondoGradiente style={styles.container}>
-          <Image
-            source={require("../assets/icons/undav.png")}
-            style={styles.logo}
-          />
 
-          <View style={styles.inputGroup}>
+          <View style={{flex: 1, justifyContent:"flex-end"}}>
+            <Image
+              source={require("../assets/icons/undav.png")}
+              style={styles.logo}
+            />
+          </View>
+          
+          <View style={{gap: 10, flex: 1, justifyContent:"flex-start"}}>
             <TextInput
+              id="usuario"
               style={styles.inlineInputField}
-              value={documentoLogin}
+              value={documentoIngresado}
               placeholder="DNI"
-              onChangeText={setDocumentoLogin}
+              onChangeText={setDocumentoIngresado}
+              //keyboardType={documentoIngresado.length < 2 ? "default" : "numeric"}
               keyboardType="numeric"
               autoCapitalize="none"
               autoComplete="off"
               editable={!esperandoRespuesta}
             />
+
+            <View>
+              <TextInput
+                id="contraseña"
+                style={[styles.inlineInputField, {paddingRight: 48}]}
+                value={contrasenaIngresada}
+                placeholder="Contraseña"
+                onChangeText={setContrasenaIngresada}
+                secureTextEntry={!contrasenaVisible}
+                autoCapitalize="none"
+                autoComplete="off"
+                editable={!esperandoRespuesta}/>
+              <TouchableOpacity onPress={() => setContrasenaVisible(prev => !prev)} style={styles.eyeIcon}>
+                <Ionicons name={contrasenaVisible ? 'eye' : 'eye-off'} size={24} color="gray"/>
+              </TouchableOpacity>
+            </View>
+
+            <TouchableOpacity
+              onPress={botonIngresar}
+              disabled={botonDesactivado()}
+              style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : azulLogoUndav, marginTop: 6}]}>
+              <CustomText weight="bold" style={styles.buttonText}>
+                {esperandoRespuesta ? "CARGANDO..." : "INGRESAR"}
+              </CustomText>
+            </TouchableOpacity>
+
+            <TouchableOpacity
+              onPress={() => Linking.openURL("https://academica.undav.edu.ar/g3w/acceso/recuperar")}
+              disabled={esperandoRespuesta}>
+              <CustomText style={styles.forgotPassword}>
+                Olvidé mi contraseña
+              </CustomText>
+            </TouchableOpacity>
           </View>
 
-          <View style={styles.inputGroup}>
-            <TextInput
-              style={styles.inlineInputField}
-              value={contrasena}
-              placeholder="Contraseña"
-              onChangeText={setContrasena}
-              secureTextEntry
-              autoCapitalize="none"
-              autoComplete="off"
-              editable={!esperandoRespuesta}
-            />
-          </View>
-
-          <TouchableOpacity
-            onPress={botonIngresar}
-            disabled={botonDesactivado()}
-            style={[
-              styles.button,
-              { backgroundColor: botonDesactivado() ? "gray" : "#1c2f4a" },
-            ]}
-          >
-            <CustomText weight="bold" style={styles.buttonText}>
-              {esperandoRespuesta ? "CARGANDO..." : "INGRESAR"}
-            </CustomText>
-          </TouchableOpacity>
-
-          <TouchableOpacity
-            onPress={() =>
-              Linking.openURL(
-                "https://academica.undav.edu.ar/g3w/acceso/recuperar"
-              )
-            }
-            disabled={esperandoRespuesta}
-          >
-            <CustomText style={styles.forgotPassword}>
-              Olvidé mi contraseña
-            </CustomText>
-          </TouchableOpacity>
         </FondoGradiente>
-      </OcultadorTeclado>
-    </>
+    </View>
+  </OcultadorTeclado>
   );
 }
 
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 24,
     justifyContent: "center",
     alignItems: "center",
   },
@@ -146,28 +136,19 @@ const styles = StyleSheet.create({
     width: 200,
     height: 200,
     resizeMode: "contain",
-    marginBottom: 40,
-    marginTop: 22,
-  },
-  inputGroup: {
-    flexDirection: "row",
-    alignItems: "center",
-    width: 240,
-    marginBottom: 12,
+    marginBottom: 32
   },
   inlineInputField: {
-    flex: 1,
-    padding: 12,
+    width: 240,
     backgroundColor: "#fff",
     borderBottomRightRadius: 12,
     fontSize: 18,
-    width: 240,
+    padding: 10
   },
   button: {
     paddingVertical: 12,
     paddingHorizontal: 32,
     borderBottomRightRadius: 12,
-    marginTop: 28,
     width: 240,
     alignItems: "center",
   },
@@ -179,7 +160,16 @@ const styles = StyleSheet.create({
   forgotPassword: {
     color: "#1a2b50",
     fontSize: 17,
-    marginTop: 16,
-    textDecorationLine: "underline",
+    alignSelf: "center"
+    //textDecorationLine: "underline",
   },
+  eyeIcon: {
+    position: 'absolute',
+    right: 4,
+    top: '50%',
+    transform: [{ translateY: -23 }],
+    zIndex: 1,
+    padding: 10,
+    //backgroundColor: "red"
+  }
 });

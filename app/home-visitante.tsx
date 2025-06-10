@@ -14,6 +14,7 @@ import SedesIcon from '../assets/icons/sedes.svg';
 
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
+import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 
 const iconSize = 44;
 const iconColor = "#fff";
@@ -123,9 +124,10 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 10,
     borderBottomRightRadius: 24,
-    backgroundColor: '#1c2f4a',
+    backgroundColor: azulLogoUndav,
     //marginVertical: 12,
-    elevation: 4
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   buttonsRow: {
     flex: 1,
@@ -141,8 +143,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     borderBottomRightRadius: 20,
     //backgroundColor: 'white'
-    //backgroundColor: #005BA4'#1c2f4a'
-    backgroundColor:"#005BA4"
+    backgroundColor: azulClaro
   },
   buttonText: {
     textAlign: 'center',

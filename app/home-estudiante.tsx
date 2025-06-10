@@ -13,10 +13,14 @@ import ReportesIcon from '../assets/icons/reportes.svg';
 import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '../data/DatosUsuarioGuarani';
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
+import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 
 export default function HomeEstudiante() {
 
   const router = useRouter();
+
+  const nombreLegajo:string = !UsuarioEsAutenticado() ? "Nombre Nombre Apellido\nLegajo: 12345" 
+  : infoBaseUsuarioActual.nombreCompleto+"\nLegajo: "+infoBaseUsuarioActual.legajo;
 
   return (
     <FondoGradiente style={styles.containerGradient}>
@@ -24,8 +28,9 @@ export default function HomeEstudiante() {
       <View style={styles.header}>
         <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
         <View style={styles.userInfo}>
-          <CustomText style={styles.userText}>{"Bienvenido de vuelta,\n" + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido")}</CustomText>
-          <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{"ID: " + (UsuarioEsAutenticado() ? infoBaseUsuarioActual.idPersona : "12345")}</CustomText>
+          <CustomText style={styles.userText}>{nombreLegajo}</CustomText>
+          {/* <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{}</CustomText> */}
+          <CustomText style={styles.userText}>{(UsuarioEsAutenticado() ? infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length-1].nombre : "Nombre de Propuesta")}</CustomText>
         </View>
         <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
       </View>
@@ -88,7 +93,7 @@ export default function HomeEstudiante() {
 
 const iconSize = 44;
 const iconColor = "#fff";
-const iconBgColor = "#005BA4";
+const iconBgColor = azulClaro;
 
 const styles = StyleSheet.create({
   containerGradient: {
@@ -136,8 +141,9 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 10,
     borderBottomRightRadius: 24,
-    backgroundColor: '#1c2f4a',
-    elevation: 4
+    backgroundColor: azulLogoUndav,
+    elevation: 4, // Android sombra
+    shadowColor: '#000' // IOS sombra
   },
   buttonsRow: {
     flex: 1,

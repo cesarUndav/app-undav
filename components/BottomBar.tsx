@@ -9,6 +9,7 @@ import CommunityIcon from '../assets/icons/community.svg';
 import LinksIcon from '../assets/icons/links.svg';
 import SettingsIcon from '../assets/icons/settings.svg';
 import { useRouter, usePathname } from 'expo-router';
+import { azulMedioUndav } from '@/constants/Colors';
 
 const routes = [
   "/home-estudiante",
@@ -55,7 +56,7 @@ const iconSize = 30;
 const styles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#173c68',
+    backgroundColor: azulMedioUndav,
     justifyContent: 'space-around'
   },
   btn: {
@@ -67,6 +68,5 @@ const styles = StyleSheet.create({
     //flex: 1,
   },
   icon: {
-    
   },
 });
