@@ -9,6 +9,7 @@ import AgendaItemEditable from '@/components/AgendaItemEditable';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import { azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -167,8 +168,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
     borderRadius: 0,
     borderBottomRightRadius: 16,
-    elevation: 2, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(2)
     //marginHorizontal: 10
   },
   agregarBtnText: {
@@ -234,8 +234,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignItems: "center",
     borderBottomRightRadius: 16,
-    elevation: 2, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(2)
     //marginHorizontal: 10
   },
   modalBtnText: {

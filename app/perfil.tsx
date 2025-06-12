@@ -10,6 +10,7 @@ import {
   UsuarioEsAutenticado,
   infoBaseUsuarioActual
 } from "@/data/DatosUsuarioGuarani";
+import { getShadowStyle } from "@/constants/ShadowStyle";
 
 // Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -31,17 +32,17 @@ export default function Configuracion() {
   const handleLogout = () => {
     Alert.alert(
       "Cerrar sesión",
-      "¿Estás seguro de que querés cerrar sesión?",
+      "¿Estás seguro de que querés\ncerrar sesión?",
       [
-        { text: "Cancelar", style: "cancel" },
         {
-          text: "Sí, cerrar sesión",
+          text: "Sí",
           style: "destructive",
           onPress: () => {
             Logout();
             router.replace("/"); // redirige a index.tsx
           }
-        }
+        },
+        { text: "No", style: "cancel" }
       ]
     );
   };
@@ -59,54 +60,19 @@ export default function Configuracion() {
     {
       data: [
         {
-          type: "toggle",
-          label: "Recibir notificaciones",
-          value: notifsOn,
-          onValueChange: (val) => setNotifsOn(val),
-        },
-        {
-          type: "toggle",
-          label: "DEV - Fondo celeste",
-          value: fondoCeleste,
-          onValueChange: (val) => {
-            setFondoCeleste(val);
-            setColorFondoCeleste(val);
-          },
-        },
-        { type: "separator" }
-      ]
-    },
-    {
-      data: [
-        {
           type: "link",
           label: "Historia Académica",
           onPress: () => router.push("/historia-academica"),
         },
         {
           type: "link",
-          label: "Bienestar",
-          onPress: () => router.push("/bienestar"),
+          label: "Ajustes",
+          onPress: () => router.push("/ajustes"),
         },
         {
           type: "link",
-          label: "Contacto",
-          onPress: () => router.push("/contacto"),
-        },
-        {
-          type: "link",
-          label: "Preguntas frecuentes",
-          onPress: () => router.push("/preguntas-frecuentes"),
-        },
-        {
-          type: "link",
-          label: "Sedes",
-          onPress: () => router.push("/sedes"),
-        },
-        {
-          type: "link",
-          label: "Envianos tus sugerencias",
-          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
+          label: "Extras",
+          onPress: () => router.push("/extras"),
         },
         { type: "separator" }
       ]
@@ -174,7 +140,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     backgroundColor: "#fff",
-    elevation: 6
+    ...getShadowStyle(6)
   },
   list: {},
   item: {

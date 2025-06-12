@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, Linking } from 'react-native';
+import { View, StyleSheet, Image, Linking, TouchableOpacity } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
@@ -14,6 +14,7 @@ import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '../data/DatosUsuari
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 import { azulClaro, azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 export default function HomeEstudiante() {
 
@@ -32,7 +33,9 @@ export default function HomeEstudiante() {
           {/* <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{}</CustomText> */}
           <CustomText style={styles.userText}>{(UsuarioEsAutenticado() ? infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length-1].nombre : "Nombre de Propuesta")}</CustomText>
         </View>
-        <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
+        <TouchableOpacity onPress={() => router.push("/extras")}>
+          <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
+        </TouchableOpacity>
       </View>
         
       <AgendaPreview />
@@ -142,8 +145,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomRightRadius: 24,
     backgroundColor: azulLogoUndav,
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(4)
   },
   buttonsRow: {
     flex: 1,

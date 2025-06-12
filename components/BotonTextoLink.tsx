@@ -2,6 +2,7 @@ import React from 'react';
 import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle } from 'react-native';
 import CustomText from './CustomText';
 import { azulMedioUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 type BotonTextoProps = {
   label: string;
@@ -51,8 +52,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     paddingHorizontal: 20,
     justifyContent: 'center',
-    elevation: 6, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle( 6)
   },
   texto: {
     fontWeight: 'bold',

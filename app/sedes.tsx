@@ -4,6 +4,7 @@ import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import { azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 
 
@@ -85,8 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: azulLogoUndav,
     borderBottomRightRadius: 30,
     overflow: 'hidden',
-    elevation: 6, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(6)
   },
   image: {
     width: '100%',

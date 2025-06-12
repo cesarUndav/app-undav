@@ -51,19 +51,34 @@ export default function Configuracion() {
     {
       data: [
         {
-          type: "toggle",
-          label: "Recibir notificaciones",
-          value: notifsOn,
-          onValueChange: (val) => setNotifsOn(val),
+          type: "link",
+          label: "Comunidad",
+          onPress: () => router.push("/comunidad"),
         },
         {
-          type: "toggle",
-          label: "DEV - Fondo celeste",
-          value: fondoCeleste,
-          onValueChange: (val) => {
-            setFondoCeleste(val);
-            setColorFondoCeleste(val);
-          },
+          type: "link",
+          label: "Bienestar",
+          onPress: () => router.push("/bienestar"),
+        },
+        {
+          type: "link",
+          label: "Contacto",
+          onPress: () => router.push("/contacto"),
+        },
+        {
+          type: "link",
+          label: "Preguntas frecuentes",
+          onPress: () => router.push("/preguntas-frecuentes"),
+        },
+        {
+          type: "link",
+          label: "Sedes",
+          onPress: () => router.push("/sedes"),
+        },
+        {
+          type: "link",
+          label: "Envianos tus sugerencias",
+          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
         }
       ]
     }

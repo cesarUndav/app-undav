@@ -1,5 +1,3 @@
-// app/_layout.tsx
-
 import { Slot, Stack, usePathname, useRouter } from "expo-router";
 import { useEffect, useState } from "react";
 import React from "react";

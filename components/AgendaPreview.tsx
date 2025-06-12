@@ -1,10 +1,11 @@
 import React, { useCallback, useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { listaCompleta, EventoAgenda } from '../data/agenda';
 import AgendaItem from './AgendaItem';
 import { azulClaro, azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 
 export default function AgendaPreview() {
@@ -25,16 +26,18 @@ export default function AgendaPreview() {
     <View style={styles.agendaContainer}>
       <CustomText style ={styles.agendaTitle}>AGENDA</CustomText>
       
-      <ScrollView contentContainerStyle={styles.listaScrollContainer}>
-        {listaEventos.map((evento) => (
-          <AgendaItem key={evento.id} evento={evento} />
-        ))}
-      </ScrollView>
+        {/* <TouchableWithoutFeedback onPress={() => router.push('/agenda')}> */}
+          <ScrollView contentContainerStyle={styles.listaScrollContainer}>
+          {listaEventos.map((evento) => (
+            <AgendaItem key={evento.id} evento={evento} />
+          ))}
+          </ScrollView>
+        {/* </TouchableWithoutFeedback> */}
 
       <View style={styles.agendaBtnContainer}>
       
       {/*Boton invisible, para que el flex quede bien*/}
-
+       
       <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 3.3}]}>
         <CustomText style={styles.agendaBtnText}>DETALLES</CustomText>
       </TouchableOpacity>
@@ -62,8 +65,7 @@ const styles = StyleSheet.create({
 
     marginVertical: 0,
     borderBottomRightRadius: 24,
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(4)
   },
   agendaTitle: {
     color: '#ffffff',
@@ -86,8 +88,7 @@ const styles = StyleSheet.create({
     backgroundColor: azulClaro,
     borderRadius: 0,
     borderBottomRightRadius: 16,
-    elevation: 2, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle( 2)
   },
   agendaBtnText: {
     color: '#fff',

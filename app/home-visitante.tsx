@@ -15,6 +15,7 @@ import SedesIcon from '../assets/icons/sedes.svg';
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 import { azulClaro, azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 const iconSize = 44;
 const iconColor = "#fff";
@@ -126,8 +127,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 24,
     backgroundColor: azulLogoUndav,
     //marginVertical: 12,
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(4)
   },
   buttonsRow: {
     flex: 1,

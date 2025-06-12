@@ -3,6 +3,7 @@ import { View, StyleSheet, TextStyle } from 'react-native';
 import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaTituloColor } from '../data/agenda';
 import { eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 type AgendaItemProps = {
   evento: EventoAgenda;
@@ -27,8 +28,7 @@ export const AgendaItemStyles = StyleSheet.create({
     paddingVertical: 6,
     paddingHorizontal: 10,
     borderBottomRightRadius: 16,
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(4)
   },
   eventTitle: {
     fontSize: 16,
