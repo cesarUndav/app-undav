@@ -21,6 +21,8 @@ import {
   validarPersona,
 } from "@/data/DatosUsuarioGuarani";
 import { azulLogoUndav } from "@/constants/Colors";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { setNotificationCount } from "@/data/notificaciones";
 
 export default function LoginScreen() {
 
@@ -48,6 +50,9 @@ export default function LoginScreen() {
     try
     {
       const {token, idPersona} = await validarPersona(documentoIngresado, contrasenaIngresada);
+      await AsyncStorage.setItem("username", documentoIngresado.toString());
+      await AsyncStorage.setItem("password", contrasenaIngresada.toString());
+      setNotificationCount(3);
       router.replace("/home-estudiante");
     }
     catch (error: any) {
@@ -80,7 +85,7 @@ export default function LoginScreen() {
               placeholder="DNI"
               onChangeText={setDocumentoIngresado}
               //keyboardType={documentoIngresado.length < 2 ? "default" : "numeric"}
-              keyboardType="numeric"
+              keyboardType="default"
               autoCapitalize="none"
               autoComplete="off"
               editable={!esperandoRespuesta}

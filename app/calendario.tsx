@@ -145,7 +145,7 @@ export default function Calendario() {
       </LoadingWrapper>
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <BotonTextoLink label="Calendario Académico" url="https://undav.edu.ar/index.php?idcateg=129" />
+        <BotonTextoLink label="Calendario Académico" openInsideApp url="https://undav.edu.ar/index.php?idcateg=129" />
       </View>
     </FondoGradiente>
   );

@@ -96,35 +96,37 @@ export default function EventosPersonalizados() {
                 onChangeText={setTitulo}
               />
 
-              <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={styles.dateButton}>
-                <CustomText>Inicio: {fechaInicio.toLocaleDateString()}</CustomText>
-              </TouchableOpacity>
-              {showInicioPicker && (
-                <DateTimePicker
-                  value={fechaInicio}
-                  mode="date"
-                  display="default"
-                  onChange={(_, date) => {
-                    if (date) setFechaInicio(date);
-                    setShowInicioPicker(Platform.OS === 'ios');
-                  }}
-                />
-              )}
+              <View style={{flexDirection:"row", gap: 10}}>
+                <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={styles.dateButton}>
+                  <CustomText>{"Inicio: "+fechaInicio.toLocaleDateString()}</CustomText>
+                </TouchableOpacity>
+                {showInicioPicker && (
+                  <DateTimePicker
+                    value={fechaInicio}
+                    mode="date"
+                    display="default"
+                    onChange={(_, date) => {
+                      if (date) {setFechaInicio(date); }
+                      setShowInicioPicker(Platform.OS === 'ios');
+                    }}
+                  />
+                )}
 
-              <TouchableOpacity onPress={() => setShowFinPicker(true)} style={styles.dateButton}>
-                <CustomText>Fin: {fechaFin.toLocaleDateString()}</CustomText>
-              </TouchableOpacity>
-              {showFinPicker && (
-                <DateTimePicker
-                  value={fechaFin}
-                  mode="date"
-                  display="default"
-                  onChange={(_, date) => {
-                    if (date) setFechaFin(date);
-                    setShowFinPicker(Platform.OS === 'ios');
-                  }}
-                />
-              )}
+                <TouchableOpacity onPress={() => setShowFinPicker(true)} style={styles.dateButton}>
+                  <CustomText>{"Fin: "+fechaFin.toLocaleDateString()}</CustomText>
+                </TouchableOpacity>
+                {showFinPicker && (
+                  <DateTimePicker
+                    value={fechaFin}
+                    mode="date"
+                    display="default"
+                    onChange={(_, date) => {
+                      if (date) setFechaFin(date);
+                      setShowFinPicker(Platform.OS === 'ios');
+                    }}
+                  />
+                )}
+              </View>
               <View style={[{gap: 10}]}>
                 <TouchableOpacity onPress={confirmarAgregarEvento}
                   disabled={titulo.trim().length === 0}
@@ -226,6 +228,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     marginBottom: 10,
     borderRadius: 6,
+    flex: 1
   },
     modalBtn: {
     backgroundColor: "gray",

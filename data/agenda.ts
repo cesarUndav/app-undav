@@ -8,7 +8,6 @@ export type EventoAgenda = {
   fechaInicio: Date;
   fechaFin: Date;
   esFeriado?: Boolean;
-  color?: string;
 };
 
 // vars dev

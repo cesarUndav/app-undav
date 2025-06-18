@@ -42,7 +42,8 @@
     "react-native-collapsible": "^1.6.2",
     "react-native-svg": "^15.11.2",
     "react-native-svg-transformer": "^1.5.1",
-    "react-native-web": "^0.20.0"
+    "react-native-web": "^0.20.0",
+    "react-native-webview": "^13.15.0"
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",

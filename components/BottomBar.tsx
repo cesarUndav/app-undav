@@ -2,7 +2,9 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
-import { azulMedioUndav } from '@/constants/Colors';
+import { azulMedioUndav, celesteSIU } from '@/constants/Colors';
+import CustomText from './CustomText';
+import { getNotificationCount } from '@/data/notificaciones';
 
 const routes = [
   "/home-estudiante",
@@ -39,17 +41,31 @@ export default function BottomBar() {
   ];
 
   return (
-    <View style={styles.container}>
+    <View style={bottomBarStyles.container}>
       {buttons.map(({ route, Icon, IconName }) => {
         const disabled = pathname === route;
+        const iconColor = disabled ? colorSeleccionado : "#fff";
+        const esIconoNotificaciones: boolean = route == "/notificaciones";
+
         return (
           <TouchableOpacity
             key={route}
-            style={[styles.btn, disabled && { opacity: opacidadSeleccionado }]}
+            style={[bottomBarStyles.btn, disabled && { opacity: opacidadSeleccionado }]}
             onPress={() => !disabled && router.push(route)}
             disabled={disabled}
           >
-            {Icon ? <Icon width={tamanioIcono} height={tamanioIcono} fill="white" /> : <Ionicons name={IconName!} size={30} color="white" />}
+            {Icon ? 
+            <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />
+            :
+            <Ionicons name={IconName!} size={tamanioIcono-2} color={iconColor} />}
+
+            {esIconoNotificaciones && getNotificationCount() > 0 && (
+              <View style={bottomBarStyles.notificationBubble}>
+                <CustomText style={bottomBarStyles.notificationText}>
+                  {getNotificationCount()}
+                </CustomText>
+              </View>
+            )}
           </TouchableOpacity>
         );
       })}
@@ -57,19 +73,40 @@ export default function BottomBar() {
   );
 }
 
-const tamanioIcono = 32;
-const opacidadSeleccionado = 0.5;
+export const tamanioIcono = 32;
+export const opacidadSeleccionado = 1;
+export const colorSeleccionado = celesteSIU;
 
-const styles = StyleSheet.create({
+export const bottomBarStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: azulMedioUndav,
     justifyContent: 'space-around',
+    height: 56
   },
   btn: {
-    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: 70,
   },
+  notificationBubble: {
+    backgroundColor: "red",
+    position: "absolute",
+    top: 4,
+    right: 10,
+    height: 22,
+    width: 22,
+    borderRadius: "100%",
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
+  },
+  notificationText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "bold",
+    textAlign:"center",
+    textAlignVertical:"center"
+  }
+
 });

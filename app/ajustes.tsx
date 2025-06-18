@@ -1,14 +1,11 @@
 import React, { useState } from "react";
-import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking, Alert } from "react-native";
-import { router } from "expo-router";
+import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Platform } from "react-native";
 import CustomText from "../components/CustomText";
 import FondoGradiente from "@/components/FondoGradiente";
 import {
   fondoEsCeleste,
   Logout,
-  setColorFondoCeleste,
-  UsuarioEsAutenticado,
-  infoBaseUsuarioActual
+  setColorFondoCeleste
 } from "@/data/DatosUsuarioGuarani";
 import { getShadowStyle } from "@/constants/ShadowStyle";
 
@@ -28,24 +25,6 @@ export default function Configuracion() {
 
   const [notifsOn, setNotifsOn] = useState(false);
   const [fondoCeleste, setFondoCeleste] = useState(fondoEsCeleste);
-
-  const handleLogout = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que querés cerrar sesión?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Sí, cerrar sesión",
-          style: "destructive",
-          onPress: () => {
-            Logout();
-            router.replace("/"); // redirige a index.tsx
-          }
-        }
-      ]
-    );
-  };
 
   const sections: ConfigSection[] = [
     {
@@ -85,9 +64,9 @@ export default function Configuracion() {
                 );
               case "toggle":
                 return (
-                  <View style={[styles.item, { marginVertical: -10 }]}>
+                  <View style= {[styles.item, Platform.OS === "ios" ? {marginVertical: 0} : {marginVertical: -10}]}>
                     <CustomText style={styles.textItem}>{item.label}</CustomText>
-                    <Switch value={item.value} onValueChange={item.onValueChange} />
+                    <Switch value={item.value} onValueChange={item.onValueChange}/>
                   </View>
                 );
               case "link":

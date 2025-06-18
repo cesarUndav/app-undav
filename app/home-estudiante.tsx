@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, Linking, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
@@ -9,34 +9,20 @@ import LinksIcon from '../assets/icons/links.svg';
 import InscripcionesIcon from '../assets/icons/inscripciones.svg';
 import ReportesIcon from '../assets/icons/reportes.svg';
 
-
-import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '../data/DatosUsuarioGuarani';
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import UndavEstudianteHeader from '@/components/UndavUsuarioHeader';
 
 export default function HomeEstudiante() {
 
   const router = useRouter();
 
-  const nombreLegajo:string = !UsuarioEsAutenticado() ? "Nombre Nombre Apellido\nLegajo: 12345" 
-  : infoBaseUsuarioActual.nombreCompleto+"\nLegajo: "+infoBaseUsuarioActual.legajo;
-
   return (
     <FondoGradiente style={styles.containerGradient}>
 
-      <View style={styles.header}>
-        <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-        <View style={styles.userInfo}>
-          <CustomText style={styles.userText}>{nombreLegajo}</CustomText>
-          {/* <CustomText style={[styles.userText, {color: '#444', lineHeight:20}]}>{}</CustomText> */}
-          <CustomText style={styles.userText}>{(UsuarioEsAutenticado() ? infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length-1].nombre : "Nombre de Propuesta")}</CustomText>
-        </View>
-        <TouchableOpacity onPress={() => router.push("/extras")}>
-          <Image source={require('../assets/icons/undav.png')} style={styles.profileIcon} />
-        </TouchableOpacity>
-      </View>
+      <UndavEstudianteHeader/>
         
       <AgendaPreview />
 
@@ -73,7 +59,8 @@ export default function HomeEstudiante() {
 
           <BotonIconoTexto
             label={"SIU GUARANÍ"}
-            funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
+            //funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
+            funcionOnPress={() => router.push('/web-SIU-Guarani')}
             Icon={LinksIcon}
             iconSize={iconSize}
             iconColor={iconColor}
@@ -82,7 +69,8 @@ export default function HomeEstudiante() {
 
           <BotonIconoTexto
             label={"CAMPUS\nVIRTUAL"}
-            funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
+            //funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
+            funcionOnPress={() => router.push('/web-Campus-Virtual')}
             Icon={LinksIcon}
             iconSize={iconSize}
             iconColor={iconColor}
@@ -103,41 +91,6 @@ const styles = StyleSheet.create({
     gap: 10,
     paddingHorizontal: 15,
     paddingVertical: 10
-  },
-  header: { //header
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    height: 60,
-    //marginVertical: 10,
-    //backgroundColor: "red"
-  },
-  logoUndav: {
-    height: "100%",
-    aspectRatio: "1 / 1.22",
-    width: "auto",
-    resizeMode: "contain"
-  },
-  userInfo: {
-    //backgroundColor: "green",
-    flexDirection: "column",
-    height: "100%",
-    flex: 1
-  },
-  userText: {
-    lineHeight: 18,
-    fontSize: 14,
-    fontWeight: '600',    
-    textAlign: 'right',
-    paddingRight: 12,
-    alignContent: "flex-end"
-  },
-  profileIcon: {
-    height: "100%",
-    aspectRatio: "1 / 1",
-    width: "auto",
-    tintColor: '#444',
-    borderBottomRightRadius: 12
   },
   buttonsRowParent: { //buttons
     flex: 0.6, // tamaño de botones con respecto a lista

@@ -3,10 +3,14 @@ import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle } from 'rea
 import CustomText from './CustomText';
 import { azulMedioUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import { useRouter } from 'expo-router';
 
 type BotonTextoProps = {
   label: string;
-  url: string;
+  route?: string;
+  url?: string;
+  openInsideApp?: boolean;
+  tryLogin?: boolean;
   color?: string;
   verticalPadding?: number;
   fontSize?: number;
@@ -15,16 +19,31 @@ type BotonTextoProps = {
 
 export default function BotonTextoLink({
   label,
+  route,
   url,
+  openInsideApp = false,
+  tryLogin = false,
   color = azulMedioUndav,
   verticalPadding = 12,
   fontSize = 16,
   fontColor = 'white',
 }: BotonTextoProps) {
   const openLink = () => {
-    Linking.openURL(url).catch(() =>
-      console.warn('No se pudo abrir el enlace:', url)
-    );
+    const router = useRouter();
+
+    if (route) {
+      router.push(route as any);
+      return;
+    }
+    if (url) {
+      if (openInsideApp) {
+        const encodedURL = encodeURIComponent(url);
+        router.push(`/webview/${encodedURL}?tryLogin=${tryLogin}`);
+      }
+      else {
+        Linking.openURL(url).catch(() => console.warn('No se pudo abrir el enlace:', url));
+      }
+    }
   };
 
   const dynamicContainerStyle: ViewStyle = {
