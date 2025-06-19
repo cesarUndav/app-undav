@@ -40,7 +40,8 @@ export default function ListaItem({
     fontWeight: 'bold',
     color: subtitleColor,
     fontSize: fontSize - 1,
-    marginTop: 3,
+    marginTop: 1,
+    paddingBottom: 1
   };
 
   return (

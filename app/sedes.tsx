@@ -53,7 +53,7 @@ export default function Sedes() {
   const router = useRouter();
 
   return (
-    <FondoScrollGradiente style={{padding:15, gap: 15}}>
+    <FondoScrollGradiente gap={15} style={{padding:15}}>
         {sedes.map((sede, index) => (
           <View key={index} style={styles.card}>
               <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>

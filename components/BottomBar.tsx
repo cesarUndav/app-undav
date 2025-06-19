@@ -53,6 +53,7 @@ export default function BottomBar() {
             style={[bottomBarStyles.btn, disabled && { opacity: opacidadSeleccionado }]}
             onPress={() => !disabled && router.push(route)}
             disabled={disabled}
+            //activeOpacity={1} // se puede usar esto para quitar animacion
           >
             {Icon ? 
             <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />

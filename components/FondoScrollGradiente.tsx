@@ -8,6 +8,7 @@ interface FondoScrollGradienteProps {
   colorTop?: ColorValue;
   colorBottom?: ColorValue;
   style?: StyleProp<ViewStyle>;
+  gap?: number;
 }
 
 const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({
@@ -15,10 +16,11 @@ const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({
   colorTop = "#fff",
   colorBottom = colorFondo,
   style,
+  gap = 8
 }) => {
   return (
     <LinearGradient colors={[colorTop, colorBottom]} style={{flex: 1}}>
-      <ScrollView contentContainerStyle={style ? style : styles.container}>
+      <ScrollView contentContainerStyle={[style ? style : styles.container, {gap: gap}]}>
         {children}
       </ScrollView>
     </LinearGradient>
@@ -28,8 +30,7 @@ const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({
 const styles = StyleSheet.create({
   container: {
     paddingVertical: 10,
-    paddingHorizontal: 15,
-    gap: 8
+    paddingHorizontal: 15
   },
 });
 

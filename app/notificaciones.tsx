@@ -1,4 +1,4 @@
-import FondoScrollGradiente from '@/components/FondoGradiente';
+import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import ListaItem from '@/components/ListaItem';
 import { negroAzulado } from '@/constants/Colors';
 import { historialNotificaciones, Notificacion, notificacionToFechaString, setNotificationCount } from '@/data/notificaciones';
@@ -12,10 +12,10 @@ import { StyleSheet } from 'react-native';
   }
 
 export default function Notificaciones() {
-  setNotificationCount(0);
+  setNotificationCount(0); // LIMPIA GLOBO de notificaciones al CARGAR esta página
   return (
-    <FondoScrollGradiente style={{paddingHorizontal: 15, gap: 10}}>
-      {mostrarLista(historialNotificaciones)}
+    <FondoScrollGradiente>
+        {mostrarLista(historialNotificaciones)}
     </FondoScrollGradiente>
   );
 }

@@ -48,8 +48,8 @@ export default function BotonTextoLink({
 
   const dynamicContainerStyle: ViewStyle = {
     backgroundColor: color,
-    paddingTop: verticalPadding + 2,
-    paddingBottom: verticalPadding,
+    paddingTop: verticalPadding + 3,
+    paddingBottom: verticalPadding -1,
   };
 
   const dynamicTextStyle: TextStyle = {

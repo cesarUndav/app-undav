@@ -65,7 +65,7 @@ const styles = StyleSheet.create({
   segmentWrapper: {
     alignItems: 'center',
     flex: 1,
-    gap: 2,
+    gap: 0,
   },
   diaText: {
     fontSize: 14,
