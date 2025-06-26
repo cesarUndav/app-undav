@@ -20,25 +20,28 @@ function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.get
 
 // listas
 export const listaEventosAgenda: Notificacion[] = [
-  // Feriados nacionales
-  { id: "F1", titulo: "Año Nuevo", fecha: new Date("2025-01-01") },
-  { id: "F2", titulo: "Carnaval", fecha: new Date("2025-03-03") },
-  { id: "F3", titulo: "Día de la Memoria", fecha: new Date("2025-03-24") },
-  { id: "F4", titulo: "Veteranos de Malvinas", fecha: new Date("2025-04-02") },
-  { id: "F5", titulo: "Fundación Avellaneda", fecha: new Date("2025-04-07") },
-  { id: "F6", titulo: "Jueves Santo", fecha: new Date("2025-04-17") },
-  { id: "F7", titulo: "Viernes Santo", fecha: new Date("2025-04-18") },
-  { id: "F8", titulo: "Día del Trabajador", fecha: new Date("2025-05-01") },
-  { id: "F9", titulo: "Pase a la Inmortalidad de Güemes", fecha: new Date("2025-06-17") },
-  { id: "F10", titulo: "Paso a la Inmortalidad de Belgrano", fecha: new Date("2025-06-20") },
-  { id: "F11", titulo: "Día de la Independencia", fecha: new Date("2025-07-09") },
-  { id: "F12", titulo: "Fiestas Patronales Avellaneda", fecha: new Date("2025-08-15") },
-  { id: "F13", titulo: "Paso a la Inmortalidad de San Martín", fecha: new Date("2025-08-17") },
-  { id: "F14", titulo: "Día del Respeto a la Diversidad Cultural", fecha: new Date("2025-10-12") },
-  { id: "F15", titulo: "Día no laboral con fines turísticos", fecha: new Date("2025-11-21") },
-  { id: "F16", titulo: "Día de la Soberanía Nacional", fecha: new Date("2025-11-24") },
-  { id: "F17", titulo: "Inmaculada Concepción", fecha: new Date("2025-12-08") },
-  { id: "F18", titulo: "Navidad", fecha: new Date("2025-12-25") },
+  { id: "A1", titulo: "Inscripción a materias abierta", fecha: new Date("2025-02-10") },
+  { id: "A2", titulo: "Publicación de notas del 1° parcial", fecha: new Date("2025-04-18") },
+  { id: "A3", titulo: "Recordatorio: Entrega de TP1 mañana", fecha: new Date("2025-05-02") },
+  { id: "A4", titulo: "Clase cancelada: Sistemas Operativos", fecha: new Date("2025-06-12") },
+  { id: "A5", titulo: "Aula cambiada: Análisis Matemático I", fecha: new Date("2025-04-03") },
+
+  { id: "F1", titulo: "Feriado: Día de la Mujer", fecha: new Date("2025-03-08") },
+  { id: "F2", titulo: "Feriado: Semana Santa", fecha: new Date("2025-04-18") },
+  { id: "F3", titulo: "Feriado: Día de la Memoria", fecha: new Date("2025-03-24") },
+  { id: "F4", titulo: "Feriado: Día del Trabajador", fecha: new Date("2025-05-01") },
+  { id: "F5", titulo: "Feriado: Paso a la Inmortalidad de Belgrano", fecha: new Date("2025-06-20") },
+
+  { id: "E1", titulo: "Seminario: Inteligencia Artificial y Sociedad", fecha: new Date("2025-05-15") },
+  { id: "E2", titulo: "Charla informativa: Becas Progresar", fecha: new Date("2025-03-12") },
+  { id: "E3", titulo: "Convocatoria abierta: Intercambio a México", fecha: new Date("2025-04-01") },
+  { id: "E4", titulo: "Taller de Primeros Auxilios", fecha: new Date("2025-06-03") },
+  { id: "E5", titulo: "Competencia de programación interna", fecha: new Date("2025-06-10") },
+
+  { id: "S1", titulo: "Actualización del sistema SIU Guaraní", fecha: new Date("2025-02-28") },
+  { id: "S2", titulo: "Corte de luz programado en sede central", fecha: new Date("2025-03-25") },
+  { id: "S3", titulo: "Nueva versión disponible de la app", fecha: new Date("2025-04-09") },
+  { id: "S4", titulo: "Reestablecido el acceso al campus virtual", fecha: new Date("2025-05-06") }
 ];
 
 // aux listas

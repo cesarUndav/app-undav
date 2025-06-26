@@ -63,19 +63,21 @@ const styles = StyleSheet.create({
     color: negroAzulado,    
     textAlign: 'right',
     paddingRight: 10,
-    alignContent: "flex-end"
+    alignContent: "flex-end",
+    //backgroundColor: "red"
   },
   profileIcon: {
     height: "100%",
-    aspectRatio: 1,
-    backgroundColor: azulClaro,
+    aspectRatio: 1, // CUADRADO
     borderRadius: "100%",
-    //borderBottomRightRadius: 16,
+    backgroundColor: azulClaro,
     ...getShadowStyle(2),
+    justifyContent: "center",
+    alignItems: "center",
+    //marginRight: 5
+    //borderBottomRightRadius: 16,
     // borderWidth: 6,
     // borderColor: azulLogoUndav,
-    justifyContent: "center", // <- centra verticalmente
-    alignItems: "center",     // <- centra horizontalmente
   }
 
 });

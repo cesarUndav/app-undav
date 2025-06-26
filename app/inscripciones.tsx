@@ -12,10 +12,10 @@ export default function Inscripciones() {
     
       <BotonTextoLink label="Tutorial de Inscripcion a Carreras" url="https://undav.edu.ar/index.php?idcateg=5" />
       <CustomText style={styles.title}>Autogestión</CustomText>
-      <BotonTextoLink label="Inscripción a Materias" url="https://academica.undav.edu.ar/g3w/cursada" color={celesteSIU}/>
-      <BotonTextoLink label="Inscripción a Exámen" url="https://academica.undav.edu.ar/g3w/examen" color={celesteSIU}/>
-      <BotonTextoLink label="Horarios de Cursada" url="https://academica.undav.edu.ar/g3w/horarios_cursadas" color={celesteSIU}/>
-      <BotonTextoLink label="Fechas de Exámen" url="https://academica.undav.edu.ar/g3w/fecha_examen" color={celesteSIU}/>
+      <BotonTextoLink label="Inscripción a Materias" openInsideApp url="https://academica.undav.edu.ar/g3w/cursada" color={celesteSIU}/>
+      <BotonTextoLink label="Inscripción a Exámen" openInsideApp url="https://academica.undav.edu.ar/g3w/examen" color={celesteSIU}/>
+      <BotonTextoLink label="Horarios de Cursada" openInsideApp url="https://academica.undav.edu.ar/g3w/horarios_cursadas" color={celesteSIU}/>
+      <BotonTextoLink label="Fechas de Exámen" openInsideApp url="https://academica.undav.edu.ar/g3w/fecha_examen" color={celesteSIU}/>
 
       <CustomText style={styles.title}>Consultas</CustomText>
     

@@ -5,6 +5,7 @@ import { useRouter, usePathname } from 'expo-router';
 import { azulMedioUndav, celesteSIU } from '@/constants/Colors';
 import CustomText from './CustomText';
 import { getNotificationCount } from '@/data/notificaciones';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 const routes = [
   "/home-estudiante",
@@ -83,7 +84,8 @@ export const bottomBarStyles = StyleSheet.create({
     flexDirection: 'row',
     backgroundColor: azulMedioUndav,
     justifyContent: 'space-around',
-    height: 56
+    height: 56,
+    ...getShadowStyle(3)
   },
   btn: {
     alignItems: 'center',

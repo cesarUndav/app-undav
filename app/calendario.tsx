@@ -172,6 +172,7 @@ export default function Calendario() {
       <View style={{ marginTop: 10, justifyContent: 'flex-end' }}>
         <BotonTextoLink
           label="Calendario Académico"
+          centered
           openInsideApp
           url="https://undav.edu.ar/index.php?idcateg=129"
         />

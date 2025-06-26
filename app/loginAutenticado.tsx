@@ -52,7 +52,7 @@ export default function LoginScreen() {
       const {token, idPersona} = await validarPersona(documentoIngresado, contrasenaIngresada);
       await AsyncStorage.setItem("username", documentoIngresado.toString());
       await AsyncStorage.setItem("password", contrasenaIngresada.toString());
-      setNotificationCount(3);
+      setNotificationCount(10);
       router.replace("/home-estudiante");
     }
     catch (error: any) {

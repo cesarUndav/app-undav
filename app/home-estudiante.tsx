@@ -2,12 +2,15 @@ import React from 'react';
 import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
 
 import { useRouter } from 'expo-router';
-import CustomText from '../components/CustomText';
 import AgendaPreview from '../components/AgendaPreview';
 
-import LinksIcon from '../assets/icons/links.svg';
-import InscripcionesIcon from '../assets/icons/inscripciones.svg';
-import ReportesIcon from '../assets/icons/reportes.svg';
+// import LinksIcon from '../assets/icons/links.svg';
+import LinksIcon from '../assets/icons/ico-svg/redes-arroba.svg';
+import SIU_Gua_Icon from '../assets/icons/ico-svg/siu-original.svg';
+import CampusVirtualIcon from '../assets/icons/ico-svg/campus-virtual.svg';
+import InscripcionesIcon from '../assets/icons/ico-svg/inscripciones.svg';
+import ReportesIcon from '../assets/icons/ico-svg/certificados.svg';
+import TrayectoriaIcon from '../assets/icons/ico-svg/certificados.svg';
 
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
@@ -27,8 +30,8 @@ export default function HomeEstudiante() {
       <AgendaPreview />
 
       <View style={styles.buttonsRowParent}> 
-        <View style={styles.buttonsRow}>
 
+        <View style={styles.buttonsRow}>
           <BotonIconoTexto
             label={"CERTIFICADOS\nY REPORTES"}
             funcionOnPress={() => router.push('/certificados')}
@@ -45,7 +48,34 @@ export default function HomeEstudiante() {
             iconColor={iconColor}
             backgroundColor={iconBgColor}
           />
+          <BotonIconoTexto
+            label={"TRAYECTORIA\nACADÉMICA"}
+            funcionOnPress={() => router.push('/historia-academica')}
+            Icon={TrayectoriaIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
         </View>
+
+        {/* <View style={styles.buttonsRow}>  
+          <BotonIconoTexto
+            label={"HISTORIA\nACADÉMICA"}
+            funcionOnPress={() => router.push('/historia-academica')}
+            Icon={ReportesIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+          <BotonIconoTexto
+            label={"PLAN DE\nESTUDIO"}
+            funcionOnPress={() => router.push('/plan-de-estudio')}
+            Icon={InscripcionesIcon}
+            iconSize={iconSize}
+            iconColor={iconColor}
+            backgroundColor={iconBgColor}
+          />
+        </View> */}
         <View style={styles.buttonsRow}>
           
           <BotonIconoTexto
@@ -61,7 +91,7 @@ export default function HomeEstudiante() {
             label={"SIU GUARANÍ"}
             //funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
             funcionOnPress={() => router.push('/web-SIU-Guarani')}
-            Icon={LinksIcon}
+            Icon={SIU_Gua_Icon}
             iconSize={iconSize}
             iconColor={iconColor}
             backgroundColor={iconBgColor}
@@ -71,7 +101,7 @@ export default function HomeEstudiante() {
             label={"CAMPUS\nVIRTUAL"}
             //funcionOnPress={() => Linking.openURL('https://ead.undav.edu.ar/')}
             funcionOnPress={() => router.push('/web-Campus-Virtual')}
-            Icon={LinksIcon}
+            Icon={CampusVirtualIcon}
             iconSize={iconSize}
             iconColor={iconColor}
             backgroundColor={iconBgColor}
@@ -82,18 +112,18 @@ export default function HomeEstudiante() {
   );
 }
 
-const iconSize = 44;
+const iconSize = 55;
 const iconColor = "#fff";
 const iconBgColor = azulClaro;
 
 const styles = StyleSheet.create({
   containerGradient: {
-    gap: 10,
-    paddingHorizontal: 15,
-    paddingVertical: 10
+    gap: 12,
+    padding: 15,
+    paddingTop: 10
   },
   buttonsRowParent: { //buttons
-    flex: 0.6, // tamaño de botones con respecto a lista
+    flex: 0.53, // tamaño de botones con respecto a lista
     gap: 10,
     padding: 10,
     borderBottomRightRadius: 24,

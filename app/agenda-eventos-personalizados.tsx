@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal, Platform, TextInput } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, Platform, TextInput, ScrollView } from 'react-native';
 import CustomText from '../components/CustomText';
 import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
 
@@ -10,6 +10,8 @@ import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import { azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import FondoGradiente from '@/components/FondoGradiente';
+import BotonTextoLink from '@/components/BotonTextoLink';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -68,12 +70,9 @@ export default function EventosPersonalizados() {
   }
 
   return (
-    <FondoScrollGradiente>
-
-        <TouchableOpacity onPress={abrirModalAgregarEvento} style={styles.agregarBtn}>
-          <CustomText style={styles.agregarBtnText}>CREAR EVENTO</CustomText>
-        </TouchableOpacity>
-
+    <FondoGradiente>
+    
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         {listaEventos.map((evento) => (
           <AgendaItemEditable
             key={evento.id}
@@ -81,6 +80,11 @@ export default function EventosPersonalizados() {
             onPressEdit={abrirModalEditarEvento}
           />
         ))}
+      </ScrollView>
+      
+      <View style={{marginTop: 15}}>
+        <BotonTextoLink onPressFunction={() => abrirModalAgregarEvento()} label='CREAR EVENTO' centered/>
+      </View>
 
       {/* MODAL */}
       <Modal visible={modalVisible} animationType="fade" transparent>
@@ -131,72 +135,33 @@ export default function EventosPersonalizados() {
                 <TouchableOpacity onPress={confirmarAgregarEvento}
                   disabled={titulo.trim().length === 0}
                   style={[styles.modalBtn, { backgroundColor: titulo.trim().length > 0 ? azulLogoUndav : "gray" }]}>
-                  <CustomText style={styles.modalBtnText}>ACEPTAR</CustomText>
+                  <CustomText style={styles.modalBtnText}>GUARDAR CAMBIOS</CustomText>
                 </TouchableOpacity>
                 
                 { modoEdicion && (
                     <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[styles.modalBtn, { backgroundColor: "#c91800" }]}>
-                      <CustomText style={styles.modalBtnText}>ELIMINAR</CustomText>
+                      <CustomText style={styles.modalBtnText}>ELIMINAR EVENTO</CustomText>
                     </TouchableOpacity>
                   )
                 }
 
                 <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalBtn, { backgroundColor: "white" }]}>
-                  <CustomText style={[styles.modalBtnText,{color: "gray"}]}>CANCELAR</CustomText>
+                  <CustomText style={[styles.modalBtnText,{color: "gray"}]}>SALIR</CustomText>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         </OcultadorTeclado>
       </Modal>
-      
-    </FondoScrollGradiente>
+    
+    </FondoGradiente>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   scrollContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
     gap: 8
   },
-  agregarBtn: {
-    backgroundColor: azulLogoUndav,
-    flex: 1,
-    height: "100%",
-    textAlign: "center",
-    alignItems: "center",
-    borderRadius: 0,
-    borderBottomRightRadius: 16,
-    ...getShadowStyle(2)
-    //marginHorizontal: 10
-  },
-  agregarBtnText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 15,
-    paddingVertical: 12
-  },
-  
-  itemParent: {
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  },
-  itemChildLeft: {
-    flex: 1,
-    textAlign: "left",
-    alignItems: "flex-start"
-  },
-  itemChildRight: {
-    flex: 0.12,
-    textAlign: "right",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    alignContent: "center"
-  },
-    modalOverlay: {
+  modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.7)',

@@ -8,7 +8,7 @@ export interface User {
   nombreCompleto: string;
   email: string;
   legajo: string;
-  propuestas: Propuesta[]
+  propuestas: Propuesta[];
 }
 
 export let infoBaseUsuarioActual: User = {
@@ -17,7 +17,7 @@ export let infoBaseUsuarioActual: User = {
   nombreCompleto: "",
   email: "",
   legajo: "",
-  propuestas: []
+  propuestas: [],
 };
 
 export interface Propuesta {
@@ -26,10 +26,33 @@ export interface Propuesta {
   nombre: string;
   nombre_abreviado: string;
   regular: "S" | "N"; // o solo "S" si no hay otros valores
+  plan_version: number;
 }
 
 export interface RespuestaPropuestas {
   propuestas: Propuesta[];
+}
+
+export interface Materia {
+  nombre: string,
+  nombre_abreviado: string,
+  anio_de_cursada: number,
+  periodo_de_cursada: number,
+  horas_semanales: string,
+  horas_totales: string,
+  permite_rendir_libre: string,
+  permite_promocion: string,
+}
+
+export interface Plan {
+  plan: number,
+  version_actual: number,
+  nombre: string,
+  duracion_teorica: string,
+  duracion_en_anios: number,
+  duracion_en_meses: number,
+  cnt_materias: number,
+  materias: Materia[]
 }
 
 export let visitante: boolean = true;
@@ -40,16 +63,6 @@ export function setVisitante(v: boolean): void {
 
 export function UsuarioEsAutenticado(): boolean {
   return infoBaseUsuarioActual.idPersona !== "";
-}
-
-const celeste: string = "#91c9f7";
-
-export let colorFondo: string = grisUndav;
-export let fondoEsCeleste: boolean = false;
-
-export function setColorFondoCeleste(esCeleste: boolean) {
-  fondoEsCeleste = esCeleste;
-  colorFondo = esCeleste ? celeste : grisUndav;
 }
 
 const URL_BASE = "http://172.16.1.43/api/appundav";
@@ -141,7 +154,35 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
 
   visitante = false;
 
-  console.log("Usuario cargado:", infoBaseUsuarioActual);
+  //console.log("Usuario cargado:", infoBaseUsuarioActual);
+}
+
+export async function ObtenerMateriasConPlan(): Promise<Plan> {
+  const token = await AsyncStorage.getItem("token");
+  //const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length].plan_version;
+  const planId = 435;
+  console.log("plan:",planId,"token:",token);
+
+  const url = `${URL_BASE}/propuesta/${planId}/plan`;
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
+  }
+  console.log("response OK");
+  const respuestaPlan = await response.json();
+  
+  console.log("respuesta cruda:", respuestaPlan);
+  
+  const plan:Plan = respuestaPlan;
+  console.log("plan completo:",plan);
+  return respuestaPlan as Plan;
 }
 
 // Logout
@@ -157,4 +198,15 @@ export function Logout() {
   };
   AsyncStorage.removeItem("token");
   AsyncStorage.removeItem("idPersona");
+}
+
+// El que quiere celeste, que le cueste:
+const celeste: string = "#91c9f7";
+
+export let colorFondo: string = grisUndav;
+export let fondoEsCeleste: boolean = false;
+
+export function setColorFondoCeleste(esCeleste: boolean) {
+  fondoEsCeleste = esCeleste;
+  colorFondo = esCeleste ? celeste : grisUndav;
 }

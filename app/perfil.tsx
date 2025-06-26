@@ -23,6 +23,11 @@ type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem | SeparatorItem;
 interface ConfigSection {
   data: ConfigItem[];
 }
+function PropuestasString():string {
+  const str:string = "Mis Propuestas Educativas:" +
+  infoBaseUsuarioActual.propuestas.map(p=> "\n"+p.nombre + ": " +(p.regular == "S" ? "Regular" : "NO Regular")).join("");
+  return str;
+}
 
 export default function Configuracion() {
 
@@ -52,7 +57,7 @@ export default function Configuracion() {
       data: [
         { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido" },
         { type: "text", label: UsuarioEsAutenticado() ? "Legajo: " + infoBaseUsuarioActual.legajo : "Legajo: 12345" },
-        { type: "text", label: UsuarioEsAutenticado() ? "Propuestas:" + infoBaseUsuarioActual.propuestas.map(p=> "\n"+p.nombre+" - Regular: "+p.regular).join("") : "Propuestas:\nP1 - Regular: N" },
+        { type: "text", label: UsuarioEsAutenticado() ? PropuestasString() : "Mis Propuestas Educativas:\nP1 - Regular: N" },
         { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.email : "nombreapellido@email.com" },
         { type: "separator" }
       ]
@@ -63,6 +68,11 @@ export default function Configuracion() {
           type: "link",
           label: "Historia Académica",
           onPress: () => router.push("/historia-academica"),
+        },
+        {
+          type: "link",
+          label: "Plan de Estudio",
+          onPress: () => router.push("/plan-de-estudio"),
         },
         {
           type: "link",

@@ -25,8 +25,8 @@ const FondoGradiente: React.FC<FondoGradienteProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
-    paddingHorizontal: 15
+    paddingTop: 10,
+    padding: 15
   },
 });
 

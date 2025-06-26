@@ -29,8 +29,8 @@ const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    paddingVertical: 10,
-    paddingHorizontal: 15
+    padding: 15,
+    paddingTop: 10
   },
 });
 
