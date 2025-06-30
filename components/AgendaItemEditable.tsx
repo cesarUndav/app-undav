@@ -15,25 +15,19 @@ type AgendaItemEditableProps = {
 export default function AgendaItemEditable({ evento, onPressEdit }: AgendaItemEditableProps) {
   return (
     <View style={AgendaItemStyles.agendaItem}>
-      <View style={styles.itemParent}>
-        <View style={styles.itemChildLeft}>
-          <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>
-            {evento.titulo}
-          </CustomText>
-          <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
-            {eventoAgendaToFechaString(evento)}
-          </CustomText>
-        </View>
-
-        <TouchableOpacity
-          style={styles.itemChildRight}
-          onPress={() => onPressEdit(evento.id)}
-          accessible
-          accessibilityLabel="Editar Evento"
-        >
-          <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
+        <TouchableOpacity style={styles.itemParent} onPress={() => onPressEdit(evento.id)} accessible accessibilityLabel="Editar Evento" >
+          <View style={styles.itemChildLeft}>
+            <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>
+              {evento.titulo}
+            </CustomText>
+            <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
+              {eventoAgendaToFechaString(evento)}
+            </CustomText>
+          </View>
+          <View style={styles.itemChildRight}>
+            <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
+          </View>
         </TouchableOpacity>
-      </View>
     </View>
   );
 }

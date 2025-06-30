@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, ScrollView, Touchable, TouchableOpacity, registerCallableModule } from 'react-native';
 
 import CustomText from '../components/CustomText';
-import { listaPasado, EventoAgenda, listaCompleta} from '../data/agenda';
+import { EventoAgenda, listaEventosCalendarioAcademico, listaFuturo, listaPasado} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
@@ -13,7 +13,7 @@ import { getShadowStyle } from '@/constants/ShadowStyle';
 
 const filterBtnColor = azulLogoUndav
 export default function Agenda() {
-  const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
+
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
   const [mostrarPersonalizados, setMostrarPersonalizados] = useState(true);
@@ -26,14 +26,17 @@ export default function Agenda() {
     else {return mostrarAcademicos;}
   }
   function mostrarLista(lista:EventoAgenda[]) {
-    return lista.map((evento) => ( puedeMostrarEvento(evento) &&
-      <AgendaItem key={evento.id} evento={evento} />
-    ))
+    if (lista.length > 0) {
+      return lista.map((evento) => ( puedeMostrarEvento(evento) &&
+        <AgendaItem key={evento.id} evento={evento} />
+      ))
+    }
+    else return <CustomText>No hay</CustomText>
   }
 
   useFocusEffect( // cada vez que entramos a esta pantalla
     useCallback(() => {
-      setListaEventos(listaCompleta);
+      //setListaEventos(listaEventosCalendarioAcademico);
     }, []) // no hay variable de actualizacion especificada [var]
   );
   
@@ -44,7 +47,7 @@ export default function Agenda() {
       mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
       <>
         <CustomText style={styles.title}>PRÓXIMO</CustomText>
-        {mostrarLista(listaEventos)}
+        {mostrarLista(listaFuturo)}
         <CustomText style={styles.title}>FINALIZADO</CustomText>
         {mostrarLista(listaPasado)}
       </>

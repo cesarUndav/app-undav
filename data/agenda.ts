@@ -1,6 +1,9 @@
 // la declaracion de fecha debería ser:
 // fechaInicio: new Date('2025-3-1'); // RESPETAR FORMATO: AÑO-MES-DIA
 // por cuestiones de DEV se está haciendo con:
+
+import { listaEventosAgenda } from "./notificaciones";
+
 // fechaInicio: devHoyMasDias(n);
 export type EventoAgenda = {
   id: string;
@@ -8,6 +11,7 @@ export type EventoAgenda = {
   fechaInicio: Date;
   fechaFin: Date;
   esFeriado?: Boolean;
+  notificar?: false;
 };
 
 // vars dev
@@ -21,7 +25,7 @@ function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.get
 
 
 // listas
-export const listaEventosAgenda: EventoAgenda[] = [
+export const listaEventosCalendarioAcademico: EventoAgenda[] = [
 // Actividades académicas
   { id: "1", titulo: "Etapa diagnóstica – 1º cuatrimestre", fechaInicio: new Date("2025-02-03"), fechaFin: new Date("2025-03-07") },
   { id: "2", titulo: "Inscripción finales presenciales", fechaInicio: new Date("2025-02-12"), fechaFin: new Date("2025-02-22") },
@@ -136,8 +140,27 @@ function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): 
   const lista = lista1.concat(lista2);
   return ordenarEventosPorFechaFin(lista);
 }
+function fechaYaSucedio(fecha:Date) {
+  return fecha.getTime < Date.now;
+}
+function ordenar(a:EventoAgenda, b:EventoAgenda):number {
+  return (a.fechaFin.getTime() - b.fechaFin.getTime());
+  // if (fechaYaSucedio(a.fechaInicio)) {
+  //   return (a.fechaFin.getTime() - b.fechaFin.getTime());
+  // } else {
+  //   return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
+  // }
+}
 function ordenarEventosPorFechaFin(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
-  if (ascendiente) return listaEventos.sort((a,b) => a.fechaFin.getTime() - b.fechaFin.getTime());
+  if (ascendiente) {
+    return listaEventos.sort((a,b) =>ordenar(a,b));
+  }
+  else return listaEventos.sort((a,b) =>ordenar(a,b)).reverse();
+}
+function ordenarEventosPorFechaFin2(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
+  if (ascendiente) {
+    return listaEventos.sort((a,b) => a.fechaFin.getTime() - b.fechaFin.getTime());
+  }
   else return listaEventos.sort((a,b) => b.fechaFin.getTime() - a.fechaFin.getTime());
 }
 function eventoDuraUnDia(evento:EventoAgenda): Boolean {
@@ -171,9 +194,9 @@ function charPlural(plural:string, valorAEvaluar:number) {
 // export listas
 // export function listaFuturoFiltros(mostrarFeriados:Boolean): EventoAgenda[] {
 //   return ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false)); }
-export const listaFuturo: EventoAgenda[] = ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false));
-export const listaPasado: EventoAgenda[] = ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento) == true), false);
-export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaFuturo, listaEventosPersonalizados); };
+export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); };
+export const listaFuturo: EventoAgenda[] = ordenarEventosPorFechaFin(listaCompleta().filter((evento) => eventoFinalizado(evento)==false));
+export const listaPasado: EventoAgenda[] = ordenarEventosPorFechaFin(listaCompleta().filter((evento) => eventoFinalizado(evento) == true), false);
 
 // export funcs
 export function eventoAgendaToFechaString(evento:EventoAgenda): string {

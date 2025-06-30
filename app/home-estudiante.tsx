@@ -50,7 +50,7 @@ export default function HomeEstudiante() {
           />
           <BotonIconoTexto
             label={"TRAYECTORIA\nACADÉMICA"}
-            funcionOnPress={() => router.push('/historia-academica')}
+            funcionOnPress={() => router.push('/trayectoria-academica')}
             Icon={TrayectoriaIcon}
             iconSize={iconSize}
             iconColor={iconColor}

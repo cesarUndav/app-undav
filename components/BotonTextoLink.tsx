@@ -16,7 +16,7 @@ type BotonTextoProps = {
   verticalPadding?: number;
   fontSize?: number;
   fontColor?: string;
-  onPressFunction?: () => void;
+  onPressFunction?: () => void | Promise<void>;
 };
 
 export default function BotonTextoLink({

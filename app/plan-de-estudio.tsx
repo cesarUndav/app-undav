@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { StyleSheet } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import {
@@ -11,6 +11,8 @@ import ListaItem from '@/components/ListaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
+import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
+import FondoGradiente from '@/components/FondoGradiente';
 
 function codPeriodoToNumber(cod:number):number {
   switch(cod){
@@ -41,7 +43,7 @@ function SNToString(letra:string) {
 function materiaEsOpcional(m:Materia):boolean {return m.anio_de_cursada == null;}
 function MateriaToString(m:Materia):string {
   let str:string = "";
-  materiaEsOpcional(m) ? str += "Materia Opcional" :
+  materiaEsOpcional(m) ? str += "Materia Electiva" :
   str += `Año ${m.anio_de_cursada} Cuatrimestre ${codPeriodoToNumber(m.periodo_de_cursada)}`
   
   str += `\nhoras semanales: ${Number(m.horas_semanales)} (${Number(m.horas_totales)} horas totales)
@@ -53,13 +55,39 @@ export default function MateriasPlan() {
   const [loading, setLoading] = useState(true);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [cantidadOpcionales, setCantidadOpcionales] = useState(-1);
+  const [mostrarAprobadas, setMostrarAprobadas] = useState(true);
+
+  // BARRA DE BÚSQUEDA
+  const [search, setSearch] = useState('');
+  const materiasMostradas = plan?.materias.filter((materia) =>
+    coincideBusqueda(materia.nombre, search)
+  );
+
+  function mostrarListaMaterias() {
+    if (!materiasMostradas) return;
+    return materiasMostradas.map((m) => (
+      <ListaItem
+        key={m.nombre_abreviado}
+        title={m.nombre}
+        subtitle={MateriaToString(m)}
+      />
+    ))
+  }
+  //
+  function PlanInfoString(plan:Plan | null):string {
+  return plan ?
+    `Versión del plan: ${plan.nombre}
+Duración teórica: ${plan.duracion_teorica} (${plan.duracion_en_anios} años)
+Cantidad de materias: ${plan.cnt_materias} (${cantidadOpcionales} electivas)`
+    : "No hay plan de estudio.";
+}
 
   useEffect(() => {
     const fetchPlan = async () => {
       try {
         const planObtenido = await ObtenerMateriasConPlan();
         setPlan(planObtenido);
-        if (plan != null) setCantidadOpcionales(planObtenido.materias.filter(m => materiaEsOpcional(m) == true).length);
+        if (planObtenido != null) setCantidadOpcionales(planObtenido.materias.filter(m => materiaEsOpcional(m) == true).length);
       }
       catch (error) {
         console.error('Error al obtener plan de estudio:', error);
@@ -72,25 +100,23 @@ export default function MateriasPlan() {
   }, []);
 
   return (
-    <FondoScrollGradiente>
+    <FondoGradiente>
       <LoadingWrapper loading={loading}>
-        <CustomText style={styles.estadisticas}>
-          {plan ?
-`Plan de estudio: ${plan.nombre}
-Duración teórica: ${plan.duracion_teorica} (${plan.duracion_en_anios} años)
-Cantidad de materias: ${plan.cnt_materias} (${cantidadOpcionales} opcionales)`
-          : "No hay plan de estudio."}
+
+        <CustomText style={[styles.estadisticas, {paddingBottom: 10}]}>
+          {PlanInfoString(plan)}
         </CustomText>
 
-        {plan?.materias.map((m) => (
-          <ListaItem
-            key={m.nombre_abreviado}
-            title={m.nombre}
-            subtitle={ MateriaToString(m) }
-          />
-        ))}
+        <ScrollView contentContainerStyle={{gap: 8}}>
+          {mostrarListaMaterias()}
+        </ScrollView>
+
+
+        <View style={{paddingTop: 10}}>
+          <BarraBusqueda value={search} onChangeText={setSearch} />
+        </View>
       </LoadingWrapper>
-    </FondoScrollGradiente>
+    </FondoGradiente>
   );
 }
 

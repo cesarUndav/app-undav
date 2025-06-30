@@ -2,7 +2,7 @@ import React, { useCallback, useEffect, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
-import { listaCompleta, EventoAgenda } from '../data/agenda';
+import { EventoAgenda, listaFuturo } from '../data/agenda';
 import AgendaItem from './AgendaItem';
 import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
@@ -18,7 +18,7 @@ export default function AgendaPreview() {
   useFocusEffect(
     // This runs every time the screen is focused (entered)
     useCallback(() => {
-      setListaEventos(listaCompleta);
+      setListaEventos(listaFuturo);
     }, [])
   );
 

@@ -6,7 +6,6 @@ import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEve
 import {agregarEventoPersonalizado, quitarEventoPersonalizado} from '../data/agenda';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
-import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import { azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';

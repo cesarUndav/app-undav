@@ -48,7 +48,8 @@ function obtenerFechasDelMes(mes: number, anio: number): string[] {
 }
 
 export default function Calendario() {
-  const diaHoy = new Date();
+  const diaHoy = new Date(""); // el día actual
+  //const diaHoy = new Date("2025-10-10");
   const hoyStr = DateToISOStringNoTime(diaHoy);
 
   const [loading, setLoading] = useState(true);
@@ -169,21 +170,17 @@ export default function Calendario() {
 
       </LoadingWrapper>
 
-      <View style={{ marginTop: 10, justifyContent: 'flex-end' }}>
-        <BotonTextoLink
-          label="Calendario Académico"
-          centered
-          openInsideApp
-          url="https://undav.edu.ar/index.php?idcateg=129"
-        />
+      <View style={{ flex: 1, marginTop: 10, justifyContent: 'flex-end' }}>
+        <BotonTextoLink route='/calend.-academico-resoluciones' label={"Calendario Académico PDF"} />
       </View>
+
     </FondoGradiente>
   );
 }
 
 const styles = StyleSheet.create({
   listaContainer: {
-    gap: 8
+    gap: 8,
   },
   title: {
     fontSize: 16,
@@ -197,6 +194,6 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-    paddingVertical: 8
-  }
+    paddingVertical: 8,
+  },
 });

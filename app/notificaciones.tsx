@@ -21,7 +21,7 @@ export default function Notificaciones() {
         {mostrarLista(historialNotificaciones)}
       </ScrollView>
       <View style={{paddingTop: 10}}>
-        <BotonTextoLink label={'Noticias UNDAV'} centered url="https://undav.edu.ar/index.php?idcateg=323" openInsideApp />
+        <BotonTextoLink label={'Noticias UNDAV'} url="https://undav.edu.ar/index.php?idcateg=323" openInsideApp />
       </View>
       </FondoGradiente>
   );

@@ -52,11 +52,6 @@ export default function Configuracion() {
       data: [
         {
           type: "link",
-          label: "Comunidad",
-          onPress: () => router.push("/comunidad"),
-        },
-        {
-          type: "link",
           label: "Bienestar",
           onPress: () => router.push("/bienestar"),
         },
@@ -79,7 +74,12 @@ export default function Configuracion() {
           type: "link",
           label: "Envianos tus sugerencias",
           onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
-        }
+        },
+        {
+          type: "link",
+          label: "Comunidad",
+          onPress: () => router.push("/comunidad"),
+        },
       ]
     }
   ];
