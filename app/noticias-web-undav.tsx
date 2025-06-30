@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import {  StyleSheet, ScrollView } from 'react-native';
+import { StyleSheet, ScrollView } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import BotonTextoLink from '@/components/BotonTextoLink';
@@ -8,37 +8,50 @@ import FondoGradiente from '@/components/FondoGradiente';
 import { negroAzulado } from '@/constants/Colors';
 import LoadingWrapper from '@/components/LoadingWrapper';
 
-import he from 'he';  // IMPORTANTE: para decodificar entidades HTML
-async function obtenerLinksYLabelsDelPrimerParrafo(): Promise<{ href: string; label: string }[]> {
-  const response = await fetch("https://undav.edu.ar/index.php?idcateg=129");
+import he from 'he'; // para decodificar entidades HTML
+
+async function obtenerTablasListadornot(): Promise<{ label: string; href: string }[]> {
+  const response = await fetch("https://undav.edu.ar/index.php?idcateg=323");
   const html = await response.text();
 
-  const contenedorMatch = html.match(/<div[^>]*id=["']contenidocentral["'][^>]*>([\s\S]*?)<\/div>/i);
-  if (!contenedorMatch || !contenedorMatch[1]) return [];
+  const tablaRegex = /<table[^>]*class=["']listadornot["'][^>]*>([\s\S]*?)<\/table>/gi;
+  const resultados: { label: string; href: string }[] = [];
 
-  const contenidoCentral = contenedorMatch[1];
+  let matchTabla;
+  while ((matchTabla = tablaRegex.exec(html)) !== null) {
+    const tablaHtml = matchTabla[1];
 
-  const parrafoMatch = contenidoCentral.match(/<p[^>]*>([\s\S]*?)<\/p>/i);
-  if (!parrafoMatch || !parrafoMatch[1]) return [];
+    // Extraer los <tr> de la tabla
+    const trMatches = [...tablaHtml.matchAll(/<tr[^>]*>([\s\S]*?)<\/tr>/gi)];
+    if (trMatches.length < 3) continue;
 
-  const primerParrafoHtml = parrafoMatch[1];
+    const tr1 = trMatches[0][1];
+    const tr3 = trMatches[2][1];
 
-  const regex = /<a[^>]*href=["']([^"']+)["'][^>]*>\s*<strong[^>]*>([\s\S]*?)<\/strong>\s*<\/a>/gi;
+    // Label
+    const labelMatch = tr1.match(/<td[^>]*class=["']titulo["'][^>]*>([\s\S]*?)<\/td>/i);
+    if (!labelMatch) continue;
 
-  const resultados: { href: string; label: string }[] = [];
-  let match;
-  while ((match = regex.exec(primerParrafoHtml)) !== null) {
+    let labelLimpio = labelMatch[1].replace(/<[^>]+>/g, '').trim();
+    labelLimpio = he.decode(labelLimpio); // decodificar entidades HTML
+    if (labelLimpio.startsWith(' - ')) {
+      labelLimpio = labelLimpio.slice(3).trim();
+    }
+
+    // Link
+    const hrefMatch = tr3.match(/<a[^>]*href=["']([^"']+)["']/i);
+    if (!hrefMatch) continue;
+
     resultados.push({
-      href: match[1],
-      label: he.decode(match[2].replace(/<[^>]*>/g, '').trim()).replace(/^- /, ""), // <--- Aquí quitamos " - "
+      label: labelLimpio,
+      href: he.decode(hrefMatch[1]), // << CORREGIDO
     });
   }
 
   return resultados;
 }
 
-
-export default function Calendario() {
+export default function NoticiasWeb() {
   const [loading, setLoading] = useState(true);
   const [linksWebCal, setLinksWebCal] = useState<{ href: string; label: string }[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(false);
@@ -46,7 +59,7 @@ export default function Calendario() {
   const handleObtenerLinks = async () => {
     setLoadingLinks(true);
     try {
-      const links = await obtenerLinksYLabelsDelPrimerParrafo();
+      const links = await obtenerTablasListadornot();
       setLinksWebCal(links);
       console.log("Links obtenidos:", links);
     } catch (error) {
@@ -67,23 +80,17 @@ export default function Calendario() {
         <ScrollView contentContainerStyle={styles.listaContainer}>
           {linksWebCal.length > 0 && (
             <>
-              <CustomText style={styles.title}>
-                {`Resoluciones más recientes del Calendario Académico en formato PDF:`}
-              </CustomText>
               {linksWebCal.map((linkObj, i) => (
                 <BotonTextoLink
                   key={i}
                   url={"https://undav.edu.ar/" + linkObj.href}
                   label={linkObj.label}
+                  openInsideApp
                 />
               ))}
             </>
           )}
-          {loadingLinks && (
-            <CustomText style={{ marginTop: 20, color: negroAzulado }}>
-              Cargando links...
-            </CustomText>
-          )}
+          <BotonTextoLink label={'Ver todas las noticias'} url="https://undav.edu.ar/index.php?idcateg=323" openInsideApp />
         </ScrollView>
       </LoadingWrapper>
     </FondoGradiente>
