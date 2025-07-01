@@ -1,15 +1,16 @@
 // app-undav/app/agenda.tsx
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, ScrollView, Touchable, TouchableOpacity, registerCallableModule } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import CustomText from '../components/CustomText';
-import { EventoAgenda, listaEventosCalendarioAcademico, listaFuturo, listaPasado} from '../data/agenda';
+import { EventoAgenda, listaFuturo, listaPasado} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import { azulClaro, azulLogoUndav,  negroAzulado } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import { bottomBarStyles } from '@/components/BottomBar';
 
 const filterBtnColor = azulLogoUndav
 export default function Agenda() {
@@ -26,12 +27,12 @@ export default function Agenda() {
     else {return mostrarAcademicos;}
   }
   function mostrarLista(lista:EventoAgenda[]) {
-    if (lista.length > 0) {
-      return lista.map((evento) => ( puedeMostrarEvento(evento) &&
-        <AgendaItem key={evento.id} evento={evento} />
-      ))
-    }
-    else return <CustomText>No hay</CustomText>
+    const listaFiltrada = lista.filter(puedeMostrarEvento);
+
+    if (listaFiltrada.length > 0) return lista.map((evento) => ( puedeMostrarEvento(evento) &&
+      <AgendaItem key={evento.id} evento={evento} />
+    ))
+    else return <CustomText style={styles.title}>No hay eventos de este tipo</CustomText>
   }
 
   useFocusEffect( // cada vez que entramos a esta pantalla
@@ -48,7 +49,8 @@ export default function Agenda() {
       <>
         <CustomText style={styles.title}>PRÓXIMO</CustomText>
         {mostrarLista(listaFuturo)}
-        <CustomText style={styles.title}>FINALIZADO</CustomText>
+        
+        {<CustomText style={styles.title}>FINALIZADO</CustomText>}
         {mostrarLista(listaPasado)}
       </>
     ):(
@@ -60,27 +62,27 @@ export default function Agenda() {
     </FondoScrollGradiente>
 
     <View style={styles.floatingBox}>
-      {mostrarFiltros ? (
-        <View style={styles.filterBtnParent}>
-          <TouchableOpacity onPress={() => setMostrarFeriados(!mostrarFeriados)} style={[styles.filterBtn, { backgroundColor: mostrarFeriados ? filterBtnColor : "gray" }]}>
-            <CustomText style={styles.filterBtnText}>Feriados</CustomText>
+      {mostrarFiltros && 
+        <View style={styles.filterOptionsParent}>
+          <TouchableOpacity onPress={() => setMostrarFeriados(!mostrarFeriados)} style={[styles.filterOption, { backgroundColor: mostrarFeriados ? filterBtnColor : "gray" }]}>
+            <CustomText style={styles.filterOptionText}>Feriados</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)} style={[styles.filterBtn, { backgroundColor: mostrarPersonalizados ? filterBtnColor : "gray" }]}>
-            <CustomText style={styles.filterBtnText}>Personalizados</CustomText>
+          <TouchableOpacity onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)} style={[styles.filterOption, { backgroundColor: mostrarPersonalizados ? filterBtnColor : "gray" }]}>
+            <CustomText style={styles.filterOptionText}>Personalizados</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setMostrarAcademicos(!mostrarAcademicos)} style={[styles.filterBtn, { backgroundColor: mostrarAcademicos ? filterBtnColor : "gray" }]}>
-            <CustomText style={styles.filterBtnText}>Académicos</CustomText>
-          </TouchableOpacity>
-          <TouchableOpacity onPress={() => setMostrarFiltros(false)} style={styles.closeBtn}>
-            <CustomText style={styles.closeBtnText}>×</CustomText>
+          <TouchableOpacity onPress={() => setMostrarAcademicos(!mostrarAcademicos)} style={[styles.filterOption, { backgroundColor: mostrarAcademicos ? filterBtnColor : "gray" }, {borderBottomRightRadius: 10}]}>
+            <CustomText style={styles.filterOptionText}>Académicos</CustomText>
           </TouchableOpacity>
         </View>
-      ) : (
-        <TouchableOpacity onPress={() => setMostrarFiltros(true)} style={styles.openBtn}>
-          <Ionicons name="filter" size={28} color="#fff" />
-        </TouchableOpacity>
-      )}
+      }
+
+      <TouchableOpacity onPress={() => setMostrarFiltros(!mostrarFiltros)} style={mostrarFiltros ? styles.closeBtn : styles.openBtn}>
+        {mostrarFiltros ? (<CustomText style={styles.closeBtnText}>x</CustomText>) 
+        : (<Ionicons name={"filter"} size={28} color="#fff" />)
+        }
+      </TouchableOpacity>
     </View>
+
     </>
   );
 }
@@ -101,37 +103,41 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     flexWrap: 'wrap'
   },
-  filterBtn: {
+  floatingBox: {
+    position: 'absolute',
+    bottom: 15 + bottomBarStyles.container.height,
+    right: 15,
+    zIndex: 10, // encima de otras Views
+    flexDirection: "column",
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end'
+  },
+  filterOptionsParent: {
+    backgroundColor: "#fff",
+    padding: 8,
+    marginBottom: 10,
+    gap:4,
+    borderBottomRightRadius: 16,
+    flex: 1,
+    ...getShadowStyle(4)
+  },
+  filterOption: {
     flex: 1,
     height: "100%",
-    textAlign: "center",
-    alignItems: "center",
+    alignItems: "flex-start",
     backgroundColor: filterBtnColor,
     borderRadius: 0,
     borderBottomRightRadius: 0,
     ...getShadowStyle(2)
   },
-  filterBtnText: {
+  filterOptionText: {
     color: '#fff',
     fontWeight: 'bold',
     fontSize: 14,
-    paddingVertical: 8,
-    paddingHorizontal: 8
+    paddingVertical: 10,
+    paddingHorizontal: 12,
   },
-  floatingBox: {
-    position: 'absolute',
-    bottom: 10+56,
-    right: 10,
-    zIndex: 10, // encima de otras Views
-  },
-  filterBtnParent: {
-    backgroundColor: "#fff",
-    padding: 8,
-    gap:4,
-    borderBottomRightRadius: 16,
 
-    ...getShadowStyle(4)
-  },
   openBtn: {
     backgroundColor: azulLogoUndav,
     borderRadius: 30,
@@ -142,15 +148,21 @@ const styles = StyleSheet.create({
     ...getShadowStyle(4)
   },
   closeBtn: {
-    backgroundColor: "lightgray", //lightgray
-    borderBottomRightRadius: 12,
+    backgroundColor: "lightgray",
+    borderRadius: 30,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
     alignItems: 'center',
+    ...getShadowStyle(4)
   },
   closeBtnText: {
-    fontSize: 24,
+    fontSize: 20,
     fontWeight: 'bold',
     color: '#c91800', // #333
-    paddingVertical: 2,
-    paddingHorizontal: 8,
+    paddingBottom: 4,
+    //paddingHorizontal: 8,
+    textAlign: "center",
+    textAlignVertical: "center",
   },
 });

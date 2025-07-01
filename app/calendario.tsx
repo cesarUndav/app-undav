@@ -16,6 +16,7 @@ import {
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
+import { EventoAgenda, eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
 
 export type Actividad = {
   id: string;
@@ -48,7 +49,7 @@ function obtenerFechasDelMes(mes: number, anio: number): string[] {
 }
 
 export default function Calendario() {
-  const diaHoy = new Date(""); // el día actual
+  const diaHoy = new Date(); // el día actual
   //const diaHoy = new Date("2025-10-10");
   const hoyStr = DateToISOStringNoTime(diaHoy);
 
@@ -79,20 +80,65 @@ export default function Calendario() {
     const actividadesTemp: { [fecha: string]: Actividad[] } = {};
 
     try {
-      await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
-        const url = UrlObtenerAgenda(personaIdStr, fechaStr);
-        const json = JsonStringAObjeto(await ObtenerJsonString(url));
+await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
+  const url = UrlObtenerAgenda(personaIdStr, fechaStr);
+  const json = JsonStringAObjeto(await ObtenerJsonString(url));
 
-        const actividades: Actividad[] = json.error
-          ? []
-          : json.map((elem: any, idx: number) => ({
-              id: `${index * 1000 + idx}`,
-              title: `${elem.tipo_actividad} de ${elem.actividad}`,
-              body: `${elem.horario} hs`,
-            }));
-
-        actividadesTemp[fechaStr] = actividades;
+  // Actividades SIU
+  const actividadesSIU: Actividad[] = json.error
+    ? []
+    : json.map((elem: any, idx: number) => ({
+        id: `${index * 1000 + idx}`,
+        title: `${elem.tipo_actividad} de ${elem.actividad}`,
+        body: `${elem.horario} hs`,
       }));
+
+  // Eventos del calendario local que coincidan con la fecha
+  const eventosCalendario = listaCompleta().filter(evento => {
+    return evento.fechaInicio && DateToISOStringNoTime(new Date(evento.fechaInicio)) === fechaStr;
+  });
+
+  // EVENTOS
+  const actividadesEvento: Actividad[] = [];
+
+  listaCompleta().forEach((evento, idx) => {
+    const fechaIniStr = DateToISOStringNoTime(new Date(evento.fechaInicio));
+    const fechaFinStr = DateToISOStringNoTime(new Date(evento.fechaFin));
+
+    if (fechaIniStr === fechaFinStr && fechaIniStr === fechaStr) {
+      actividadesEvento.push({
+        id: `e-${index * 1000 + idx}`,
+        title: evento.titulo,
+        body: `Evento - ${eventoAgendaToFechaString(evento)}`,
+      });
+    }
+
+    if (fechaIniStr !== fechaFinStr) {
+      if (fechaIniStr === fechaStr) {
+        actividadesEvento.push({
+          id: `e-${index * 1000 + idx}-ini`,
+          title: `Inicio - ${evento.titulo}`,
+          body: eventoAgendaToFechaString(evento),
+        });
+      }
+      if (fechaFinStr === fechaStr) {
+        actividadesEvento.push({
+          id: `e-${index * 1000 + idx}-fin`,
+          title: `Fin - ${evento.titulo}`,
+          body: eventoAgendaToFechaString(evento),
+        });
+      }
+    }
+  });
+
+
+
+  // Combinar ambas
+  const todasLasActividades = [...actividadesSIU, ...actividadesEvento];
+
+  actividadesTemp[fechaStr] = todasLasActividades;
+}));
+
 
       setActividadesPorFecha(prev => ({ ...prev, ...actividadesTemp }));
 
@@ -161,17 +207,17 @@ export default function Calendario() {
         <View style={styles.titleContainer}>
           <CustomText style={styles.title}>{tituloPagina}</CustomText>
         </View>
+        </LoadingWrapper>
 
+      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <ScrollView contentContainerStyle={styles.listaContainer}>
           {listaActividadesDiaSeleccionado.map((evento) => (
             <ListaItem key={evento.id} title={evento.title} subtitle={evento.body.toString()} />
           ))}
         </ScrollView>
-
-      </LoadingWrapper>
-
-      <View style={{ flex: 1, marginTop: 10, justifyContent: 'flex-end' }}>
-        <BotonTextoLink route='/calend.-academico-resoluciones' label={"Calendario Académico PDF"} />
+        <View style={{marginTop: 10}}>
+          <BotonTextoLink route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} />
+        </View>
       </View>
 
     </FondoGradiente>
@@ -180,7 +226,7 @@ export default function Calendario() {
 
 const styles = StyleSheet.create({
   listaContainer: {
-    gap: 8,
+    gap: 8
   },
   title: {
     fontSize: 16,

@@ -128,8 +128,8 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
 };
 
 const blanco = "#fff";
-const colorSeleccionado = azulLogoUndav;
-const colorHoy = celesteSIU;
+const colorSeleccionado = celesteSIU;
+const colorHoy = azulLogoUndav;
 const actividadesColor = azulMedioUndav;
 
 const styles = StyleSheet.create({
@@ -174,6 +174,7 @@ const styles = StyleSheet.create({
   gridDias: {
     flexDirection: 'row',
     flexWrap: 'wrap',
+    paddingTop: 4
   },
   diaCelda: {
     width: `${(100 / 7)-0.01}%`,
@@ -195,6 +196,8 @@ const styles = StyleSheet.create({
   seleccionado: {
     backgroundColor: colorSeleccionado,
     borderRadius: "100%",
+    borderColor: azulLogoUndav,
+    borderWidth: 3
   },
   indicador: {
     position: 'absolute',

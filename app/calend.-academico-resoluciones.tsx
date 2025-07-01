@@ -48,7 +48,6 @@ export default function Calendario() {
     try {
       const links = await obtenerLinksYLabelsDelPrimerParrafo();
       setLinksWebCal(links);
-      console.log("Links obtenidos:", links);
     } catch (error) {
       console.error("Error al obtener links:", error);
     } finally {

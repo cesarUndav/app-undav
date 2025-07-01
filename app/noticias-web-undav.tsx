@@ -53,15 +53,14 @@ async function obtenerTablasListadornot(): Promise<{ label: string; href: string
 
 export default function NoticiasWeb() {
   const [loading, setLoading] = useState(true);
-  const [linksWebCal, setLinksWebCal] = useState<{ href: string; label: string }[]>([]);
+  const [linksNoticias, setLinksNoticias] = useState<{ href: string; label: string }[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(false);
 
   const handleObtenerLinks = async () => {
     setLoadingLinks(true);
     try {
       const links = await obtenerTablasListadornot();
-      setLinksWebCal(links);
-      console.log("Links obtenidos:", links);
+      setLinksNoticias(links);
     } catch (error) {
       console.error("Error al obtener links:", error);
     } finally {
@@ -78,9 +77,9 @@ export default function NoticiasWeb() {
     <FondoGradiente>
       <LoadingWrapper loading={loading}>
         <ScrollView contentContainerStyle={styles.listaContainer}>
-          {linksWebCal.length > 0 && (
+          {linksNoticias.length > 0 && (
             <>
-              {linksWebCal.map((linkObj, i) => (
+              {linksNoticias.map((linkObj, i) => (
                 <BotonTextoLink
                   key={i}
                   url={"https://undav.edu.ar/" + linkObj.href}
