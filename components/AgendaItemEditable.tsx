@@ -5,6 +5,7 @@ import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 import SettingsIcon from '../assets/icons/settings.svg';
 import { azulLogoUndav } from '@/constants/Colors';
+import { AgendaItemStyles } from './AgendaItem';
 
 type AgendaItemEditableProps = {
   evento: EventoAgenda;
@@ -13,39 +14,25 @@ type AgendaItemEditableProps = {
 
 export default function AgendaItemEditable({ evento, onPressEdit }: AgendaItemEditableProps) {
   return (
-    <View style={styles.agendaItem}>
-      <View style={styles.itemParent}>
-        <View style={styles.itemChildLeft}>
-          <CustomText style={[styles.eventTitle, { color: '#000' }]}>
-            {evento.titulo}
-          </CustomText>
-          <CustomText style={[styles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
-            {eventoAgendaToFechaString(evento)}
-          </CustomText>
-        </View>
-
-        <TouchableOpacity
-          style={styles.itemChildRight}
-          onPress={() => onPressEdit(evento.id)}
-          accessible
-          accessibilityLabel="Editar Evento"
-        >
-          <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
+    <View style={AgendaItemStyles.agendaItem}>
+        <TouchableOpacity style={styles.itemParent} onPress={() => onPressEdit(evento.id)} accessible accessibilityLabel="Editar Evento" >
+          <View style={styles.itemChildLeft}>
+            <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>
+              {evento.titulo}
+            </CustomText>
+            <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
+              {eventoAgendaToFechaString(evento)}
+            </CustomText>
+          </View>
+          <View style={styles.itemChildRight}>
+            <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
+          </View>
         </TouchableOpacity>
-      </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  agendaItem: {
-    backgroundColor: '#fff',
-    paddingVertical: 6,
-    paddingHorizontal: 10,
-    borderBottomRightRadius: 16,
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
-  },
   itemParent: {
     flexDirection: 'row',
     justifyContent: 'space-between',
@@ -58,14 +45,5 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
-  },
-  eventTitle: {
-    fontSize: 16,
-    fontWeight: 'bold',
-  },
-  eventDate: {
-    fontSize: 13,
-    fontWeight: 'bold',
-    marginTop: 2,
-  },
+  }
 });

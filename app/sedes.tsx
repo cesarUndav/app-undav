@@ -4,6 +4,7 @@ import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import { azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 
 
@@ -52,7 +53,7 @@ export default function Sedes() {
   const router = useRouter();
 
   return (
-    <FondoScrollGradiente style={{padding:15, gap: 15}}>
+    <FondoScrollGradiente gap={15} style={{padding:15}}>
         {sedes.map((sede, index) => (
           <View key={index} style={styles.card}>
               <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>
@@ -85,8 +86,7 @@ const styles = StyleSheet.create({
     backgroundColor: azulLogoUndav,
     borderBottomRightRadius: 30,
     overflow: 'hidden',
-    elevation: 6, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(6)
   },
   image: {
     width: '100%',

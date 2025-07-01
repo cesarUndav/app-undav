@@ -14,9 +14,9 @@ export default function Certificados() {
 
       <BotonTextoLink label="Certificado de Exámen" url="https://docs.google.com/document/d/1NGOoRhWOAubZEhG0EzOjhquI1bIKpYwE/edit?tab=t.0#heading=h.gjdgxs" />
       <BotonTextoLink label="Solicitud de Sello Institucional" url="https://docs.google.com/forms/d/e/1FAIpQLSe4hgptWLsprQocC75YEdXzeT9CNiLhd1SH-tawXbMpY4dxGQ/viewform" />
-      <BotonTextoLink label="Certificado de Alumno Regular" url="https://academica.undav.edu.ar/g3w/solicitudes" color={celesteSIU}/>
-      <BotonTextoLink label="Certificado de Actividades Aprobadas" url="https://academica.undav.edu.ar/g3w/solicitudes" color={celesteSIU}/>
-      <BotonTextoLink label="Boleto Estudiantil" url="https://academica.undav.edu.ar/g3w/boleto_estudiantil" color={celesteSIU}/>
+      <BotonTextoLink label="Certificado de Alumno Regular" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/solicitudes" color={celesteSIU}/>
+      <BotonTextoLink label="Certificado de Actividades Aprobadas" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/solicitudes" color={celesteSIU}/>
+      <BotonTextoLink label="Boleto Estudiantil" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/boleto_estudiantil" color={celesteSIU}/>
 
       <CustomText style={styles.title}>Atención al Estudiante</CustomText>
 

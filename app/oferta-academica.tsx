@@ -4,6 +4,7 @@ import Collapsible from "react-native-collapsible";
 import { router } from "expo-router";
 import { AntDesign } from '@expo/vector-icons';
 import CustomText from "@/components/CustomText";
+import { getShadowStyle } from "@/constants/ShadowStyle";
 
 const departamentos = [
   {
@@ -152,8 +153,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(4) 
   },
   deptoText: {
     color: "white",

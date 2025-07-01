@@ -10,6 +10,7 @@ import {
   UsuarioEsAutenticado,
   infoBaseUsuarioActual
 } from "@/data/DatosUsuarioGuarani";
+import { getShadowStyle } from "@/constants/ShadowStyle";
 
 // Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -22,6 +23,11 @@ type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem | SeparatorItem;
 interface ConfigSection {
   data: ConfigItem[];
 }
+function PropuestasString():string {
+  const str:string = "Mis Propuestas Educativas:" +
+  infoBaseUsuarioActual.propuestas.map(p=> "\n"+p.nombre + ": " +(p.regular == "S" ? "Regular" : "NO Regular")).join("");
+  return str;
+}
 
 export default function Configuracion() {
 
@@ -31,17 +37,17 @@ export default function Configuracion() {
   const handleLogout = () => {
     Alert.alert(
       "Cerrar sesión",
-      "¿Estás seguro de que querés cerrar sesión?",
+      "¿Estás seguro de que querés\ncerrar sesión?",
       [
-        { text: "Cancelar", style: "cancel" },
         {
-          text: "Sí, cerrar sesión",
+          text: "Sí",
           style: "destructive",
           onPress: () => {
             Logout();
             router.replace("/"); // redirige a index.tsx
           }
-        }
+        },
+        { text: "No", style: "cancel" }
       ]
     );
   };
@@ -51,28 +57,8 @@ export default function Configuracion() {
       data: [
         { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido" },
         { type: "text", label: UsuarioEsAutenticado() ? "Legajo: " + infoBaseUsuarioActual.legajo : "Legajo: 12345" },
-        { type: "text", label: UsuarioEsAutenticado() ? "Propuestas:" + infoBaseUsuarioActual.propuestas.map(p=> "\n"+p.nombre+" - Regular: "+p.regular).join("") : "Propuestas:\nP1 - Regular: N" },
+        { type: "text", label: UsuarioEsAutenticado() ? PropuestasString() : "Mis Propuestas Educativas:\nP1 - Regular: N" },
         { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.email : "nombreapellido@email.com" },
-        { type: "separator" }
-      ]
-    },
-    {
-      data: [
-        {
-          type: "toggle",
-          label: "Recibir notificaciones",
-          value: notifsOn,
-          onValueChange: (val) => setNotifsOn(val),
-        },
-        {
-          type: "toggle",
-          label: "DEV - Fondo celeste",
-          value: fondoCeleste,
-          onValueChange: (val) => {
-            setFondoCeleste(val);
-            setColorFondoCeleste(val);
-          },
-        },
         { type: "separator" }
       ]
     },
@@ -85,28 +71,18 @@ export default function Configuracion() {
         },
         {
           type: "link",
-          label: "Bienestar",
-          onPress: () => router.push("/bienestar"),
+          label: "Plan de Estudio",
+          onPress: () => router.push("/plan-de-estudio"),
         },
         {
           type: "link",
-          label: "Contacto",
-          onPress: () => router.push("/contacto"),
+          label: "Ajustes",
+          onPress: () => router.push("/ajustes"),
         },
         {
           type: "link",
-          label: "Preguntas frecuentes",
-          onPress: () => router.push("/preguntas-frecuentes"),
-        },
-        {
-          type: "link",
-          label: "Sedes",
-          onPress: () => router.push("/sedes"),
-        },
-        {
-          type: "link",
-          label: "Envianos tus sugerencias",
-          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
+          label: "Extras",
+          onPress: () => router.push("/extras"),
         },
         { type: "separator" }
       ]
@@ -174,7 +150,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     backgroundColor: "#fff",
-    elevation: 6
+    ...getShadowStyle(6)
   },
   list: {},
   item: {

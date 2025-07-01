@@ -4,6 +4,7 @@ import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, SafeAreaView }
 import CustomText from '../components/CustomText';
 import FondoGradiente from '@/components/FondoGradiente';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 export default function Contacto() {
   const abrirEmail = (email: string) => {
@@ -51,8 +52,7 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 20,
     paddingVertical: 10,
     paddingHorizontal: 15,
-    elevation: 6, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(6)
   },
   subtitulo: {
     fontSize: 16,

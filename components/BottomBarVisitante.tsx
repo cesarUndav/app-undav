@@ -1,70 +1,59 @@
-// components/BottomBar.tsx
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
-
-// Íconos SVG como componentes
-import HomeIcon from '../assets/icons/home.svg';
-import CalendarIcon from '../assets/icons/calendar.svg';
-import LinksIcon from '../assets/icons/links.svg';
-import SettingsIcon from '../assets/icons/settings.svg';
+import { View, TouchableOpacity } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
-import { azulMedioUndav } from '@/constants/Colors';
+import { bottomBarStyles, colorSeleccionado, opacidadSeleccionado, tamanioIcono } from './BottomBar';
 
 const routes = [
   "/home-visitante",
-  "/calendario",
   "/ajustes-visitante",
-] as const;  // <-- "as const" to make these literal types
+] as const;
 
-type Route = typeof routes[number];  // Union of route string literals
+type Route = typeof routes[number];
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-export default function BottomBarVisitante() {
+type ButtonWithSVG = {
+  route: Route;
+  Icon: React.FC<any>;
+  IconName?: never;
+};
+type ButtonWithIonicon = {
+  route: Route;
+  IconName: IoniconName;
+  Icon?: never;
+};
+type Button = ButtonWithSVG | ButtonWithIonicon;
+
+
+export default function BottomBar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const buttons: { route: Route; Icon: React.FC<any> }[] = [
-    { route: "/home-visitante", Icon: HomeIcon },
-    { route: "/calendario", Icon: CalendarIcon },
-    { route: "/ajustes-visitante", Icon: SettingsIcon },
+  const buttons: Button[] = [
+    { route: "/home-visitante", Icon: require('../assets/icons/home.svg').default },
+    { route: "/ajustes-visitante", Icon: require('../assets/icons/settings.svg').default },
   ];
 
   return (
-    <View style={styles.container}>
-      {buttons.map(({ route, Icon }) => {
+    <View style={bottomBarStyles.container}>
+      {buttons.map(({ route, Icon, IconName }) => {
         const disabled = pathname === route;
+        const iconColor = disabled ? colorSeleccionado : "#fff";
+
         return (
           <TouchableOpacity
             key={route}
-            style={[styles.btn, disabled && { opacity: 0.5 }]}
+            style={[bottomBarStyles.btn, disabled && { opacity: opacidadSeleccionado }]}
             onPress={() => !disabled && router.push(route)}
             disabled={disabled}
           >
-            <Icon width={iconSize} height={iconSize} fill="white" />
+            {Icon ? 
+            <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />
+            :
+            <Ionicons name={IconName!} size={30} color={iconColor} />}
           </TouchableOpacity>
         );
       })}
     </View>
   );
 }
-
-
-const iconSize = 30;
-
-const styles = StyleSheet.create({
-  container: {
-    flexDirection: 'row',
-    backgroundColor: azulMedioUndav,
-    justifyContent: 'space-around'
-  },
-  btn: {
-    //flex: 1,
-    paddingVertical: 12,
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 70,
-    //backgroundColor: "green",
-  },
-  icon: {
-    
-  },
-});

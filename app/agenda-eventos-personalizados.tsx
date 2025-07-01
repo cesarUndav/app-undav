@@ -1,14 +1,16 @@
 import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal, Platform, TextInput } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, Platform, TextInput, ScrollView } from 'react-native';
 import CustomText from '../components/CustomText';
 import { EventoAgenda, listaEventosPersonalizados, obtenerEventoConId, editarEventoPersonalizado} from '../data/agenda';
 
 import {agregarEventoPersonalizado, quitarEventoPersonalizado} from '../data/agenda';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
-import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import { azulLogoUndav } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
+import FondoGradiente from '@/components/FondoGradiente';
+import BotonTextoLink from '@/components/BotonTextoLink';
 
 export default function EventosPersonalizados() {
   const [listaEventos, setListaEventos] = useState<EventoAgenda[]>([]);
@@ -67,12 +69,9 @@ export default function EventosPersonalizados() {
   }
 
   return (
-    <FondoScrollGradiente>
-
-        <TouchableOpacity onPress={abrirModalAgregarEvento} style={styles.agregarBtn}>
-          <CustomText style={styles.agregarBtnText}>CREAR EVENTO</CustomText>
-        </TouchableOpacity>
-
+    <FondoGradiente>
+    
+      <ScrollView contentContainerStyle={styles.scrollContainer}>
         {listaEventos.map((evento) => (
           <AgendaItemEditable
             key={evento.id}
@@ -80,6 +79,11 @@ export default function EventosPersonalizados() {
             onPressEdit={abrirModalEditarEvento}
           />
         ))}
+      </ScrollView>
+      
+      <View style={{marginTop: 15}}>
+        <BotonTextoLink onPressFunction={() => abrirModalAgregarEvento()} label='CREAR EVENTO' centered/>
+      </View>
 
       {/* MODAL */}
       <Modal visible={modalVisible} animationType="fade" transparent>
@@ -95,106 +99,68 @@ export default function EventosPersonalizados() {
                 onChangeText={setTitulo}
               />
 
-              <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={styles.dateButton}>
-                <CustomText>Inicio: {fechaInicio.toLocaleDateString()}</CustomText>
-              </TouchableOpacity>
-              {showInicioPicker && (
-                <DateTimePicker
-                  value={fechaInicio}
-                  mode="date"
-                  display="default"
-                  onChange={(_, date) => {
-                    if (date) setFechaInicio(date);
-                    setShowInicioPicker(Platform.OS === 'ios');
-                  }}
-                />
-              )}
+              <View style={{flexDirection:"row", gap: 10}}>
+                <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={styles.dateButton}>
+                  <CustomText>{"Inicio: "+fechaInicio.toLocaleDateString()}</CustomText>
+                </TouchableOpacity>
+                {showInicioPicker && (
+                  <DateTimePicker
+                    value={fechaInicio}
+                    mode="date"
+                    display="default"
+                    onChange={(_, date) => {
+                      if (date) {setFechaInicio(date); }
+                      setShowInicioPicker(Platform.OS === 'ios');
+                    }}
+                  />
+                )}
 
-              <TouchableOpacity onPress={() => setShowFinPicker(true)} style={styles.dateButton}>
-                <CustomText>Fin: {fechaFin.toLocaleDateString()}</CustomText>
-              </TouchableOpacity>
-              {showFinPicker && (
-                <DateTimePicker
-                  value={fechaFin}
-                  mode="date"
-                  display="default"
-                  onChange={(_, date) => {
-                    if (date) setFechaFin(date);
-                    setShowFinPicker(Platform.OS === 'ios');
-                  }}
-                />
-              )}
+                <TouchableOpacity onPress={() => setShowFinPicker(true)} style={styles.dateButton}>
+                  <CustomText>{"Fin: "+fechaFin.toLocaleDateString()}</CustomText>
+                </TouchableOpacity>
+                {showFinPicker && (
+                  <DateTimePicker
+                    value={fechaFin}
+                    mode="date"
+                    display="default"
+                    onChange={(_, date) => {
+                      if (date) setFechaFin(date);
+                      setShowFinPicker(Platform.OS === 'ios');
+                    }}
+                  />
+                )}
+              </View>
               <View style={[{gap: 10}]}>
                 <TouchableOpacity onPress={confirmarAgregarEvento}
                   disabled={titulo.trim().length === 0}
                   style={[styles.modalBtn, { backgroundColor: titulo.trim().length > 0 ? azulLogoUndav : "gray" }]}>
-                  <CustomText style={styles.modalBtnText}>ACEPTAR</CustomText>
+                  <CustomText style={styles.modalBtnText}>GUARDAR CAMBIOS</CustomText>
                 </TouchableOpacity>
                 
                 { modoEdicion && (
                     <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[styles.modalBtn, { backgroundColor: "#c91800" }]}>
-                      <CustomText style={styles.modalBtnText}>ELIMINAR</CustomText>
+                      <CustomText style={styles.modalBtnText}>ELIMINAR EVENTO</CustomText>
                     </TouchableOpacity>
                   )
                 }
 
                 <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.modalBtn, { backgroundColor: "white" }]}>
-                  <CustomText style={[styles.modalBtnText,{color: "gray"}]}>CANCELAR</CustomText>
+                  <CustomText style={[styles.modalBtnText,{color: "gray"}]}>SALIR</CustomText>
                 </TouchableOpacity>
               </View>
             </View>
           </View>
         </OcultadorTeclado>
       </Modal>
-      
-    </FondoScrollGradiente>
+    
+    </FondoGradiente>
   );
 }
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
   scrollContainer: {
-    paddingVertical: 10,
-    paddingHorizontal: 10,
     gap: 8
   },
-  agregarBtn: {
-    backgroundColor: azulLogoUndav,
-    flex: 1,
-    height: "100%",
-    textAlign: "center",
-    alignItems: "center",
-    borderRadius: 0,
-    borderBottomRightRadius: 16,
-    elevation: 2, // Android sombra
-    shadowColor: '#000' // IOS sombra
-    //marginHorizontal: 10
-  },
-  agregarBtnText: {
-    color: '#fff',
-    fontWeight: 'bold',
-    fontSize: 15,
-    paddingVertical: 12
-  },
-  
-  itemParent: {
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  },
-  itemChildLeft: {
-    flex: 1,
-    textAlign: "left",
-    alignItems: "flex-start"
-  },
-  itemChildRight: {
-    flex: 0.12,
-    textAlign: "right",
-    alignItems: "flex-end",
-    justifyContent: "center",
-    alignContent: "center"
-  },
-    modalOverlay: {
+  modalOverlay: {
     flex: 1,
     justifyContent: 'center',
     backgroundColor: 'rgba(0,0,0,0.7)',
@@ -226,6 +192,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#eee',
     marginBottom: 10,
     borderRadius: 6,
+    flex: 1
   },
     modalBtn: {
     backgroundColor: "gray",
@@ -234,8 +201,7 @@ const styles = StyleSheet.create({
     textAlign: "center",
     alignItems: "center",
     borderBottomRightRadius: 16,
-    elevation: 2, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(2)
     //marginHorizontal: 10
   },
   modalBtnText: {

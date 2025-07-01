@@ -1,4 +1,4 @@
-import React, { act, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 import CustomText from '../components/CustomText';
@@ -12,9 +12,10 @@ import {
   infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
 import ListaItem from '@/components/ListaItem';
-import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { azulClaro, negroAzulado } from '@/constants/Colors';
+import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
+import FondoGradiente from '@/components/FondoGradiente';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -42,9 +43,25 @@ export default function HistoriaAcademica() {
   const [promedioConAplazos, setPromedioConAplazos] = useState(0);
   const [conAplazos, setConAplazos] = useState(false);
 
-  useEffect(() => {
+  // BARRA DE BÚSQUEDA
+  const [search, setSearch] = useState('');
+  const actividadesMostradas = (conAplazos ? listaActividades : listaActividadesAprobadas)
+  .filter((actividad) =>
+    coincideBusqueda(actividad.title, search)
+  );
+  function mostrarListaActividad() {
+    return actividadesMostradas.map((actividad) => (
+      <ListaItem
+        key={actividad.id}
+        title={actividad.title}
+        subtitle={actividad.body}
+      />
+    ))
+  }
+  //
 
-    const fetchAgenda = async () => {
+  useEffect(() => {
+    const fetchHistoria = async () => {
       try {
         const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/"+infoBaseUsuarioActual.idPersona+"/datosanalitico";
         const json = JsonStringAObjeto(await ObtenerJsonString(url));
@@ -100,45 +117,37 @@ export default function HistoriaAcademica() {
         setLoading(false);
       }
     };
-
-    fetchAgenda();
+    fetchHistoria();
   }, [conAplazos]);
+
 
   return (
 
-    <FondoScrollGradiente>
+    <FondoGradiente style={{gap: 10, paddingBottom: 15}}>
       <LoadingWrapper loading={loading}>
-        <CustomText style={styles.estadisticas}> 
-          {hayHistoria ? 
-          "Materias Aprobadas: "+cantMaterias+
-          (conAplazos ?
-            "\nPromedio con Aplazos: "+promedioConAplazos.toFixed(2)
-            : "\nPromedio: "+promedio.toFixed(2))
-          : "No hay historia académica."}
-        </CustomText>
-        
-        <TouchableOpacity onPress={() => setConAplazos(!conAplazos)}>
-          <CustomText style={[styles.estadisticas, {color: azulClaro}]}>{conAplazos ? "Ocultar Aplazos" : "Mostrar Aplazos" }</CustomText>
-        </TouchableOpacity>
+        <View>
+          <CustomText style={styles.estadisticas}> 
+            {hayHistoria ? 
+            "Materias Aprobadas: "+cantMaterias+
+            (conAplazos ?
+              "\nPromedio con Aplazos: "+promedioConAplazos.toFixed(2)
+              : "\nPromedio: "+promedio.toFixed(2))
+            : "No hay historia académica."}
+          </CustomText>
+          
+          <TouchableOpacity onPress={() => setConAplazos(!conAplazos)}>
+            <CustomText style={[styles.estadisticas, {color: azulClaro}]}>{conAplazos ? "Ocultar Aplazos" : "Mostrar Aplazos" }</CustomText>
+          </TouchableOpacity>
+        </View>
+        <ScrollView contentContainerStyle={{gap: 8, paddingHorizontal: 15}}>
+            {mostrarListaActividad()}
+        </ScrollView>
+        <View style={{paddingHorizontal: 15}}>
+          <BarraBusqueda value={search} onChangeText={setSearch} />
+        </View>
 
-        {conAplazos ? listaActividades.map((actividad) => (
-          <ListaItem
-            key={actividad.id}
-            title={actividad.title}
-            subtitle={actividad.body}
-          />
-        ))
-        :
-        listaActividadesAprobadas.map((actividad) => (
-          <ListaItem
-            key={actividad.id}
-            title={actividad.title}
-            subtitle={actividad.body}
-          />
-        ))
-        }
       </LoadingWrapper>
-    </FondoScrollGradiente>
+    </FondoGradiente>
   );
 }
 
@@ -160,3 +169,4 @@ const styles = StyleSheet.create({
     marginHorizontal: 15
   }
 });
+

@@ -1,26 +1,25 @@
 ###
 ### VARIABLES DE PRUEBA
 ###
-#POST http://{{hostname}}/persona/validuser HTTP/1.1
-# @hostname = localhost/api/appundav
-@hostname = "172.16.1.43/api/appundav"
+#@hostname = localhost/api/appundav
+#server
+@hostname = 172.16.1.43/api/appundav/
 
-### ESTUDIANTES DE PRUEBA
-
-# @USUARIO = "0-23156651"
-# @PASSWORD = "Desarrollo2025+"
-# @PERSONA_ID = 6451
-
+### ESTUDIANTE DE PRUEBA
+##@TIPO_DOC = 0
+##@NRO_DOC = 999999999
 @USUARIO = "43877860"
 @PASSWORD = "abc123"
+
+### TOKEN Y PERSONA_ID
 @PERSONA_ID = 57481
+@PLAN_ID = 435
+@TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Mzg3Nzg2MCIsImlhdCI6MTc1MDk0NzQzNSwiZXhwIjoxNzUwOTUxMDM1fQ.Iwur6EIh7HLlF-rfypAHbnCJxEJ-xC8WcSVWpioZha8
 
-@TOKEN = eyJ0eXAiOiJKV1QiLCJhbGciOiJIUzI1NiJ9.eyJzdWIiOiI0Mzg3Nzg2MCIsImlhdCI6MTc0OTEzODIwNywiZXhwIjoxNzQ5MTQxODA3fQ.VJroEmw9ieQrUdZ2SgOYlasSy0bIGFSjoqiiD6HEU0U
-
+#####################################################################
 ###
-### OBTIENE TOKEN (login)
-###
-POST http://172.16.1.43/api/appundav/persona/validuser HTTP/1.1
+### OBTIENE TOKEN (loglocalhost/api/appundav
+POST http://{{hostname}}persona/validuser HTTP/1.1
 Content-Type: application/json
 
 {
@@ -30,24 +29,33 @@ Content-Type: application/json
 
 #####################################################################
 ### PERSONA 
+#####################################################################
 
 ###
 ### SHOW PERSONA
-GET http://172.16.1.43/api/appundav/persona/{{PERSONA_ID}} HTTP/1.1
+GET http://{{hostname}}persona/{{PERSONA_ID}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 ### SHOW TODAS LAS PERSONA
-GET http://172.16.1.43/api/appundav/persona HTTP/1.1
+GET http://{{hostname}}persona HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 ### DELETE PERSONA (BORRADO LOGICO)
-DELETE http://172.16.1.43/api/appundav/persona/{{PERSONA_ID}} HTTP/1.1
+DELETE  http://{{hostname}}persona/{{PERSONA_ID}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
+
+#####################################################################
+### PROPUESTAS Y MATERIAS  55 abogacia
+#####################################################################
+GET  http://{{hostname}}propuesta/55 HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
 
 
 #####################################################################
@@ -56,28 +64,28 @@ Authorization: Bearer {{TOKEN}}
 ###
 ### CREATE ANOTACION PARA UNA PERSONA
 ###
-POST http://172.16.1.43/api/appundav/anotaciones HTTP/1.1
+POST http://{{hostname}}anotaciones HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 {
     "persona": {{PERSONA_ID}},
-    "titulo": "jhgkhjngvjhv para examen Mock!",
-    "detalle": "Estudiar, Estudiar, Estudiar.... y mas estudiar", 
+    "titulo": "Parcial de Fisica I",
+    "detalle": "Estudiar todo el material que dieron en clase mas los que se pueda encontrar en Youtube.", 
     "fecha_alerta": "2026-03-11 18:00:00"
 }
 
 
 ###
 ### SHOW TODAS LAS ANOTACIONES DE UNA PERSONA
-GET http://172.16.1.43/api/appundav/anotaciones/{{PERSONA_ID}} HTTP/1.1
+GET http://{{hostname}}anotaciones/{{PERSONA_ID}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 
 ###
 ### TRAE ANOTACION PUNTUAL DE UNA PERSONA
-GET  http://172.16.1.43/api/appundav/anotaciones/{{PERSONA_ID}}/7 HTTP/1.1
+GET  http://{{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -85,7 +93,7 @@ Authorization: Bearer {{TOKEN}}
 ###
 ### UPDATE
 ###
-PUT http://172.16.1.43/api/appundav/anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
+PUT http://{{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -96,16 +104,25 @@ Authorization: Bearer {{TOKEN}}
     "fecha_alerta": "2026-03-11 18:00:00"
 }
 
+
 ###
 ### DELETE logico - actualiza fecha de borrado. deleted_at
 ###
-DELETE http://172.16.1.43/api/appundav/anotaciones/{{PERSONA_ID}}/6 HTTP/1.1
+DELETE  http://{{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
-#####################################################################
+
+
+###
+### TRAE INFORMACION DEL PLAN Y MATERIAS DEL PLAN
+###
+GET  http://{{hostname}}propuesta/{{PLAN_ID}}/plan HTTP/1.1
+Content-Type: application/json
+Authorization: Bearer {{TOKEN}}
+
 ### ENVIA MAIL AL ESTUDIANTE/PERSONA (PREVIO DEFINIR TOKEN)
 ###
-GET http://172.16.1.43/api/appundav/persona/{{PERSONA_ID}}/sendmail HTTP/1.1
+GET http://{{hostname}}persona/{{PERSONA_ID}}/sendmail HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

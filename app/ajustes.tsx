@@ -1,15 +1,13 @@
 import React, { useState } from "react";
-import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking, Alert } from "react-native";
-import { router } from "expo-router";
+import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Platform } from "react-native";
 import CustomText from "../components/CustomText";
 import FondoGradiente from "@/components/FondoGradiente";
 import {
   fondoEsCeleste,
   Logout,
-  setColorFondoCeleste,
-  UsuarioEsAutenticado,
-  infoBaseUsuarioActual
+  setColorFondoCeleste
 } from "@/data/DatosUsuarioGuarani";
+import { getShadowStyle } from "@/constants/ShadowStyle";
 
 // Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -28,34 +26,7 @@ export default function Configuracion() {
   const [notifsOn, setNotifsOn] = useState(false);
   const [fondoCeleste, setFondoCeleste] = useState(fondoEsCeleste);
 
-  const handleLogout = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que querés cerrar sesión?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Sí, cerrar sesión",
-          style: "destructive",
-          onPress: () => {
-            Logout();
-            router.replace("/"); // redirige a index.tsx
-          }
-        }
-      ]
-    );
-  };
-
   const sections: ConfigSection[] = [
-    {
-      data: [
-        { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido" },
-        { type: "text", label: UsuarioEsAutenticado() ? "Legajo: " + infoBaseUsuarioActual.legajo : "Legajo: 12345" },
-        { type: "text", label: UsuarioEsAutenticado() ? "Propuestas:" + infoBaseUsuarioActual.propuestas.map(p=> "\n"+p.nombre+" - Regular: "+p.regular).join("") : "Propuestas:\nP1 - Regular: N" },
-        { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.email : "nombreapellido@email.com" },
-        { type: "separator" }
-      ]
-    },
     {
       data: [
         {
@@ -72,51 +43,6 @@ export default function Configuracion() {
             setFondoCeleste(val);
             setColorFondoCeleste(val);
           },
-        },
-        { type: "separator" }
-      ]
-    },
-    {
-      data: [
-        {
-          type: "link",
-          label: "Historia Académica",
-          onPress: () => router.push("/historia-academica"),
-        },
-        {
-          type: "link",
-          label: "Bienestar",
-          onPress: () => router.push("/bienestar"),
-        },
-        {
-          type: "link",
-          label: "Contacto",
-          onPress: () => router.push("/contacto"),
-        },
-        {
-          type: "link",
-          label: "Preguntas frecuentes",
-          onPress: () => router.push("/preguntas-frecuentes"),
-        },
-        {
-          type: "link",
-          label: "Sedes",
-          onPress: () => router.push("/sedes"),
-        },
-        {
-          type: "link",
-          label: "Envianos tus sugerencias",
-          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
-        },
-        { type: "separator" }
-      ]
-    },
-    {
-      data: [
-        {
-          type: "action",
-          label: "Cerrar sesión",
-          onPress: handleLogout
         }
       ]
     }
@@ -138,9 +64,9 @@ export default function Configuracion() {
                 );
               case "toggle":
                 return (
-                  <View style={[styles.item, { marginVertical: -10 }]}>
+                  <View style= {[styles.item, Platform.OS === "ios" ? {marginVertical: 0} : {marginVertical: -10}]}>
                     <CustomText style={styles.textItem}>{item.label}</CustomText>
-                    <Switch value={item.value} onValueChange={item.onValueChange} />
+                    <Switch value={item.value} onValueChange={item.onValueChange}/>
                   </View>
                 );
               case "link":
@@ -174,8 +100,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     backgroundColor: "#fff",
-    elevation: 6, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(6)
   },
   list: {},
   item: {

@@ -1,27 +1,27 @@
-import React, { useEffect, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
-
-import { Ionicons } from '@expo/vector-icons';
+import React, { useEffect, useState, useCallback, useRef } from 'react';
+import { View, StyleSheet, ScrollView } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import ListaItem from '@/components/ListaItem';
 import BotonTextoLink from '@/components/BotonTextoLink';
-import BarraSemanal from './BarraSemanal';
+import CalendarioMensual from '../components/CalendarioMensual';
 import FondoGradiente from '@/components/FondoGradiente';
 
 import {
   JsonStringAObjeto,
   ObtenerJsonString,
   UrlObtenerAgenda,
-} from '@/data/DatosUsuarioGuarani Backup'
+} from '@/data/DatosUsuarioGuarani Backup';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
+import { EventoAgenda, eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
 
 export type Actividad = {
-  id: number;
-  title: string;
+  id: string;
   body: string;
+  title: string;
 };
 
 function fechaSumarDias(diasASumar: number, fechaOpcional?: Date): Date {
@@ -38,123 +38,195 @@ function IndexToDiaString(index: number): string {
   return dias[index] ?? 'Día inválido.';
 }
 
+function obtenerFechasDelMes(mes: number, anio: number): string[] {
+  const fechas: string[] = [];
+  const fecha = new Date(anio, mes, 1);
+  while (fecha.getMonth() === mes) {
+    fechas.push(DateToISOStringNoTime(new Date(fecha)));
+    fecha.setDate(fecha.getDate() + 1);
+  }
+  return fechas;
+}
+
 export default function Calendario() {
-  
-  const diaHoy = fechaSumarDias(0);
-  const numDiaHoy = diaHoy.getDay();
+  const diaHoy = new Date(); // el día actual
+  //const diaHoy = new Date("2025-10-10");
+  const hoyStr = DateToISOStringNoTime(diaHoy);
 
   const [loading, setLoading] = useState(true);
-  const [listaActividadesSemanal, setListaActividadesSemanal] = useState<Actividad[][]>([]);
-  const [listaCantidadActividadesSemanal, setListaCantidadActividadesSemanal] = useState<number[]>([]);
-
+  const [actividadesPorFecha, setActividadesPorFecha] = useState<{ [fecha: string]: Actividad[] }>({});
+  const [cantidadActividadesPorFecha, setCantidadActividadesPorFecha] = useState<{ [fecha: string]: number }>({});
   const [listaActividadesDiaSeleccionado, setListaActividadesDiaSeleccionado] = useState<Actividad[]>([]);
   const [tituloPagina, setTituloPagina] = useState('');
-  const [numDiaSeleccionado, setNumDiaSeleccionado] = useState(numDiaHoy);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(diaHoy);
 
-  useEffect(() => {
-    //console.log("FETCH AGENDA");
-    const fetchAgenda = async () => {
-      setLoading(true);
+  // Para evitar recargar el mismo mes más de una vez
+  const mesesCargadosRef = useRef<Set<string>>(new Set());
 
-      const personaIdStr = await AsyncStorage.getItem("idPersona");
-      if (!personaIdStr) return;
+  const fetchActividadesDelMes = useCallback(async (mes: number, anio: number) => {
+    const claveMes = `${anio}-${mes}`;
+    if (mesesCargadosRef.current.has(claveMes)) return;
 
-      try {
-        const fechaInicioSemana = fechaSumarDias(-numDiaHoy);
-        const semana: Actividad[][] = [];
+    setLoading(true);
 
-        for (let i = 0; i < 7; i++) {
-          const fecha = fechaSumarDias(i, fechaInicioSemana);
-          
-          //const url = UrlObtenerAgenda(infoBaseUsuarioActual.idPersona, DateToISOStringNoTime(fecha));
-          const url = UrlObtenerAgenda(personaIdStr, DateToISOStringNoTime(fecha));
-          const json = JsonStringAObjeto(await ObtenerJsonString(url));
+    const personaIdStr = await AsyncStorage.getItem("idPersona");
+    if (!personaIdStr) {
+      console.warn("No se encontró ID de persona");
+      setLoading(false);
+      return;
+    }
 
-          const actividades: Actividad[] = (json.error ? [] : json.map((elem: any, index: number) => ({
-            id: index,
-            title: `${elem.tipo_actividad} de ${elem.actividad}`,
-            body: `${elem.horario} hs`,
-          })));
+    const fechasDelMes = obtenerFechasDelMes(mes, anio);
+    const actividadesTemp: { [fecha: string]: Actividad[] } = {};
 
-          semana[i] = actividades;
-        }
+    try {
+await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
+  const url = UrlObtenerAgenda(personaIdStr, fechaStr);
+  const json = JsonStringAObjeto(await ObtenerJsonString(url));
 
-        setListaActividadesSemanal(semana);
-        setListaCantidadActividadesSemanal(semana.map((dia) => dia.length));
-      } catch (err) {
-        console.error('Error al obtener agenda:', err);
-      } finally {
-        setLoading(false);
+  // Actividades SIU
+  const actividadesSIU: Actividad[] = json.error
+    ? []
+    : json.map((elem: any, idx: number) => ({
+        id: `${index * 1000 + idx}`,
+        title: `${elem.tipo_actividad} de ${elem.actividad}`,
+        body: `${elem.horario} hs`,
+      }));
+
+  // Eventos del calendario local que coincidan con la fecha
+  const eventosCalendario = listaCompleta().filter(evento => {
+    return evento.fechaInicio && DateToISOStringNoTime(new Date(evento.fechaInicio)) === fechaStr;
+  });
+
+  // EVENTOS
+  const actividadesEvento: Actividad[] = [];
+
+  listaCompleta().forEach((evento, idx) => {
+    const fechaIniStr = DateToISOStringNoTime(new Date(evento.fechaInicio));
+    const fechaFinStr = DateToISOStringNoTime(new Date(evento.fechaFin));
+
+    if (fechaIniStr === fechaFinStr && fechaIniStr === fechaStr) {
+      actividadesEvento.push({
+        id: `e-${index * 1000 + idx}`,
+        title: evento.titulo,
+        body: `Evento - ${eventoAgendaToFechaString(evento)}`,
+      });
+    }
+
+    if (fechaIniStr !== fechaFinStr) {
+      if (fechaIniStr === fechaStr) {
+        actividadesEvento.push({
+          id: `e-${index * 1000 + idx}-ini`,
+          title: `Inicio - ${evento.titulo}`,
+          body: eventoAgendaToFechaString(evento),
+        });
       }
-    };
+      if (fechaFinStr === fechaStr) {
+        actividadesEvento.push({
+          id: `e-${index * 1000 + idx}-fin`,
+          title: `Fin - ${evento.titulo}`,
+          body: eventoAgendaToFechaString(evento),
+        });
+      }
+    }
+  });
 
-    fetchAgenda();
+
+
+  // Combinar ambas
+  const todasLasActividades = [...actividadesSIU, ...actividadesEvento];
+
+  actividadesTemp[fechaStr] = todasLasActividades;
+}));
+
+
+      setActividadesPorFecha(prev => ({ ...prev, ...actividadesTemp }));
+
+      const nuevasCantidades: { [fecha: string]: number } = {};
+      for (const fecha in actividadesTemp) {
+        nuevasCantidades[fecha] = actividadesTemp[fecha].length;
+      }
+      setCantidadActividadesPorFecha(prev => ({ ...prev, ...nuevasCantidades }));
+
+      mesesCargadosRef.current.add(claveMes);
+    } catch (err) {
+      console.error("Error al cargar actividades del mes:", err);
+    } finally {
+      setLoading(false);
+    }
   }, []);
 
+  // Cargar mes inicial
   useEffect(() => {
-    //console.log("DRAW AGENDA");
+    const mes = diaHoy.getMonth();
+    const anio = diaHoy.getFullYear();
+    fetchActividadesDelMes(mes, anio);
+  }, [fetchActividadesDelMes]);
 
-    const actividadesDelDia = listaActividadesSemanal[numDiaSeleccionado];
-    if (!actividadesDelDia) return;
+  // Cargar actividades del día seleccionado
+  useEffect(() => {
+    const fechaStr = DateToISOStringNoTime(fechaSeleccionada);
+    const actividadesDelDia = actividadesPorFecha[fechaStr] ?? [];
 
-    const fecha = fechaSumarDias(numDiaSeleccionado - numDiaHoy);
-    const nombreDia = IndexToDiaString(fecha.getDay());
-    const mensajeDia = `${nombreDia} ${fecha.getDate()}`;
-    const esHoy = numDiaSeleccionado === numDiaHoy;
+    const nombreDia = IndexToDiaString(fechaSeleccionada.getDay());
+    const mensajeDia = `${nombreDia} ${fechaSeleccionada.getDate()}`;
 
-    setTituloPagina(
-      actividadesDelDia.length === 0
-        ? `No hay actividades ${esHoy ? `hoy, ${mensajeDia}` : `el ${mensajeDia}`}`
-        : `Actividades ${esHoy ? `de hoy, ` : `del `}${mensajeDia}`
-    );
+    let tituloPaginaDia: string = "";
+    if (actividadesDelDia.length === 0)
+      tituloPaginaDia = `No hay actividades ${fechaStr === hoyStr ? `hoy, ${mensajeDia}` : `el ${mensajeDia}`}`;
+    else {
+      if (fechaStr === hoyStr) tituloPaginaDia = "hoy, ";
+      else {
+        const fechaAyer = DateToISOStringNoTime(fechaSumarDias(-1));
+        const fechaManiana = DateToISOStringNoTime(fechaSumarDias(1));
 
+        if (fechaStr === fechaManiana) tituloPaginaDia = "mañana, ";
+        else if (fechaStr === fechaAyer) tituloPaginaDia = "ayer, ";
+      }
+      tituloPaginaDia += mensajeDia;
+    }
+
+    setTituloPagina(tituloPaginaDia);
     setListaActividadesDiaSeleccionado(actividadesDelDia);
-  }, [numDiaSeleccionado, listaActividadesSemanal]);
-
-  const cambiarDia = (incremento: number) => {
-    setNumDiaSeleccionado((prev) => Math.max(0, Math.min(6, prev + incremento)));
-  };
+  }, [fechaSeleccionada, actividadesPorFecha]);
 
   return (
     <FondoGradiente>
       <LoadingWrapper loading={loading}>
-        <ScrollView contentContainerStyle={styles.container}>
-          <BarraSemanal
-            actividadesPorDia={listaCantidadActividadesSemanal ?? [0, 0, 0, 0, 0, 0, 0]}
-            diaActual={numDiaSeleccionado}
-            diaHoy={numDiaHoy}
-            onSelectDay={(dayIndex) => setNumDiaSeleccionado(dayIndex)}
-          />
 
-          <View style={styles.headerButtons}>
-            <TouchableOpacity onPress={() => cambiarDia(-1)} style={styles.navButton}>
-              <Ionicons name="arrow-back" size={24} color="#1a2b50" />
-            </TouchableOpacity>
+        <CalendarioMensual
+          actividadesPorDia={cantidadActividadesPorFecha}
+          diaSeleccionadoActualmente={fechaSeleccionada}
+          diaHoy={diaHoy}
+          onSelectDay={setFechaSeleccionada}
+          onSelectMonthChange={(nuevoMes, nuevoAnio) => {
+            fetchActividadesDelMes(nuevoMes, nuevoAnio);
+          }}
+        />
 
-            <CustomText style={styles.title}>{tituloPagina}</CustomText>
-
-            <TouchableOpacity onPress={() => cambiarDia(1)} style={styles.navButton}>
-              <Ionicons name="arrow-forward" size={24} color="#1a2b50" />
-            </TouchableOpacity>
-          </View>
-
-          {listaActividadesDiaSeleccionado.map((evento) => (
-            <ListaItem key={evento.id} title={evento.title} subtitle={evento.body} />
-          ))}
-        </ScrollView>
-      </LoadingWrapper>
+        <View style={styles.titleContainer}>
+          <CustomText style={styles.title}>{tituloPagina}</CustomText>
+        </View>
+        </LoadingWrapper>
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <BotonTextoLink label="Calendario Académico" url="https://undav.edu.ar/index.php?idcateg=129" />
+        <ScrollView contentContainerStyle={styles.listaContainer}>
+          {listaActividadesDiaSeleccionado.map((evento) => (
+            <ListaItem key={evento.id} title={evento.title} subtitle={evento.body.toString()} />
+          ))}
+        </ScrollView>
+        <View style={{marginTop: 10}}>
+          <BotonTextoLink route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} />
+        </View>
       </View>
+
     </FondoGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-    gap: 8,
+  listaContainer: {
+    gap: 8
   },
   title: {
     fontSize: 16,
@@ -164,12 +236,10 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     flex: 1,
   },
-  headerButtons: {
+  titleContainer: {
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
-  },
-  navButton: {
-    padding: 10,
+    paddingVertical: 8,
   },
 });

@@ -51,10 +51,11 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     alignItems: 'center',
     borderBottomRightRadius: 20,
+    //borderRadius: "15%",
     backgroundColor:azulClaro
   },
     buttonBoxIconParent: {
-    height: "60%",
+    height: "64%",
     justifyContent: "flex-end"
   },
   buttonBoxTextParent: {
@@ -63,6 +64,6 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     fontWeight: "bold",
-    fontSize: 12
+    fontSize: 11
   }
 });

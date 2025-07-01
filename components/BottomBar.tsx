@@ -1,48 +1,73 @@
-// components/BottomBar.tsx
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
-
-// Íconos SVG como componentes
-import HomeIcon from '../assets/icons/home.svg';
-import CalendarIcon from '../assets/icons/calendar.svg';
-import CommunityIcon from '../assets/icons/community.svg';
-import LinksIcon from '../assets/icons/links.svg';
-import SettingsIcon from '../assets/icons/settings.svg';
+import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
-import { azulMedioUndav } from '@/constants/Colors';
+import { azulMedioUndav, celesteSIU } from '@/constants/Colors';
+import CustomText from './CustomText';
+import { getNotificationCount } from '@/data/notificaciones';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 const routes = [
   "/home-estudiante",
   "/calendario",
-  "/comunidad",
-  "/ajustes",
-] as const;  // <-- "as const" to make these literal types
+  "/notificaciones",
+  "/perfil",
+] as const;
 
-type Route = typeof routes[number];  // Union of route string literals
+type Route = typeof routes[number];
+type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
+
+type ButtonWithSVG = {
+  route: Route;
+  Icon: React.FC<any>;
+  IconName?: never;
+};
+type ButtonWithIonicon = {
+  route: Route;
+  IconName: IoniconName;
+  Icon?: never;
+};
+type Button = ButtonWithSVG | ButtonWithIonicon;
+
 
 export default function BottomBar() {
   const router = useRouter();
   const pathname = usePathname();
 
-  const buttons: { route: Route; Icon: React.FC<any> }[] = [
-    { route: "/home-estudiante", Icon: HomeIcon },
-    { route: "/calendario", Icon: CalendarIcon },
-    { route: "/comunidad", Icon: CommunityIcon },
-    { route: "/ajustes", Icon: SettingsIcon },
+  const buttons: Button[] = [
+    { route: "/home-estudiante", Icon: require('../assets/icons/home.svg').default },
+    { route: "/calendario", Icon: require('../assets/icons/calendar.svg').default },
+    { route: "/notificaciones", IconName: "notifications-outline" },
+    { route: "/perfil", IconName: "person-outline" },
   ];
 
   return (
-    <View style={styles.container}>
-      {buttons.map(({ route, Icon }) => {
+    <View style={bottomBarStyles.container}>
+      {buttons.map(({ route, Icon, IconName }) => {
         const disabled = pathname === route;
+        const iconColor = disabled ? colorSeleccionado : "#fff";
+        const esIconoNotificaciones: boolean = route == "/notificaciones";
+
         return (
           <TouchableOpacity
             key={route}
-            style={[styles.btn, disabled && { opacity: 0.5 }]}
+            style={[bottomBarStyles.btn, disabled && { opacity: opacidadSeleccionado }]}
             onPress={() => !disabled && router.push(route)}
             disabled={disabled}
+            //activeOpacity={1} // se puede usar esto para quitar animacion
           >
-            <Icon width={iconSize} height={iconSize} fill="white" />
+            {Icon ? 
+            <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />
+            :
+            <Ionicons name={IconName!} size={tamanioIcono-2} color={iconColor} />}
+
+            {esIconoNotificaciones && getNotificationCount() > 0 && (
+              <View style={bottomBarStyles.notificationBubble}>
+                <CustomText style={bottomBarStyles.notificationText}>
+                  {getNotificationCount()}
+                </CustomText>
+              </View>
+            )}
           </TouchableOpacity>
         );
       })}
@@ -50,23 +75,41 @@ export default function BottomBar() {
   );
 }
 
+export const tamanioIcono = 32;
+export const opacidadSeleccionado = 1;
+export const colorSeleccionado = celesteSIU;
 
-const iconSize = 30;
-
-const styles = StyleSheet.create({
+export const bottomBarStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
     backgroundColor: azulMedioUndav,
-    justifyContent: 'space-around'
+    justifyContent: 'space-around',
+    height: 56,
+    ...getShadowStyle(3)
   },
   btn: {
-    paddingVertical: 12,
     alignItems: 'center',
     justifyContent: 'center',
     width: 70,
-    //backgroundColor: "green",
-    //flex: 1,
   },
-  icon: {
+  notificationBubble: {
+    backgroundColor: "red",
+    position: "absolute",
+    top: 4,
+    right: 10,
+    height: 22,
+    width: 22,
+    borderRadius: "100%",
+    justifyContent: 'center',
+    alignItems: 'center',
+    zIndex: 10,
   },
+  notificationText: {
+    color: "#fff",
+    fontSize: 13,
+    fontWeight: "bold",
+    textAlign:"center",
+    textAlignVertical:"center"
+  }
+
 });

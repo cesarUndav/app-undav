@@ -3,6 +3,7 @@ import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
 import { useRouter } from "expo-router";
 import CustomText from "@/components/CustomText";
+import { getShadowStyle } from "@/constants/ShadowStyle";
 
 export default function CienciasAmbientales() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
@@ -110,8 +111,7 @@ const styles = StyleSheet.create({
     //justifyContent: "space-evenly",
   },
   seccion: {
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
+    ...getShadowStyle(4)
   },
   boton: {
     backgroundColor: "#9fa521",

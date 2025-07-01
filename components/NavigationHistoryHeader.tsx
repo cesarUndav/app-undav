@@ -2,6 +2,7 @@ import React, { ReactNode } from 'react';
 import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 type HeaderProps = {
   title: string;
@@ -46,11 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     paddingHorizontal: 8,
-    elevation: 4, // Android sombra
-    shadowColor: '#000', // IOS sombra
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 2,
+    ...getShadowStyle(4)
   },
   side: {
     width: 50,

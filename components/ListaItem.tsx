@@ -1,6 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TextStyle, ViewStyle } from 'react-native';
 import CustomText from './CustomText';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 type ListaItemProps = {
   title: string;
@@ -30,20 +31,23 @@ export default function ListaItem({
   };
 
   const titleStyle: TextStyle = {
+    fontWeight: 'bold',
     color: titleColor,
     fontSize,
   };
 
   const subtitleStyle: TextStyle = {
+    fontWeight: 'bold',
     color: subtitleColor,
-    fontSize: fontSize - 2,
-    marginTop: 2,
+    fontSize: fontSize - 1,
+    marginTop: 1,
+    paddingBottom: 1
   };
 
   return (
     <View style={[styles.itemContainer, containerStyle]}>
-      <CustomText style={[styles.title, titleStyle]}>{title}</CustomText>
-      {subtitle && <CustomText style={[styles.subtitle, subtitleStyle]}>{subtitle}</CustomText>}
+      <CustomText style={titleStyle}>{title}</CustomText>
+      {subtitle && <CustomText style={subtitleStyle}>{subtitle}</CustomText>}
     </View>
   );
 }
@@ -51,13 +55,6 @@ export default function ListaItem({
 const styles = StyleSheet.create({
   itemContainer: {
     borderBottomRightRadius: 16,
-    elevation: 4, // Android sombra
-    shadowColor: '#000' // IOS sombra
-  },
-  title: {
-    fontWeight: 'bold',
-  },
-  subtitle: {
-    fontWeight: 'bold',
-  },
+    ...getShadowStyle( 4)
+  }
 });
