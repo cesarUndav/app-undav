@@ -35,10 +35,14 @@ export default function BottomBar() {
   const pathname = usePathname();
 
   const buttons: Button[] = [
-    { route: "/home-estudiante", Icon: require('../assets/icons/home.svg').default },
-    { route: "/calendario", Icon: require('../assets/icons/calendar.svg').default },
-    { route: "/notificaciones", IconName: "notifications-outline" },
-    { route: "/perfil", IconName: "person-outline" },
+    // { route: "/home-estudiante", Icon: require('../assets/icons/home.svg').default },
+    // { route: "/calendario", Icon: require('../assets/icons/calendar.svg').default },
+    // { route: "/notificaciones", IconName: "notifications-outline" },
+    // { route: "/perfil", IconName: "person-outline" },
+    { route: "/home-estudiante", Icon: require('../assets/icons/ico-svg/inicio.svg').default },
+    { route: "/calendario", Icon: require('../assets/icons/ico-svg/calendario.svg').default },
+    { route: "/notificaciones", IconName: "notifications" },
+    { route: "/perfil", IconName: "person" },
   ];
 
   return (
@@ -59,7 +63,7 @@ export default function BottomBar() {
             {Icon ? 
             <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />
             :
-            <Ionicons name={IconName!} size={tamanioIcono-2} color={iconColor} />}
+            <Ionicons name={IconName!} size={tamanioIcono-20} color={iconColor} />}
 
             {esIconoNotificaciones && getNotificationCount() > 0 && (
               <View style={bottomBarStyles.notificationBubble}>
@@ -75,7 +79,7 @@ export default function BottomBar() {
   );
 }
 
-export const tamanioIcono = 32;
+export const tamanioIcono = 50;
 export const opacidadSeleccionado = 1;
 export const colorSeleccionado = celesteSIU;
 

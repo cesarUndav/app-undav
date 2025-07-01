@@ -111,7 +111,7 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
             onPress={() => onSelectDay(fecha)}
           >
             <View style={{ padding: 14, backgroundColor: "transparent", alignItems: 'center' }}>
-              <Text style={[styles.textoDiaNumero, (esSeleccionado||esHoy) && {color: "white"}]}>{fecha.getDate()}</Text>
+              <Text style={[styles.textoDiaNumero, (esSeleccionado||esHoy) && {color: colorTextoSeleccionado}]}>{fecha.getDate()}</Text>
               {cantidadActividades > 0 && (
                 <View style={styles.indicador}>
                   <Text style={styles.textoIndicador}>{cantidadActividades}</Text>
@@ -129,6 +129,7 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
 
 const blanco = "#fff";
 const colorSeleccionado = celesteSIU;
+const colorTextoSeleccionado = blanco;
 const colorHoy = azulLogoUndav;
 const actividadesColor = azulMedioUndav;
 
@@ -195,15 +196,16 @@ const styles = StyleSheet.create({
   },
   seleccionado: {
     backgroundColor: colorSeleccionado,
-    borderRadius: "100%",
+    borderRadius: 9999, // circular
+    borderWidth: 2,
     borderColor: azulLogoUndav,
-    borderWidth: 3
+    //overflow: 'hidden'
   },
   indicador: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: azulMedioUndav,
+    backgroundColor: actividadesColor,
     borderRadius: "100%",
     paddingHorizontal: 6,
     paddingVertical: 1,

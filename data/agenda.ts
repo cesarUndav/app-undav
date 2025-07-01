@@ -144,12 +144,12 @@ function fechaYaSucedio(fecha:Date) {
   return fecha.getTime < Date.now;
 }
 function ordenar(a:EventoAgenda, b:EventoAgenda):number {
-  return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  // if (fechaYaSucedio(a.fechaInicio)) {
-  //   return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  // } else {
-  //   return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
-  // }
+  // return (a.fechaFin.getTime() - b.fechaFin.getTime());
+  if (!fechaYaSucedio(a.fechaInicio)) {
+    return (a.fechaFin.getTime() - b.fechaFin.getTime());
+  } else {
+    return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
+  }
 }
 function ordenarEventosPorFechaFin(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
   if (ascendiente) {

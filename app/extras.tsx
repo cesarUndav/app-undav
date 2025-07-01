@@ -72,18 +72,13 @@ export default function Configuracion() {
         },
         {
           type: "link",
-          label: "Envianos tus sugerencias",
-          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
-        },
-        {
-          type: "link",
-          label: "Noticias",
-          onPress: () => router.push("/noticias-web-undav"),
-        },
-        {
-          type: "link",
           label: "Comunidad",
           onPress: () => router.push("/comunidad"),
+        },
+        {
+          type: "link",
+          label: "Envianos tus sugerencias",
+          onPress: () => Linking.openURL("mailto:app-sugerencias@undav.edu.ar"),
         },
       ]
     }

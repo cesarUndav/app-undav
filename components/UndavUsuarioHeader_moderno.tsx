@@ -1,12 +1,14 @@
 // components/UndavHeader.tsx
 import React from 'react';
-import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText'; // Asegúrate que el path es correcto
 import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '@/data/DatosUsuarioGuarani';
 import { azulClaro, azulLogoUndav, negroAzulado } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import UndavIcon from '../assets/icons/ico-svg/undav-letra.svg';
+
 
 export default function UndavEstudianteHeader() {
   const router = useRouter();
@@ -17,22 +19,17 @@ export default function UndavEstudianteHeader() {
   return (
     <View style={styles.header}>
 
-      <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-      {/* <View style={styles.logoUndav}>
+      {/* <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} /> */}
+      <View style={styles.logoUndav}>
         <UndavIcon/>
-      </View> */}
+      </View>
 
       <View style={styles.userInfo}>
         <CustomText style={styles.userText}>{nombreLegajo}</CustomText>
-        {/* <CustomText style={styles.userText}>
-          {UsuarioEsAutenticado()
-            ? infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length - 1].nombre
-            : 'Nombre de Propuesta'}
-        </CustomText> */}
       </View>
 
       <TouchableOpacity onPress={() => router.push('/perfil')} style={styles.profileIcon}>
-        <Ionicons name="person" size={42} color={azulLogoUndav} />
+        <Ionicons name="person" size={38} color={azulLogoUndav} />
       </TouchableOpacity>
     </View>
   );
@@ -48,17 +45,20 @@ const styles = StyleSheet.create({
     //backgroundColor: "red"
   },
   logoUndav: {
-    height: "100%",
-    aspectRatio: "1 / 1.22",
+    marginLeft: 10,
     width: "auto",
-    resizeMode: "contain"
+    height: "135%",
+    aspectRatio: "1",
+    resizeMode: "contain",
+    alignSelf: "center",
+    //backgroundColor: "green",
   },
   userInfo: {
-    //backgroundColor: "green",
     flex: 1,
     flexDirection: "column",
     height: "100%",
-    justifyContent: "center"
+    justifyContent: "center",
+    //backgroundColor: "lightblue",
   },
   userText: {
     lineHeight: 18,
@@ -66,12 +66,11 @@ const styles = StyleSheet.create({
     fontWeight: "bold",
     color: negroAzulado,    
     textAlign: 'right',
-    paddingRight: 10,
+    paddingRight: 6,
     alignContent: "flex-end",
     //backgroundColor: "red"
   },
   profileIcon: {
-    paddingLeft: 20-15,
     height: "100%",
     aspectRatio: 1, // CUADRADO
     borderRadius: "100%",

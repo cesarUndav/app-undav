@@ -37,7 +37,7 @@ export default function AutoLoginWebView({ url, tryLogin = false, idUsername, id
         setHasInjected(true);
         setTimeout(() => {
           if (tryLogin) webViewRef.current?.injectJavaScript(injectCredentials);
-        }, 1000); // espera 1 segundo antes de inyectar
+        }, 800); // espera X milisegundos antes de inyectar
         }
     };
     
