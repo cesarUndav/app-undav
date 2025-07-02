@@ -30,8 +30,8 @@ export default function BottomBar() {
   const pathname = usePathname();
 
   const buttons: Button[] = [
-    { route: "/home-visitante", Icon: require('../assets/icons/home.svg').default },
-    { route: "/ajustes-visitante", Icon: require('../assets/icons/settings.svg').default },
+    { route: "/home-visitante", Icon: require('../assets/icons/ico-svg/inicio.svg').default },
+    { route: "/ajustes-visitante", IconName: "settings"},
   ];
 
   return (
@@ -50,7 +50,7 @@ export default function BottomBar() {
             {Icon ? 
             <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />
             :
-            <Ionicons name={IconName!} size={30} color={iconColor} />}
+            <Ionicons name={IconName!} size={tamanioIcono-20} color={iconColor} />}
           </TouchableOpacity>
         );
       })}

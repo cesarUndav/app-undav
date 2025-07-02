@@ -87,9 +87,9 @@ export default function Layout() {
   if (!usandoStackNavigator)
   {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
         {showHeader && <HistoryHeader title={headerHistoryTitle} />}
-        <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
+        <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
         <Slot />
         {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)}
       </SafeAreaView>
@@ -98,8 +98,8 @@ export default function Layout() {
   else
   {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: "#ffffff" }}>
-        <StatusBar backgroundColor="#ffffff" barStyle="dark-content" />
+      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+        <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
         <Stack screenOptions={{ animation: Platform.OS === "android" ? "none" : "default" }}>
           <Slot />
         </Stack>
