@@ -145,7 +145,7 @@ function fechaYaSucedio(fecha:Date) {
 }
 function ordenar(a:EventoAgenda, b:EventoAgenda):number {
   // return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  if (!fechaYaSucedio(a.fechaInicio)) {
+  if (!fechaYaSucedio(a.fechaFin)) {
     return (a.fechaFin.getTime() - b.fechaFin.getTime());
   } else {
     return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
