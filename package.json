@@ -33,6 +33,7 @@
     "@expo/config-plugins": "~10.0.3",
     "@react-native-async-storage/async-storage": "2.1.2",
     "@react-native-community/datetimepicker": "8.4.1",
+    "@react-native-picker/picker": "^2.11.1",
     "expo": "53.0.16",
     "expo-font": "^13.3.1",
     "expo-haptics": "~14.1.4",
@@ -49,10 +50,13 @@
     "react-native": "0.79.5",
     "react-native-collapsible": "^1.6.2",
     "react-native-html-parser": "^0.1.0",
-    "react-native-svg": "15.11.2",
+    "react-native-picker": "^4.3.7",
+    "react-native-svg": "^15.11.2",
+    "react-native-svg-pan-zoom": "^0.1.2",
     "react-native-svg-transformer": "^1.5.1",
     "react-native-web": "^0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "react-svg-pan-zoom": "^3.13.1"
   },
   "devDependencies": {
     "@react-native-community/cli": "latest",
