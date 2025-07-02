@@ -10,7 +10,7 @@ import SIU_Gua_Icon from '../assets/icons/ico-svg/siu-original.svg';
 import CampusVirtualIcon from '../assets/icons/ico-svg/campus-virtual.svg';
 import InscripcionesIcon from '../assets/icons/ico-svg/inscripciones.svg';
 import ReportesIcon from '../assets/icons/ico-svg/certificados.svg';
-import TrayectoriaIcon from '../assets/icons/ico-svg/certificados.svg';
+import TrayectoriaIcon from '../assets/icons/ico-svg/historial-aca.svg';
 
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
