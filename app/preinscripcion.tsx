@@ -8,7 +8,7 @@ export default function Preinscripcion() {
   return (
     <FondoGradiente>
       <ScrollView style={styles.container}>
-        <BotonTextoLink label="Tutorial Preinscripción" url="https://undav.edu.ar/index.php?idcateg=5" />
+        <BotonTextoLink label="Tutorial Preinscripción" openInsideApp url="https://undav.edu.ar/index.php?idcateg=5" />
       </ScrollView>
     </FondoGradiente>
   );

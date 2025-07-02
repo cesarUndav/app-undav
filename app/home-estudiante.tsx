@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import AgendaPreview from '../components/AgendaPreview';
@@ -57,25 +57,6 @@ export default function HomeEstudiante() {
             backgroundColor={iconBgColor}
           />
         </View>
-
-        {/* <View style={styles.buttonsRow}>  
-          <BotonIconoTexto
-            label={"HISTORIA\nACADÉMICA"}
-            funcionOnPress={() => router.push('/historia-academica')}
-            Icon={ReportesIcon}
-            iconSize={iconSize}
-            iconColor={iconColor}
-            backgroundColor={iconBgColor}
-          />
-          <BotonIconoTexto
-            label={"PLAN DE\nESTUDIO"}
-            funcionOnPress={() => router.push('/plan-de-estudio')}
-            Icon={InscripcionesIcon}
-            iconSize={iconSize}
-            iconColor={iconColor}
-            backgroundColor={iconBgColor}
-          />
-        </View> */}
         <View style={styles.buttonsRow}>
           
           <BotonIconoTexto

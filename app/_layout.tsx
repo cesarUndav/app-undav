@@ -28,10 +28,10 @@ export default function Layout() {
   const router = useRouter();
 
   const headerHistoryTitle = PathToTitle(pathName);
-  const desactivarHistoryHeaderEnRutas = ['/', '/loginFalso','/loginAutenticado','/loginMail','/home-estudiante', '/home-visitante'];
+  const desactivarHistoryHeaderEnRutas = ['/', '/loginAutenticado','/loginMail','/home-estudiante', '/home-visitante'];
   const showHeader = !desactivarHistoryHeaderEnRutas.includes(pathName);
 
-  const desactivarBottomBarEnRutas = ['/', '/loginFalso', '/loginAutenticado', '/loginMail'];
+  const desactivarBottomBarEnRutas = ['/', '/loginAutenticado', '/loginMail'];
   const showBottomBar = !desactivarBottomBarEnRutas.includes(pathName);
 
   useEffect(() => {
@@ -55,9 +55,7 @@ export default function Layout() {
           }
         } else {
           setVisitante(true);
-          if (pathName === '/') {
-            router.replace("/loginAutenticado");
-          }
+          // if (pathName === '/') { router.replace("/loginAutenticado"); }
         }
       } catch (error) {
         console.error("Error al verificar sesión:", error);
@@ -91,7 +89,8 @@ export default function Layout() {
         {showHeader && <HistoryHeader title={headerHistoryTitle} />}
         <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
         <Slot />
-        {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)}
+        {/* {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)} */}
+        {showBottomBar && (!visitante && <BottomBar/>)}
       </SafeAreaView>
     );
   }

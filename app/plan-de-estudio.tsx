@@ -13,6 +13,7 @@ import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
+import BotonTextoLink from '@/components/BotonTextoLink';
 
 function codPeriodoToNumber(cod:number):number {
   switch(cod){
@@ -112,8 +113,9 @@ Cantidad de materias: ${plan.cnt_materias} (${cantidadOpcionales} electivas)`
         </ScrollView>
 
 
-        <View style={{paddingTop: 10}}>
+        <View style={{paddingTop: 10, gap: 10}}>
           <BarraBusqueda value={search} onChangeText={setSearch} />
+          <BotonTextoLink label='Ver en el SIU Guaraní' openInsideApp tryLogin url='https://academica.undav.edu.ar/g3w/plan_estudio'/>
         </View>
       </LoadingWrapper>
     </FondoGradiente>

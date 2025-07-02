@@ -26,27 +26,6 @@ interface ConfigSection {
 
 export default function Configuracion() {
 
-  const [notifsOn, setNotifsOn] = useState(false);
-  const [fondoCeleste, setFondoCeleste] = useState(fondoEsCeleste);
-
-  const handleLogout = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que querés cerrar sesión?",
-      [
-        { text: "Cancelar", style: "cancel" },
-        {
-          text: "Sí, cerrar sesión",
-          style: "destructive",
-          onPress: () => {
-            Logout();
-            router.replace("/"); // redirige a index.tsx
-          }
-        }
-      ]
-    );
-  };
-
   const sections: ConfigSection[] = [
     {
       data: [
@@ -54,6 +33,11 @@ export default function Configuracion() {
           type: "link",
           label: "Bienestar",
           onPress: () => router.push("/bienestar"),
+        },
+        {
+          type: "link",
+          label: "Oferta Académica",
+          onPress: () => router.push("/oferta-academica"),
         },
         {
           type: "link",

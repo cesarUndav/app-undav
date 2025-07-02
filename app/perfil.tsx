@@ -1,66 +1,88 @@
 import React, { useState } from "react";
-import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Linking, Alert } from "react-native";
+import {
+  View,
+  StyleSheet,
+  SectionList,
+  TouchableOpacity,
+  Switch,
+  Alert,
+} from "react-native";
 import { router } from "expo-router";
 import CustomText from "../components/CustomText";
 import FondoGradiente from "@/components/FondoGradiente";
 import {
-  fondoEsCeleste,
   Logout,
-  setColorFondoCeleste,
-  UsuarioEsAutenticado,
-  infoBaseUsuarioActual
+  infoBaseUsuarioActual,
 } from "@/data/DatosUsuarioGuarani";
 import { getShadowStyle } from "@/constants/ShadowStyle";
 
 // Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
-type ToggleItem = { type: "toggle"; label: string; value: boolean; onValueChange: (val: boolean) => void };
+type ToggleItem = {
+  type: "toggle";
+  label: string;
+  value: boolean;
+  onValueChange: (val: boolean) => void;
+};
 type LinkItem = { type: "link"; label: string; onPress: () => void };
 type ActionItem = { type: "action"; label: string; onPress: () => void };
 type SeparatorItem = { type: "separator" };
+type DropdownItem = { type: "dropdown"; label: string; content: string[] };
 
-type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem | SeparatorItem;
+type ConfigItem =
+  | TextItem
+  | ToggleItem
+  | LinkItem
+  | ActionItem
+  | SeparatorItem
+  | DropdownItem;
+
 interface ConfigSection {
   data: ConfigItem[];
 }
-function PropuestasString():string {
-  const str:string = "Mis Propuestas Educativas:" +
-  infoBaseUsuarioActual.propuestas.map(p=> "\n"+p.nombre + ": " +(p.regular == "S" ? "Regular" : "NO Regular")).join("");
-  return str;
-}
 
 export default function Configuracion() {
-
-  const [notifsOn, setNotifsOn] = useState(false);
-  const [fondoCeleste, setFondoCeleste] = useState(fondoEsCeleste);
+  const [mostrarPropuestas, setMostrarPropuestas] = useState(false);
 
   const handleLogout = () => {
-    Alert.alert(
-      "Cerrar sesión",
-      "¿Estás seguro de que querés\ncerrar sesión?",
-      [
-        {
-          text: "Sí",
-          style: "destructive",
-          onPress: () => {
-            Logout();
-            router.replace("/"); // redirige a index.tsx
-          }
+    Alert.alert("Cerrar sesión", "¿Estás seguro de que querés\ncerrar sesión?", [
+      {
+        text: "Sí",
+        style: "destructive",
+        onPress: () => {
+          Logout();
+          router.replace("/");
         },
-        { text: "No", style: "cancel" }
-      ]
-    );
+      },
+      { text: "No", style: "cancel" },
+    ]);
   };
 
   const sections: ConfigSection[] = [
     {
       data: [
-        { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.nombreCompleto : "Nombre Nombre Apellido" },
-        { type: "text", label: UsuarioEsAutenticado() ? "Legajo: " + infoBaseUsuarioActual.legajo : "Legajo: 12345" },
-        { type: "text", label: UsuarioEsAutenticado() ? PropuestasString() : "Mis Propuestas Educativas:\nP1 - Regular: N" },
-        { type: "text", label: UsuarioEsAutenticado() ? infoBaseUsuarioActual.email : "nombreapellido@email.com" },
-        { type: "separator" }
-      ]
+        {
+          type: "text",
+          label: infoBaseUsuarioActual.nombreCompleto
+        },
+        {
+          type: "text",
+          label: "Legajo: " + infoBaseUsuarioActual.legajo
+        },
+        {
+          type: "dropdown",
+          label: "Mis Propuestas Educativas",
+          content: infoBaseUsuarioActual.propuestas.map(
+              (p) =>
+                `${p.nombre}: ${p.regular === "S" ? "Regular" : "NO Regular"}`
+            )
+        },
+        {
+          type: "text",
+          label: infoBaseUsuarioActual.email
+        },
+        { type: "separator" },
+      ],
     },
     {
       data: [
@@ -84,18 +106,18 @@ export default function Configuracion() {
           label: "Extras",
           onPress: () => router.push("/extras"),
         },
-        { type: "separator" }
-      ]
+        { type: "separator" },
+      ],
     },
     {
       data: [
         {
           type: "action",
           label: "Cerrar sesión",
-          onPress: handleLogout
-        }
-      ]
-    }
+          onPress: handleLogout,
+        },
+      ],
+    },
   ];
 
   return (
@@ -116,7 +138,10 @@ export default function Configuracion() {
                 return (
                   <View style={[styles.item, { marginVertical: -10 }]}>
                     <CustomText style={styles.textItem}>{item.label}</CustomText>
-                    <Switch value={item.value} onValueChange={item.onValueChange} />
+                    <Switch
+                      value={item.value}
+                      onValueChange={item.onValueChange}
+                    />
                   </View>
                 );
               case "link":
@@ -133,6 +158,26 @@ export default function Configuracion() {
                 );
               case "separator":
                 return <View style={styles.separator} />;
+              case "dropdown":
+                return (
+                  <View style={{ marginBottom: 0 }}>
+                    <TouchableOpacity
+                      style={styles.item}
+                      onPress={() => setMostrarPropuestas(!mostrarPropuestas)}
+                    >
+                      <CustomText style={styles.textItem}>{item.label}</CustomText>
+                      <CustomText style={{ fontSize: 22 }}>
+                        {mostrarPropuestas ? "▲ " : "▼ "}
+                      </CustomText>
+                    </TouchableOpacity>
+                    {mostrarPropuestas &&
+                      item.content.map((line, idx) => (
+                        <View key={idx} style={{ paddingLeft: 16, paddingVertical: 2 }}>
+                          <CustomText style={styles.textItem}>{line}</CustomText>
+                        </View>
+                      ))}
+                  </View>
+                );
               default:
                 return null;
             }
@@ -150,7 +195,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 16,
     paddingVertical: 6,
     backgroundColor: "#fff",
-    ...getShadowStyle(6)
+    ...getShadowStyle(6),
   },
   list: {},
   item: {
@@ -169,7 +214,7 @@ const styles = StyleSheet.create({
   },
   actionItem: {
     fontSize: 16,
-    color: "#d9534f"
+    color: "#d9534f",
   },
   separator: {
     height: 1,
