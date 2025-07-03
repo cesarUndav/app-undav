@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import { Route, useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
@@ -116,8 +116,8 @@ const styles = StyleSheet.create({
     padding: 15,
     paddingTop: 10
   },
-  buttonsRowParent: { //buttons
-    flex: 1.0, // tamaño de botones con respecto a lista
+  buttonsRowParent: {
+    flex: 1.5, // tamaño de botones con respecto a lista
     gap: 10,
     padding: 10,
     borderBottomRightRadius: 24,

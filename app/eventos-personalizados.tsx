@@ -69,7 +69,7 @@ export default function EventosPersonalizados() {
   }
 
   return (
-    <FondoGradiente>
+    <FondoGradiente style={{paddingBottom: 15}}>
     
       <ScrollView contentContainerStyle={styles.scrollContainer}>
         {listaEventos.map((evento) => (
@@ -81,7 +81,7 @@ export default function EventosPersonalizados() {
         ))}
       </ScrollView>
       
-      <View style={{marginTop: 15}}>
+      <View style={{marginTop: 15, paddingHorizontal: 15}}>
         <BotonTextoLink onPressFunction={() => abrirModalAgregarEvento()} label='CREAR EVENTO' centered/>
       </View>
 
@@ -158,7 +158,9 @@ export default function EventosPersonalizados() {
 }
 const styles = StyleSheet.create({
   scrollContainer: {
-    gap: 8
+    gap: 8,
+    paddingHorizontal: 15,
+    paddingVertical: 10
   },
   modalOverlay: {
     flex: 1,

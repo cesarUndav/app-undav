@@ -44,8 +44,7 @@ export default function BotonTextoLink({
     }
     else if (url) {
       if (openInsideApp) {
-        const encodedURL = encodeURIComponent(url);
-        router.push(`/webview/${encodedURL}?tryLogin=${tryLogin}`);
+        router.push(`/webview/${encodeURIComponent(url)}?tryLogin=${tryLogin}`);
       } else {
         Linking.openURL(url).catch(() => console.warn('No se pudo abrir el enlace:', url));
       }

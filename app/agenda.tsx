@@ -3,7 +3,7 @@ import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
 import CustomText from '../components/CustomText';
-import { EventoAgenda, listaFuturo, listaPasado} from '../data/agenda';
+import { EventoAgenda, listaCompleta, listaEnCurso, listaFuturo, listaPasado} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
@@ -11,7 +11,9 @@ import { azulClaro, azulLogoUndav,  negroAzulado } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { bottomBarStyles } from '@/components/BottomBar';
+import DropdownSeccion from '@/components/DropdownSeccion';
 
+const dropDownTextColor = "#fff";
 const filterBtnColor = azulLogoUndav
 export default function Agenda() {
 
@@ -19,7 +21,6 @@ export default function Agenda() {
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
   const [mostrarPersonalizados, setMostrarPersonalizados] = useState(true);
   const [mostrarAcademicos, setMostrarAcademicos] = useState(true);
-
 
   function puedeMostrarEvento(evento:EventoAgenda):Boolean {
     if (evento.esFeriado) {return mostrarFeriados;}
@@ -38,7 +39,7 @@ export default function Agenda() {
   useFocusEffect( // cada vez que entramos a esta pantalla
     useCallback(() => {
       //setListaEventos(listaEventosCalendarioAcademico);
-    }, []) // no hay variable de actualizacion especificada [var]
+    }, [listaCompleta()])
   );
   
   return (
@@ -47,12 +48,19 @@ export default function Agenda() {
     {
       mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
       <>
-        <CustomText style={styles.title}>PRÓXIMO</CustomText>
-        {mostrarLista(listaFuturo)}
-        
-        {<CustomText style={styles.title}>FINALIZADO</CustomText>}
-        {mostrarLista(listaPasado)}
+        <DropdownSeccion titulo="EN CURSO" styleContenido={styles.dropdownContenido} colorTexto={dropDownTextColor} colorFondo={azulLogoUndav} inicialmenteAbierto={true}>
+          {mostrarLista(listaEnCurso())}
+        </DropdownSeccion>
+
+        <DropdownSeccion titulo="PRÓXIMO" styleContenido={styles.dropdownContenido} colorTexto={dropDownTextColor} colorFondo={azulLogoUndav} inicialmenteAbierto={true}>
+          {mostrarLista(listaFuturo())}
+        </DropdownSeccion>
+
+        <DropdownSeccion titulo="FINALIZADO" styleContenido={styles.dropdownContenido} colorTexto={dropDownTextColor} colorFondo={azulLogoUndav} inicialmenteAbierto={false}>
+          {mostrarLista(listaPasado())}
+        </DropdownSeccion>
       </>
+
     ):(
       <CustomText style={[styles.title,{}]}>
         No hay ningún tipo de evento seleccionado en los filtros.
@@ -91,10 +99,23 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 16,
     fontWeight: 'bold',
-    color: negroAzulado,
+    color: "negroAzulado",
     alignSelf: 'center',
     textAlign:"center",
     marginVertical: 0
+  },
+  dropdownHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: azulLogoUndav,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 0,
+    borderBottomEndRadius: 20
+  },
+  dropdownContenido: {
+    gap: 5
   },
   agendaBtnContainer: {
     paddingVertical: 8,

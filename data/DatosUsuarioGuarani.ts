@@ -9,6 +9,8 @@ export interface User {
   email: string;
   legajo: string;
   propuestas: Propuesta[];
+  usuario: string,
+  password: string
 }
 
 export let infoBaseUsuarioActual: User = {
@@ -18,6 +20,8 @@ export let infoBaseUsuarioActual: User = {
   email: "",
   legajo: "",
   propuestas: [],
+  usuario: "",
+  password: ""
 };
 
 export interface Propuesta {
@@ -25,7 +29,7 @@ export interface Propuesta {
   propuesta: number;
   nombre: string;
   nombre_abreviado: string;
-  regular: "S" | "N"; // o solo "S" si no hay otros valores
+  regular: "S" | "N";
   plan_version: number;
 }
 
@@ -117,13 +121,17 @@ async function guardarSesion(token: string, personaId: number):Promise<void> {
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
   await guardarSesion(token, idPersona);
+  
+  // GUARDO ASI MEJOR, AsyncStorage.getItem() es una mierda
+  infoBaseUsuarioActual.usuario = usuario.toString();
+  infoBaseUsuarioActual.password = clave.toString();
+  
   setVisitante(false);
   await ObtenerDatosBaseUsuarioConToken(token, idPersona);
   return {token, idPersona};
 }
 
 // Obtener datos personales con token JWT (para iOS y Android)
-
 export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: number): Promise<void> {
   const url = `${URL_BASE}/persona/${personaId}`;
 
@@ -149,7 +157,9 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
     documento: datos.nro_documento,
     email: datos.email,
     //tel: datos.telefono_celular,
-    propuestas: datos.propuestas
+    propuestas: datos.propuestas,
+    usuario: "",
+    password: ""
   };
 
   visitante = false;
@@ -194,7 +204,9 @@ export function Logout() {
     nombreCompleto: "",
     email: "",
     legajo: "",
-    propuestas: []
+    propuestas: [],
+    usuario: "",
+    password: "",
   };
   AsyncStorage.removeItem("token");
   AsyncStorage.removeItem("idPersona");

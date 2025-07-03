@@ -17,12 +17,12 @@ import FondoGradiente from "@/components/FondoGradiente";
 import { Ionicons } from '@expo/vector-icons';
 
 import {
-  ObtenerDatosBaseUsuarioConToken,
   validarPersona,
 } from "@/data/DatosUsuarioGuarani";
 import { azulLogoUndav } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setNotificationCount } from "@/data/notificaciones";
+import Svg from "react-native-svg";
 
 export default function LoginScreen() {
 
@@ -77,6 +77,14 @@ export default function LoginScreen() {
             />
           </View>
           
+          <Image
+            // source={require('@/assets/images/siu-guarani_logo-transparente.png')}
+            //style={{ resizeMode: "contain", height: 50, marginRight: 5, marginBottom: 20 }}
+            source={require('@/assets/images/Logo_guarani.png')}
+            style={{ resizeMode: "contain", height: 80, width:400, marginRight:0, marginTop:-10,marginBottom: 20 }}
+            resizeMode="contain"
+          />
+
           <View style={{gap: 10, flex: 1, justifyContent:"flex-start"}}>
             <TextInput
               id="usuario"
@@ -93,7 +101,7 @@ export default function LoginScreen() {
 
             <View>
               <TextInput
-                id="contraseña"
+                id="password"
                 style={[styles.inlineInputField, {paddingRight: 48}]}
                 value={contrasenaIngresada}
                 placeholder="Contraseña"
@@ -103,7 +111,7 @@ export default function LoginScreen() {
                 autoComplete="off"
                 editable={!esperandoRespuesta}/>
               <TouchableOpacity onPress={() => setContrasenaVisible(prev => !prev)} style={styles.eyeIcon}>
-                <Ionicons name={contrasenaVisible ? 'eye' : 'eye-off'} size={24} color="gray"/>
+                <Ionicons name={contrasenaVisible ? 'eye' : 'eye-off'} size={26} color="gray"/>
               </TouchableOpacity>
             </View>
 
@@ -116,12 +124,10 @@ export default function LoginScreen() {
               </CustomText>
             </TouchableOpacity>
 
-            <TouchableOpacity
-              onPress={() => Linking.openURL("https://academica.undav.edu.ar/g3w/acceso/recuperar")}
+            <TouchableOpacity style={{paddingTop: 8}}
+              onPress={() => router.push(`/webview/${encodeURIComponent("https://academica.undav.edu.ar/g3w/acceso/recuperar")}?tryLogin=${false}`)}
               disabled={esperandoRespuesta}>
-              <CustomText style={styles.forgotPassword}>
-                Olvidé mi contraseña
-              </CustomText>
+              <CustomText style={styles.forgotPassword}> Olvidé mi contraseña </CustomText>
             </TouchableOpacity>
           </View>
 
@@ -172,8 +178,8 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 4,
     top: '50%',
-    transform: [{ translateY: -23 }],
-    zIndex: 1,
+    transform: [{ translateY: -24 }],
+    zIndex: 10,
     padding: 10,
     //backgroundColor: "red"
   }

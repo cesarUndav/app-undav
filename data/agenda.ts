@@ -76,8 +76,8 @@ export let listaEventosPersonalizados: EventoAgenda[] = [
   {
   id: "p0",
     titulo: 'Evento Personalizado 1',
-    fechaInicio: devHoyMasDiasPermanente(1),
-    fechaFin: devHoyMasDiasPermanente(1)
+    fechaInicio: devHoyMasDiasPermanente(0),
+    fechaFin: devHoyMasDiasPermanente(0)
   },{
     id: "p1",
     titulo: 'Evento Personalizado 2',
@@ -138,37 +138,31 @@ export function obtenerEventoConId(id:string): EventoAgenda {
 // aux listas
 function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): EventoAgenda[] {
   const lista = lista1.concat(lista2);
-  return ordenarEventosPorFechaFin(lista);
+  console.log(lista2);
+  return ordenarEventosPorFecha(lista);
 }
 function fechaYaSucedio(fecha:Date) {
-  return fecha.getTime < Date.now;
+  return Date.now > fecha.getTime;
 }
-function ordenar(a:EventoAgenda, b:EventoAgenda):number {
-  // return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  if (!fechaYaSucedio(a.fechaFin)) {
-    return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  } else {
-    return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
-  }
+function ordenarPorFechaFin(a:EventoAgenda, b:EventoAgenda):number {
+  return (a.fechaFin.getTime() - b.fechaFin.getTime());
+  // if (fechaYaSucedio(a.fechaFin)) {
+  //   return (a.fechaFin.getTime() - b.fechaFin.getTime());
+  // } else {
+  //   return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
+  // }
 }
-function ordenarEventosPorFechaFin(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
+function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
   if (ascendiente) {
-    return listaEventos.sort((a,b) =>ordenar(a,b));
+    return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b));
   }
-  else return listaEventos.sort((a,b) =>ordenar(a,b)).reverse();
-}
-function ordenarEventosPorFechaFin2(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
-  if (ascendiente) {
-    return listaEventos.sort((a,b) => a.fechaFin.getTime() - b.fechaFin.getTime());
-  }
-  else return listaEventos.sort((a,b) => b.fechaFin.getTime() - a.fechaFin.getTime());
+  else return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b)).reverse();
 }
 function eventoDuraUnDia(evento:EventoAgenda): Boolean {
   return Boolean(evento.fechaInicio.getDate() == evento.fechaFin.getDate());
 }
 function eventoEnCurso(evento:EventoAgenda): Boolean {
-  if (!eventoDuraUnDia(evento) && diasHastaFechaActual(evento.fechaInicio) <= 0 && !eventoFinalizado(evento)) return true;
-  else return false;
+return (diasHastaFechaActual(evento.fechaInicio) <= 0 && !eventoFinalizado(evento));
 }
 function eventoEnCursoFinalizaHoy(evento:EventoAgenda): Boolean {
   return eventoEnCurso(evento)==true && diasHastaFechaActual(evento.fechaFin) == -1;
@@ -195,8 +189,9 @@ function charPlural(plural:string, valorAEvaluar:number) {
 // export function listaFuturoFiltros(mostrarFeriados:Boolean): EventoAgenda[] {
 //   return ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false)); }
 export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); };
-export const listaFuturo: EventoAgenda[] = ordenarEventosPorFechaFin(listaCompleta().filter((evento) => eventoFinalizado(evento)==false));
-export const listaPasado: EventoAgenda[] = ordenarEventosPorFechaFin(listaCompleta().filter((evento) => eventoFinalizado(evento) == true), false);
+export function listaFuturo(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
+export function listaPasado(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoFinalizado(evento)), false);}
+export function listaEnCurso(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoEnCurso(evento)));} 
 
 // export funcs
 export function eventoAgendaToFechaString(evento:EventoAgenda): string {
@@ -209,7 +204,8 @@ export function eventoAgendaToFechaString(evento:EventoAgenda): string {
   let diasStr = "";
   const diasHastaInicio = diasHastaFechaActual(evento.fechaInicio) + 1;
   if (diasHastaInicio > 0) {
-    diasStr = `falta${charPlural("n",diasHastaInicio)} ${diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;
+    if (duraUnDia) diasStr = `falta${charPlural("n",diasHastaInicio)} ${diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;
+    else diasStr = `inicia en ${diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;
   }
   else {
     if (duraUnDia)

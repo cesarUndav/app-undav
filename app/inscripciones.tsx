@@ -4,7 +4,8 @@ import { StyleSheet } from 'react-native';
 import CustomText from '../components/CustomText';
 import BotonTextoLink from '../components/BotonTextoLink';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { celesteSIU, negroAzulado } from '@/constants/Colors';
+import { negroAzulado } from '@/constants/Colors';
+import BotonTextoSIU from '@/components/BotonTextoSIU';
 
 export default function Inscripciones() {
   return (
@@ -12,11 +13,11 @@ export default function Inscripciones() {
     
       <BotonTextoLink label="Tutorial de Inscripcion a Carreras" openInsideApp url="https://undav.edu.ar/index.php?idcateg=5" />
       <CustomText style={styles.title}>Autogestión</CustomText>
-      <BotonTextoLink label="Oferta de Comisiones" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/oferta_comisiones" color={celesteSIU}/>
-      <BotonTextoLink label="Inscripción a Materias" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/cursada" color={celesteSIU}/>
-      <BotonTextoLink label="Inscripción a Exámen" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/examen" color={celesteSIU}/>
-      <BotonTextoLink label="Fechas de Exámen" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/fecha_examen" color={celesteSIU}/>
-      <BotonTextoLink label="Horarios de Cursada" openInsideApp tryLogin url="https://academica.undav.edu.ar/g3w/horarios_cursadas" color={celesteSIU}/>
+      <BotonTextoSIU label="Oferta de Comisiones" url="https://academica.undav.edu.ar/g3w/oferta_comisiones"/>
+      <BotonTextoSIU label="Inscripción a Materias" url="https://academica.undav.edu.ar/g3w/cursada"/>
+      <BotonTextoSIU label="Inscripción a Exámen" url="https://academica.undav.edu.ar/g3w/examen" />
+      <BotonTextoSIU label="Fechas de Exámen" url="https://academica.undav.edu.ar/g3w/fecha_examen" />
+      <BotonTextoSIU label="Horarios de Cursada" url="https://academica.undav.edu.ar/g3w/horarios_cursadas"/>
 
       <CustomText style={styles.title}>Consultas</CustomText>
     
