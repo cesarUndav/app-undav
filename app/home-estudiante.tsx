@@ -2,7 +2,7 @@ import React from 'react';
 import { View, StyleSheet } from 'react-native';
 
 import { useRouter } from 'expo-router';
-import AgendaPreview from '../components/AgendaPreview';
+import AgendaPreview from '../components/AgendaPreviewHibrida';
 
 // import LinksIcon from '../assets/icons/links.svg';
 import LinksIcon from '../assets/icons/ico-svg/redes-arroba.svg';

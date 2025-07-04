@@ -81,7 +81,7 @@ export default function LoginScreen() {
             // source={require('@/assets/images/siu-guarani_logo-transparente.png')}
             //style={{ resizeMode: "contain", height: 50, marginRight: 5, marginBottom: 20 }}
             source={require('@/assets/images/Logo_guarani.png')}
-            style={{ resizeMode: "contain", height: 80, width:400, marginRight:0, marginTop:-10,marginBottom: 20 }}
+            style={{ resizeMode: "contain", height: 80, width:400, marginRight:-4, marginTop:-10,marginBottom: 20 }}
             resizeMode="contain"
           />
 
