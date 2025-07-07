@@ -138,7 +138,6 @@ export function obtenerEventoConId(id:string): EventoAgenda {
 // aux listas
 function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): EventoAgenda[] {
   const lista = lista1.concat(lista2);
-  console.log(lista2);
   return ordenarEventosPorFecha(lista);
 }
 function fechaYaSucedio(fecha:Date) {

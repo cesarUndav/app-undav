@@ -22,7 +22,6 @@ import {
 import { azulLogoUndav } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setNotificationCount } from "@/data/notificaciones";
-import Svg from "react-native-svg";
 
 export default function LoginScreen() {
 

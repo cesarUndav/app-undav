@@ -5,9 +5,12 @@ import CustomText from "@/components/CustomText";
 import FondoGradiente from "@/components/FondoGradiente";
 import NavigationHeader from "@/components/NavigationHeader";
 import { azulClaro } from "@/constants/Colors";
+import { useBloquearBotonAtras } from "@/hooks/useBloquearBotonAtras";
 
 export default function HomeScreen()
 {
+  useBloquearBotonAtras();
+  
   const router = useRouter();
   return (
     <View style={{flex:1}}>

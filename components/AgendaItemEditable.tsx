@@ -1,6 +1,6 @@
 // components/AgendaItemEditable.tsx
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
 import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 import SettingsIcon from '../assets/icons/settings.svg';
@@ -10,11 +10,12 @@ import { AgendaItemStyles } from './AgendaItem';
 type AgendaItemEditableProps = {
   evento: EventoAgenda;
   onPressEdit: (id: string) => void;
+  styleExtra?: StyleProp<ViewStyle>;
 };
 
-export default function AgendaItemEditable({ evento, onPressEdit }: AgendaItemEditableProps) {
+export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: AgendaItemEditableProps) {
   return (
-    <View style={AgendaItemStyles.agendaItem}>
+    <View style={[AgendaItemStyles.agendaItem, styleExtra]}>
         <TouchableOpacity style={styles.itemParent} onPress={() => onPressEdit(evento.id)} accessible accessibilityLabel="Editar Evento" >
           <View style={styles.itemChildLeft}>
             <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>

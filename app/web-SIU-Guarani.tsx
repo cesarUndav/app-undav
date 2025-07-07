@@ -1,5 +1,4 @@
 import { infoBaseUsuarioActual } from '@/data/DatosUsuarioGuarani';
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import React, { useRef, useState } from 'react';
 import { WebView } from 'react-native-webview';
 import type { WebView as WebViewType } from 'react-native-webview';

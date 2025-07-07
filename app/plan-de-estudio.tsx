@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, View } from 'react-native';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import {
@@ -13,6 +13,12 @@ import { negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
 import BotonTextoSIU from '@/components/BotonTextoSIU';
+import BotonTexto from '@/components/BotonTexto';
+
+import {
+  infoBaseUsuarioActual,
+} from "@/data/DatosUsuarioGuarani";
+import DropdownPropuestas from '@/components/DropdownPropuestas';
 
 function codPeriodoToNumber(cod:number):number {
   switch(cod){
@@ -55,7 +61,10 @@ export default function MateriasPlan() {
   const [loading, setLoading] = useState(true);
   const [plan, setPlan] = useState<Plan | null>(null);
   const [cantidadOpcionales, setCantidadOpcionales] = useState(-1);
-  const [mostrarAprobadas, setMostrarAprobadas] = useState(true);
+  const [recargar, setRecargar] = useState(0);
+  const [menuAbierto, setMenuAbierto] = useState(false);
+
+
 
   // BARRA DE BÚSQUEDA
   const [search, setSearch] = useState('');
@@ -97,11 +106,20 @@ Cantidad de materias: ${plan.cnt_materias} (${cantidadOpcionales} electivas)`
     };
 
     fetchPlan();
-  }, []);
+  }, [recargar]);
 
   return (
     <FondoGradiente>
       <LoadingWrapper loading={loading}>
+
+<DropdownPropuestas
+  propuestas={infoBaseUsuarioActual.propuestas}
+  indiceSeleccionado={infoBaseUsuarioActual.indicePropuestaSeleccionada}
+  onSeleccionar={(nuevoIdx) => {
+    infoBaseUsuarioActual.indicePropuestaSeleccionada = nuevoIdx;
+    setRecargar(r => r + 1); // fuerza re-render
+  }}
+/>
 
         <CustomText style={[styles.estadisticas, {paddingBottom: 10}]}>
           {PlanInfoString(plan)}

@@ -1,10 +1,10 @@
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, ScrollView, TouchableWithoutFeedback } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { EventoAgenda, listaCompleta, listaFuturo } from '../data/agenda';
 import AgendaItem from './AgendaItem';
-import { azulClaro, azulLogoUndav, celesteSIU } from '@/constants/Colors';
+import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -50,7 +50,7 @@ export default function AgendaPreview() {
         </ScrollView>
       </View>
 
-      <View style={{ flex: 0.85 }}>
+      <View style={{ flex: 0.8 }}>
         <CustomText style={styles.agendaTitle}>AGENDA PERSONAL</CustomText>
 
         <ScrollView contentContainerStyle={styles.listaScrollContainer}>
@@ -66,12 +66,12 @@ export default function AgendaPreview() {
 
       <View style={styles.agendaBtnContainer}>
 
-        <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 3.3}]}>
+        <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 6}]}>
           <CustomText style={styles.agendaBtnText}>DETALLES</CustomText>
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={() => setSeparada(!separada)}style={[styles.agendaBtn, {backgroundColor: azulLogoUndav}, styles.eyeIcon]}>
-          <Ionicons name={!separada ? 'eye' : 'eye-off'} size={26} color="white"/>
+        <TouchableOpacity onPress={() => setSeparada(!separada)}style={[styles.agendaBtn, { backgroundColor: "transparent"}]}>
+          <Ionicons name={separada ? 'eye' : 'eye-off'} size={26} color="white" style={styles.eyeIcon}/>
           {/* <CustomText style={styles.agendaBtnText}>{"VISTA"}</CustomText> */}
         </TouchableOpacity>
       </View>
@@ -126,6 +126,6 @@ const styles = StyleSheet.create({
     textAlign: "center"
   },
     eyeIcon: {
-    transform: [{ translateY: 5 }],
+    transform: [{ translateY: 6 }]
   }
 });

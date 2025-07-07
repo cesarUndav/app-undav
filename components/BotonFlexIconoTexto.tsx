@@ -1,5 +1,5 @@
 import React from 'react';
-import { TouchableOpacity, View, StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { StyleSheet } from 'react-native';
@@ -13,6 +13,7 @@ type BotonIconoTextoProps = {
   iconSize?: number;
   iconColor?: string;
   backgroundColor?: string;
+  styleExtra?: StyleProp<ViewStyle>;
 };
 
 export default function BotonIconoTexto({
@@ -21,7 +22,8 @@ export default function BotonIconoTexto({
   Icon,
   iconSize = 40,
   iconColor = 'white',
-  backgroundColor = azulClaro
+  backgroundColor = azulClaro,
+  styleExtra,
 }: BotonIconoTextoProps) {
   const router = useRouter();
 
@@ -29,7 +31,7 @@ export default function BotonIconoTexto({
     <TouchableOpacity
       accessible
       accessibilityLabel={"Ir a " + label}
-      style={[styles.buttonBox,{backgroundColor: backgroundColor}]}
+      style={[styles.buttonBox,{backgroundColor: backgroundColor}, styleExtra]}
       onPress={funcionOnPress}
     >
       <View style={styles.buttonBoxIconParent}>
@@ -50,7 +52,7 @@ const styles = StyleSheet.create({
     flexDirection: "column",
     justifyContent: 'center',
     alignItems: 'center',
-    borderBottomRightRadius: 20,
+    //borderBottomRightRadius: 20,
     //borderRadius: "15%",
     backgroundColor:azulClaro
   },

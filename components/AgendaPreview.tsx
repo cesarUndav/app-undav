@@ -2,7 +2,7 @@ import React, { useCallback, useState } from 'react';
 import { View, StyleSheet, TouchableOpacity, ScrollView } from 'react-native';
 import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
-import { EventoAgenda, eventoAgendaProximidadColor, listaCompleta, listaFuturo, listaPasado } from '../data/agenda';
+import { EventoAgenda, listaCompleta, listaFuturo } from '../data/agenda';
 import AgendaItem from './AgendaItem';
 import { azulLogoUndav, celesteSIU } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
@@ -63,7 +63,7 @@ export default function AgendaPreview() {
 
 const styles = StyleSheet.create({
   listaScrollContainer: {
-    gap: 6,
+    gap: 4,
     paddingTop: -4
   },
   agendaContainer: {

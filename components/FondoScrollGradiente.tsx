@@ -16,7 +16,7 @@ const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({
   colorTop = "#fff",
   colorBottom = colorFondo,
   style,
-  gap = 8
+  gap = 10
 }) => {
   return (
     <LinearGradient colors={[colorTop, colorBottom]} style={{flex: 1}}>

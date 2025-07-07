@@ -4,10 +4,10 @@ import { View, StyleSheet, TouchableOpacity, Modal, TextInput, Platform } from '
 
 import CustomText from '../components/CustomText';
 import { agregarEventoPersonalizado, editarEventoPersonalizado, EventoAgenda, listaCompleta, listaEnCurso, listaEventosPersonalizados, listaFuturo, listaPasado, obtenerEventoConId, quitarEventoPersonalizado} from '../data/agenda';
-import { useFocusEffect, useRouter } from 'expo-router';
+import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulClaro, azulLogoUndav,  negroAzulado } from '@/constants/Colors';
+import { azulLogoUndav } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { bottomBarStyles } from '@/components/BottomBar';
@@ -19,7 +19,6 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 const dropDownTextColor = "#fff";
 const filterBtnColor = azulLogoUndav
 export default function Agenda() {
-  const router = useRouter();
   
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
@@ -83,19 +82,47 @@ export default function Agenda() {
   }
   // FIN EVENTOS CUSTOM
   
-  function mostrarLista(lista:EventoAgenda[]) {
-    const listaFiltrada = lista.filter(puedeMostrarEvento);
+  function mostrarLista(lista: EventoAgenda[]) {
+  const listaFiltrada = lista.filter(puedeMostrarEvento);
 
-    if (listaFiltrada.length > 0) return lista.map((evento) => ( puedeMostrarEvento(evento) &&
-      (
-        evento.id.startsWith("p") ?
+  if (listaFiltrada.length === 0) {
+    return <CustomText style={styles.title}>No hay eventos de este tipo</CustomText>;
+  }
+
+  return listaFiltrada.map((evento, index) => {
+    const esUltimo = index === listaFiltrada.length - 1;
+    const extraStyle = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
+
+    if (evento.id.startsWith("p")) {
+      return (
         <AgendaItemEditable
           key={evento.id}
           evento={evento}
           onPressEdit={abrirModalEditarEvento}
+          styleExtra={extraStyle}
         />
+      );
+    } else {
+      return (
+        <AgendaItem
+          key={evento.id}
+          evento={evento}
+          styleExtra={extraStyle}
+        />
+      );
+    }
+  });
+}
+
+  function mostrarListaViejo(lista:EventoAgenda[]) {
+    const listaFiltrada = lista.filter(puedeMostrarEvento);
+
+    if (listaFiltrada.length > 0) return lista.map((evento) => ( puedeMostrarEvento(evento) &&
+      (
+      evento.id.startsWith("p") ?
+        <AgendaItemEditable key={evento.id} evento={evento} onPressEdit={abrirModalEditarEvento}/>
       :
-      <AgendaItem key={evento.id} evento={evento} />
+        <AgendaItem key={evento.id} evento={evento} />
       )
     ))
     else return <CustomText style={styles.title}>No hay eventos de este tipo</CustomText>
@@ -113,15 +140,15 @@ export default function Agenda() {
     {
       mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
       <>
-        <DropdownSeccion titulo="EN CURSO" styleContenido={styles.dropdownContenido} colorTexto={dropDownTextColor} colorFondo={azulLogoUndav} inicialmenteAbierto={true}>
+        <DropdownSeccion titulo="EN CURSO" styleContenido={styles.dropdownContenido} >
           {mostrarLista(listaEnCurso())}
         </DropdownSeccion>
 
-        <DropdownSeccion titulo="PRÓXIMO" styleContenido={styles.dropdownContenido} colorTexto={dropDownTextColor} colorFondo={azulLogoUndav} inicialmenteAbierto={true}>
+        <DropdownSeccion titulo="PRÓXIMO" styleContenido={styles.dropdownContenido}>
           {mostrarLista(listaFuturo().filter((e) => !listaEnCurso().includes(e)))}
         </DropdownSeccion>
 
-        <DropdownSeccion titulo="FINALIZADO" styleContenido={styles.dropdownContenido} colorTexto={dropDownTextColor} colorFondo={azulLogoUndav} inicialmenteAbierto={false}>
+        <DropdownSeccion titulo="FINALIZADO" styleContenido={styles.dropdownContenido} inicialmenteAbierto={false}>
           {mostrarLista(listaPasado())}
         </DropdownSeccion>
       </>
@@ -255,7 +282,7 @@ const styles = StyleSheet.create({
     borderBottomEndRadius: 20
   },
   dropdownContenido: {
-    gap: 5
+    gap: 4
   },
   agendaBtnContainer: {
     paddingVertical: 8,

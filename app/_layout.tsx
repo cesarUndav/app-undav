@@ -13,7 +13,6 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 
 import HistoryHeader, { PathToTitle } from "@/components/NavigationHistoryHeader";
 import BottomBar from "@/components/BottomBar";
-import BottomBarVisitante from "@/components/BottomBarVisitante";
 import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from "@/data/DatosUsuarioGuarani";
 import { azulMedioUndav } from "@/constants/Colors";
 

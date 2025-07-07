@@ -4,7 +4,7 @@ import CustomText from '../components/CustomText';
 import {
   JsonStringAObjeto,
   ObtenerJsonString
-} from '@/data/DatosUsuarioGuarani Backup';
+} from '@/data/DatosUsuarioGuarani_VIEJO';
 import {
   infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';

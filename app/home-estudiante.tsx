@@ -86,6 +86,7 @@ export default function HomeEstudiante() {
             iconSize={iconSize}
             iconColor={iconColor}
             backgroundColor={iconBgColor}
+            styleExtra={{borderBottomRightRadius: 20}}
           />
         </View>
       </View>
@@ -107,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 0.53, // tamaño de botones con respecto a lista
     gap: 10,
     padding: 10,
-    borderBottomRightRadius: 24,
+    borderBottomRightRadius: 28,
     backgroundColor: azulLogoUndav,
     ...getShadowStyle(4)
   },

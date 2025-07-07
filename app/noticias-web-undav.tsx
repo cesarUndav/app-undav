@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { StyleSheet, ScrollView } from 'react-native';
 
-import CustomText from '../components/CustomText';
-import BotonTextoLink from '@/components/BotonTextoLink';
+import BotonTexto from '@/components/BotonTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 
 import { negroAzulado } from '@/constants/Colors';
@@ -52,7 +51,6 @@ async function obtenerTablasListadornot(): Promise<{ label: string; href: string
 }
 
 export default function NoticiasWeb() {
-  const [loading, setLoading] = useState(true);
   const [linksNoticias, setLinksNoticias] = useState<{ href: string; label: string }[]>([]);
   const [loadingLinks, setLoadingLinks] = useState(false);
 
@@ -65,7 +63,6 @@ export default function NoticiasWeb() {
       console.error("Error al obtener links:", error);
     } finally {
       setLoadingLinks(false);
-      setLoading(false);
     }
   };
 
@@ -75,12 +72,12 @@ export default function NoticiasWeb() {
 
   return (
     <FondoGradiente>
-      <LoadingWrapper loading={loading}>
+      <LoadingWrapper loading={loadingLinks}>
         <ScrollView contentContainerStyle={styles.listaContainer}>
           {linksNoticias.length > 0 && (
             <>
               {linksNoticias.map((linkObj, i) => (
-                <BotonTextoLink
+                <BotonTexto
                   key={i}
                   url={"https://undav.edu.ar/" + linkObj.href}
                   label={linkObj.label}
@@ -89,7 +86,7 @@ export default function NoticiasWeb() {
               ))}
             </>
           )}
-          <BotonTextoLink label={'Ver todas las noticias'} url="https://undav.edu.ar/index.php?idcateg=323" openInsideApp />
+          <BotonTexto styleExtra={{borderBottomRightRadius: 20}} label={'Ver todas las noticias'} url="https://undav.edu.ar/index.php?idcateg=323" openInsideApp />
         </ScrollView>
       </LoadingWrapper>
     </FondoGradiente>
@@ -98,7 +95,7 @@ export default function NoticiasWeb() {
 
 const styles = StyleSheet.create({
   listaContainer: {
-    gap: 8,
+    gap: 4,
   },
   title: {
     fontSize: 16,

@@ -9,7 +9,7 @@ import AgendaItem from '@/components/AgendaItem';
 import { azulClaro, azulLogoUndav,  negroAzulado } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
-import BotonTextoLink from '@/components/BotonTextoLink';
+import BotonTexto from '@/components/BotonTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 
 const filterBtnColor = azulLogoUndav
@@ -47,7 +47,7 @@ export default function Agenda() {
         }
         </ScrollView>
         <View style={{paddingHorizontal: 15, paddingBottom: 15, marginTop: 10}}>
-          <BotonTextoLink route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} />
+          <BotonTexto route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} />
         </View>
       </View>
       

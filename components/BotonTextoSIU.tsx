@@ -1,5 +1,5 @@
 import React from 'react';
-import BotonTextoLink from './BotonTextoLink';
+import BotonTexto from './BotonTexto';
 import { celesteSIU } from '@/constants/Colors';
 
 type BotonTextoProps = {
@@ -24,6 +24,6 @@ export default function BotonTextoSIU({
   fontColor = 'white'
 }: BotonTextoProps) {
   return (
-    <BotonTextoLink label={label} url={url} tryLogin={tryLogin} openInsideApp={openInsideApp} color={celesteSIU} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
+    <BotonTexto label={label} url={url} tryLogin={tryLogin} openInsideApp={openInsideApp} color={celesteSIU} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
   );
 }

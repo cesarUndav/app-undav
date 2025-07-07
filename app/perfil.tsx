@@ -6,6 +6,7 @@ import {
   TouchableOpacity,
   Switch,
   Alert,
+  Platform,
 } from "react-native";
 import { router } from "expo-router";
 import CustomText from "../components/CustomText";
@@ -45,7 +46,7 @@ export default function Configuracion() {
   const [mostrarPropuestas, setMostrarPropuestas] = useState(false);
 
   const handleLogout = () => {
-    Alert.alert("Cerrar sesión", "¿Estás seguro de que querés\ncerrar sesión?", [
+    Alert.alert("Cerrar sesión", "¿Quiere cerrar sesión?", [
       {
         text: "Sí",
         style: "destructive",
@@ -103,8 +104,8 @@ export default function Configuracion() {
         },
         {
           type: "link",
-          label: "Extras",
-          onPress: () => router.push("/extras"),
+          label: "Accesos Directos",
+          onPress: () => router.push("/accesos-directos"),
         },
         { type: "separator" },
       ],
@@ -136,7 +137,7 @@ export default function Configuracion() {
                 );
               case "toggle":
                 return (
-                  <View style={[styles.item, { marginVertical: -10 }]}>
+                  <View style={[styles.item, Platform.OS != "ios" && { marginVertical: -10 }]}>
                     <CustomText style={styles.textItem}>{item.label}</CustomText>
                     <Switch
                       value={item.value}

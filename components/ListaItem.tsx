@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet, TextStyle, ViewStyle } from 'react-native';
+import { View, StyleSheet, TextStyle, ViewStyle, StyleProp } from 'react-native';
 import CustomText from './CustomText';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
@@ -12,6 +12,7 @@ type ListaItemProps = {
   fontSize?: number;
   paddingVertical?: number;
   paddingHorizontal?: number;
+  styleExtra?: StyleProp<ViewStyle>;
 };
 
 export default function ListaItem({
@@ -23,6 +24,8 @@ export default function ListaItem({
   fontSize = 16,
   paddingVertical = 8,
   paddingHorizontal = 15,
+  styleExtra,
+
 }: ListaItemProps) {
   const containerStyle: ViewStyle = {
     backgroundColor,
@@ -45,7 +48,7 @@ export default function ListaItem({
   };
 
   return (
-    <View style={[styles.itemContainer, containerStyle]}>
+    <View style={[styles.itemContainer, containerStyle, styleExtra]}>
       <CustomText style={titleStyle}>{title}</CustomText>
       {subtitle && <CustomText style={subtitleStyle}>{subtitle}</CustomText>}
     </View>
@@ -54,7 +57,7 @@ export default function ListaItem({
 
 const styles = StyleSheet.create({
   itemContainer: {
-    borderBottomRightRadius: 16,
+    //borderBottomRightRadius: 16,
     ...getShadowStyle( 4)
   }
 });
