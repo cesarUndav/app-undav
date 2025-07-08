@@ -1,8 +1,8 @@
 import React from 'react';
-import { View, StyleSheet, Image, TouchableOpacity } from 'react-native';
+import { View, StyleSheet } from 'react-native';
 
 import { useRouter } from 'expo-router';
-import AgendaPreview from '../components/AgendaPreview';
+import AgendaPreview from '../components/AgendaPreviewHibrida';
 
 // import LinksIcon from '../assets/icons/links.svg';
 import LinksIcon from '../assets/icons/ico-svg/redes-arroba.svg';
@@ -57,25 +57,6 @@ export default function HomeEstudiante() {
             backgroundColor={iconBgColor}
           />
         </View>
-
-        {/* <View style={styles.buttonsRow}>  
-          <BotonIconoTexto
-            label={"HISTORIA\nACADÉMICA"}
-            funcionOnPress={() => router.push('/historia-academica')}
-            Icon={ReportesIcon}
-            iconSize={iconSize}
-            iconColor={iconColor}
-            backgroundColor={iconBgColor}
-          />
-          <BotonIconoTexto
-            label={"PLAN DE\nESTUDIO"}
-            funcionOnPress={() => router.push('/plan-de-estudio')}
-            Icon={InscripcionesIcon}
-            iconSize={iconSize}
-            iconColor={iconColor}
-            backgroundColor={iconBgColor}
-          />
-        </View> */}
         <View style={styles.buttonsRow}>
           
           <BotonIconoTexto
@@ -105,6 +86,7 @@ export default function HomeEstudiante() {
             iconSize={iconSize}
             iconColor={iconColor}
             backgroundColor={iconBgColor}
+            styleExtra={{borderBottomRightRadius: 20}}
           />
         </View>
       </View>
@@ -126,7 +108,7 @@ const styles = StyleSheet.create({
     flex: 0.53, // tamaño de botones con respecto a lista
     gap: 10,
     padding: 10,
-    borderBottomRightRadius: 24,
+    borderBottomRightRadius: 28,
     backgroundColor: azulLogoUndav,
     ...getShadowStyle(4)
   },

@@ -11,6 +11,7 @@ const routes = [
   "/home-estudiante",
   "/calendario",
   "/notificaciones",
+  "/accesos-directos",
   "/perfil",
 ] as const;
 
@@ -35,13 +36,10 @@ export default function BottomBar() {
   const pathname = usePathname();
 
   const buttons: Button[] = [
-    // { route: "/home-estudiante", Icon: require('../assets/icons/home.svg').default },
-    // { route: "/calendario", Icon: require('../assets/icons/calendar.svg').default },
-    // { route: "/notificaciones", IconName: "notifications-outline" },
-    // { route: "/perfil", IconName: "person-outline" },
     { route: "/home-estudiante", Icon: require('../assets/icons/ico-svg/inicio.svg').default },
     { route: "/calendario", Icon: require('../assets/icons/ico-svg/calendario.svg').default },
     { route: "/notificaciones", IconName: "notifications" },
+    { route: "/accesos-directos", Icon: require('../assets/icons/ico-svg/enlaces.svg').default },
     { route: "/perfil", IconName: "person" },
   ];
 

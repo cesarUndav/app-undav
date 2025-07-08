@@ -69,7 +69,10 @@ function charPlural(plural:string, valorAEvaluar:number) {
 }
 
 // export listas
-export const historialNotificaciones: Notificacion[] = ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento) == true), false);
+export function historialNotificaciones(): Notificacion[]{
+  return ordenarEventosPorFechaFin(listaEventosAgenda.filter(
+    (evento) => eventoFinalizado(evento) == true), false);
+  }
 
 // export funcs
 let notifCount = -1;
