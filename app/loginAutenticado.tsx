@@ -84,7 +84,7 @@ export default function LoginScreen() {
             resizeMode="contain"
           />
 
-          <View style={{gap: 10, flex: 1, justifyContent:"flex-start"}}>
+          <View style={{gap: 10, flex: 1.1, justifyContent:"flex-start"}}>
             <TextInput
               id="usuario"
               style={styles.inlineInputField}

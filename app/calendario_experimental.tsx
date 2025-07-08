@@ -1,11 +1,13 @@
 import React, { useEffect, useState, useCallback, useRef } from 'react';
-import { View, StyleSheet, ScrollView } from 'react-native';
+import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import ListaItem from '@/components/ListaItem';
 import BotonTexto from '@/components/BotonTexto';
 import CalendarioMensual from '../components/CalendarioMensual';
 import FondoGradiente from '@/components/FondoGradiente';
+// FILTROS
+import { Ionicons } from '@expo/vector-icons';
 
 import {
   JsonStringAObjeto,
@@ -15,14 +17,18 @@ import {
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingWrapper from '@/components/LoadingWrapper';
-import { negroAzulado } from '@/constants/Colors';
+import { azulLogoUndav, negroAzulado } from '@/constants/Colors';
 import { eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
+import { getShadowStyle } from '@/constants/ShadowStyle';
+import { bottomBarStyles } from '@/components/BottomBar';
 
 export type Actividad = {
   id: string;
   body: string;
   title: string;
 };
+
+const filterBtnColor = azulLogoUndav
 
 function fechaSumarDias(diasASumar: number, fechaOpcional?: Date): Date {
   const base = fechaOpcional ? fechaOpcional.getTime() : Date.now();
@@ -59,6 +65,13 @@ export default function Calendario() {
   const [listaActividadesDiaSeleccionado, setListaActividadesDiaSeleccionado] = useState<Actividad[]>([]);
   const [tituloPagina, setTituloPagina] = useState('');
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(diaHoy);
+
+  // FILTROS
+        const [mostrarFiltros, setMostrarFiltros] = useState(false);
+      const [mostrarFeriados, setMostrarFeriados] = useState(true);
+      const [mostrarPersonalizados, setMostrarPersonalizados] = useState(true);
+      const [mostrarAcademicos, setMostrarAcademicos] = useState(true);
+
 
   // Para evitar recargar el mismo mes más de una vez
   const mesesCargadosRef = useRef<Set<string>>(new Set());
@@ -131,14 +144,11 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
     }
   });
 
-
-
   // Combinar ambas
   const todasLasActividades = [...actividadesSIU, ...actividadesEvento];
 
   actividadesTemp[fechaStr] = todasLasActividades;
 }));
-
 
       setActividadesPorFecha(prev => ({ ...prev, ...actividadesTemp }));
 
@@ -191,6 +201,7 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
   }, [fechaSeleccionada, actividadesPorFecha]);
 
   return (
+    <>
     <FondoGradiente>
       <LoadingWrapper loading={loading}>
 
@@ -204,13 +215,13 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
           }}
         />
 
-        <View style={styles.titleContainer}>
-          <CustomText style={styles.title}>{tituloPagina}</CustomText>
+        <View style={stylesOg.titleContainer}>
+          <CustomText style={stylesOg.title}>{tituloPagina}</CustomText>
         </View>
         </LoadingWrapper>
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
-        <ScrollView contentContainerStyle={styles.listaContainer}>
+        <ScrollView contentContainerStyle={stylesOg.listaContainer}>
           {listaActividadesDiaSeleccionado.map((evento, index) => {
             const esUltimo = index === listaActividadesDiaSeleccionado.length - 1;
             const estiloExtra = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
@@ -224,16 +235,47 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
             );
           })}
         </ScrollView>
-        <View style={{marginTop: 10}}>
+        <View style={{marginTop: 8}}>
           <BotonTexto route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} styleExtra={{borderBottomRightRadius: 20}}/>
         </View>
       </View>
 
     </FondoGradiente>
+    
+    {/* botones FLOTANTES */}
+    <View style={styles.floatingBox}>
+
+      {mostrarFiltros && 
+        <View style={styles.filterOptionsParent}>
+          <TouchableOpacity onPress={() => setMostrarFeriados(!mostrarFeriados)} style={[styles.filterOption, { backgroundColor: mostrarFeriados ? filterBtnColor : "gray" }]}>
+            <CustomText style={styles.filterOptionText}>Feriados</CustomText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)} style={[styles.filterOption, { backgroundColor: mostrarPersonalizados ? filterBtnColor : "gray" }]}>
+            <CustomText style={styles.filterOptionText}>Personalizados</CustomText>
+          </TouchableOpacity>
+          <TouchableOpacity onPress={() => setMostrarAcademicos(!mostrarAcademicos)} style={[styles.filterOption, { backgroundColor: mostrarAcademicos ? filterBtnColor : "gray" }, {borderBottomRightRadius: 10}]}>
+            <CustomText style={styles.filterOptionText}>Académicos</CustomText>
+          </TouchableOpacity>
+        </View>
+      }
+
+      <TouchableOpacity onPress={() => abrirModalAgregarEvento()} style={[styles.openBtn, {backgroundColor: "green", marginBottom: 10}]}>
+        <Ionicons name={"add"} size={28} color="#fff" />
+      </TouchableOpacity>
+
+      <TouchableOpacity onPress={() => setMostrarFiltros(!mostrarFiltros)} style={styles.openBtn}>
+        {mostrarFiltros ?
+          (<Ionicons name={"close"} size={28} color="#f00" />)
+        : (<Ionicons name={"filter"} size={28} color="#fff" />)
+        }
+      </TouchableOpacity>
+
+    </View>
+    </>
   );
 }
 
-const styles = StyleSheet.create({
+const stylesOg = StyleSheet.create({
   listaContainer: {
     gap: 4
   },
@@ -250,5 +292,99 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'space-between',
     paddingVertical: 8,
+  },
+});
+
+
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: "negroAzulado",
+    alignSelf: 'center',
+    textAlign:"center",
+    marginVertical: 0
+  },
+  dropdownHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: azulLogoUndav,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 0,
+    borderBottomEndRadius: 20
+  },
+  dropdownContenido: {
+    gap: 4
+  },
+  agendaBtnContainer: {
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    gap: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
+  floatingBox: {
+    position: 'absolute',
+    bottom: 15 + 66 + bottomBarStyles.container.height,
+    right: 15,
+    zIndex: 10, // encima de otras Views
+    flexDirection: "column",
+    alignItems: 'flex-end',
+    justifyContent: 'flex-end'
+  },
+  filterOptionsParent: {
+    backgroundColor: "#fff",
+    padding: 8,
+    marginBottom: 10,
+    gap:4,
+    borderBottomRightRadius: 16,
+    flex: 1,
+    ...getShadowStyle(4)
+  },
+  filterOption: {
+    flex: 1,
+    height: "100%",
+    alignItems: "flex-start",
+    backgroundColor: filterBtnColor,
+    borderRadius: 0,
+    borderBottomRightRadius: 0,
+    ...getShadowStyle(2)
+  },
+  filterOptionText: {
+    color: '#fff',
+    fontWeight: 'bold',
+    fontSize: 14,
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+  },
+
+  openBtn: {
+    backgroundColor: azulLogoUndav,
+    borderRadius: 30,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...getShadowStyle(4)
+  },
+  closeBtn: {
+    backgroundColor: "lightgray",
+    borderRadius: 30,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...getShadowStyle(4)
+  },
+  closeBtnText: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    color: '#c91800', // #333
+    paddingBottom: 4,
+    //paddingHorizontal: 8,
+    textAlign: "center",
+    textAlignVertical: "center",
   },
 });

@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import {
@@ -13,7 +13,6 @@ import { negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
 import BotonTextoSIU from '@/components/BotonTextoSIU';
-import BotonTexto from '@/components/BotonTexto';
 
 import {
   infoBaseUsuarioActual,

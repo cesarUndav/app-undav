@@ -6,6 +6,8 @@ import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } 
 import SettingsIcon from '../assets/icons/settings.svg';
 import { azulLogoUndav } from '@/constants/Colors';
 import { AgendaItemStyles } from './AgendaItem';
+import { useCategoriasPersistentes } from '@/hooks/useCategoriasPersistentes';
+import { Categoria } from './DropdownCategoria';
 
 type AgendaItemEditableProps = {
   evento: EventoAgenda;
@@ -14,11 +16,15 @@ type AgendaItemEditableProps = {
 };
 
 export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: AgendaItemEditableProps) {
+  useCategoriasPersistentes();
+
   return (
     <View style={[AgendaItemStyles.agendaItem, styleExtra]}>
         <TouchableOpacity style={styles.itemParent} onPress={() => onPressEdit(evento.id)} accessible accessibilityLabel="Editar Evento" >
           <View style={styles.itemChildLeft}>
-            <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>
+            <CustomText style={[AgendaItemStyles.eventTitle, { 
+              //</View>color: evento.categoria ? categorias[evento.categoria]
+              color: '#000' }]}>
               {evento.titulo}
             </CustomText>
             <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>

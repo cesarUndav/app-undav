@@ -163,7 +163,6 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
     usuario: "",
     password: ""
   };
-  console.log("datos.propuestas: ",prop);
   
   visitante = false;
 }

@@ -11,7 +11,9 @@ export type EventoAgenda = {
   fechaInicio: Date;
   fechaFin: Date;
   esFeriado?: Boolean;
+  descripcion?: string;
   notificar?: false;
+  categoria?: number;
 };
 
 // vars dev
@@ -93,7 +95,8 @@ export let listaEventosPersonalizados: EventoAgenda[] = [
 ];
 
 // funciones
-export function agregarEventoPersonalizado(titulo:string, fechainicio:string, fechaFin:string):void {
+
+export function agregarEventoPersonalizado(titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
   
   let fi = new Date(fechainicio);
   let ff = new Date(fechaFin);
@@ -106,13 +109,14 @@ export function agregarEventoPersonalizado(titulo:string, fechainicio:string, fe
   {
     id: "p"+devUltimoId,
     titulo: titulo,
+    descripcion: descripcion,
     fechaInicio: fi,
     fechaFin: ff
   };
   devUltimoId += 1;
   listaEventosPersonalizados.push(nuevoEvento);
 }
-export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:string, fechaFin:string):void {
+export function editarEventoPersonalizado(id:string, titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
   let fi = new Date(fechainicio);
   let ff = new Date(fechaFin);
   if (ff < fi) {
@@ -122,6 +126,7 @@ export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:
   }
   const eventoEditado:EventoAgenda = obtenerEventoConId(id);
   eventoEditado.titulo = titulo;
+  eventoEditado.descripcion = descripcion;
   eventoEditado.fechaInicio = fi;
   eventoEditado.fechaFin = ff;
 }
@@ -161,10 +166,7 @@ function eventoDuraUnDia(evento:EventoAgenda): Boolean {
   return Boolean(evento.fechaInicio.getDate() == evento.fechaFin.getDate());
 }
 function eventoEnCurso(evento:EventoAgenda): Boolean {
-return (diasHastaFechaActual(evento.fechaInicio) <= 0 && !eventoFinalizado(evento));
-}
-function eventoEnCursoFinalizaHoy(evento:EventoAgenda): Boolean {
-  return eventoEnCurso(evento)==true && diasHastaFechaActual(evento.fechaFin) == -1;
+  return (diasHastaFechaActual(evento.fechaInicio) <= -1 && !eventoFinalizado(evento));
 }
 function eventoFinalizado(evento:EventoAgenda): Boolean {
   return diasHastaFechaActual(evento.fechaFin) < -1;
