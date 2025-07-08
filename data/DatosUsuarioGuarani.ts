@@ -1,4 +1,3 @@
-import { Platform } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 
@@ -9,6 +8,9 @@ export interface User {
   email: string;
   legajo: string;
   propuestas: Propuesta[];
+  indicePropuestaSeleccionada: number,
+  usuario: string,
+  password: string
 }
 
 export let infoBaseUsuarioActual: User = {
@@ -18,6 +20,9 @@ export let infoBaseUsuarioActual: User = {
   email: "",
   legajo: "",
   propuestas: [],
+  indicePropuestaSeleccionada: -1,
+  usuario: "",
+  password: ""
 };
 
 export interface Propuesta {
@@ -25,7 +30,7 @@ export interface Propuesta {
   propuesta: number;
   nombre: string;
   nombre_abreviado: string;
-  regular: "S" | "N"; // o solo "S" si no hay otros valores
+  regular: "S" | "N";
   plan_version: number;
 }
 
@@ -117,13 +122,17 @@ async function guardarSesion(token: string, personaId: number):Promise<void> {
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
   await guardarSesion(token, idPersona);
+  
+  // GUARDO ASI MEJOR, AsyncStorage.getItem() es una mierda
+  infoBaseUsuarioActual.usuario = usuario.toString();
+  infoBaseUsuarioActual.password = clave.toString();
+  
   setVisitante(false);
   await ObtenerDatosBaseUsuarioConToken(token, idPersona);
   return {token, idPersona};
 }
 
 // Obtener datos personales con token JWT (para iOS y Android)
-
 export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: number): Promise<void> {
   const url = `${URL_BASE}/persona/${personaId}`;
 
@@ -133,7 +142,6 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
       Authorization: `Bearer ${token}`
     }
   });
-  console.log("RESPONSE:", response);
 
   if (!response.ok) {
     const errorText = await response.text();
@@ -141,7 +149,8 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
   }
 
   const datos = await response.json();
-  //const prop = datos.propuestas;
+  const prop = datos.propuestas;
+  
   infoBaseUsuarioActual = {
     idPersona: personaId.toString(),
     legajo: datos.legajo,
@@ -149,18 +158,24 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
     documento: datos.nro_documento,
     email: datos.email,
     //tel: datos.telefono_celular,
-    propuestas: datos.propuestas
+    propuestas: prop,
+    indicePropuestaSeleccionada: prop.length - 1,
+    usuario: "",
+    password: ""
   };
-
+  console.log("datos.propuestas: ",prop);
+  
   visitante = false;
-
-  //console.log("Usuario cargado:", infoBaseUsuarioActual);
 }
 
 export async function ObtenerMateriasConPlan(): Promise<Plan> {
   const token = await AsyncStorage.getItem("token");
-  //const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length].plan_version;
-  const planId = 435;
+  
+  //const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length -1].plan_version;
+  
+  //console.log("PROPS: ",infoBaseUsuarioActual);
+  const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].plan_version;
+  //const planId = 435;
   console.log("plan:",planId,"token:",token);
 
   const url = `${URL_BASE}/propuesta/${planId}/plan`;
@@ -175,18 +190,12 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
     const errorText = await response.text();
     throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
   }
-  console.log("response OK");
   const respuestaPlan = await response.json();
-  
-  console.log("respuesta cruda:", respuestaPlan);
-  
   const plan:Plan = respuestaPlan;
-  console.log("plan completo:",plan);
   return respuestaPlan as Plan;
 }
 
-// Logout
-export function Logout() {
+export async function Logout() {
   visitante = true;
   infoBaseUsuarioActual = {
     idPersona: "",
@@ -194,10 +203,13 @@ export function Logout() {
     nombreCompleto: "",
     email: "",
     legajo: "",
-    propuestas: []
+    propuestas: [],
+    indicePropuestaSeleccionada: -1,
+    usuario: "",
+    password: "",
   };
-  AsyncStorage.removeItem("token");
-  AsyncStorage.removeItem("idPersona");
+  await AsyncStorage.removeItem("token");
+  await AsyncStorage.removeItem("idPersona"); // O AsyncStorage.clear();
 }
 
 // El que quiere celeste, que le cueste:

@@ -1,48 +1,51 @@
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, Image, SafeAreaView } from 'react-native';
+import React from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
-import { useRouter } from 'expo-router';
+import { Route, useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
 
-import {Ionicons } from '@expo/vector-icons';
-import LinksIcon from '../assets/icons/links.svg';
-import PreguntasIcon from '../assets/icons/preguntas.svg';
-import InscripcionesIcon from '../assets/icons/inscripciones.svg';
+import {Ionicons} from '@expo/vector-icons';
+import RedesIcon from '../assets/icons/ico-svg/redes-arroba.svg';
+import PreguntasIcon from '../assets/icons/ico-svg/preguntas-frecuentes.svg';
+import InscripcionesIcon from '../assets/icons/ico-svg/inscripciones.svg';
+import CalendarioIcon from '../assets/icons/ico-svg/calendario.svg';
 
-import ContactoIcon from '../assets/icons/contacto.svg';
-import SedesIcon from '../assets/icons/sedes.svg';
+import SedesIcon from '../assets/icons/ico-svg/sedes.svg';
 
 import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import UndavVisitanteHeader from '@/components/UndavVisitanteHeader';
 
-const iconSize = 44;
+const iconSize = 55;
 const iconColor = "#fff";
+
+function ContactoIcon() {
+  return (<Ionicons name={"mail"!} size={iconSize-8} color={iconColor} />);
+}
+function NoticiasIcon() {
+  return (<Ionicons name={"notifications"!} size={iconSize-12} color={iconColor} />);
+}
 
 export default function HomeEstudiante() {
   const router = useRouter();
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+      <FondoGradiente style={styles.containerGradient}>
 
-      <FondoGradiente>
-
-        <View style={styles.header}>
-          <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-          <CustomText style={styles.bannerText}>{"Ingreso 2do Cuatrimestre 2025:\n31/3/25 - 30/5/2025"}</CustomText>
-        </View>
+        <UndavVisitanteHeader/>
 
         <View style={[styles.buttonsRowParent,{flex: 1}]}>
           <TouchableOpacity style={styles.buttonBox} onPress={() => router.push('/oferta-academica')} accessible accessibilityLabel="Ir a oferta académica" >
-            <Ionicons name="school-outline" size={80} color={iconColor} />
+            <Ionicons name="school" size={iconSize+0} color={iconColor} />
             <CustomText style={styles.buttonText}>OFERTA ACADÉMICA</CustomText>
           </TouchableOpacity>
         </View>
         
         <View style={styles.buttonsRowParent}> 
+          
           <View style={styles.buttonsRow}>
-            
             <BotonIconoTexto
               label={"TUTORIAL DE\nPREINSCRIPCIÓN"}
               funcionOnPress={() => router.push('/preinscripcion')}
@@ -51,9 +54,9 @@ export default function HomeEstudiante() {
               iconColor="white"
             />
             <BotonIconoTexto
-              label={"PREGUNTAS\nFRECUENTES"}
-              funcionOnPress={() => router.push('/preguntas-frecuentes')}
-              Icon={PreguntasIcon}
+              label={"CALENDARIO\nACADÉMICO"}
+              funcionOnPress={() => router.push('/calendario-academico-visitante')}
+              Icon={CalendarioIcon}
               iconSize={iconSize}
               iconColor="white"
             />
@@ -63,7 +66,7 @@ export default function HomeEstudiante() {
             <BotonIconoTexto
               label={"REDES"}
               funcionOnPress={() => router.push('/redes')}
-              Icon={LinksIcon}
+              Icon={RedesIcon}
               iconSize={iconSize}
               iconColor="white"
             />
@@ -74,6 +77,9 @@ export default function HomeEstudiante() {
               iconSize={iconSize}
               iconColor="white"
             />
+          </View>
+          <View style={styles.buttonsRow}>
+
             <BotonIconoTexto
               label={"CONTACTO"}
               funcionOnPress={() => router.push('/contacto')}
@@ -81,11 +87,24 @@ export default function HomeEstudiante() {
               iconSize={iconSize}
               iconColor="white"
             />
+            <BotonIconoTexto
+              label={"PREGUNTAS\nFRECUENTES"}
+              funcionOnPress={() => router.push('/preguntas-frecuentes')}
+              Icon={PreguntasIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
+            <BotonIconoTexto
+              label={"NOTICIAS"}
+              funcionOnPress={() => router.push('/notificaciones')}
+              Icon={NoticiasIcon}
+              iconSize={iconSize}
+              iconColor="white"
+            />
           </View>
         </View>
 
       </FondoGradiente>
-    </SafeAreaView>
   );
 }
 
@@ -93,40 +112,16 @@ export default function HomeEstudiante() {
 
 const styles = StyleSheet.create({
   containerGradient: {
-    flex: 1,
-    paddingHorizontal: 10,
     gap: 12,
-    paddingVertical: 12
+    padding: 15,
+    paddingTop: 10
   },
-  header: { //header
-    flexDirection: 'row',
-    alignItems: 'flex-start',
-    justifyContent: 'space-between',
-    height: 60
-  },
-  logoUndav: {
-    height: "100%",
-    aspectRatio: "1 / 1.22",
-    width: "auto",
-    resizeMode: "contain"
-  },
-  bannerText: {
-    flex: 1,
-    paddingLeft: 15,
-    alignSelf: "flex-start",
-    justifyContent: "flex-start",
-    color: "black",
-    fontWeight: "bold",
-    fontSize: 15
-    //backgroundColor: "red"
-  },
-  buttonsRowParent: { //buttons
-    flex: 0.6, // tamaño de botones con respecto a lista
+  buttonsRowParent: {
+    flex: 1.5, // tamaño de botones con respecto a lista
     gap: 10,
     padding: 10,
     borderBottomRightRadius: 24,
     backgroundColor: azulLogoUndav,
-    //marginVertical: 12,
     ...getShadowStyle(4)
   },
   buttonsRow: {

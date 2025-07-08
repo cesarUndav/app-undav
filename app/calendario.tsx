@@ -3,7 +3,7 @@ import { View, StyleSheet, ScrollView } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import ListaItem from '@/components/ListaItem';
-import BotonTextoLink from '@/components/BotonTextoLink';
+import BotonTexto from '@/components/BotonTexto';
 import CalendarioMensual from '../components/CalendarioMensual';
 import FondoGradiente from '@/components/FondoGradiente';
 
@@ -11,12 +11,12 @@ import {
   JsonStringAObjeto,
   ObtenerJsonString,
   UrlObtenerAgenda,
-} from '@/data/DatosUsuarioGuarani Backup';
+} from '@/data/DatosUsuarioGuarani_VIEJO';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
-import { EventoAgenda, eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
+import { eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
 
 export type Actividad = {
   id: string;
@@ -211,12 +211,21 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <ScrollView contentContainerStyle={styles.listaContainer}>
-          {listaActividadesDiaSeleccionado.map((evento) => (
-            <ListaItem key={evento.id} title={evento.title} subtitle={evento.body.toString()} />
-          ))}
+          {listaActividadesDiaSeleccionado.map((evento, index) => {
+            const esUltimo = index === listaActividadesDiaSeleccionado.length - 1;
+            const estiloExtra = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
+            return (
+              <ListaItem
+                key={evento.id}
+                title={evento.title}
+                subtitle={evento.body.toString()}
+                styleExtra={estiloExtra}
+              />
+            );
+          })}
         </ScrollView>
         <View style={{marginTop: 10}}>
-          <BotonTextoLink route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} />
+          <BotonTexto route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} styleExtra={{borderBottomRightRadius: 20}}/>
         </View>
       </View>
 
@@ -226,7 +235,7 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
 
 const styles = StyleSheet.create({
   listaContainer: {
-    gap: 8
+    gap: 4
   },
   title: {
     fontSize: 16,

@@ -1,4 +1,5 @@
-import BotonTextoLink from '@/components/BotonTextoLink';
+import ApplyRadiusToLastChild from '@/components/ApplyRadiusToLastChild';
+import BotonTexto from '@/components/BotonTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import ListaItem from '@/components/ListaItem';
@@ -16,12 +17,12 @@ import { ScrollView, StyleSheet, View } from 'react-native';
 export default function Notificaciones() {
   setNotificationCount(0); // LIMPIA GLOBO de notificaciones al CARGAR esta página
   return (
-    <FondoGradiente>
+    <FondoGradiente style={{paddingBottom: 15}}>
       <ScrollView contentContainerStyle={styles.listContainer}>
-        {mostrarLista(historialNotificaciones)}
+        {mostrarLista(historialNotificaciones())}
       </ScrollView>
-      <View style={{paddingTop: 10}}>
-        <BotonTextoLink label={'Noticias UNDAV'} route='noticias-web-undav' />
+      <View style={[{paddingTop: 10},styles.listContainer]}>
+        <BotonTexto label={'Noticias UNDAV'} route='noticias-web-undav' styleExtra={{borderBottomRightRadius: 20}}/>
       </View>
       </FondoGradiente>
   );
@@ -37,6 +38,8 @@ const styles = StyleSheet.create({
     marginVertical: 0
   },
   listContainer: {
-    gap: 8
+    gap: 4,
+    paddingHorizontal: 15,
+    paddingTop: 10
   }
 });
