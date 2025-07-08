@@ -4,7 +4,6 @@ import CustomText from "../components/CustomText";
 import FondoGradiente from "@/components/FondoGradiente";
 import {
   fondoEsCeleste,
-  Logout,
   setColorFondoCeleste
 } from "@/data/DatosUsuarioGuarani";
 import { getShadowStyle } from "@/constants/ShadowStyle";

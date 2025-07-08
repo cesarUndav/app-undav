@@ -1,13 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
-
 import CustomText from '../components/CustomText';
-
 import {
   JsonStringAObjeto,
   ObtenerJsonString
-} from '@/data/DatosUsuarioGuarani Backup'
-
+} from '@/data/DatosUsuarioGuarani_VIEJO';
 import {
   infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
@@ -20,17 +17,18 @@ import FondoGradiente from '@/components/FondoGradiente';
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
 }
+
 function convertToISODateFormat(dateStr: string): string {
   const [day, month, year] = dateStr.split("/");
   return `${year}-${month.padStart(2, "0")}-${day.padStart(2, "0")}`;
 }
 
 export type Actividad = {
-  id:number,
-  title:string,
-  body:string,
-  nota:number,
-  fecha:string
+  id: number,
+  title: string,
+  body: string,
+  nota: number,
+  fecha: string
 }
 
 export default function HistoriaAcademica() {
@@ -42,13 +40,14 @@ export default function HistoriaAcademica() {
   const [promedio, setPromedio] = useState(0);
   const [promedioConAplazos, setPromedioConAplazos] = useState(0);
   const [conAplazos, setConAplazos] = useState(false);
+  const [materiasPorCuatrimestre, setMateriasPorCuatrimestre] = useState(0);
 
-  // BARRA DE BÚSQUEDA
   const [search, setSearch] = useState('');
   const actividadesMostradas = (conAplazos ? listaActividades : listaActividadesAprobadas)
-  .filter((actividad) =>
-    coincideBusqueda(actividad.title, search)
-  );
+    .filter((actividad) =>
+      coincideBusqueda(actividad.title, search)
+    );
+
   function mostrarListaActividad() {
     return actividadesMostradas.map((actividad) => (
       <ListaItem
@@ -58,94 +57,98 @@ export default function HistoriaAcademica() {
       />
     ))
   }
-  //
 
   useEffect(() => {
     const fetchHistoria = async () => {
       try {
-        const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/"+infoBaseUsuarioActual.idPersona+"/datosanalitico";
+        const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
         const json = JsonStringAObjeto(await ObtenerJsonString(url));
-        
+
         const listaActividad: Actividad[] = [];
         const listaActividadAprobadas: Actividad[] = [];
 
-        if (json.error != null) { // si hay error, es decir, no hay actividades en la fecha: 
+        if (json.error != null) {
           setListaActividades([]);
           setListaActividadesAprobadas([]);
-        }
-        else { // transformar actividades JSON a actividades Actividad:
-          let cantMateriasAprobadas:number = 0;
-          let sumaNotasAprobadas:number = 0;
-
-          let cantMateriasTotal:number = 0;
-          let sumaNotasTotal:number = 0;
+        } else {
+          let sumaNotasAprobadas = 0;
+          let sumaNotasTotal = 0;
+          const fechas = new Set<string>();
 
           json.forEach((elem: any, index: number) => {
-            const nota:number = Number(elem.nota);
-            const nuevaActividad:Actividad = {
+            const nota = Number(elem.nota);
+            const fechaISO = convertToISODateFormat(elem.fecha);
+            const nuevaActividad: Actividad = {
               id: index,
               title: `${elem.actividad_nombre}`,
               body: `Nota: ${nota}\n${elem.resultado}: ${elem.fecha}`,
-              fecha: convertToISODateFormat(elem.fecha),
+              fecha: fechaISO,
               nota: nota
             };
             listaActividad.push(nuevaActividad);
-            if (nota >= 4) listaActividadAprobadas.push(nuevaActividad);
+            sumaNotasTotal += nota;
+            fechas.add(fechaISO.slice(0, 7)); // año-mes
+            if (nota >= 4) {
+              listaActividadAprobadas.push(nuevaActividad);
+              sumaNotasAprobadas += nota;
+            }
           });
 
-          cantMateriasAprobadas = listaActividadAprobadas.length;
-          sumaNotasAprobadas = listaActividadAprobadas.reduce((acc, curr) => acc + curr.nota, 0);
-          cantMateriasAprobadas == 0 ? setPromedio(0) : setPromedio(sumaNotasAprobadas/cantMateriasAprobadas);
+          const cantMateriasAprobadas = listaActividadAprobadas.length;
+          const cantMateriasTotal = listaActividad.length;
+
           setCantMaterias(cantMateriasAprobadas);
+          setPromedio(cantMateriasAprobadas === 0 ? 0 : sumaNotasAprobadas / cantMateriasAprobadas);
+          setPromedioConAplazos(cantMateriasTotal === 0 ? 0 : sumaNotasTotal / cantMateriasTotal);
 
-          cantMateriasTotal = listaActividad.length;
-          sumaNotasTotal = listaActividad.reduce((acc, curr) => acc + curr.nota, 0);
-          cantMaterias == 0 ? setPromedioConAplazos(0) : setPromedioConAplazos(sumaNotasTotal/cantMateriasTotal);
+          const cuatrimestres = fechas.size / 2 || 1;
+          setMateriasPorCuatrimestre(cantMateriasAprobadas / cuatrimestres);
 
-          
           listaActividad.sort((b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
-          setListaActividades(listaActividad);
-
           listaActividadAprobadas.sort((b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime());
+
+          setListaActividades(listaActividad);
           setListaActividadesAprobadas(listaActividadAprobadas);
           setHayHistoria(true);
         }
-      }
-      catch (error) {
-        console.error('Error al obtener agenda:', error);
+      } catch (error) {
+        console.error('Error al obtener historia académica:', error);
       } finally {
         setLoading(false);
       }
     };
+
     fetchHistoria();
   }, [conAplazos]);
 
-
   return (
-
-    <FondoGradiente style={{gap: 10, paddingBottom: 15}}>
+    <FondoGradiente style={{ gap: 10, paddingBottom: 15 }}>
       <LoadingWrapper loading={loading}>
         <View>
-          <CustomText style={styles.estadisticas}> 
-            {hayHistoria ? 
-            "Materias Aprobadas: "+cantMaterias+
-            (conAplazos ?
-              "\nPromedio con Aplazos: "+promedioConAplazos.toFixed(2)
-              : "\nPromedio: "+promedio.toFixed(2))
-            : "No hay historia académica."}
+          <CustomText style={styles.estadisticas}>
+            {hayHistoria ?
+              "Materias aprobadas: " + cantMaterias +
+              (conAplazos ?
+                "\nNota promedio con aplazos: " + promedioConAplazos.toFixed(2)
+                : "\nNota promedio: " + promedio.toFixed(2)) +
+              "\nMaterias por cuatrimestre promedio: " + materiasPorCuatrimestre.toFixed(2)
+              : "No hay historia académica."}
           </CustomText>
-          
+
           <TouchableOpacity onPress={() => setConAplazos(!conAplazos)}>
-            <CustomText style={[styles.estadisticas, {color: azulClaro}]}>{conAplazos ? "Ocultar Aplazos" : "Mostrar Aplazos" }</CustomText>
+            <CustomText style={[styles.estadisticas, { color: azulClaro }]}>
+              {conAplazos ? "Ocultar Aplazos" : "Mostrar Aplazos"}
+            </CustomText>
           </TouchableOpacity>
         </View>
-        <ScrollView contentContainerStyle={{gap: 8, paddingHorizontal: 15}}>
-            {mostrarListaActividad()}
+
+        <ScrollView contentContainerStyle={{ gap: 8, paddingHorizontal: 15 }}>
+          {mostrarListaActividad()}
         </ScrollView>
-        <View style={{paddingHorizontal: 15}}>
+
+        <View style={{ paddingHorizontal: 15 }}>
           <BarraBusqueda value={search} onChangeText={setSearch} />
         </View>
-
       </LoadingWrapper>
     </FondoGradiente>
   );
@@ -157,7 +160,6 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
     color: negroAzulado,
     alignSelf: 'center',
-    marginVertical: 0,
     marginBottom: 10
   },
   estadisticas: {
@@ -165,8 +167,6 @@ const styles = StyleSheet.create({
     lineHeight: 22,
     fontWeight: 'bold',
     color: negroAzulado,
-    marginVertical: 0,
     marginHorizontal: 15
   }
 });
-

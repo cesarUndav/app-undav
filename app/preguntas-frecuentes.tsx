@@ -1,5 +1,5 @@
 import React, { useState } from "react";
-import { View, StyleSheet, ScrollView, TouchableOpacity } from "react-native";
+import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
 import CustomText from "../components/CustomText";
 import FondoScrollGradiente from "@/components/FondoScrollGradiente";
@@ -23,7 +23,7 @@ const faqs = [
   {
     pregunta: "¿Dónde solicito un certificado?",
     respuesta:
-      'Los certificados se pueden solicitar desde SIU-Guaraní o en la sección "Certificados y Reportes" de esta app.',
+      'Los certificados se pueden solicitar desde SIU-Guaraní o en la sección "Certificados" de esta app.',
   },
 ];
 

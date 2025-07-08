@@ -1,14 +1,16 @@
 import React from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
-import BotonTextoLink from '@/components/BotonTextoLink';
+import BotonTexto from '@/components/BotonTexto';
 import FondoGradiente from '@/components/FondoGradiente';
+import { router } from 'expo-router';
 
-export default function Preinscripcion() {  
+export default function Preinscripcion() {
+  //router.push(`/webview/${encodeURIComponent("https://undav.edu.ar/index.php?idcateg=5")}?tryLogin=${false}`);
   return (
     <FondoGradiente>
       <ScrollView style={styles.container}>
-        <BotonTextoLink label="Tutorial Preinscripción" url="https://undav.edu.ar/index.php?idcateg=5" />
+        <BotonTexto label="Tutorial Preinscripción" openInsideApp url="https://undav.edu.ar/index.php?idcateg=5" />
       </ScrollView>
     </FondoGradiente>
   );

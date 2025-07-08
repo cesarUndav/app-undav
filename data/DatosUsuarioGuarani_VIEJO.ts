@@ -77,7 +77,6 @@ export async function ObtenerCorreoConDocumento(documentoUsuario:string):Promise
     const jsonDatosPersonales = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerDatosPersona(usuarioActual.idPersona)));
     
     const email:string = jsonDatosPersonales.mail;
-    console.log("eMail:",email);
     if (email == undefined) return "undefined";
     else return email;
     //else return email.split("@")[0]+"\n@"+email.split("@")[1];

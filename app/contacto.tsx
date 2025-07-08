@@ -1,72 +1,35 @@
 import React from 'react';
-import { View, StyleSheet, ScrollView, Linking, TouchableOpacity, SafeAreaView } from 'react-native';
-
-import CustomText from '../components/CustomText';
-import FondoGradiente from '@/components/FondoGradiente';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { getShadowStyle } from '@/constants/ShadowStyle';
+import BotonTextoMail from '@/components/BotonTextoMail';
+import DropdownSeccion from '@/components/DropdownSeccion';
+import BotonTexto from '@/components/BotonTexto';
+import BotonTextoTelefono from '@/components/BotonTextoTelefono';
+import ListaItem from '@/components/ListaItem';
+import { azulLogoUndav, negroAzulado } from '@/constants/Colors';
 
 export default function Contacto() {
-  const abrirEmail = (email: string) => {
-    Linking.openURL(`mailto:${email}`);
-  };
-
-  const llamar = (telefono: string) => {
-    Linking.openURL(`tel:${telefono}`);
-  };
 
   return (
     <FondoScrollGradiente>
-      <View style={styles.bloque}>
-        <CustomText style={styles.subtitulo}>Secretaría Académica</CustomText>
-        <TouchableOpacity onPress={() => abrirEmail('academica@undav.edu.ar')}>
-          <CustomText style={styles.link}>academica@undav.edu.ar</CustomText>
-        </TouchableOpacity>
-        <TouchableOpacity onPress={() => llamar('01142019999')}>
-          <CustomText style={styles.link}>Tel: (011) 4201-9999</CustomText>
-        </TouchableOpacity>
-      </View>
+      <DropdownSeccion titulo={'Secretaría Académica'}>
+      <>
+        <BotonTextoMail label='eMail' mail={'academica@undav.edu.ar'}/>
+        <BotonTextoTelefono label={'Teléfono: (011) 4201-9999'} tel='01142019999'/>
+      </>
+      </DropdownSeccion>
 
-      <View style={styles.bloque}>
-        <CustomText style={styles.subtitulo}>Soporte Técnico</CustomText>
-        <TouchableOpacity onPress={() => abrirEmail('soporte@undav.edu.ar')}>
-          <CustomText style={styles.link}>soporte@undav.edu.ar</CustomText>
-        </TouchableOpacity>
-      </View>
-
-      <View style={styles.bloque}>
-        <CustomText style={styles.subtitulo}>Dirección</CustomText>
-        <CustomText style={styles.direccion}>
-          España 350, Avellaneda, Buenos Aires, Argentina
-        </CustomText>
-      </View>
+      <DropdownSeccion titulo={'Soporte Técnico'}>
+      <>
+        <BotonTextoMail label='eMail' mail={'soporte@undav.edu.ar'}/>
+      </>
+      </DropdownSeccion>
+      
+      <DropdownSeccion titulo="Atención Presencial">
+      <>
+        <ListaItem title={`Lunes a viernes, 8 a 20 hs.`} titleColor={negroAzulado}/>
+        <BotonTexto label={`Oficina Sede Piñeyro (Mario Bravo 1460).`} url="https://maps.app.goo.gl/4mJxbwrwD9WPGrjx6"/>
+      </>
+      </DropdownSeccion>
     </FondoScrollGradiente>
   );
 }
-
-const styles = StyleSheet.create({
-
-  bloque: {
-    //backgroundColor: '#e3f0fb',
-    backgroundColor: '#fff',
-    borderBottomRightRadius: 20,
-    paddingVertical: 10,
-    paddingHorizontal: 15,
-    ...getShadowStyle(6)
-  },
-  subtitulo: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    marginBottom: 5,
-    color: '#0b5085',
-  },
-  link: {
-    fontSize: 15,
-    color: '#0068b3',
-    marginBottom: 5,
-  },
-  direccion: {
-    fontSize: 15,
-    color: '#333',
-  },
-});

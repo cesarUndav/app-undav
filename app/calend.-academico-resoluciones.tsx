@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import {  StyleSheet, ScrollView } from 'react-native';
 
 import CustomText from '../components/CustomText';
-import BotonTextoLink from '@/components/BotonTextoLink';
+import BotonTexto from '@/components/BotonTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 
 import { negroAzulado } from '@/constants/Colors';
@@ -70,7 +70,7 @@ export default function Calendario() {
                 {`Resoluciones más recientes del Calendario Académico en formato PDF:`}
               </CustomText>
               {linksWebCal.map((linkObj, i) => (
-                <BotonTextoLink
+                <BotonTexto
                   key={i}
                   url={"https://undav.edu.ar/" + linkObj.href}
                   label={linkObj.label}

@@ -35,19 +35,3 @@ export async function apiRequest(method:string, route:string, parameters:Params 
 
   return await response.json();
 }
-
-/* USO:
-
-import { apiRequest } from './utils/apiRequest';
-
-async function getData() {
-  try {
-    const token = 'your_token_here';
-    const data = await apiRequest('GET', '/api/items', { category: 'books' }, token);
-    console.log(data);
-  } catch (error) {
-    console.error(error);
-  }
-}
-
-*/
