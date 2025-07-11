@@ -1,6 +1,7 @@
 import React from 'react';
 import BotonTexto from './BotonTexto';
 import { celesteSIU } from '@/constants/Colors';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type BotonTextoProps = {
   label: string;
@@ -11,6 +12,7 @@ type BotonTextoProps = {
   verticalPadding?: number;
   fontSize?: number;
   fontColor?: string;
+  styleExtra?: StyleProp<ViewStyle>;
 };
 
 export default function BotonTextoSIU({
@@ -21,9 +23,10 @@ export default function BotonTextoSIU({
   openInsideApp=true,
   verticalPadding = 12,
   fontSize = 16,
-  fontColor = 'white'
+  fontColor = 'white',
+  styleExtra
 }: BotonTextoProps) {
   return (
-    <BotonTexto label={label} url={url} tryLogin={tryLogin} openInsideApp={openInsideApp} color={celesteSIU} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
+    <BotonTexto label={label} url={url} tryLogin={tryLogin} openInsideApp={openInsideApp} styleExtra={styleExtra} color={celesteSIU} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
   );
 }

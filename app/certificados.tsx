@@ -4,7 +4,7 @@ import { StyleSheet } from 'react-native';
 import BotonTexto from '../components/BotonTexto';
 import ListaItem from '@/components/ListaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulLogoUndav, negroAzulado } from '@/constants/Colors';
+import { negroAzulado } from '@/constants/Colors';
 import BotonTextoSIU from '@/components/BotonTextoSIU';
 import DropdownSeccion from '@/components/DropdownSeccion';
 import BotonTextoMail from '@/components/BotonTextoMail';
@@ -19,7 +19,7 @@ export default function Certificados() {
           <BotonTexto label="Solicitud de Sello Institucional" url="https://docs.google.com/forms/d/e/1FAIpQLSe4hgptWLsprQocC75YEdXzeT9CNiLhd1SH-tawXbMpY4dxGQ/viewform" />
           <BotonTextoSIU label="Certificado de Alumno Regular" url="https://academica.undav.edu.ar/g3w/solicitudes" />
           <BotonTextoSIU label="Certificado de Actividades Aprobadas" url="https://academica.undav.edu.ar/g3w/solicitudes"/>
-          <BotonTextoSIU label="Boleto Estudiantil" url="https://academica.undav.edu.ar/g3w/boleto_estudiantil" />
+          <BotonTextoSIU styleExtra={{borderBottomRightRadius: 20}} label="Boleto Estudiantil" url="https://academica.undav.edu.ar/g3w/boleto_estudiantil" />
         </>
       </DropdownSeccion>
       
@@ -27,14 +27,14 @@ export default function Certificados() {
       <>
         <BotonTextoMail label="eMail: Consultas Generales" mail="tramitesestudiantes@undav.edu.ar"/>
         <BotonTextoMail label="eMail: Prórrogas de Cursadas Vencidas" mail="finales@undav.edu.ar"/>
-        <BotonTextoTelefono label="Teléfono: 5436-7521" tel="54367521"/>
+        <BotonTextoTelefono styleExtra={{borderBottomRightRadius: 20}} label="Teléfono: 5436-7521" tel="54367521"/>
       </>
       </DropdownSeccion>
 
       <DropdownSeccion titulo="Atención Presencial" >
       <>
         <ListaItem title={`Lunes a viernes, 8 a 20 hs.`} titleColor={negroAzulado}/>
-        <BotonTexto label={`Oficina Sede Piñeyro (Mario Bravo 1460).`} url="https://maps.app.goo.gl/4mJxbwrwD9WPGrjx6"/>
+        <BotonTexto label={`Oficina Sede Piñeyro (Mario Bravo 1460).`} styleExtra={{borderBottomRightRadius: 20}} url="https://maps.app.goo.gl/4mJxbwrwD9WPGrjx6"/>
       </>
       </DropdownSeccion>
 

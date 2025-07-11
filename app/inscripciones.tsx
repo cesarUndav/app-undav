@@ -14,7 +14,7 @@ export default function Inscripciones() {
   return (
     <FondoScrollGradiente>
     
-      <BotonTexto label="Tutorial de Inscripcion a Carreras" openInsideApp url="https://undav.edu.ar/index.php?idcateg=5" />
+      <BotonTexto label="Tutorial de Inscripcion a Carreras" openInsideApp url="https://undav.edu.ar/index.php?idcateg=5" styleExtra={{borderBottomRightRadius: 20}}/>
       
       <DropdownSeccion titulo="Autogestión" inicialmenteAbierto={true}>
       <>
@@ -22,14 +22,14 @@ export default function Inscripciones() {
         <BotonTextoSIU label="Inscripción a Materias" url="https://academica.undav.edu.ar/g3w/cursada"/>
         <BotonTextoSIU label="Inscripción a Exámen" url="https://academica.undav.edu.ar/g3w/examen" />
         <BotonTextoSIU label="Fechas de Exámen" url="https://academica.undav.edu.ar/g3w/fecha_examen" />
-        <BotonTextoSIU label="Horarios de Cursada" url="https://academica.undav.edu.ar/g3w/horarios_cursadas"/>
+        <BotonTextoSIU label="Horarios de Cursada" styleExtra={{borderBottomRightRadius: 20}} url="https://academica.undav.edu.ar/g3w/horarios_cursadas"/>
       </>
       </DropdownSeccion>
 
       <DropdownSeccion titulo="Consultas" inicialmenteAbierto={true}>
       <>
         <BotonTextoMail label="eMail Inscripciones" mail="inscripciones@undav.edu.ar"/>
-        <BotonTextoTelefono label="Teléfono: 5436-7545" tel="54367545"/>
+        <BotonTextoTelefono label="Teléfono: 5436-7545" tel="54367545" styleExtra={{borderBottomRightRadius: 20}}/>
       </>
       </DropdownSeccion>   
       

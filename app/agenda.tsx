@@ -242,7 +242,7 @@ export default function Agenda() {
               onChangeText={setDescripcion}
             />
 
-            {!cargandoCategorias && (
+            {/* {!cargandoCategorias && (
               <DropdownCategorias
                 categorias={categorias}
                 seleccionada={categoriaSeleccionada}
@@ -250,7 +250,7 @@ export default function Agenda() {
                 onEliminar={eliminarCategoria}
                 onAgregar={agregarCategoria}
               />
-            )}
+            )} */}
 
             <View style={{flexDirection:"row", gap: 8}}>
               <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={stylesP.dateButton}>
@@ -298,7 +298,7 @@ export default function Agenda() {
             }
 
             <TouchableOpacity onPress={() => setModalVisible(false)} style={[stylesP.modalBtn, { backgroundColor: "white" }]}>
-              <CustomText style={[stylesP.modalBtnText,{color: "gray"}]}>SALIR</CustomText>
+              <CustomText style={[stylesP.modalBtnText,{color: "gray"}]}>SALIR SIN GUARDAR</CustomText>
             </TouchableOpacity>
           
           </View>
