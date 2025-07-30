@@ -3,7 +3,7 @@ import { View, Image, StyleSheet, TouchableOpacity, Linking, ScrollView, SafeAre
 import CustomText from '../components/CustomText';
 import { useRouter } from 'expo-router';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulLogoUndav } from '@/constants/Colors';
+import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 
@@ -54,6 +54,10 @@ export default function Sedes() {
 
   return (
     <FondoScrollGradiente gap={15} style={{padding:15}}>
+            <TouchableOpacity style={[styles.button, {backgroundColor: azulClaro}]} onPress={() => router.push("../planos")}>
+              <CustomText weight="bold" style={styles.buttonText}>planos</CustomText>
+            </TouchableOpacity>
+
         {sedes.map((sede, index) => (
           <View key={index} style={styles.card}>
               <TouchableOpacity onPress={() => Linking.openURL(sede.maps)}>
@@ -118,4 +122,16 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#f5f5f5',
   },
+    button: {
+    paddingVertical: 12,
+    paddingHorizontal: 0,
+    borderBottomRightRadius: 12,
+    width: 240,
+    alignItems: "center",
+  },
+  buttonText: {
+    color: "#fff",
+    fontSize: 20,
+    fontWeight: "bold",
+  }
 });

@@ -1,12 +1,69 @@
 <?xml version="1.0"?>
-<svg width="1370.5" height="834.4" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" enable-background="new 0 0 1370.5 834.4" version="1.1" xml:space="preserve">
+<svg width="500" height="900" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" enable-background="new 0 0 1370.5 834.4" version="1.1" xml:space="preserve">
  <style type="text/css">.st0{fill:#005091;}
 	.st1{fill:#2B79AF;}</style>
  <g class="layer">
   <title>Layer 1</title>
-  <g id="Capa_2">
-   <text fill="#000000" font-family="Serif" font-size="8" id="svg_1" stroke-width="0" style="cursor: move;" text-anchor="middle" transform="matrix(30.8687 0 0 39.8285 -12157 -18123.8)" x="416.38" xml:space="preserve" y="467.91">Piñeyro A 1</text>
-  </g>
   <g id="Capa_1"/>
+  <g id="svg_12"/>
+  <rect fill="#0000ff" height="99" id="svg_1" stroke="#000000" width="100" x="1" y="0.4"/>
+  <rect fill="#0000ff" height="99" id="svg_2" stroke="#000000" width="100" x="201.2" y="1.5"/>
+  <g id="svg_9"/>
+  <g id="svg_8"/>
+  <rect fill="#0000ff" height="99" id="svg_6" stroke="#000000" width="100" x="1.6" y="200.15"/>
+  <rect fill="#0000ff" height="99" id="svg_5" stroke="#000000" width="100" x="201.8" y="201.25"/>
+  <g id="svg_15"/>
+  <g id="svg_14"/>
+  <rect fill="#0000ff" height="99" id="svg_13" stroke="#000000" width="100" x="100.9" y="101.03"/>
+  <rect fill="#0000ff" height="99" id="svg_11" stroke="#000000" width="100" x="301.1" y="102.13"/>
+  <g id="svg_20"/>
+  <g id="svg_19"/>
+  <g id="svg_27"/>
+  <g id="svg_26"/>
+  <rect fill="#0000ff" height="99" id="svg_25" stroke="#000000" width="100" x="401.3" y="-0.92"/>
+  <g id="svg_23"/>
+  <g id="svg_22"/>
+  <rect fill="#0000ff" height="99" id="svg_21" stroke="#000000" width="100" x="401.9" y="198.83"/>
+  <g id="svg_17"/>
+  <g id="svg_16"/>
+  <g id="svg_4"/>
+  <g id="svg_3"/>
+  <g id="svg_48"/>
+  <g id="svg_47"/>
+  <rect fill="#0000ff" height="99" id="svg_46" stroke="#000000" width="100" x="1.25" y="201.53"/>
+  <rect fill="#0000ff" height="99" id="svg_45" stroke="#000000" width="100" x="201.45" y="202.63"/>
+  <g id="svg_44"/>
+  <g id="svg_43"/>
+  <rect fill="#0000ff" height="99" id="svg_42" stroke="#000000" width="100" x="1.85" y="401.28"/>
+  <rect fill="#0000ff" height="99" id="svg_41" stroke="#000000" width="100" x="202.05" y="402.38"/>
+  <g id="svg_40"/>
+  <g id="svg_39"/>
+  <rect fill="#0000ff" height="99" id="svg_38" stroke="#000000" width="100" x="101.15" y="302.16"/>
+  <rect fill="#0000ff" height="99" id="svg_37" stroke="#000000" width="100" x="301.35" y="303.26"/>
+  <g id="svg_36"/>
+  <g id="svg_35"/>
+  <g id="svg_34"/>
+  <g id="svg_33"/>
+  <rect fill="#0000ff" height="99" id="svg_32" stroke="#000000" width="100" x="401.55" y="200.21"/>
+  <g id="svg_31"/>
+  <g id="svg_30"/>
+  <rect fill="#0000ff" height="99" id="svg_29" stroke="#000000" width="100" x="402.15" y="399.96"/>
+  <g id="svg_28"/>
+  <g id="svg_24"/>
+  <g id="svg_18"/>
+  <g id="svg_10"/>
+  <rect fill="#0000ff" height="99" id="svg_71" stroke="#000000" width="100" x="-0.9" y="600.74"/>
+  <rect fill="#0000ff" height="99" id="svg_70" stroke="#000000" width="100" x="199.3" y="601.84"/>
+  <rect fill="#0000ff" height="99" id="svg_69" stroke="#000000" width="100" x="98.4" y="501.62"/>
+  <rect fill="#0000ff" height="99" id="svg_68" stroke="#000000" width="100" x="298.6" y="502.72"/>
+  <rect fill="#0000ff" height="99" id="svg_67" stroke="#000000" width="100" x="399.4" y="599.42"/>
+  <rect fill="#0000ff" height="99" id="svg_66" stroke="#000000" width="100" x="-1.25" y="602.13"/>
+  <rect fill="#0000ff" height="99" id="svg_65" stroke="#000000" width="100" x="198.95" y="603.23"/>
+  <rect fill="#0000ff" height="99" id="svg_64" stroke="#000000" width="100" x="-0.65" y="801.88"/>
+  <rect fill="#0000ff" height="99" id="svg_63" stroke="#000000" width="100" x="199.55" y="802.98"/>
+  <rect fill="#0000ff" height="99" id="svg_62" stroke="#000000" width="100" x="98.65" y="702.76"/>
+  <rect fill="#0000ff" height="99" id="svg_61" stroke="#000000" width="100" x="298.85" y="703.86"/>
+  <rect fill="#0000ff" height="99" id="svg_60" stroke="#000000" width="100" x="399.05" y="600.81"/>
+  <rect fill="#0000ff" height="99" id="svg_59" stroke="#000000" width="100" x="399.65" y="800.56"/>
  </g>
 </svg>
