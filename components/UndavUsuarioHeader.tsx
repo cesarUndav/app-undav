@@ -3,7 +3,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText'; // Asegúrate que el path es correcto
-import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '@/data/DatosUsuarioGuarani';
+import { infoBaseUsuarioActual, modoOscuro, UsuarioEsAutenticado } from '@/data/DatosUsuarioGuarani';
 import { azulClaro, azulLogoUndav, negroAzulado } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
@@ -32,7 +32,7 @@ export default function UndavEstudianteHeader() {
       </View>
 
       <TouchableOpacity onPress={() => router.push('/perfil')} style={styles.profileIcon}>
-        <Ionicons name="person" size={42} color={azulLogoUndav} />
+        <Ionicons name="person" size={42} color={modoOscuro ? "#fff":azulLogoUndav} />
       </TouchableOpacity>
     </View>
   );
@@ -64,7 +64,7 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontSize: 14,
     fontWeight: "bold",
-    color: negroAzulado,    
+    color: modoOscuro ? "#fff":negroAzulado,    
     textAlign: 'right',
     paddingRight: 10,
     alignContent: "flex-end",

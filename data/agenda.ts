@@ -2,6 +2,7 @@
 // fechaInicio: new Date('2025-3-1'); // RESPETAR FORMATO: AÑO-MES-DIA
 // por cuestiones de DEV se está haciendo con:
 
+import { enModoOscuro } from "./DatosUsuarioGuarani";
 import { listaEventosAgenda } from "./notificaciones";
 
 // fechaInicio: devHoyMasDias(n);
@@ -225,7 +226,7 @@ export function eventoAgendaToFechaString(evento:EventoAgenda): string {
   return `${intervaloFechaStr} (${diasStr})`;
 }
 export function eventoAgendaTituloColor(evento:EventoAgenda): string {
-  return evento.esFeriado? "#6CACE4":"#000";
+  return evento.esFeriado? "#6CACE4": (enModoOscuro() ? "#fff":"#000");
 }
 export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   // const colorFeriado = "#6CACE4";

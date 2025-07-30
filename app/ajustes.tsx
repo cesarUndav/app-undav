@@ -3,10 +3,11 @@ import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Platform } fro
 import CustomText from "../components/CustomText";
 import FondoGradiente from "@/components/FondoGradiente";
 import {
-  fondoEsCeleste,
-  setColorFondoCeleste
+  modoOscuro,
+  setDarkMode
 } from "@/data/DatosUsuarioGuarani";
 import { getShadowStyle } from "@/constants/ShadowStyle";
+import { useRouter } from "expo-router";
 
 // Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -22,8 +23,10 @@ interface ConfigSection {
 
 export default function Configuracion() {
 
+  const router = useRouter();
+
   const [notifsOn, setNotifsOn] = useState(false);
-  const [fondoCeleste, setFondoCeleste] = useState(fondoEsCeleste);
+  const [dark, setDark] = useState(modoOscuro);
 
   const sections: ConfigSection[] = [
     {
@@ -36,12 +39,19 @@ export default function Configuracion() {
         },
         {
           type: "toggle",
-          label: "DEV - Fondo celeste",
-          value: fondoCeleste,
+          label: "Modo Oscuro",
+          value: dark,
           onValueChange: (val) => {
-            setFondoCeleste(val);
-            setColorFondoCeleste(val);
+            setDark(val);
+            setDarkMode(val);
           },
+        },
+        {
+          type: "link",
+          label: "Credenciales Campus Virtual",
+          onPress() {
+            router.push("/credenciales-campus-virtual");   
+          }
         }
       ]
     }

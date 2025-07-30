@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet, StyleProp, ViewStyle, ColorValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colorFondo } from '@/data/DatosUsuarioGuarani';
+import { colorFondoTop, colorFondoBottom } from '@/data/DatosUsuarioGuarani';
 
 interface FondoGradienteProps {
   children: ReactNode;
@@ -12,8 +12,8 @@ interface FondoGradienteProps {
 
 const FondoGradiente: React.FC<FondoGradienteProps> = ({
   children,
-  colorTop = "#fff",
-  colorBottom = colorFondo,
+  colorTop = colorFondoTop,
+  colorBottom = colorFondoBottom,
   style,
 }) => {
   return (

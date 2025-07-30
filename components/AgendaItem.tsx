@@ -4,6 +4,8 @@ import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaTituloColor } from '../data/agenda';
 import { eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
+import { azulLogoUndav } from '@/constants/Colors';
 
 type AgendaItemProps = {
   evento: EventoAgenda;
@@ -25,7 +27,7 @@ export default function AgendaItem({ evento, styleExtra }: AgendaItemProps) {
 
 export const AgendaItemStyles = StyleSheet.create({
   agendaItem: {
-    backgroundColor: '#fff',
+    backgroundColor: enModoOscuro() ? azulLogoUndav:'#fff',
     paddingVertical: 6,
     paddingHorizontal: 10,
     //borderBottomRightRadius: 16,

@@ -8,6 +8,7 @@ import { azulLogoUndav } from '@/constants/Colors';
 import { AgendaItemStyles } from './AgendaItem';
 import { useCategoriasPersistentes } from '@/hooks/useCategoriasPersistentes';
 import { Categoria } from './DropdownCategoria';
+import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
 
 type AgendaItemEditableProps = {
   evento: EventoAgenda;
@@ -24,7 +25,7 @@ export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: 
           <View style={styles.itemChildLeft}>
             <CustomText style={[AgendaItemStyles.eventTitle, { 
               //</View>color: evento.categoria ? categorias[evento.categoria]
-              color: '#000' }]}>
+              color: enModoOscuro() ? "#fff":'#000' }]}>
               {evento.titulo}
             </CustomText>
             <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
@@ -32,7 +33,7 @@ export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: 
             </CustomText>
           </View>
           <View style={styles.itemChildRight}>
-            <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
+            <SettingsIcon width={30} height={30} fill={enModoOscuro()? "#fff":azulLogoUndav} />
           </View>
         </TouchableOpacity>
     </View>

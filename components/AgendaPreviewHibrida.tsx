@@ -8,6 +8,8 @@ import { azulClaro, azulLogoUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 import { Ionicons } from '@expo/vector-icons';
+import AgendaItemEditable from './AgendaItemEditable';
+import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
 
 
 export default function AgendaPreview() {
@@ -28,10 +30,13 @@ export default function AgendaPreview() {
     <View style={styles.agendaContainer}>
       {!separada ?
       (<>
-      <CustomText style ={styles.agendaTitle}>{"AGENDA ACADÉMICA"}</CustomText>
+      <CustomText style ={styles.agendaTitle}>{"AGENDA ACADÉMICA COMPLETA"}</CustomText>
     
         <ScrollView contentContainerStyle={styles.listaScrollContainer}>
         {listaEventos.map((evento) => (
+          evento.id.startsWith("p") ?
+          <AgendaItemEditable key={evento.id} evento={evento} onPressEdit={()=>router.push("/agenda")}/>
+          :
           <AgendaItem key={evento.id} evento={evento} />
         ))}
         </ScrollView>
@@ -82,7 +87,8 @@ export default function AgendaPreview() {
 const styles = StyleSheet.create({
   listaScrollContainer: {
     gap: 4,
-    paddingTop: -4
+    paddingTop: -4,
+    backgroundColor: enModoOscuro() ? azulClaro:"#000"
   },
   agendaContainer: {
     // height: "calc(60vh - 120px)"
