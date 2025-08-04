@@ -1,4 +1,4 @@
-//planos.tsx
+{/*planos.tsx*/}
 import React, { useState, useRef, useMemo } from 'react';
 import {
   View,
@@ -11,10 +11,11 @@ import {
 } from 'react-native';
 import { Svg, Polygon } from 'react-native-svg';
 import SvgPanZoom from 'react-native-svg-pan-zoom';
-// Alias para permitir children en TS
+import CustomText from "../components/CustomText";
+{/*Alias para permitir children en TS*/}
 const PanZoom: React.ComponentType<any> = SvgPanZoom;
 
-// Importa config centralizada
+{/*Importa config centralizada*/}
 import {
   edificios,
   coordsMap,
@@ -39,23 +40,23 @@ export default function Planos() {
   const toggleMenu = () => setShowMenu(v => !v);
   const toggleRooms = () => setShowRooms(v => !v);
 
-  // Obtiene datos del plano seleccionado
+  {/*Obtiene datos del plano seleccionado*/}
   const planData = useMemo<PlanData | null>(() => {
     if (!building) return null;
     const key = edificios[building].floors[floorIndex].key;
     return coordsMap[building][key] || null;
   }, [building, floorIndex]);
 
-  // Obtiene pisos actuales para evitar acceso con clave indefinida
+  {/*Obtiene pisos actuales para evitar acceso con clave indefinida*/}
   const currentFloors = building ? edificios[building].floors : [];
 
-  // Lista de aulas actuales
+  {/*Lista de aulas actuales*/}
   const roomsList = useMemo(() => {
     if (!planData) return [];
     return planData.zones.filter(z => z.id.toLowerCase().startsWith('aula'));
   }, [planData]);
 
-  // Muestra tooltip
+  {/*Muestra tooltip*/}
   const showTip = (text: string) => {
     setTooltip(text);
     fadeAnim.setValue(0);
@@ -66,7 +67,7 @@ export default function Planos() {
     ]).start(() => setTooltip(null));
   };
 
-  // Dibuja zonas interactivas
+  {/*Dibuja zonas interactivas*/}
   const renderZones = () => {
     if (!planData) return null;
     return planData.zones.map((zone: ZoneType) => (
@@ -79,7 +80,7 @@ export default function Planos() {
     ));
   };
 
-  // SVG componente de la planta actual
+  {/* SVG componente de la planta actual*/}
   const SelectedSvg = building && planData
     ? currentFloors[floorIndex].SvgComponent
     : null;
@@ -89,9 +90,9 @@ export default function Planos() {
       {/* Selector de edificio */}
       <View style={styles.dropdownWrapper}>
         <TouchableOpacity style={styles.dropdownButton} onPress={toggleMenu}>
-          <Text style={styles.dropdownButtonText}>
+          <CustomText style={styles.dropdownButtonText}>
             {building ? edificios[building].label : 'Seleccionar Edificio'}
-          </Text>
+          </CustomText>
         </TouchableOpacity>
         {showMenu && (
           <ScrollView style={styles.dropdownMenu}>
@@ -105,7 +106,7 @@ export default function Planos() {
                   panZoomRef.current?.reset();
                   setShowMenu(false);
                 }}>
-                <Text style={styles.dropdownItemText}>{info.label}</Text>
+                <CustomText style={styles.dropdownItemText}>{info.label}</CustomText>
               </TouchableOpacity>
             ))}
           </ScrollView>
@@ -116,9 +117,9 @@ export default function Planos() {
       {building && (
         <View style={[styles.dropdownWrapper, styles.roomDropdownWrapper]}>
           <TouchableOpacity style={styles.dropdownButton} onPress={toggleRooms}>
-            <Text style={styles.dropdownButtonText}>
+            <CustomText style={styles.dropdownButtonText}>
               {showRooms ? 'Seleccionar Aula' : 'Mostrar Aulas'}
-            </Text>
+            </CustomText>
           </TouchableOpacity>
           {showRooms && (
             <ScrollView style={styles.dropdownMenu}>
@@ -127,7 +128,7 @@ export default function Planos() {
                   key={zone.id}
                   style={styles.dropdownItem}
                   onPress={() => { setShowRooms(false); showTip(zone.name); }}>
-                  <Text style={styles.dropdownItemText}>{zone.name}</Text>
+                  <CustomText style={styles.dropdownItemText}>{zone.name}</CustomText>
                 </TouchableOpacity>
               ))}
             </ScrollView>
@@ -135,7 +136,7 @@ export default function Planos() {
         </View>
       )}
 
-      /* Visualización del plano */
+      {/* Visualización del plano */}
       {SelectedSvg && planData && (
         <View style={[styles.mapWrapper, { width: containerW, height: containerH}]}> 
           <PanZoom
@@ -159,13 +160,13 @@ export default function Planos() {
               <TouchableOpacity
                 onPress={() => floorIndex > 0 && (setFloorIndex(i => i-1), panZoomRef.current?.reset())}
                 disabled={floorIndex === 0}>
-                <Text style={styles.floorButton}>Anterior</Text>
+                <CustomText style={styles.floorButton}>Anterior</CustomText>
               </TouchableOpacity>
-              <Text style={styles.floorLabel}>{`Planta ${floorIndex+1}`}</Text>
+              <CustomText style={styles.floorLabel}>{`Planta ${floorIndex+1}`}</CustomText>
               <TouchableOpacity
                 onPress={() => floorIndex < currentFloors.length-1 && (setFloorIndex(i => i+1), panZoomRef.current?.reset())}
                 disabled={floorIndex === currentFloors.length-1}>
-                <Text style={styles.floorButton}>Siguiente</Text>
+                <CustomText style={styles.floorButton}>Siguiente</CustomText>
               </TouchableOpacity>
             </View>
           )}
@@ -175,7 +176,7 @@ export default function Planos() {
       {/* Tooltip */}
       {tooltip && (
         <Animated.View style={[styles.tooltip, { opacity: fadeAnim }]}>  
-          <Text style={styles.tooltipText}>{tooltip}</Text>
+          <CustomText style={styles.tooltipText}>{tooltip}</CustomText>
         </Animated.View>
       )}
     </View>

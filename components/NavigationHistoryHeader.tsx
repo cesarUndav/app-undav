@@ -47,7 +47,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     paddingHorizontal: 8,
-    ...getShadowStyle(4)
+    // ...getShadowStyle(4)
   },
   side: {
     width: 50,
