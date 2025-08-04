@@ -103,7 +103,6 @@ export default function Planos() {
                 onPress={() => {
                   setBuilding(key as BuildingKey);
                   setFloorIndex(0);
-                  panZoomRef.current?.reset();
                   setShowMenu(false);
                 }}>
                 <CustomText style={styles.dropdownItemText}>{info.label}</CustomText>
@@ -140,6 +139,7 @@ export default function Planos() {
       {SelectedSvg && planData && (
         <View style={[styles.mapWrapper, { width: containerW, height: containerH}]}> 
           <PanZoom
+            key={`${building}-${floorIndex}`}
             ref={panZoomRef}
             canvasWidth={planData.width}
             canvasHeight={planData.height}
@@ -158,13 +158,13 @@ export default function Planos() {
           {currentFloors.length > 1 && (
             <View style={styles.floorControls}>
               <TouchableOpacity
-                onPress={() => floorIndex > 0 && (setFloorIndex(i => i-1), panZoomRef.current?.reset())}
+                onPress={() => floorIndex > 0 && (setFloorIndex(i => i-1) )}
                 disabled={floorIndex === 0}>
                 <CustomText style={styles.floorButton}>Anterior</CustomText>
               </TouchableOpacity>
               <CustomText style={styles.floorLabel}>{`Planta ${floorIndex+1}`}</CustomText>
               <TouchableOpacity
-                onPress={() => floorIndex < currentFloors.length-1 && (setFloorIndex(i => i+1), panZoomRef.current?.reset())}
+                onPress={() => floorIndex < currentFloors.length-1 && (setFloorIndex(i => i+1) )}
                 disabled={floorIndex === currentFloors.length-1}>
                 <CustomText style={styles.floorButton}>Siguiente</CustomText>
               </TouchableOpacity>
