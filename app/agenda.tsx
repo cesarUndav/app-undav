@@ -7,7 +7,7 @@ import { agregarEventoPersonalizado, editarEventoPersonalizado, EventoAgenda, li
 import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulLogoUndav } from '@/constants/Colors';
+import { azulLogoUndav, grisBorde } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { bottomBarStyles } from '@/components/BottomBar';
@@ -430,7 +430,7 @@ const stylesP = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
+    borderBottomColor: grisBorde,
     padding: 6,
     fontSize: 16,
     flexWrap: "wrap"

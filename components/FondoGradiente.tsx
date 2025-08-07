@@ -17,6 +17,7 @@ const FondoGradiente: React.FC<FondoGradienteProps> = ({
   style,
 }) => {
   return (
+    // colorTop, colorBottom
     <LinearGradient colors={[colorTop, colorBottom]} style={[{flex: 1}, style ? style : styles.container]}>
       {children}
     </LinearGradient>

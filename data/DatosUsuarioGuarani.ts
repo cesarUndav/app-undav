@@ -218,7 +218,7 @@ export async function Logout() {
 export let modoOscuro:boolean = false;
 
 export let colorFondoTop: string = "#fff";
-export let colorFondoBottom: string = grisUndav;
+export let colorFondoBottom: string = "#ddd";
 
 const celeste: string = "#91c9f7";
 

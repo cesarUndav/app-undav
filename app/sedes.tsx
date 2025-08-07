@@ -64,7 +64,7 @@ export default function Sedes() {
               {sede.telefono && (
                 <CustomText style={styles.text}>Tel: {sede.telefono}</CustomText>
               )}
-                {/* <CustomText style={styles.link}>Toca para ver en Google Maps</CustomText> */}
+                <CustomText style={styles.link}>Toca para ver en Google Maps</CustomText>
             </View>
               </TouchableOpacity>
           </View>

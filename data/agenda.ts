@@ -26,7 +26,6 @@ function hoyMasDias(dias:number) { return new Date(Date.now() + diasAMilisegundo
 function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.getTime() + diasAMilisegundos(dias)); }
 
 
-
 // listas // FORMATO: new Date(AÑO, MES -1, DIA). EJEMPLO: 1/1/2025 => new Date(2025, 0, 1)
 export const listaEventosCalendarioAcademico: EventoAgenda[] = [
   //academicas

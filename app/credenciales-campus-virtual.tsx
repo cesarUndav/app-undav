@@ -13,6 +13,7 @@ import FondoGradiente from "@/components/FondoGradiente";
 import { getShadowStyle } from "@/constants/ShadowStyle";
 import { useRouter } from "expo-router";
 import AsyncStorage from "@react-native-async-storage/async-storage";
+import { grisBorde } from "@/constants/Colors";
 
 // Tipado de ítems de configuración
 type TextItem = { type: "text"; label: string };
@@ -181,7 +182,7 @@ const styles = StyleSheet.create({
   textInput: {
     padding: 10,
     borderBottomWidth: 1,
-    borderBottomColor: "#ccc",
+    borderBottomColor: grisBorde,
     fontSize: 16,
     color: "#0b254a",
   },

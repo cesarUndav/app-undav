@@ -4,7 +4,7 @@ import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-
 import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 import SettingsIcon from '../assets/icons/settings.svg';
-import { azulLogoUndav } from '@/constants/Colors';
+import { azulClaro, azulLogoUndav, azulMedioUndav } from '@/constants/Colors';
 import { AgendaItemStyles } from './AgendaItem';
 import { useCategoriasPersistentes } from '@/hooks/useCategoriasPersistentes';
 import { Categoria } from './DropdownCategoria';
@@ -33,7 +33,7 @@ export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: 
             </CustomText>
           </View>
           <View style={styles.itemChildRight}>
-            <SettingsIcon width={30} height={30} fill={enModoOscuro()? "#fff":azulLogoUndav} />
+            <SettingsIcon width={30} height={30} fill={enModoOscuro()? "#fff":azulClaro} />
           </View>
         </TouchableOpacity>
     </View>

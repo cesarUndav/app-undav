@@ -4,7 +4,7 @@ import { useFocusEffect, useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { EventoAgenda, listaCompleta, listaFuturo } from '../data/agenda';
 import AgendaItem from './AgendaItem';
-import { azulClaro, azulLogoUndav } from '@/constants/Colors';
+import { azulClaro, azulLogoUndav, azulMedioUndav, grisBorde } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 import { Ionicons } from '@expo/vector-icons';
@@ -30,53 +30,58 @@ export default function AgendaPreview() {
     <View style={styles.agendaContainer}>
       {!separada ?
       (<>
-      <CustomText style ={styles.agendaTitle}>{"AGENDA ACADÉMICA COMPLETA"}</CustomText>
-    
-        <ScrollView contentContainerStyle={styles.listaScrollContainer}>
-        {listaEventos.map((evento) => (
-          evento.id.startsWith("p") ?
-          <AgendaItemEditable key={evento.id} evento={evento} onPressEdit={()=>router.push("/agenda")}/>
-          :
-          <AgendaItem key={evento.id} evento={evento} />
-        ))}
-        </ScrollView>
+
+        <CustomText style ={styles.agendaTitle}>{"AGENDA ACADÉMICA COMPLETA"}</CustomText>
+        <View style={styles.listaScrollParentBorder}>
+            <ScrollView contentContainerStyle={styles.listaScrollContainer}>
+            {listaEventos.map((evento) => (
+              evento.id.startsWith("p") ?
+              <AgendaItemEditable key={evento.id} evento={evento} onPressEdit={()=>router.push("/agenda")}/>
+              :
+              <AgendaItem key={evento.id} evento={evento} />
+            ))}
+            </ScrollView>
+        </View>
+
       </>)
       :
       (<>
       <View style={{ flex: 1 }}>
         <CustomText style={styles.agendaTitle}>{"AGENDA ACADÉMICA"}</CustomText>
-
-        <ScrollView contentContainerStyle={styles.listaScrollContainer}>
-          {listaEventos.map((evento) => (
-            !evento.id.startsWith("p") && !evento.esFeriado && (
-              <AgendaItem key={evento.id} evento={evento} />
-            )
-          ))}
-        </ScrollView>
+        <View style={styles.listaScrollParentBorder}>
+          <ScrollView contentContainerStyle={styles.listaScrollContainer}>
+            {listaEventos.map((evento) => (
+              !evento.id.startsWith("p") && !evento.esFeriado && (
+                <AgendaItem key={evento.id} evento={evento} />
+              )
+            ))}
+          </ScrollView>
+        </View>
       </View>
 
       <View style={{ flex: 0.8 }}>
         <CustomText style={styles.agendaTitle}>AGENDA PERSONAL</CustomText>
-
-        <ScrollView contentContainerStyle={styles.listaScrollContainer}>
-          {listaCompleta().map((evento) => (
-            evento.id.startsWith("p") && (
-              <AgendaItem key={evento.id} evento={evento} />
-            )
-          ))}
-        </ScrollView>
+        <View style={styles.listaScrollParentBorder}>
+          <ScrollView contentContainerStyle={styles.listaScrollContainer}>
+            {listaCompleta().map((evento) => (
+              evento.id.startsWith("p") && (
+                <AgendaItem key={evento.id} evento={evento} />
+              )
+            ))}
+          </ScrollView>
+        </View>
       </View>
       </>)
       }
 
       <View style={styles.agendaBtnContainer}>
 
-        <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 6}]}>
+        <TouchableOpacity onPress={() => router.push('/agenda')} style={[styles.agendaBtn, {flex: 6.5, borderBottomRightRadius: 0 }]}>
           <CustomText style={styles.agendaBtnText}>DETALLES</CustomText>
         </TouchableOpacity>
         
-        <TouchableOpacity onPress={() => setSeparada(!separada)}style={[styles.agendaBtn, { backgroundColor: "transparent"}]}>
-          <Ionicons name={separada ? 'eye' : 'eye-off'} size={26} color="white" style={styles.eyeIcon}/>
+        <TouchableOpacity onPress={() => setSeparada(!separada)}style={[styles.agendaBtn, { backgroundColor: "#fff" }]}>
+          <Ionicons name={separada ? 'eye' : 'eye-off'} size={26} color={azulClaro} style={styles.eyeIcon}/>
           {/* <CustomText style={styles.agendaBtnText}>{"VISTA"}</CustomText> */}
         </TouchableOpacity>
       </View>
@@ -85,23 +90,31 @@ export default function AgendaPreview() {
 }
 
 const styles = StyleSheet.create({
+  listaScrollParentBorder: {
+    flex: 1,
+    borderWidth: 1,
+    borderColor:  grisBorde,
+    borderRadius: 0
+  },
   listaScrollContainer: {
-    gap: 4,
-    paddingTop: -4,
-    backgroundColor: enModoOscuro() ? azulClaro:"#000"
+    gap: 2,
+    paddingTop: 0,
+    backgroundColor: "#fff"
   },
   agendaContainer: {
     // height: "calc(60vh - 120px)"
     flex: 1,
-    backgroundColor: azulLogoUndav,
-    paddingHorizontal: 10,
-
+    backgroundColor: "#fff",
+    paddingHorizontal: 15,
+    
     marginVertical: 0,
     borderBottomRightRadius: 24,
-    ...getShadowStyle(4)
+    ...getShadowStyle(3),
+    borderWidth: 0.5,
+    borderColor: grisBorde
   },
   agendaTitle: {
-    color: '#ffffff',
+    color: azulClaro,
     fontSize: 15,
     fontWeight: 'bold',
     alignSelf: 'center',
@@ -109,7 +122,8 @@ const styles = StyleSheet.create({
     paddingTop: 10
   },
   agendaBtnContainer: {
-    paddingVertical: 10,
+    paddingTop: 10,
+    paddingBottom: 15,
     gap: 10,
     flexDirection: 'row',
     flexWrap: 'wrap'

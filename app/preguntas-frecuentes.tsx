@@ -3,6 +3,9 @@ import { View, StyleSheet, TouchableOpacity } from "react-native";
 import Collapsible from "react-native-collapsible";
 import CustomText from "../components/CustomText";
 import FondoScrollGradiente from "@/components/FondoScrollGradiente";
+import { azulLogoUndav, azulMedioUndav } from "@/constants/Colors";
+
+// HACE FALTA UNA MANERA DE MARCAR LINKS EN EL TEXTO DE MANERA QUE EL USUARIO PUEDA TOCARLOS. 
 
 const faqs = [
   {
@@ -46,7 +49,7 @@ return (
                 onPress={() => toggleCollapse(index)}
                 style={[
                   styles.preguntaHeader,
-                  { backgroundColor: "#0b5085", borderBottomRightRadius: isCollapsed ? 12 : 0 },
+                  { backgroundColor: azulLogoUndav, borderBottomRightRadius: isCollapsed ? 12 : 0 },
                 ]}
               >
                 <CustomText style={styles.preguntaText}>
@@ -79,7 +82,7 @@ const styles = StyleSheet.create({
     fontSize: 22,
     fontWeight: "bold",
     alignSelf: "center",
-    color: "#0b254a",
+    color: azulLogoUndav,
     marginBottom: 20,
   },
   preguntaHeader: {
@@ -92,7 +95,7 @@ const styles = StyleSheet.create({
   },
   respuestaContainer: {
     padding: 12,
-    backgroundColor: "#e3f0fb",
+    backgroundColor: "#fff",
     borderTopWidth: 1,
     borderTopColor: "white",
   },

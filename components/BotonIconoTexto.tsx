@@ -3,7 +3,8 @@ import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText';
 import { StyleSheet } from 'react-native';
-import { azulClaro } from '@/constants/Colors';
+import { azulClaro, grisBorde, grisTexto } from '@/constants/Colors';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
 
 type BotonIconoTextoProps = {
@@ -12,6 +13,7 @@ type BotonIconoTextoProps = {
   funcionOnPress: () => void;
   iconSize?: number;
   iconColor?: string;
+  iconTextColor?: string;
   backgroundColor?: string;
   styleExtra?: StyleProp<ViewStyle>;
 };
@@ -20,9 +22,10 @@ export default function BotonIconoTexto({
   label,
   funcionOnPress,
   Icon,
-  iconSize = 40,
-  iconColor = 'white',
-  backgroundColor = azulClaro,
+  iconSize = 55,
+  iconColor = azulClaro,
+  iconTextColor = grisTexto,
+  backgroundColor = "#fff",
   styleExtra,
 }: BotonIconoTextoProps) {
   const router = useRouter();
@@ -35,11 +38,15 @@ export default function BotonIconoTexto({
       onPress={funcionOnPress}
     >
       <View style={styles.buttonBoxIconParent}>
-        <Icon width={iconSize} height={iconSize} fill={iconColor} />
+        <View style={styles.buttonOutline}>
+          <Icon width={iconSize} height={iconSize} fill={iconColor} />
+        </View>
       </View>
+
       <View style={styles.buttonBoxTextParent}>
-        <CustomText style={[styles.buttonText, {color: iconColor}]}>{label}</CustomText>
+        <CustomText style={[styles.buttonText, {color: iconTextColor}]}>{label}</CustomText>
       </View>
+
     </TouchableOpacity>
   );
 
@@ -50,15 +57,25 @@ const styles = StyleSheet.create({
     flex: 1,
     height: "100%",
     flexDirection: "column",
-    justifyContent: 'center',
     alignItems: 'center',
-    //borderBottomRightRadius: 20,
-    //borderRadius: "15%",
-    backgroundColor:azulClaro
+    justifyContent: 'center',
   },
     buttonBoxIconParent: {
-    height: "64%",
-    justifyContent: "flex-end"
+    height: "72%",
+    justifyContent: "flex-end",
+  },
+  buttonOutline: {
+    backgroundColor: "#fff",
+    borderRadius: 999,
+    borderWidth: 1,
+    borderColor: grisBorde,
+    //...getShadowStyle(2),
+    padding: 6,
+    marginBottom: 4,
+
+    // alignItems: "center",
+    // alignContent: "center",
+    // justifyContent: 'center'
   },
   buttonBoxTextParent: {
     flex: 1
@@ -67,5 +84,17 @@ const styles = StyleSheet.create({
     textAlign: 'center',
     fontWeight: "bold",
     fontSize: 11
+  },
+  buttonBoxBackup: {
+    flex: 1,
+    height: "100%",
+    flexDirection: "column",
+    justifyContent: 'center',
+    alignItems: 'center',
+    backgroundColor:azulClaro,
+    ...getShadowStyle(3),
+    //borderRadius: 6,
+    //borderBottomRightRadius: 20,
+    //borderRadius: "15%",
   }
 });

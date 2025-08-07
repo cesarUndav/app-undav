@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import CustomText from "./CustomText";
 import { Ionicons } from "@expo/vector-icons";
-import { negroAzulado } from "@/constants/Colors";
+import { grisBorde, negroAzulado } from "@/constants/Colors";
 
 export type Categoria = {
   nombre: string;
@@ -163,7 +163,7 @@ const styles = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    borderColor: "#ccc",
+    borderColor: grisBorde,
     paddingVertical: 4,
     fontSize: 16,
   },
@@ -177,7 +177,7 @@ const styles = StyleSheet.create({
     height: 24,
     borderRadius: 12,
     borderWidth: 1,
-    borderColor: "#ccc",
+    borderColor: grisBorde,
   },
   selectedColor: {
     borderColor: "#000",

@@ -117,7 +117,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               onPress={botonIngresar}
               disabled={botonDesactivado()}
-              style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : azulLogoUndav, marginTop: 6}]}>
+              style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : azulLogoUndav, marginTop: 0}]}>
               <CustomText weight="bold" style={styles.buttonText}>
                 {esperandoRespuesta ? "CARGANDO..." : "INGRESAR"}
               </CustomText>
