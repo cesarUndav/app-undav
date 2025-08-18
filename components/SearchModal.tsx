@@ -63,6 +63,7 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 16,
+
   },
   header: {
     fontSize: 18,
@@ -71,6 +72,7 @@ const styles = StyleSheet.create({
   },
   item: {
     paddingVertical: 8,
+    
   },
   itemText: {
     fontSize: 16,

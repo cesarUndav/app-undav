@@ -59,9 +59,10 @@ export default function MapViewer({
 
 const styles = StyleSheet.create({
   wrapper: {
-    marginTop: 136,
-    marginBottom: 10,
+    flex: 1,
+    marginTop: 16,          // solo un pequeño respiro tras los dropdowns
     marginHorizontal: 16,
+    marginBottom: 10,
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
@@ -69,6 +70,7 @@ const styles = StyleSheet.create({
     shadowOffset: { width: 0, height: 2 },
     shadowOpacity: 0.1,
     shadowRadius: 4,
-    elevation: 3,
+    elevation: 0,
+    zIndex: 0,
   },
 });

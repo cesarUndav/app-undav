@@ -4,7 +4,7 @@
   "zones": [
     {
       "id": "aula01",
-      "name": "Aula 101",
+      "name": "Aula 201",
       "points": [
         [100, 100],
         [300, 100],
@@ -14,7 +14,7 @@
     },
     {
       "id": "aula02",
-      "name": "Aula 102",
+      "name": "Aula 202",
       "points": [
         [350, 100],
         [550, 100],

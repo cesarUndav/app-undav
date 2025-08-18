@@ -4,6 +4,7 @@ import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import CustomText from './CustomText';
 import { edificios, BuildingKey } from '../app/mapsConfig'
 
+
 interface Props {
   building: BuildingKey | '';
   showMenu: boolean;
@@ -38,18 +39,17 @@ export default function BuildingSelector({
   );
 }
 
+const BTN_H = 44;  // alto de cada dropdown
+const MENU_OFFSET = 4;
+
 const styles = StyleSheet.create({
   wrapper: {
-    position: 'absolute',
-    top: 16,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    zIndex: 30,
-    elevation: 5,
+    position: 'relative',
+    height: BTN_H,     // reserva el alto del botón
+    zIndex: 30,        // por encima del de aulas
   },
   button: {
-    height: 40,
+    height: BTN_H,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
@@ -57,24 +57,22 @@ const styles = StyleSheet.create({
     paddingHorizontal: 12,
     backgroundColor: '#fff',
   },
-  text: {
-    fontSize: 16,
-    color: '#333',
-  },
+  text: { fontSize: 16, color: '#333' },
+
+  // el menú se superpone y NO empuja el layout
   menu: {
-    marginTop: 4,
+    position: 'absolute',
+    top: BTN_H + MENU_OFFSET,
+    left: 0,
+    right: 0,
     backgroundColor: '#fff',
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
     maxHeight: 200,
+    zIndex: 30,
+    elevation: 5,
   },
-  item: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  itemText: {
-    fontSize: 16,
-    color: '#333',
-  },
+  item: { paddingVertical: 10, paddingHorizontal: 12 },
+  itemText: { fontSize: 16, color: '#333' },
 });
