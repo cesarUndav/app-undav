@@ -5,31 +5,49 @@ import CustomText from './CustomText';
 import { ZoneType } from '../app/mapsConfig';
 
 interface Props {
-  showRooms: boolean;
+  disabled?:boolean;
+  show: boolean;
   onToggle: () => void;
   rooms: ZoneType[];
   onSelect: (zoneId: string) => void;
 }
 
 export default function RoomSelector({
-   showRooms, onToggle, rooms, onSelect
+  disabled = false,
+  show,
+  onToggle,
+  rooms,
+  onSelect,
 }: Props) {
+  const label = disabled
+    ? 'Mostrar Aulas'                 // Desactivado: solo texto
+    : show
+    ? 'Seleccionar Aula'              // Desplegado
+    : 'Mostrar Aulas';                // Cerrado
+
   return (
-    <View style={[styles.wrapper, styles.roomWrapper]}>
-      <TouchableOpacity style={styles.button} onPress={onToggle}>
-        <CustomText style={styles.text}>
-          { showRooms ? 'Seleccionar Aula' : 'Mostrar Aulas'}
+    <View style={styles.wrapper}>
+      <TouchableOpacity
+        disabled={disabled}           // 👈 desactiva press feedback
+        onPress={() => { if (!disabled) onToggle(); }}  // 👈 no abre menú si disabled
+        style={[styles.button, disabled && styles.buttonDisabled]}
+        activeOpacity={0.8}
+      >
+        <CustomText style={[styles.text, disabled && styles.textDisabled]}>
+          {label}
         </CustomText>
       </TouchableOpacity>
-      { showRooms && (
-        <ScrollView style={styles.menu}>
-          {rooms.map(z => (
+
+      {/* Menú solo si NO está desactivado */}
+      {!disabled &&  show && (
+        <ScrollView style={styles.menu} keyboardShouldPersistTaps="handled">
+          {rooms.map(zone => (
             <TouchableOpacity
-              key={z.id}
+              key={zone.id}
               style={styles.item}
-              onPress={() => onSelect(z.id)}
+              onPress={() => onSelect(zone.id)}
             >
-              <CustomText style={styles.itemText}>{z.name}</CustomText>
+              <CustomText style={styles.itemText}>{zone.name}</CustomText>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -38,53 +56,55 @@ export default function RoomSelector({
   );
 }
 
+
+const BTN_H = 44;
+const MENU_OFFSET = 4;
+
 const styles =  StyleSheet.create({
   wrapper: {
-    position: 'absolute',
-    top: 72,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    zIndex: 20,
-    elevation: 4,
+    position: 'relative',
+    height: BTN_H,
+    marginTop: 8,      // separación entre dropdowns
+    zIndex: 20,        // por debajo del de edificio
   },
-    roomWrapper: {
-    position: 'absolute',
-    top: 72,
-    left: 0,
-    right: 0,
-    paddingHorizontal: 16,
-    zIndex: 20,
+  roomWrapper: {
+    paddingHorizontal: 0,
+    zIndex: 20 ,
     elevation: 4,
   },
   button: {
-    height: 40,
+    height: BTN_H,
     borderWidth: 1,
     borderColor: '#ccc',
     borderRadius: 6,
     justifyContent: 'center',
     paddingHorizontal: 12,
     backgroundColor: '#fff',
-    marginBottom: 0,
   },
-  text: {
-    fontSize: 16,
-    color: '#333',
+  buttonDisabled: {
+    backgroundColor: '#f5f5f5',
+    borderColor: '#ddd',
+  },
+  text: { 
+    fontSize: 16, 
+    color: '#333'
+  },
+  textDisabled: {
+    color: '#aaa',
   },
   menu: {
-    marginTop: 4,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    maxHeight: 200,
-  },
-  item: {
-    paddingVertical: 10,
-    paddingHorizontal: 12,
-  },
-  itemText: {
-    fontSize: 16,
-    color: '#333',
-  },
+      position: 'absolute',
+      top: BTN_H + MENU_OFFSET,
+      left: 0,
+      right: 0,
+      backgroundColor: '#fff',
+      borderWidth: 1,
+      borderColor: '#ccc',
+      borderRadius: 6,
+      maxHeight: 200,
+      zIndex: 20,
+      elevation: 5,
+    },
+  item: { paddingVertical: 10, paddingHorizontal: 12 },
+  itemText: { fontSize: 16, color: '#333' },
 });

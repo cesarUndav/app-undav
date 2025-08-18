@@ -328,7 +328,7 @@ const styles = StyleSheet.create({
     left: 0,
     right: 0,
     paddingHorizontal: 16,
-    zIndex: 30,
+    zIndex: 20,
     elevation: 5,
   },
   roomDropdownWrapper: {
@@ -358,12 +358,19 @@ const styles = StyleSheet.create({
     borderRadius: 6,
     maxHeight: 200,
   },
-  dropdownItem: { paddingVertical: 10, paddingHorizontal: 12 },
-  dropdownItemText: { fontSize: 16, color: '#333' },
+  dropdownItem: { 
+    paddingVertical: 10, 
+    paddingHorizontal: 12 
+  },
+  dropdownItemText: { 
+    fontSize: 16, 
+    color: '#333' 
+  },
   mapWrapper: {
-    marginTop: 136,
-    marginBottom: 10,
+    flex: 1,
+    marginTop: 12,
     marginHorizontal: 16,
+    marginBottom: 10,
     backgroundColor: '#fff',
     borderRadius: 12,
     overflow: 'hidden',
