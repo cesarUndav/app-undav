@@ -6,7 +6,6 @@ import {
   Image,
   StyleSheet,
   Alert,
-  Linking,
 } from "react-native";
 
 import { useRouter } from "expo-router";
@@ -39,16 +38,13 @@ export default function LoginScreen() {
     );
   };
 
-  // OPCION 1: INTENTAR SIN CERO; LUEGO CON CERO.
-  // OPCION 2: teclado alfanumerico hasta que se ingresa "-", luego es solo numerico
-  // OPCION 3: boton "0-"
-
   const botonIngresar = async () => {
     setEsperandoRespuesta(true);
-    
+
     try
     {
       const {token, idPersona} = await validarPersona(documentoIngresado, contrasenaIngresada);
+
       await AsyncStorage.setItem("username", documentoIngresado.toString());
       await AsyncStorage.setItem("password", contrasenaIngresada.toString());
       setNotificationCount(10);

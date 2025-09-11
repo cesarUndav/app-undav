@@ -5,7 +5,6 @@ import {
   StyleSheet,
   Dimensions,
   Animated,
-  Text,
   TouchableOpacity,
   ScrollView,
 } from 'react-native';
@@ -23,7 +22,6 @@ import {
   PlanData,
   ZoneType
 } from './mapsConfig';
-import FondoGradiente from '@/components/FondoGradiente';
 
 export default function Planos() {
   const [building, setBuilding] = useState<"" | BuildingKey>("");
@@ -34,9 +32,9 @@ export default function Planos() {
   const fadeAnim = useRef(new Animated.Value(0)).current;
   const panZoomRef = useRef<any>(null);
 
-  const { width: winW, height: winH } = Dimensions.get('screen');
-  const containerW = winW -30;
-  const containerH = winH - 256;
+  const { width: winW, height: winH } = Dimensions.get('window');
+  const containerW = winW -32;
+  const containerH = winH - 300;
 
   const toggleMenu = () => setShowMenu(v => !v);
   const toggleRooms = () => setShowRooms(v => !v);
@@ -87,9 +85,7 @@ export default function Planos() {
     : null;
 
   return (
-    <FondoGradiente>
-
-    <View style={{position: "absolute", left: 0, right: 0, paddingVertical: 10, gap: 6}}>
+    <View style={styles.container}>
       {/* Selector de edificio */}
       <View style={styles.dropdownWrapper}>
         <TouchableOpacity style={styles.dropdownButton} onPress={toggleMenu}>
@@ -117,7 +113,7 @@ export default function Planos() {
 
       {/* Selector de aulas */}
       {building && (
-        <View style={styles.dropdownWrapper}>
+        <View style={[styles.dropdownWrapper, styles.roomDropdownWrapper]}>
           <TouchableOpacity style={styles.dropdownButton} onPress={toggleRooms}>
             <CustomText style={styles.dropdownButtonText}>
               {showRooms ? 'Seleccionar Aula' : 'Mostrar Aulas'}
@@ -137,70 +133,68 @@ export default function Planos() {
           )}
         </View>
       )}
+
+      {/* Visualización del plano */}
+      {SelectedSvg && planData && (
+        <View style={[styles.mapWrapper, { width: containerW, height: containerH}]}> 
+          <PanZoom
+            key={`${building}-${floorIndex}`}
+            ref={panZoomRef}
+            canvasWidth={planData.width}
+            canvasHeight={planData.height}
+            minScale={0.5}
+            maxScale={2.5}
+            initialZoom={Math.min(containerW/planData.width, containerH/planData.height)}
+            initialX={0}
+            initialY={0}
+          >
+            <SelectedSvg width={planData.width} height={planData.height} />
+            <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
+              {renderZones()}
+            </Svg>
+          </PanZoom>
+
+          {currentFloors.length > 1 && (
+            <View style={styles.floorControls}>
+              <TouchableOpacity
+                onPress={() => floorIndex > 0 && (setFloorIndex(i => i-1) )}
+                disabled={floorIndex === 0}>
+                <CustomText style={styles.floorButton}>Anterior</CustomText>
+              </TouchableOpacity>
+              <CustomText style={styles.floorLabel}>{`Planta ${floorIndex+1}`}</CustomText>
+              <TouchableOpacity
+                onPress={() => floorIndex < currentFloors.length-1 && (setFloorIndex(i => i+1) )}
+                disabled={floorIndex === currentFloors.length-1}>
+                <CustomText style={styles.floorButton}>Siguiente</CustomText>
+              </TouchableOpacity>
+            </View>
+          )}
+        </View>
+      )}
+
+      {/* Tooltip */}
+      {tooltip && (
+        <Animated.View style={[styles.tooltip, { opacity: fadeAnim }]}>  
+          <CustomText style={styles.tooltipText}>{tooltip}</CustomText>
+        </Animated.View>
+      )}
     </View>
-
-    {/* Visualización del plano */}
-    {SelectedSvg && planData && (
-      <View style={[styles.mapWrapper, { width: containerW, height: containerH}]}> 
-        <PanZoom
-          key={`${building}-${floorIndex}`}
-          ref={panZoomRef}
-          canvasWidth={planData.width}
-          canvasHeight={planData.height}
-          minScale={0.25}
-          maxScale={2.5}
-          initialZoom={Math.min(containerW/planData.width, containerH/planData.height)}
-          initialX={0}
-          initialY={0}
-        >
-          <SelectedSvg width={planData.width} height={planData.height} />
-          <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-            {renderZones()}
-          </Svg>
-        </PanZoom>
-      </View>
-    )}
-
-    <View>
-      {currentFloors.length > 1 && (
-          <View style={styles.floorControls}>
-            <TouchableOpacity
-              onPress={() => floorIndex > 0 && (setFloorIndex(i => i-1) )}
-              disabled={floorIndex === 0}>
-              <CustomText style={styles.floorButton}>Anterior</CustomText>
-            </TouchableOpacity>
-            <CustomText style={styles.floorLabel}>{`Planta ${floorIndex+1}`}</CustomText>
-            <TouchableOpacity
-              onPress={() => floorIndex < currentFloors.length-1 && (setFloorIndex(i => i+1) )}
-              disabled={floorIndex === currentFloors.length-1}>
-              <CustomText style={styles.floorButton}>Siguiente</CustomText>
-            </TouchableOpacity>
-          </View>
-        )}
-    </View>
-
-    {/* Tooltip */}
-    {tooltip && (
-      <Animated.View style={[styles.tooltip, { opacity: fadeAnim }]}>  
-        <CustomText style={styles.tooltipText}>{tooltip}</CustomText>
-      </Animated.View>
-    )}
-
-    </FondoGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  dropdownWrapper: { paddingHorizontal: 16, zIndex:30, elevation:5 },
+  container: { flex: 1, backgroundColor: '#f2f2f2' },
+  dropdownWrapper: { position: 'absolute', top: 16, left: 0, right: 0, paddingHorizontal: 16, zIndex:30, elevation:5 },
+  roomDropdownWrapper: { position:'absolute', top:72, left:0, right:0, paddingHorizontal:16, zIndex:20, elevation:4 },
   dropdownButton: { height:40, borderWidth:1, borderColor:'#ccc', borderRadius:6, justifyContent:'center', paddingHorizontal:12, backgroundColor:'#fff' },
   dropdownButtonText: { fontSize:16, color:'#333' },
   dropdownMenu: { marginTop:4, backgroundColor:'#fff', borderWidth:1, borderColor:'#ccc', borderRadius:6, maxHeight:200 },
   dropdownItem: { paddingVertical:10, paddingHorizontal:12 },
   dropdownItemText: { fontSize:16, color:'#333' },
-  mapWrapper: { marginTop: 96, backgroundColor:'#fff', borderRadius:12, overflow:'hidden', shadowColor:'#000', shadowOffset:{ width:0, height:2 }, shadowOpacity:0.1, shadowRadius:4, elevation:3 },
-  floorControls: { position:'absolute', bottom:15, left:0, right:0, flexDirection:'row', justifyContent:'space-around' },
+  mapWrapper: { marginTop:136, marginBottom:10, marginHorizontal:16, backgroundColor:'#fff', borderRadius:12, overflow:'hidden', shadowColor:'#000', shadowOffset:{ width:0, height:2 }, shadowOpacity:0.1, shadowRadius:4, elevation:3 },
+  floorControls: { position:'absolute', bottom:16, left:0, right:0, flexDirection:'row', justifyContent:'space-around' },
   floorButton: { padding:8, backgroundColor:'#2196F3', color:'#fff', borderRadius:4 },
-  floorLabel: { alignSelf:'center', fontWeight:'600', color: "#fff", backgroundColor: "black" },
+  floorLabel: { alignSelf:'center', fontWeight:'600' },
   tooltip: { position:'absolute', top:60, left:20, right:20, backgroundColor:'rgba(0,0,0,0.7)', padding:8, borderRadius:4 },
   tooltipText: { color:'#fff', textAlign:'center' },
 });

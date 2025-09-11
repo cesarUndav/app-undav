@@ -101,6 +101,7 @@ export async function validarPersonaYTraerData(usuario: string, clave: string): 
   }
 
   const data = await response.json();
+
   if (!data.token || !data.persona) {
     throw new Error("Respuesta incompleta del servidor");
   }
@@ -122,7 +123,7 @@ async function guardarSesion(token: string, personaId: number):Promise<void> {
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
   await guardarSesion(token, idPersona);
-  
+
   infoBaseUsuarioActual.usuario = usuario.toString();
   infoBaseUsuarioActual.password = clave.toString();
   
