@@ -3,6 +3,7 @@ import React, { useRef, useState } from 'react';
 import { WebView } from 'react-native-webview';
 import type { WebView as WebViewType } from 'react-native-webview';
 
+const delayMs = 600;
 const IdCampoUsername = "usuario";
 const IdCampoPassword = "password";
 
@@ -30,7 +31,7 @@ export default function LoginWebView() {
       setHasInjected(true);
       setTimeout(() => {
         webViewRef.current?.injectJavaScript(injectCredentials);
-      }, 1000); // espera 1 segundo antes de inyectar
+      }, delayMs); // espera antes de inyectar
     }
   };
 

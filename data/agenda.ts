@@ -2,6 +2,7 @@
 // fechaInicio: new Date('2025-3-1'); // RESPETAR FORMATO: AÑO-MES-DIA
 // por cuestiones de DEV se está haciendo con:
 
+import { enModoOscuro } from "./DatosUsuarioGuarani";
 import { listaEventosAgenda } from "./notificaciones";
 
 // fechaInicio: devHoyMasDias(n);
@@ -11,7 +12,9 @@ export type EventoAgenda = {
   fechaInicio: Date;
   fechaFin: Date;
   esFeriado?: Boolean;
+  descripcion?: string;
   notificar?: false;
+  categoria?: number;
 };
 
 // vars dev
@@ -21,7 +24,6 @@ let devUltimoId = 3;
 function diasAMilisegundos(dias:number) {return 86400000 * dias; }
 function hoyMasDias(dias:number) { return new Date(Date.now() + diasAMilisegundos(dias)); }
 function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.getTime() + diasAMilisegundos(dias)); }
-
 
 
 // listas // FORMATO: new Date(AÑO, MES -1, DIA). EJEMPLO: 1/1/2025 => new Date(2025, 0, 1)
@@ -93,7 +95,8 @@ export let listaEventosPersonalizados: EventoAgenda[] = [
 ];
 
 // funciones
-export function agregarEventoPersonalizado(titulo:string, fechainicio:string, fechaFin:string):void {
+
+export function agregarEventoPersonalizado(titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
   
   let fi = new Date(fechainicio);
   let ff = new Date(fechaFin);
@@ -106,13 +109,14 @@ export function agregarEventoPersonalizado(titulo:string, fechainicio:string, fe
   {
     id: "p"+devUltimoId,
     titulo: titulo,
+    descripcion: descripcion,
     fechaInicio: fi,
     fechaFin: ff
   };
   devUltimoId += 1;
   listaEventosPersonalizados.push(nuevoEvento);
 }
-export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:string, fechaFin:string):void {
+export function editarEventoPersonalizado(id:string, titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
   let fi = new Date(fechainicio);
   let ff = new Date(fechaFin);
   if (ff < fi) {
@@ -122,6 +126,7 @@ export function editarEventoPersonalizado(id:string, titulo:string, fechainicio:
   }
   const eventoEditado:EventoAgenda = obtenerEventoConId(id);
   eventoEditado.titulo = titulo;
+  eventoEditado.descripcion = descripcion;
   eventoEditado.fechaInicio = fi;
   eventoEditado.fechaFin = ff;
 }
@@ -161,10 +166,7 @@ function eventoDuraUnDia(evento:EventoAgenda): Boolean {
   return Boolean(evento.fechaInicio.getDate() == evento.fechaFin.getDate());
 }
 function eventoEnCurso(evento:EventoAgenda): Boolean {
-return (diasHastaFechaActual(evento.fechaInicio) <= 0 && !eventoFinalizado(evento));
-}
-function eventoEnCursoFinalizaHoy(evento:EventoAgenda): Boolean {
-  return eventoEnCurso(evento)==true && diasHastaFechaActual(evento.fechaFin) == -1;
+  return (diasHastaFechaActual(evento.fechaInicio) <= -1 && !eventoFinalizado(evento));
 }
 function eventoFinalizado(evento:EventoAgenda): Boolean {
   return diasHastaFechaActual(evento.fechaFin) < -1;
@@ -223,7 +225,7 @@ export function eventoAgendaToFechaString(evento:EventoAgenda): string {
   return `${intervaloFechaStr} (${diasStr})`;
 }
 export function eventoAgendaTituloColor(evento:EventoAgenda): string {
-  return evento.esFeriado? "#6CACE4":"#000";
+  return evento.esFeriado? "#6CACE4": (enModoOscuro() ? "#fff":"#000");
 }
 export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   // const colorFeriado = "#6CACE4";

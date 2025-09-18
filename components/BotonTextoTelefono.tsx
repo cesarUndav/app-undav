@@ -1,5 +1,6 @@
 import React from 'react';
 import BotonTexto from './BotonTexto';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type BotonTextoProps = {
   label: string;
@@ -9,6 +10,7 @@ type BotonTextoProps = {
   fontSize?: number;
   fontColor?: string;
   color?:string;
+  styleExtra?: StyleProp<ViewStyle>;
 };
 
 export default function BotonTextoTelefono({
@@ -18,9 +20,10 @@ export default function BotonTextoTelefono({
   verticalPadding = 12,
   fontSize = 16,
   fontColor = 'white',
-  color = "#556"
+  color = "#556",
+  styleExtra
 }: BotonTextoProps) {
   return (
-    <BotonTexto label={label}  url={"tel:"+tel} openInsideApp={false} color={color} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
+    <BotonTexto label={label} styleExtra={styleExtra} url={"tel:"+tel} openInsideApp={false} color={color} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
   );
 }

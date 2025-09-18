@@ -1,12 +1,11 @@
-// components/UndavHeader.tsx
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, Image } from 'react-native';
 import { useRouter } from 'expo-router';
 import CustomText from './CustomText'; // Asegúrate que el path es correcto
-import { infoBaseUsuarioActual, UsuarioEsAutenticado } from '@/data/DatosUsuarioGuarani';
-import { azulClaro, azulLogoUndav, negroAzulado } from '@/constants/Colors';
+import { infoBaseUsuarioActual, modoOscuro, UsuarioEsAutenticado } from '@/data/DatosUsuarioGuarani';
+import { azulClaro, azulLogoUndav, grisBorde } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
-import { getShadowStyle } from '@/constants/ShadowStyle';
+
 
 export default function UndavEstudianteHeader() {
   const router = useRouter();
@@ -14,37 +13,32 @@ export default function UndavEstudianteHeader() {
   const nombreLegajo:string = !UsuarioEsAutenticado() ? "Nombre Nombre Apellido\nLegajo: 12345" 
   : infoBaseUsuarioActual.nombreCompleto+"\nLegajo: "+infoBaseUsuarioActual.legajo;
   
+  // se puede mostrar la carrera elegida, usando esta línea:
+  // infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].nombre
+
   return (
-    <View style={styles.header}>
+    <View style={undavHeaderStyles.header}>
 
-      <Image source={require('../assets/images/logo_undav.png')} style={styles.logoUndav} />
-      {/* <View style={styles.logoUndav}>
-        <UndavIcon/>
-      </View> */}
+      <Image source={require('../assets/images/logo_undav.png')} style={undavHeaderStyles.logoUndav} />
 
-      <View style={styles.userInfo}>
-        <CustomText style={styles.userText}>{nombreLegajo}</CustomText>
-        {/* <CustomText style={styles.userText}>
-          {UsuarioEsAutenticado()
-            ? infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length - 1].nombre
-            : 'Nombre de Propuesta'}
-        </CustomText> */}
+      <View style={undavHeaderStyles.userInfo}>
+        <CustomText style={undavHeaderStyles.userText}>{nombreLegajo}</CustomText>
       </View>
 
-      <TouchableOpacity onPress={() => router.push('/perfil')} style={styles.profileIcon}>
-        <Ionicons name="person" size={42} color={azulLogoUndav} />
+      <TouchableOpacity onPress={() => router.push('/perfil')} style={undavHeaderStyles.profileIcon}>
+          <Ionicons name="person" size={36} color={modoOscuro ? "#fff":azulClaro} />
       </TouchableOpacity>
     </View>
   );
 }
 
-const styles = StyleSheet.create({
+export const undavHeaderStyles = StyleSheet.create({
   header: {
     flexDirection: 'row',
     alignItems: 'flex-start',
     justifyContent: 'space-between',
-    height: 60,
-    //marginVertical: 10,
+    height: 56,
+    //marginVertical: 4,
     //backgroundColor: "red"
   },
   logoUndav: {
@@ -64,25 +58,21 @@ const styles = StyleSheet.create({
     lineHeight: 18,
     fontSize: 14,
     fontWeight: "bold",
-    color: negroAzulado,    
+    color: modoOscuro ? "#fff":azulLogoUndav,    
     textAlign: 'right',
-    paddingRight: 10,
+    paddingRight: 4,
     alignContent: "flex-end",
     //backgroundColor: "red"
   },
   profileIcon: {
-    paddingLeft: 20-15,
-    height: "100%",
+    height: "105%", // altura respecto al logo undav
+    marginLeft: 8,
     aspectRatio: 1, // CUADRADO
-    borderRadius: "100%",
-    //backgroundColor: azulClaro,
+    borderRadius: 999,
     //...getShadowStyle(2),
     justifyContent: "center",
     alignItems: "center",
-    //marginRight: 5
-    //borderBottomRightRadius: 16,
-    // borderWidth: 6,
-    // borderColor: azulLogoUndav,
-  }
-
+    borderWidth: 1,
+    borderColor: grisBorde,
+  },
 });

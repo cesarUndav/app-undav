@@ -178,6 +178,7 @@ const styles = StyleSheet.create({
     paddingTop: 4
   },
   diaCelda: {
+    marginVertical: 0,
     width: `${(100 / 7)-0.01}%`,
     aspectRatio: 1,
     alignItems: 'center',
@@ -192,13 +193,17 @@ const styles = StyleSheet.create({
   },
   hoy: {
     backgroundColor: colorHoy,
-    borderRadius: "100%",
+    borderRadius: 999,
   },
   seleccionado: {
     backgroundColor: colorSeleccionado,
-    borderRadius: 9999, // circular
-    borderWidth: 2,
+    borderRadius: 999,
+    borderWidth: 3,
+    marginVertical: -3,
+    height: 0,
+    transform:  [{translateY: 3}],
     borderColor: azulLogoUndav,
+    zIndex: 2
     //overflow: 'hidden'
   },
   indicador: {
@@ -206,7 +211,7 @@ const styles = StyleSheet.create({
     bottom: 0,
     right: 0,
     backgroundColor: actividadesColor,
-    borderRadius: "100%",
+    borderRadius: 999,
     paddingHorizontal: 6,
     paddingVertical: 1,
   },

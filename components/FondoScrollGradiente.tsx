@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet, StyleProp, ViewStyle, ColorValue, ScrollView } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colorFondo } from '@/data/DatosUsuarioGuarani';
+import { colorFondoBottom, colorFondoTop } from '@/data/DatosUsuarioGuarani';
 
 interface FondoScrollGradienteProps {
   children: ReactNode;
@@ -13,8 +13,8 @@ interface FondoScrollGradienteProps {
 
 const FondoScrollGradiente: React.FC<FondoScrollGradienteProps> = ({
   children,
-  colorTop = "#fff",
-  colorBottom = colorFondo,
+  colorTop = colorFondoTop,
+  colorBottom = colorFondoBottom,
   style,
   gap = 10
 }) => {

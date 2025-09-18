@@ -6,7 +6,6 @@ import {
   Image,
   StyleSheet,
   Alert,
-  Linking,
 } from "react-native";
 
 import { useRouter } from "expo-router";
@@ -39,16 +38,13 @@ export default function LoginScreen() {
     );
   };
 
-  // OPCION 1: INTENTAR SIN CERO; LUEGO CON CERO.
-  // OPCION 2: teclado alfanumerico hasta que se ingresa "-", luego es solo numerico
-  // OPCION 3: boton "0-"
-
   const botonIngresar = async () => {
     setEsperandoRespuesta(true);
-    
+
     try
     {
       const {token, idPersona} = await validarPersona(documentoIngresado, contrasenaIngresada);
+
       await AsyncStorage.setItem("username", documentoIngresado.toString());
       await AsyncStorage.setItem("password", contrasenaIngresada.toString());
       setNotificationCount(10);
@@ -84,7 +80,7 @@ export default function LoginScreen() {
             resizeMode="contain"
           />
 
-          <View style={{gap: 10, flex: 1, justifyContent:"flex-start"}}>
+          <View style={{gap: 10, flex: 1.1, justifyContent:"flex-start"}}>
             <TextInput
               id="usuario"
               style={styles.inlineInputField}
@@ -117,7 +113,7 @@ export default function LoginScreen() {
             <TouchableOpacity
               onPress={botonIngresar}
               disabled={botonDesactivado()}
-              style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : azulLogoUndav, marginTop: 6}]}>
+              style={[styles.button, { backgroundColor: botonDesactivado() ? "gray" : azulLogoUndav, marginTop: 0}]}>
               <CustomText weight="bold" style={styles.buttonText}>
                 {esperandoRespuesta ? "CARGANDO..." : "INGRESAR"}
               </CustomText>

@@ -1,13 +1,13 @@
 // app-undav/app/agenda.tsx
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal, TextInput, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, TextInput, Platform, Alert } from 'react-native';
 
 import CustomText from '../components/CustomText';
 import { agregarEventoPersonalizado, editarEventoPersonalizado, EventoAgenda, listaCompleta, listaEnCurso, listaEventosPersonalizados, listaFuturo, listaPasado, obtenerEventoConId, quitarEventoPersonalizado} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulLogoUndav } from '@/constants/Colors';
+import { azulLogoUndav, grisBorde } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { bottomBarStyles } from '@/components/BottomBar';
@@ -16,7 +16,10 @@ import AgendaItemEditable from '@/components/AgendaItemEditable';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-const dropDownTextColor = "#fff";
+import DropdownCategorias from '@/components/DropdownCategoria';
+import { useCategoriasPersistentes, Categoria } from '@/hooks/useCategoriasPersistentes';
+
+
 const filterBtnColor = azulLogoUndav
 export default function Agenda() {
   
@@ -24,6 +27,15 @@ export default function Agenda() {
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
   const [mostrarPersonalizados, setMostrarPersonalizados] = useState(true);
   const [mostrarAcademicos, setMostrarAcademicos] = useState(true);
+  // categorias
+  const {
+    categorias,
+    agregar: agregarCategoria,
+    eliminar: eliminarCategoria,
+    cargando: cargandoCategorias
+  } = useCategoriasPersistentes();
+  const [categoriaSeleccionada, setCategoriaSeleccionada] = useState<Categoria | null>(null);
+  // fin categorias
 
   function puedeMostrarEvento(evento:EventoAgenda):Boolean {
     if (evento.esFeriado) {return mostrarFeriados;}
@@ -33,6 +45,7 @@ export default function Agenda() {
   // EVENTOS CUSTOM
   const [modalVisible, setModalVisible] = useState(false);
   const [titulo, setTitulo] = useState('');
+  const [descripcion, setDescripcion] = useState('');
   const [fechaInicio, setFechaInicio] = useState<Date>(new Date());
   const [fechaFin, setFechaFin] = useState<Date>(new Date());
   const [showInicioPicker, setShowInicioPicker] = useState(false);
@@ -54,6 +67,8 @@ export default function Agenda() {
     // cargar datos de evento desde id:
     const eventoEditado:EventoAgenda = obtenerEventoConId(id);
     setTitulo(eventoEditado.titulo);
+    if (eventoEditado.descripcion) setDescripcion(eventoEditado.descripcion);
+    else setDescripcion("");
     setFechaInicio(eventoEditado.fechaInicio);
     setFechaFin(eventoEditado.fechaFin);
     
@@ -61,22 +76,37 @@ export default function Agenda() {
   };
 
   const confirmarAgregarEvento = () => {
-    if (modoEdicion) editarEventoPersonalizado(idEventoAbierto, titulo.trim(), fechaInicio.toISOString(), fechaFin.toISOString());
-    else agregarEventoPersonalizado(titulo.trim(), fechaInicio.toISOString(), fechaFin.toISOString());
+    const t = titulo.trim();
+    const d = descripcion.trim();
+    const fi = fechaInicio.toISOString();
+    const ff = fechaFin.toISOString();
+
+    if (modoEdicion) editarEventoPersonalizado(idEventoAbierto, t, d, fi, ff);
+    else agregarEventoPersonalizado(t, d, fi, ff);
     //setListaEventos([...listaEventosPersonalizados]);
     setModalVisible(false);
     limpiarVariablesModal();
   };
-
+  
   const eliminarEventoAbiertoYRedibujar = () => {
-    quitarEventoPersonalizado(idEventoAbierto);
-    //setListaEventos([...listaEventosPersonalizados]);
-    setModalVisible(false);
-    limpiarVariablesModal();
+    Alert.alert("¿Eliminar Evento?", "Esta acción no se puede deshacer", [
+      {
+        text: "Eliminar",
+        style: "destructive",
+        onPress: () => {
+          quitarEventoPersonalizado(idEventoAbierto);
+          setModalVisible(false);
+          limpiarVariablesModal();
+        },
+      },
+      { text: "No", style: "cancel" },
+    ]);
+    
   };
 
   const limpiarVariablesModal = () => {
     setTitulo('');
+    setDescripcion("");
     setFechaInicio(new Date());
     setFechaFin(new Date());
   }
@@ -131,7 +161,7 @@ export default function Agenda() {
   useFocusEffect( // cada vez que entramos a esta pantalla
     useCallback(() => {
       //setListaEventos(listaEventosCalendarioAcademico);
-    }, [listaCompleta()])
+    }, [listaCompleta()]) // por las dudas paso esto, pero no se si es necesario pq ahora uso una función para devolver la listacompleta()
   );
   
   return (
@@ -154,7 +184,7 @@ export default function Agenda() {
       </>
 
     ):(
-      <CustomText style={[styles.title,{}]}>
+      <CustomText style={styles.title}>
         No hay ningún tipo de evento seleccionado en los filtros.
       </CustomText>
     )
@@ -204,8 +234,25 @@ export default function Agenda() {
               value={titulo}
               onChangeText={setTitulo}
             />
+            <TextInput
+              style={stylesP.input}
+              multiline
+              placeholder="Descripción"
+              value={descripcion}
+              onChangeText={setDescripcion}
+            />
 
-            <View style={{flexDirection:"row", gap: 10}}>
+            {/* {!cargandoCategorias && (
+              <DropdownCategorias
+                categorias={categorias}
+                seleccionada={categoriaSeleccionada}
+                onSeleccionar={setCategoriaSeleccionada}
+                onEliminar={eliminarCategoria}
+                onAgregar={agregarCategoria}
+              />
+            )} */}
+
+            <View style={{flexDirection:"row", gap: 8}}>
               <TouchableOpacity onPress={() => setShowInicioPicker(true)} style={stylesP.dateButton}>
                 <CustomText>{"Inicio: "+fechaInicio.toLocaleDateString()}</CustomText>
               </TouchableOpacity>
@@ -236,24 +283,24 @@ export default function Agenda() {
                 />
               )}
             </View>
-            <View style={[{gap: 10}]}>
-              <TouchableOpacity onPress={confirmarAgregarEvento}
-                disabled={titulo.trim().length === 0}
-                style={[stylesP.modalBtn, { backgroundColor: titulo.trim().length > 0 ? azulLogoUndav : "gray" }]}>
-                <CustomText style={stylesP.modalBtnText}>GUARDAR CAMBIOS</CustomText>
-              </TouchableOpacity>
-              
-              { modoEdicion && (
-                  <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[stylesP.modalBtn, { backgroundColor: "#c91800" }]}>
-                    <CustomText style={stylesP.modalBtnText}>ELIMINAR EVENTO</CustomText>
-                  </TouchableOpacity>
-                )
-              }
+          
+            <TouchableOpacity onPress={confirmarAgregarEvento}
+              disabled={titulo.trim().length === 0}
+              style={[stylesP.modalBtn, { backgroundColor: titulo.trim().length > 0 ? azulLogoUndav : "gray" }]}>
+              <CustomText style={stylesP.modalBtnText}>GUARDAR CAMBIOS</CustomText>
+            </TouchableOpacity>
+            
+            { modoEdicion && (
+                <TouchableOpacity onPress={() => eliminarEventoAbiertoYRedibujar()} style={[stylesP.modalBtn, { backgroundColor: "#c91800" }]}>
+                  <CustomText style={stylesP.modalBtnText}>ELIMINAR EVENTO</CustomText>
+                </TouchableOpacity>
+              )
+            }
 
-              <TouchableOpacity onPress={() => setModalVisible(false)} style={[stylesP.modalBtn, { backgroundColor: "white" }]}>
-                <CustomText style={[stylesP.modalBtnText,{color: "gray"}]}>SALIR</CustomText>
-              </TouchableOpacity>
-            </View>
+            <TouchableOpacity onPress={() => setModalVisible(false)} style={[stylesP.modalBtn, { backgroundColor: "white" }]}>
+              <CustomText style={[stylesP.modalBtnText,{color: "gray"}]}>SALIR SIN GUARDAR</CustomText>
+            </TouchableOpacity>
+          
           </View>
         </View>
       </OcultadorTeclado>
@@ -372,6 +419,7 @@ const stylesP = StyleSheet.create({
     borderRadius: 0,
     borderBottomRightRadius: 24,
     padding: 15,
+    gap: 8
   },
   modalTitle: {
     alignSelf: "center",
@@ -382,16 +430,14 @@ const stylesP = StyleSheet.create({
   },
   input: {
     borderBottomWidth: 1,
-    borderBottomColor: '#ccc',
-    marginBottom: 12,
-    padding: 10,
+    borderBottomColor: grisBorde,
+    padding: 6,
     fontSize: 16,
     flexWrap: "wrap"
   },
   dateButton: {
     padding: 10,
     backgroundColor: '#eee',
-    marginBottom: 10,
     borderRadius: 6,
     flex: 1
   },
