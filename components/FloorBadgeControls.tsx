@@ -1,28 +1,28 @@
-// components/FloorBadgeControls.tsx
-import React from 'react';
+// ==============================
+// File: components/FloorBadgeControls.tsx
+// ==============================
+import React, { memo } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import Svg, { Polygon, Polyline } from 'react-native-svg';
 import CustomText from './CustomText';
+import { colors, floorBadgeStyles } from '../theme/mapStyles';
 
 type Props = {
-  floorIndex: number;         // 0 = Planta baja, 1 = Piso 1, ...
-  maxFloors: number;          // total de plantas (1..4)
-  onPrev: () => void;         // bajar piso
-  onNext: () => void;         // subir piso
+  floorIndex: number;    // 0 = PB, 1 = Piso 1, ...
+  maxFloors: number;     // total de plantas (1..4)
+  onPrev: () => void;    // bajar piso
+  onNext: () => void;    // subir piso
 };
 
-const ACTIVE = '#1e1ee5';     // azul activo
-const INACTIVE = '#9E9E9E';   // gris
-const DISABLED = '#CCCCCC';
+const HIT = { top: 10, right: 10, bottom: 10, left: 10 };
 
-// --- NUEVO: iconos flecha (chevron) ---
+// --- Iconos chevron ---
 const ArrowUp = ({ disabled }: { disabled?: boolean }) => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
-    {/* chevron up */}
     <Polyline
       points="6,14 12,8 18,14"
       fill="none"
-      stroke={disabled ? INACTIVE : ACTIVE}
+      stroke={disabled ? colors.inactive : colors.active}
       strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -32,11 +32,10 @@ const ArrowUp = ({ disabled }: { disabled?: boolean }) => (
 
 const ArrowDown = ({ disabled }: { disabled?: boolean }) => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
-    {/* chevron down */}
     <Polyline
       points="6,10 12,16 18,10"
       fill="none"
-      stroke={disabled ? INACTIVE : ACTIVE}
+      stroke={disabled ? colors.inactive : colors.active}
       strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -44,7 +43,7 @@ const ArrowDown = ({ disabled }: { disabled?: boolean }) => (
   </Svg>
 );
 
-export default function FloorBadgeControls({
+function FloorBadgeControls({
   floorIndex,
   maxFloors,
   onPrev,
@@ -53,31 +52,30 @@ export default function FloorBadgeControls({
   const canDown = floorIndex > 0;
   const canUp = floorIndex < maxFloors - 1;
 
-  // Icono: viewBox 100x100
-  // - Rombo superior fijo
-  // - Chevrones inferiores: cantidad = maxFloors - 1
-  const chevrons = Math.max(0, Math.min(3, maxFloors - 1)); // soporta hasta 4 plantas
+  // Cantidad de chevrons (máx 3 → 4 plantas soportadas)
+  const chevrons = Math.max(0, Math.min(3, maxFloors - 1));
 
-  // Y de cada chevrón (de abajo hacia arriba)
-  // Ej.: 3 chevrons => y = 78, 70, 62
+  // y de cada chevron (de abajo hacia arriba)
   const bottomY = 78;
   const step = 8;
   const yForChevron = (idxFromBottom: number) => bottomY - idxFromBottom * step;
 
-  // Qué resaltar:
-  // - Si floorIndex === maxFloors - 1 -> resaltar ROMBO
-  // - Si no, resaltar chevron floorIndex (contado desde abajo)
+  // Qué resaltar
   const highlightTop = floorIndex === maxFloors - 1;
-  const highlightChevronIndexFromBottom = floorIndex; // 0 = abajo
+  const highlightChevronIndexFromBottom = floorIndex;
 
   return (
-    <View style={styles.wrap}>
-      {/* Botón subir */}
-<TouchableOpacity
+    <View style={styles.wrap} pointerEvents="box-none">
+      {/* Subir */}
+      <TouchableOpacity
         onPress={onNext}
         disabled={!canUp}
-        style={[styles.circleBtn, !canUp && styles.disabledBtn, styles.subir]}
-        hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        style={[
+          floorBadgeStyles.circleBtnBase,
+          styles.circleBtnPos,
+          !canUp && floorBadgeStyles.circleBtnDisabled,
+        ]}
+        hitSlop={HIT}
         accessibilityRole="button"
         accessibilityLabel="Subir piso"
       >
@@ -85,25 +83,25 @@ export default function FloorBadgeControls({
       </TouchableOpacity>
 
       {/* Icono + etiqueta */}
-      <View style={styles.badgeBlock}>
+      <View style={styles.badgeBlock} pointerEvents="none">
         <Svg width={56} height={56} viewBox="0 0 100 100">
-          {/* Rombo (techo / planta superior) */}
+          {/* Rombo (planta superior) */}
           <Polygon
             points="50,32 80,52 50,72 20,52"
             fill="none"
-            stroke={highlightTop ? ACTIVE : INACTIVE}
+            stroke={highlightTop ? colors.active : colors.inactive}
             strokeWidth={highlightTop ? 5 : 3}
           />
-          {/* Chevrones (plantas inferiores) */}
+          {/* Chevrons (plantas inferiores) */}
           {Array.from({ length: chevrons }).map((_, i) => {
-            const y = yForChevron(i); // i = 0 (abajo) … n-1 (arriba)
+            const y = yForChevron(i);
             const active = !highlightTop && i === highlightChevronIndexFromBottom;
             return (
               <Polyline
                 key={`ch-${i}`}
                 points={`20,${y} 50,${y + 20} 80,${y}`}
                 fill="none"
-                stroke={active ? ACTIVE : INACTIVE}
+                stroke={active ? colors.active : colors.inactive}
                 strokeWidth={active ? 5 : 3}
                 strokeLinejoin="round"
                 strokeLinecap="round"
@@ -111,15 +109,18 @@ export default function FloorBadgeControls({
             );
           })}
         </Svg>
-        <CustomText style={styles.label}>{`Piso ${floorIndex + 1}`}</CustomText>
+        <CustomText style={floorBadgeStyles.label}>{`Piso ${floorIndex + 1}`}</CustomText>
       </View>
 
-      {/* Botón bajar */}
+      {/* Bajar */}
       <TouchableOpacity
         onPress={onPrev}
         disabled={!canDown}
-        style={[styles.circleBtn, !canDown && styles.disabledBtn]}
-        hitSlop={{ top: 10, right: 10, bottom: 10, left: 10 }}
+        style={[
+          floorBadgeStyles.circleBtnBase,
+          !canDown && floorBadgeStyles.circleBtnDisabled,
+        ]}
+        hitSlop={HIT}
         accessibilityRole="button"
         accessibilityLabel="Bajar piso"
       >
@@ -135,48 +136,15 @@ const styles = StyleSheet.create({
     right: 16,
     bottom: 16,
     alignItems: 'center',
-    gap: 8,
+    gap: 10, // separa subir / badge / bajar
   },
-  circleBtn: {
-    width: 44,
-    height: 44,
-    borderRadius: 22,
-    backgroundColor: '#FFFFFF',
-    borderWidth: 1,
-    borderColor: '#DADADA',
-    alignItems: 'center',
-    justifyContent: 'center',
-    shadowColor: '#000',
-    shadowOffset: { width: 0, height: 2 },
-    shadowOpacity: 0.1,
-    shadowRadius: 4,
-    elevation: 2,
-  },
-  subir:{
-    top: 15,
-  },
-  disabledBtn: {
-    backgroundColor: '#F2F2F2',
-    borderColor: '#E6E6E6',
-  },
-  sign: {
-    fontSize: 22,
-    color: '#1E88E5',
-    fontWeight: '700',
-  },
-  signDisabled: {
-    color: '#9E9E9E',
+  circleBtnPos: {
+    // si querés que "subir" se vea un poco separado del badge:
+    marginBottom: 0,
   },
   badgeBlock: {
     alignItems: 'center',
   },
-  label: {
-    marginTop: 4,
-    paddingHorizontal: 8,
-    paddingVertical: 2,
-    borderRadius: 8,
-    backgroundColor: 'rgba(161,161,161,0.7)',
-    color: '#fff',
-    fontWeight: '900',
-  },
 });
+
+export default memo(FloorBadgeControls);

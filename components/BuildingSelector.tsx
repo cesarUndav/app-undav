@@ -1,34 +1,48 @@
 // components/BuildingSelector.tsx
 import React from 'react';
-import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, ScrollView } from 'react-native';
 import CustomText from './CustomText';
-import { edificios, BuildingKey } from '../app/mapsConfig'
-
+import { edificios, BuildingKey } from '../app/mapsConfig';
+import { selectorStyles as styles } from '../theme/mapStyles';
 
 interface Props {
-  building: BuildingKey | '';
+  building: '' | BuildingKey;
   showMenu: boolean;
   onToggle: () => void;
   onSelect: (b: BuildingKey) => void;
 }
 
 export default function BuildingSelector({
-  building, showMenu, onToggle, onSelect
+  building,
+  showMenu,
+  onToggle,
+  onSelect,
 }: Props) {
+  const label = building ? edificios[building].label : 'Seleccionar Sede';
+
   return (
     <View style={styles.wrapper}>
-      <TouchableOpacity style={styles.button} onPress={onToggle}>
-        <CustomText style={styles.text}>
-          {building ? edificios[building].label : 'Seleccionar Edificio'}
-        </CustomText>
+      <TouchableOpacity
+        style={styles.button}
+        onPress={onToggle}
+        accessibilityRole="button"
+        accessibilityLabel="Seleccionar edificio"
+      >
+        <CustomText style={styles.buttonText}>{label}</CustomText>
       </TouchableOpacity>
+
       {showMenu && (
-        <ScrollView style={styles.menu}>
+        <ScrollView
+          style={styles.menu}
+          keyboardShouldPersistTaps="handled"
+        >
           {Object.entries(edificios).map(([key, info]) => (
             <TouchableOpacity
               key={key}
               style={styles.item}
               onPress={() => onSelect(key as BuildingKey)}
+              accessibilityRole="button"
+              accessibilityLabel={`Seleccionar ${info.label}`}
             >
               <CustomText style={styles.itemText}>{info.label}</CustomText>
             </TouchableOpacity>
@@ -38,41 +52,3 @@ export default function BuildingSelector({
     </View>
   );
 }
-
-const BTN_H = 44;  // alto de cada dropdown
-const MENU_OFFSET = 4;
-
-const styles = StyleSheet.create({
-  wrapper: {
-    position: 'relative',
-    height: BTN_H,     // reserva el alto del botón
-    zIndex: 30,        // por encima del de aulas
-  },
-  button: {
-    height: BTN_H,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    backgroundColor: '#fff',
-  },
-  text: { fontSize: 16, color: '#333' },
-
-  // el menú se superpone y NO empuja el layout
-  menu: {
-    position: 'absolute',
-    top: BTN_H + MENU_OFFSET,
-    left: 0,
-    right: 0,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    maxHeight: 200,
-    zIndex: 30,
-    elevation: 5,
-  },
-  item: { paddingVertical: 10, paddingHorizontal: 12 },
-  itemText: { fontSize: 16, color: '#333' },
-});

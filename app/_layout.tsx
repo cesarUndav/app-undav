@@ -1,28 +1,30 @@
-import { Slot, Stack, usePathname, useRouter } from "expo-router";
-import { useEffect, useState } from "react";
-import React from "react";
+import 'react-native-gesture-handler'; // <-- PRIMERA línea siempre
+import { Slot, Stack, usePathname, useRouter } from 'expo-router';
+import React, { useEffect, useState } from 'react';
+import { Platform, StatusBar, ActivityIndicator, View } from 'react-native';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaView } from 'react-native-safe-area-context';
 import {
   useFonts,
   Montserrat_400Regular,
   Montserrat_700Bold,
-} from "@expo-google-fonts/montserrat";
-import { Platform, StatusBar, ActivityIndicator, View } from "react-native";
-import { setBackgroundColorAsync } from "expo-system-ui";
-import { SafeAreaView } from "react-native-safe-area-context";
-import AsyncStorage from "@react-native-async-storage/async-storage";
+} from '@expo-google-fonts/montserrat';
+import { setBackgroundColorAsync } from 'expo-system-ui';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
-import HistoryHeader, { PathToTitle } from "@/components/NavigationHistoryHeader";
-import BottomBar from "@/components/BottomBar";
-import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from "@/data/DatosUsuarioGuarani";
-import { azulMedioUndav } from "@/constants/Colors";
+import HistoryHeader, { PathToTitle } from '@/components/NavigationHistoryHeader';
+import BottomBar from '@/components/BottomBar';
+import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from '@/data/DatosUsuarioGuarani';
+import { azulMedioUndav } from '@/constants/Colors';
 
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
+  const [sesionVerificada, setSesionVerificada] = useState(false);
   const [fontsLoaded] = useFonts({
     Montserrat_400Regular,
     Montserrat_700Bold,
   });
-  const [sesionVerificada, setSesionVerificada] = useState(false);
+
   const pathName = usePathname();
   const router = useRouter();
 
@@ -35,73 +37,70 @@ export default function Layout() {
 
   useEffect(() => {
     const prepararApp = async () => {
-      if (Platform.OS === "android") {
+      if (Platform.OS === 'android') {
         await setBackgroundColorAsync(azulMedioUndav);
       }
-
-      // Verificar sesión
       try {
-        const token = await AsyncStorage.getItem("token");
-        const personaIdStr = await AsyncStorage.getItem("persona_id");
+        const token = await AsyncStorage.getItem('token');
+        const personaIdStr = await AsyncStorage.getItem('persona_id');
 
         if (token && personaIdStr) {
           const personaId = parseInt(personaIdStr, 10);
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
-
           if (pathName === '/' || pathName.startsWith('/login')) {
-            router.replace("/home-estudiante");
+            router.replace('/home-estudiante');
           }
         } else {
           setVisitante(true);
-          // if (pathName === '/') { router.replace("/loginAutenticado"); }
+          // if (pathName === '/') { router.replace('/loginAutenticado'); }
         }
       } catch (error) {
-        console.error("Error al verificar sesión:", error);
+        console.error('Error al verificar sesión:', error);
         setVisitante(true);
         if (pathName === '/') {
-          router.replace("/loginAutenticado");
+          router.replace('/loginAutenticado');
         }
       } finally {
         setSesionVerificada(true);
         setIsReady(true);
       }
     };
-
     prepararApp();
   }, []);
 
+  // Pantalla de carga también debe estar dentro del RootView:
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
-      <View style={{ flex: 1, justifyContent: "center", alignItems: "center" }}>
-        <ActivityIndicator size="large" color="#1a2b50" />
-      </View>
+      <GestureHandlerRootView style={{ flex: 1 }}>
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
+          <ActivityIndicator size="large" color="#1a2b50" />
+        </View>
+      </GestureHandlerRootView>
     );
   }
 
-  const usandoStackNavigator: boolean = false;
+  const usandoStackNavigator = false;
 
-  if (!usandoStackNavigator)
-  {
-    return (
+  return (
+    <GestureHandlerRootView style={{ flex: 1 }}>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-        {showHeader && <HistoryHeader title={headerHistoryTitle} />}
-        <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
-        <Slot />
-        {/* {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)} */}
-        {showBottomBar && (!visitante && <BottomBar/>)}
+        {usandoStackNavigator ? (
+          <>
+            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            <Stack screenOptions={{ animation: Platform.OS === 'android' ? 'none' : 'default' }}>
+              <Slot />
+            </Stack>
+          </>
+        ) : (
+          <>
+            {showHeader && <HistoryHeader title={headerHistoryTitle} />}
+            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            <Slot />
+            {showBottomBar && (!visitante && <BottomBar />)}
+          </>
+        )}
       </SafeAreaView>
-    );
-  }
-  else
-  {
-    return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-        <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
-        <Stack screenOptions={{ animation: Platform.OS === "android" ? "none" : "default" }}>
-          <Slot />
-        </Stack>
-      </SafeAreaView>
-    );
-  }
+    </GestureHandlerRootView>
+  );
 }
