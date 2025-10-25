@@ -3,6 +3,7 @@ import { SafeAreaView } from 'react-native';
 import { WebView } from 'react-native-webview';
 import type { WebView as WebViewType } from 'react-native-webview';
 
+const delayMs = 700;
 
 type Props = {
   url: string;
@@ -17,27 +18,27 @@ export default function AutoLoginWebView({ url, tryLogin = false, idUsername, id
     const webViewRef = useRef<WebViewType>(null);
     const [hasInjected, setHasInjected] = useState(false);
 
+    console.log("try login:", tryLogin,"->", idUsername, idPassword, username, password);
+    
     const injectCredentials = `
-    (function() {
-      const user = document.getElementById('${idUsername}');
-      const pass = document.getElementById('${idPassword}');
-      if (user && ${username}) {
-        user.value = '${username}';
-      }
-        if (pass && ${password}) {
-        user.value = '${password}';
-      }
-        document.forms[0].submit();
-    })();
-    true;
-  `;
+      (function() {
+        const user = document.getElementById('${idUsername}');
+        const pass = document.getElementById('${idPassword}');
+        if (user && pass) {
+          user.value = '${username}';
+          pass.value = '${password}';
+          document.forms[0].submit();
+        }
+      })();
+      true;
+    `;
 
     const handleLoadEnd = () => {
         if (!hasInjected) {
         setHasInjected(true);
         setTimeout(() => {
           if (tryLogin) webViewRef.current?.injectJavaScript(injectCredentials);
-        }, 800); // espera X milisegundos antes de inyectar
+        }, delayMs); // espera X milisegundos antes de inyectar
         }
     };
     

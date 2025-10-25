@@ -101,6 +101,7 @@ export async function validarPersonaYTraerData(usuario: string, clave: string): 
   }
 
   const data = await response.json();
+
   if (!data.token || !data.persona) {
     throw new Error("Respuesta incompleta del servidor");
   }
@@ -122,8 +123,7 @@ async function guardarSesion(token: string, personaId: number):Promise<void> {
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
   await guardarSesion(token, idPersona);
-  
-  // GUARDO ASI MEJOR, AsyncStorage.getItem() es una mierda
+
   infoBaseUsuarioActual.usuario = usuario.toString();
   infoBaseUsuarioActual.password = clave.toString();
   
@@ -153,17 +153,20 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: n
   
   infoBaseUsuarioActual = {
     idPersona: personaId.toString(),
+    // se cargan los datos obtenidos:
     legajo: datos.legajo,
     nombreCompleto: capitalizeWords(`${datos.nombres_elegido? datos.nombres_elegido:datos.nombres} ${datos.apellido_elegido?datos.apellido_elegido:datos.apellido}`),
     documento: datos.nro_documento,
     email: datos.email,
     //tel: datos.telefono_celular,
+    //
     propuestas: prop,
+    // elige la "propuesta" (carrera) más reciente:
     indicePropuestaSeleccionada: prop.length - 1,
-    usuario: "",
-    password: ""
+    // no realiza cambios en las siguientes variables:
+    usuario: infoBaseUsuarioActual.usuario,
+    password: infoBaseUsuarioActual.password
   };
-  console.log("datos.propuestas: ",prop);
   
   visitante = false;
 }
@@ -213,12 +216,21 @@ export async function Logout() {
 }
 
 // El que quiere celeste, que le cueste:
+export let modoOscuro:boolean = false;
+
+export let colorFondoTop: string = "#fff";
+export let colorFondoBottom: string = "#ddd";
+
 const celeste: string = "#91c9f7";
 
-export let colorFondo: string = grisUndav;
-export let fondoEsCeleste: boolean = false;
-
-export function setColorFondoCeleste(esCeleste: boolean) {
-  fondoEsCeleste = esCeleste;
-  colorFondo = esCeleste ? celeste : grisUndav;
-}
+export function setDarkMode(dark: boolean):void {
+  modoOscuro = dark;
+  if (modoOscuro) {
+    colorFondoTop = "#000";
+    colorFondoBottom = "#000";
+  } else {
+    colorFondoTop = "#fff";
+    colorFondoBottom = grisUndav;
+  }
+} 
+export function enModoOscuro():boolean {return modoOscuro;}

@@ -9,6 +9,10 @@ export default function WebViewScreen() {
   return (
     <AutoLoginWebView
       url={decodeURIComponent(url as string)}
-      tryLogin={tryLogin === 'true'} idUsername={'usuario'} idPassword={'password'} username={infoBaseUsuarioActual.usuario} password={infoBaseUsuarioActual.password}    />
+      tryLogin={tryLogin === 'true'}
+      idUsername={'usuario'}
+      idPassword={'password'}
+      username={infoBaseUsuarioActual.usuario}
+      password={infoBaseUsuarioActual.password}    />
   );
 }

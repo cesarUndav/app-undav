@@ -1,7 +1,7 @@
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity } from 'react-native';
 
-import { Route, useRouter } from 'expo-router';
+import { useRouter } from 'expo-router';
 import CustomText from '../components/CustomText';
 
 import {Ionicons} from '@expo/vector-icons';
@@ -9,24 +9,26 @@ import RedesIcon from '../assets/icons/ico-svg/redes-arroba.svg';
 import PreguntasIcon from '../assets/icons/ico-svg/preguntas-frecuentes.svg';
 import InscripcionesIcon from '../assets/icons/ico-svg/inscripciones.svg';
 import CalendarioIcon from '../assets/icons/ico-svg/calendario.svg';
-
 import SedesIcon from '../assets/icons/ico-svg/sedes.svg';
 
-import BotonIconoTexto from '@/components/BotonFlexIconoTexto';
+import NotificacionesIcon from '../assets/icons/notifications.svg';
+import ContactoIcon from '../assets/icons/mail.svg';
+
+import BotonIconoTexto from '@/components/BotonIconoTexto';
 import FondoGradiente from '@/components/FondoGradiente';
-import { azulClaro, azulLogoUndav } from '@/constants/Colors';
+import { azulClaro } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import UndavVisitanteHeader from '@/components/UndavVisitanteHeader';
 
 const iconSize = 55;
-const iconColor = "#fff";
+const iconColor = azulClaro;
 
-function ContactoIcon() {
-  return (<Ionicons name={"mail"!} size={iconSize-8} color={iconColor} />);
-}
-function NoticiasIcon() {
-  return (<Ionicons name={"notifications"!} size={iconSize-12} color={iconColor} />);
-}
+// function ContactoIcon() {
+//   return (<Ionicons name={"mail"!} size={iconSize} color={iconColor} />);
+// }
+// function NoticiasIcon() {
+//   return (<Ionicons name={"notifications"!} size={iconSize} color={iconColor} />);
+// }
 
 export default function HomeEstudiante() {
   const router = useRouter();
@@ -36,29 +38,31 @@ export default function HomeEstudiante() {
 
         <UndavVisitanteHeader/>
 
-        <View style={[styles.buttonsRowParent,{flex: 1}]}>
+        <View style={[styles.buttonsRowParent,{flex: 1, backgroundColor: azulClaro}]}>
           <TouchableOpacity style={styles.buttonBox} onPress={() => router.push('/oferta-academica')} accessible accessibilityLabel="Ir a oferta académica" >
-            <Ionicons name="school" size={iconSize+0} color={iconColor} />
+            <Ionicons name="school" size={iconSize+0} color={"#fff"} />
             <CustomText style={styles.buttonText}>OFERTA ACADÉMICA</CustomText>
           </TouchableOpacity>
         </View>
         
-        <View style={styles.buttonsRowParent}> 
+        <View style={[styles.buttonsRowParent, {paddingBottom: 20}]}> 
           
           <View style={styles.buttonsRow}>
+            <BotonIconoTexto
+              label={"DEBUG_HOME-ESTUDIANTE"}
+              funcionOnPress={() => router.push('/home-estudiante')}
+              Icon={SedesIcon}
+              iconColor='red'
+            />
             <BotonIconoTexto
               label={"TUTORIAL DE\nPREINSCRIPCIÓN"}
               funcionOnPress={() => router.push('/preinscripcion')}
               Icon={InscripcionesIcon}
-              iconSize={iconSize}
-              iconColor="white"
             />
             <BotonIconoTexto
               label={"CALENDARIO\nACADÉMICO"}
               funcionOnPress={() => router.push('/calendario-academico-visitante')}
               Icon={CalendarioIcon}
-              iconSize={iconSize}
-              iconColor="white"
             />
           </View>
           <View style={styles.buttonsRow}>
@@ -67,15 +71,11 @@ export default function HomeEstudiante() {
               label={"REDES"}
               funcionOnPress={() => router.push('/redes')}
               Icon={RedesIcon}
-              iconSize={iconSize}
-              iconColor="white"
             />
             <BotonIconoTexto
               label={"SEDES"}
               funcionOnPress={() => router.push('/sedes')}
               Icon={SedesIcon}
-              iconSize={iconSize}
-              iconColor="white"
             />
           </View>
           <View style={styles.buttonsRow}>
@@ -84,22 +84,16 @@ export default function HomeEstudiante() {
               label={"CONTACTO"}
               funcionOnPress={() => router.push('/contacto')}
               Icon={ContactoIcon}
-              iconSize={iconSize}
-              iconColor="white"
             />
             <BotonIconoTexto
               label={"PREGUNTAS\nFRECUENTES"}
               funcionOnPress={() => router.push('/preguntas-frecuentes')}
               Icon={PreguntasIcon}
-              iconSize={iconSize}
-              iconColor="white"
             />
             <BotonIconoTexto
               label={"NOTICIAS"}
               funcionOnPress={() => router.push('/notificaciones')}
-              Icon={NoticiasIcon}
-              iconSize={iconSize}
-              iconColor="white"
+              Icon={NotificacionesIcon}
             />
           </View>
         </View>
@@ -121,7 +115,7 @@ const styles = StyleSheet.create({
     gap: 10,
     padding: 10,
     borderBottomRightRadius: 24,
-    backgroundColor: azulLogoUndav,
+    backgroundColor: "#fff",
     ...getShadowStyle(4)
   },
   buttonsRow: {
@@ -143,8 +137,9 @@ const styles = StyleSheet.create({
   buttonText: {
     textAlign: 'center',
     fontWeight: "bold",
-    color: iconColor,
+    color: "#fff",
     fontSize: 12,
+    marginTop: 5,
     //fontStyle: 'italic'
   },
 });

@@ -4,8 +4,11 @@ import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-
 import CustomText from './CustomText';
 import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
 import SettingsIcon from '../assets/icons/settings.svg';
-import { azulLogoUndav } from '@/constants/Colors';
+import { azulClaro, azulLogoUndav, azulMedioUndav } from '@/constants/Colors';
 import { AgendaItemStyles } from './AgendaItem';
+import { useCategoriasPersistentes } from '@/hooks/useCategoriasPersistentes';
+import { Categoria } from './DropdownCategoria';
+import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
 
 type AgendaItemEditableProps = {
   evento: EventoAgenda;
@@ -14,11 +17,15 @@ type AgendaItemEditableProps = {
 };
 
 export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: AgendaItemEditableProps) {
+  useCategoriasPersistentes();
+
   return (
     <View style={[AgendaItemStyles.agendaItem, styleExtra]}>
         <TouchableOpacity style={styles.itemParent} onPress={() => onPressEdit(evento.id)} accessible accessibilityLabel="Editar Evento" >
           <View style={styles.itemChildLeft}>
-            <CustomText style={[AgendaItemStyles.eventTitle, { color: '#000' }]}>
+            <CustomText style={[AgendaItemStyles.eventTitle, { 
+              //</View>color: evento.categoria ? categorias[evento.categoria]
+              color: enModoOscuro() ? "#fff":'#000' }]}>
               {evento.titulo}
             </CustomText>
             <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
@@ -26,7 +33,7 @@ export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: 
             </CustomText>
           </View>
           <View style={styles.itemChildRight}>
-            <SettingsIcon width={30} height={30} fill={azulLogoUndav} />
+            <SettingsIcon width={30} height={30} fill={enModoOscuro()? "#fff":azulClaro} />
           </View>
         </TouchableOpacity>
     </View>

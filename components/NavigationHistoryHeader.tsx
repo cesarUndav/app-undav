@@ -3,6 +3,8 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
+import { azulLogoUndav } from '@/constants/Colors';
 
 type HeaderProps = {
   title: string;
@@ -24,7 +26,7 @@ const HistoryHeader: React.FC<HeaderProps> = ({ title, children }) => {
     <View style={styles.container}>
       <View style={styles.side}>
         <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : {}}>
-          <Ionicons name="arrow-back" size={24} color="#1a2b50" />
+          <Ionicons name="arrow-back" size={24} color= {enModoOscuro() ? "#fff":"#1a2b50"} />
         </TouchableOpacity>
       </View>
 
@@ -42,7 +44,7 @@ const HistoryHeader: React.FC<HeaderProps> = ({ title, children }) => {
 const styles = StyleSheet.create({
   container: {
     height: 56,
-    backgroundColor: '#fff',
+    backgroundColor: enModoOscuro() ? azulLogoUndav : '#fff',
     flexDirection: 'row',
     alignItems: 'center',
     position: 'relative',
@@ -65,7 +67,7 @@ const styles = StyleSheet.create({
   title: {
     fontSize: 18,
     fontWeight: 'bold',
-    color: '#1a2b50',
+    color: enModoOscuro() ? "#fff" :'#1a2b50',
   },
 });
 
