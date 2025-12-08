@@ -42,24 +42,30 @@ import pineyroC2Data from '../assets/maps/PineyroC/pineyroC2.json';
 import pineyroC3Data from '../assets/maps/PineyroC/pineyroC3.json';
 
 // ====== Tipos ======
+// mapsConfig.ts
+export type Pt = [number, number];
+
 export interface ZoneType {
   id: string;
   name: string;
-  points: number[][];
-  // Si querés, podés dejar opcionales estos dos si aún no están en todos los JSON:
-  // center?: [number, number];
-  // radius?: number;
+  points: Pt[];
+  center?: Pt;
+  radius?: number;
+  path?: Pt[];
+  arrows?: [ [number, number], [number, number] ][]; 
 }
 
 export interface PlanData {
   width: number;
   height: number;
   zones: ZoneType[];
+  pathOrigin?: Pt;
 }
+
 
 export type BuildingKey = 'Espana' | 'Arenales' | 'PineyroA' | 'PineyroB' | 'PineyroC';
 
-// 🔹 NUEVO: claves de piso tipadas como literales
+// Claves de piso tipadas como literales
 export type FloorKey = '0' | '1' | '2' | '3';
 
 export interface FloorEntry {

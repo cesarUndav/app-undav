@@ -8,6 +8,8 @@ import MapViewer from './MapViewer';
 import FloorBadgeControls from './FloorBadgeControls';
 import Tooltip from './Tooltip';
 import FitAllButton from './FitAllButton';
+import GuidePointButton from './GuidePointButton'; 
+
 import { PlanData } from '../app/mapsConfig';
 import { usePlanZoom } from '../hooks/usePlanZoom';
 import { usePlanAreaEffects } from '../hooks/usePlanAreaEffects';
@@ -32,8 +34,12 @@ type Props = {
   initialFit?: boolean; // default: true
   /** Padding relativo (0..1) para el encuadre inicial. Ej: 0.1 => 10% a cada lado. */
   fitPadding?: number; // default: 0.1
-  focusPadding: 0.18,
-  fitMode: 'canvas'| 'content';
+  /** Padding relativo (0..1) para foco (aula / punto guía). */
+  focusPadding?: number; // default: 0.18 (lo pasamos abajo)
+  /** Modo de encuadre "Ver todo" */
+  fitMode?: 'canvas' | 'content'; // default: 'canvas'
+  /** Ventana (radio en unidades canvas) para el Punto Guía */
+  guideRadius?: number; // default: 90
 };
 
 const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
@@ -47,6 +53,9 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     mapId,
     initialFit = true,
     fitPadding = 0.1,
+    focusPadding = 0.18,
+    fitMode = 'canvas',
+    guideRadius = 90,
   },
   ref
 ) {
@@ -54,14 +63,24 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
   const { tooltip, fade, showTip } = useTooltip();
   const zoneLabel = (id: string) => planData.zones.find(z => z.id === id)?.name ?? id;
 
-  // Lógica base pan/zoom + layout (objetivos programados: fit/focus)
-  const { box, onLayoutBox, zoomParams, setZoomParams, fitAll, focusZone } = usePlanZoom({
+  // Lógica base pan/zoom + layout (objetivos programados: fit/focus/guía)
+  const {
+    box,
+    onLayoutBox,
+    zoomParams,
+    setZoomParams,
+    fitAll,
+    focusZone,
+    focusGuidePoint, // 👈 NUEVO
+  } = usePlanZoom({
     planData,
     floors,
     floorIndex,
     mapId,
     fitPadding,
-    focusPadding: 0.36,
+    focusPadding,
+    fitMode,
+    guideRadius,
   });
 
   // Efectos idempotentes (focus por selección + fit inicial)
@@ -78,18 +97,15 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
   const { view: animatedView, setTarget } =
     usePlanAreaAnimation?.(zoomParams) ?? { view: null, setTarget: () => {} };
 
-  // === Estado "en vivo" para gestos (NO pisa la animación) ===
-  // Cuando el usuario hace pinch/pan, actualizamos 'live'.
-  // Cuando cambia el objetivo programado (zoomParams.key), limpiamos 'live'
-  // para que la animación se vea tal cual.
+  // Estado "en vivo" para gestos (NO pisa la animación)
   const [live, setLive] = useState<ZoomParams>(null);
 
   useEffect(() => {
-    // Nuevo objetivo programado (fit/focus): limpiar interacción del usuario
-    // y disparar/actualizar la animación hacia ese objetivo.
+    // Nuevo objetivo programado (fit/focus/guía): limpiar interacción del usuario
+    // y actualizar la animación hacia ese objetivo.
     setLive(null);
     setTarget?.(zoomParams);
-  }, [zoomParams?.key, setTarget]); // importante: depender de la key
+  }, [zoomParams?.key, setTarget]);
 
   // Exponer API imperativa
   useImperativeHandle(
@@ -113,10 +129,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     onLayoutBox(width, height);
   };
 
-  // Orden de prioridad:
-  // 1) 'live' mientras el usuario está interactuando,
-  // 2) valores animados hacia el objetivo,
-  // 3) objetivo directo si no hay animación disponible.
+  // Prioridad de visualización: live → animado → objetivo directo
   const displayZoomParams = live ?? animatedView ?? zoomParams;
 
   return (
@@ -167,15 +180,23 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
             }}
           />
 
-          {tooltip && <Tooltip text={tooltip} opacity={fade} />}
+          {/* Botón “Punto guía” alineado a la izquierda */}
+          <GuidePointButton
+            onPress={() => {
+              focusGuidePoint();
+              showTip('Punto guía');
+            }}
+          />
 
-          {/* Botón flotante: Ver todo (centrado abajo) */}
+          {/* Botón “Ver todo” centrado */}
           <FitAllButton
             onPress={() => {
               fitAll();
               showTip('Vista general');
             }}
           />
+
+          {tooltip && <Tooltip text={tooltip} opacity={fade} />}
         </>
       )}
     </View>

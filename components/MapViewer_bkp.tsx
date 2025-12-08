@@ -11,6 +11,7 @@ import RoutePolygon from './PlanArea/RoutePolygon';
 import { zoneStyleById } from '../theme/mapStyles';
 import { pointInPolygon, toPointsStr } from '../lib/zoomMath';
 
+
 type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
 
 type Props = {
@@ -22,9 +23,14 @@ type Props = {
   onZonePress: (zoneId: string) => void;
   zoomParams: ZoomTarget;
   onTransformChange?: (t: { zoom: number; x: number; y: number }) => void;
+
+  /** Permite renderizar contenido SVG custom por zona. Si retorna algo, se usa en vez del <ZonePolygon> por defecto. */
   renderZone?: (zone: ZoneType, selected: boolean) => React.ReactNode;
+
+  /** Límites opcionales del zoom (se pasan a ControlledPanZoom). */
   minScale?: number;
   maxScale?: number;
+
   testID?: string;
 };
 
@@ -69,10 +75,10 @@ function MapViewer({
   // Polígono de ruta (path) del aula seleccionada
   const selectedPathStr = useMemo(() => {
     if (!selectedZoneId) return null;
-    const sel = planData.zones.find((z) => z.id === selectedZoneId) as any;
+    const sel = planData.zones.find(z => z.id === selectedZoneId) as any;
     const path: number[][] | undefined = sel?.path;
     if (!Array.isArray(path) || path.length < 3) return null;
-    return toPointsStr(path as any);
+    return path.map(p => p.join(',')).join(' ');
   }, [planData.zones, selectedZoneId]);
 
   const handleZonePress = useCallback(
@@ -99,7 +105,7 @@ function MapViewer({
           // hit-test desde la última zona a la primera (por si solapan)
           for (let i = planData.zones.length - 1; i >= 0; i--) {
             const z = planData.zones[i];
-            if (pointInPolygon(cx, cy, z.points as any)) {
+            if (pointInPolygon(cx, cy, z.points)) {
               onZonePress(z.id);
               break;
             }
@@ -116,12 +122,13 @@ function MapViewer({
 
         {/* Overlay interactivo */}
         <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-          {/* Ruta del aula seleccionada (debajo de las zonas) */}
+          {/* Ruta (path) del aula seleccionada, debajo de las zonas */}
           {selectedPathStr && <RoutePolygon pointsStr={selectedPathStr} />}
 
           {/* Zonas (aulas, etc.) */}
           {zones.map(({ z, selected, style, pointsStr }) => {
             if (renderZone) {
+              // Render custom (debe devolver elementos SVG válidos)
               return <React.Fragment key={z.id}>{renderZone(z, selected)}</React.Fragment>;
             }
             return (
@@ -139,6 +146,7 @@ function MapViewer({
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   wrapper: {
