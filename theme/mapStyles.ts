@@ -213,4 +213,112 @@ export const floorBadgeStyles = {
     color: '#fff',
     fontWeight: '900' as const,
   },
+    capsule: {
+    backgroundColor: 'rgba(255,255,255,0.5)', // ~18% opacidad
+    borderRadius: 28,                           // cápsula
+    paddingVertical: 12,
+    paddingHorizontal: 8,
+    alignItems: 'center' as const,
+    // ligera sombra para separarlo del plano
+    shadowColor: '#000',
+    shadowOffset: { width: 0, height: 2 },
+    shadowOpacity: 0.08,
+    shadowRadius: 6,
+    elevation: 2,
+  },
 };
+
+// theme/mapStyles.ts
+export const guidePointStyle = {
+  fill: '#ff0000ff',
+  stroke: '#ff0000ff',     // mismo azul activo que usas
+  strokeWidth: 2,
+} as const;
+
+export const searchModalStyles = StyleSheet.create({
+  container: { flex: 1, padding: 16, marginTop: 30 },
+
+  // Search
+  searchRow: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    marginBottom: 12,
+    position: 'relative',
+  },
+  searchInput: {
+    flex: 1,
+    height: 40,
+    borderWidth: 2,
+    borderColor: '#CBD5E1', // slate-300
+    borderRadius: 10,
+    paddingHorizontal: 12,
+    backgroundColor: '#FFFFFF',
+  },
+  clearBtn: {
+    position: 'absolute',
+    right: 8,
+    padding: 6,
+  },
+  clearBtnTxt: {
+    fontSize: 14,
+    color: '#64748B', // slate-500
+  },
+
+  title: { fontSize: 22, marginTop: 0, marginBottom: -10},
+
+  card: {
+    borderWidth: 2,
+    borderColor: '#CBD5E1',
+    borderRadius: 12,
+    padding: 12,
+    backgroundColor: '#FFFFFF',
+  },
+  cardHeader: {
+    fontSize: 18,
+    marginBottom: 8,
+  },
+
+  chipsRow: {
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    marginHorizontal: -6,
+  },
+  chip: {
+    borderWidth: 2,
+    borderColor: '#173c68',
+    borderRadius: 10,
+    paddingHorizontal: 14,
+    paddingVertical: 2,
+    marginHorizontal: 4,
+    marginVertical: 6,
+    backgroundColor: '#173c68',
+  },
+  chipPressed: {
+    backgroundColor: 'rgba(59,91,253,0.08)',
+  },
+  chipText: {
+    fontSize: 16,
+    color: '#FFFFFF',
+  },
+
+  // Empty
+  emptyWrap: {
+    flex: 1,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  emptyTitle: { fontSize: 18, marginBottom: 6 },
+  emptySub: { fontSize: 14, color: '#64748B' },
+
+  // Footer
+  closeBtn: {
+    marginTop: 12,
+    alignSelf: 'center',
+    paddingVertical: 10,
+    paddingHorizontal: 16,
+  },
+  closeText: {
+    color: '#007AFF',
+    fontSize: 16,
+  },
+});

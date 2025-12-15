@@ -1,12 +1,27 @@
-<?xml version="1.0"?>
-<svg width="1370.5" height="834.4" xmlns="http://www.w3.org/2000/svg" xmlns:svg="http://www.w3.org/2000/svg" enable-background="new 0 0 1370.5 834.4" version="1.1" xml:space="preserve">
- <style type="text/css">.st0{fill:#005091;}
-	.st1{fill:#2B79AF;}</style>
- <g class="layer">
-  <title>Layer 1</title>
-  <g id="Capa_2">
-   <text fill="#000000" font-family="Serif" font-size="8" id="svg_1" stroke-width="0" style="cursor: text;" text-anchor="middle" transform="matrix(30.8687 0 0 39.8285 -12157 -18123.8)" x="416.34" xml:space="preserve" y="467.84">Piñeyro B 0</text>
-  </g>
-  <g id="Capa_1"/>
- </g>
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000px" height="1000px" preserveAspectRatio="none" viewBox="0 0 1280 986">
+  <rect y="300" width="400" height="600" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);">
+    <title>Cuerpo A</title>
+  </rect>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); stroke-width: 1;" d="M 781.67 164.884 H 1266.488 V 164.884 H 1266.488 V 962.629 H 1266.488 V 962.629 H 781.67 V 962.629 H 781.67 V 164.884 H 781.67 V 164.884 Z" >
+    <title>Cuerpo B</title>
+  </path>
+  <path style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);" d="M 391.784 18.377 H 782.391 V 18.377 H 782.391 V 486.385 H 782.391 V 486.385 H 391.784 V 486.385 H 391.784 V 18.377 H 391.784 V 18.377 Z" >
+    <title>Cuerpo C</title>
+  </path>
+  <polygon style="stroke: rgb(196, 0, 0); fill: rgb(219, 3, 3);" points="189.186 707.319 305.36 705.519 307.941 615.517 491.24 615.517 501.566 561.516 612.577 556.116 615.158 446.314 728.752 442.714 852.67 442.714 855.252 703.719 824.273 705.519 824.273 466.114 633.231 466.114 638.394 572.316 514.474 579.516 506.729 633.517 333.759 633.517 323.432 725.319 191.768 728.919">
+    <title>Ruta</title>
+  </polygon>
+  <polygon style="stroke: rgb(216, 0, 0); fill: rgb(233, 0, 0);" points="252.965 704.994 848.604 707.432 848.604 731.001 255.348 727.75">
+    <title>Ruta</title>
+  </polygon>
+  <rect style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;" x="20" y="763" width="150" height="67" rx="0" ry="0"/>
+  <rect x="400" width="300" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="900" y="700" width="200" height="100" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0);"/>
+  <rect x="190" y="700" width="20" height="90" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="650" y="200" width="20" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="800" y="800" width="100" height="20" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="406.419" y="-78.343" transform="matrix(10.408177, 0, 0, 10.123341, -3736.757568, 1116.819092)">C</text>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px; visibility: hidden;" x="818.124" y="251.269" transform="matrix(10.590011, 0, 0, 9.907061, -7769.740723, -1953.573364)">B</text>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px;" x="5.908" y="189.078" transform="matrix(12.411764, 0, 0, 12.16, -16.95208, -1699.425903)">A</text>
 </svg>

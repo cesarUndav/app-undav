@@ -1,11 +1,11 @@
 {
   "width": 842,
   "height": 632,
-    "pathOrigin": [680, 305],
+    "pathOrigin": [684, 307],
     "zones": [
     {
     "id": "aula01",
-    "name": "Laboratorio de medios",
+    "name": "Lab. de medios",
     "points": [
     [341.3, 425],
     [383.1, 418.1],
@@ -149,7 +149,7 @@
     },
     {
     "id": "aula10",
-    "name": "Laboratorio de Idiomas",
+    "name": "Lab. de idiomas",
     "points": [
       [540.1, 504.8],
       [475.6, 504.6],

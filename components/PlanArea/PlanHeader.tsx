@@ -8,6 +8,7 @@ import BuildingSelector from '../BuildingSelector';
 import RoomSelector from '../RoomSelector';
 import SearchIcon from '../../assets/icons/search.svg';
 import { BuildingKey, PlanData } from '../../app/mapsConfig';
+import { floorLabel } from '../../lib/floors';
 
 type Props = {
   building: '' | BuildingKey;

@@ -1,36 +1,27 @@
 {
-  "width": 700,
-  "height": 300,
-  "zones": [
+  "width": 1280,
+  "height": 986,
+    "pathOrigin": [1000, 600],
+    "zones": [
     {
-      "id": "aula01",
-      "name": "Aula 101",
-      "points": [
-        [100, 100],
-        [300, 100],
-        [300, 200],
-        [100, 200]
-      ]
+    "id": "aula01",
+    "name": "Aula Cuerpo B",
+    "points": [[900, 700], [1100, 700], [1100, 800], [900, 800]],
+    "center": [1000, 750],
+    "radius": 40,
+    "path": [[800, 800], [900, 800], [900, 820], [800, 820]]
     },
     {
-      "id": "aula02",
-      "name": "Aula 102",
-      "points": [
-        [350, 100],
-        [550, 100],
-        [550, 200],
-        [350, 200]
-      ]
+      "id": "link-pineyroa",
+      "name": "Piñeyro A",
+      "points": [[0, 300], [400, 300], [400, 900], [0, 900]],
+      "linkTo": { "building": "PineyroA", "floor": "0" }
     },
     {
-      "id": "baños",
-      "name": "Baños",
-      "points": [
-        [600, 50],
-        [650, 50],
-        [650, 120],
-        [600, 120]
-      ]
+      "id": "link-pineyroc",
+      "name": "Piñeyro C",
+      "points": [[391, 18], [782, 18], [782, 486], [391, 486]],
+      "linkTo": { "building": "PineyroC", "floor": 0 } 
     }
-  ]
+    ]
 }

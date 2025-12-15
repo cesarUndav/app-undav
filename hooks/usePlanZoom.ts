@@ -22,8 +22,8 @@ type UsePlanZoomArgs = {
   maxScale?: number;
 };
 
-const DEFAULT_MIN = 0.5;
-const DEFAULT_MAX = 2.5;
+const DEFAULT_MIN = 0.3;
+const DEFAULT_MAX = 7.5;
 
 export function usePlanZoom({
   planData,

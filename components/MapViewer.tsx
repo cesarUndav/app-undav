@@ -1,14 +1,10 @@
-// ==============================
-// File: components/MapViewer.tsx
-// ==============================
+// MapViewer.tsx
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Svg } from 'react-native-svg';
+import { Svg, Polygon } from 'react-native-svg';
 import ControlledPanZoom from './ControlledPanZoom';
 import { PlanData, ZoneType } from '../app/mapsConfig';
-import ZonePolygon from './PlanArea/ZonePolygon';
-import RoutePolygon from './PlanArea/RoutePolygon';
-import { zoneStyleById } from '../theme/mapStyles';
+import { zoneStyleById, route_style } from '../theme/mapStyles';
 import { pointInPolygon, toPointsStr } from '../lib/zoomMath';
 
 type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
@@ -42,7 +38,6 @@ function MapViewer({
   maxScale,
   testID,
 }: Props) {
-  // Fallback robusto (evita división por 0)
   const fallbackZoom = useMemo(() => {
     const w = Math.max(1, containerW);
     const h = Math.max(1, containerH);
@@ -54,7 +49,6 @@ function MapViewer({
     [zoomParams, fallbackZoom]
   );
 
-  // Prepara datos por zona
   const zones = useMemo(
     () =>
       planData.zones.map((z) => {
@@ -66,13 +60,12 @@ function MapViewer({
     [planData.zones, selectedZoneId]
   );
 
-  // Polígono de ruta (path) del aula seleccionada
-  const selectedPathStr = useMemo(() => {
+  // Path (polígono) de la zona seleccionada
+  const selectedPathPts = useMemo(() => {
     if (!selectedZoneId) return null;
-    const sel = planData.zones.find((z) => z.id === selectedZoneId) as any;
-    const path: number[][] | undefined = sel?.path;
-    if (!Array.isArray(path) || path.length < 3) return null;
-    return toPointsStr(path as any);
+    const sel = planData.zones.find(z => z.id === selectedZoneId);
+    if (!sel?.path || !Array.isArray(sel.path) || sel.path.length < 3) return null;
+    return sel.path as number[][];
   }, [planData.zones, selectedZoneId]);
 
   const handleZonePress = useCallback(
@@ -96,7 +89,7 @@ function MapViewer({
         maxScale={maxScale}
         onTransformChange={onTransformChange}
         onTapCanvas={({ cx, cy }) => {
-          // hit-test desde la última zona a la primera (por si solapan)
+          // hit-test desde la última zona a la primera
           for (let i = planData.zones.length - 1; i >= 0; i--) {
             const z = planData.zones[i];
             if (pointInPolygon(cx, cy, z.points as any)) {
@@ -106,7 +99,7 @@ function MapViewer({
           }
         }}
       >
-        {/* Dibujo base del plano */}
+        {/* Base del plano */}
         <SvgComponent
           width={planData.width}
           height={planData.height}
@@ -116,21 +109,33 @@ function MapViewer({
 
         {/* Overlay interactivo */}
         <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-          {/* Ruta del aula seleccionada (debajo de las zonas) */}
-          {selectedPathStr && <RoutePolygon pointsStr={selectedPathStr} />}
+          {/* 1) Ruta (path) debajo de las zonas */}
+          {selectedPathPts && (
+            <Polygon
+              points={toPointsStr(selectedPathPts as any)}
+              fill={route_style.fill}
+              stroke={route_style.stroke}
+              strokeWidth={route_style.strokeWidth}
+              vectorEffect="non-scaling-stroke"
+            />
+          )}
 
-          {/* Zonas (aulas, etc.) */}
+          {/* 2) Zonas (aulas, etc.) */}
           {zones.map(({ z, selected, style, pointsStr }) => {
             if (renderZone) {
               return <React.Fragment key={z.id}>{renderZone(z, selected)}</React.Fragment>;
             }
             return (
-              <ZonePolygon
+              <Polygon
                 key={z.id}
-                id={z.id}
-                pointsStr={pointsStr}
+                points={pointsStr}
                 fill={style.fill}
-                onPress={handleZonePress}
+                stroke={style.stroke}
+                strokeWidth={style.strokeWidth}
+                strokeLinejoin="round"
+                strokeLinecap="round"
+                vectorEffect="non-scaling-stroke"
+                onPress={() => handleZonePress(z.id)}
               />
             );
           })}

@@ -8,8 +8,8 @@ import MapViewer from './MapViewer';
 import FloorBadgeControls from './FloorBadgeControls';
 import Tooltip from './Tooltip';
 import FitAllButton from './FitAllButton';
-import GuidePointButton from './GuidePointButton'; 
-
+import GuidePointButton from './GuidePointButton';
+import { floorLabel } from '../lib/floors';
 import { PlanData } from '../app/mapsConfig';
 import { usePlanZoom } from '../hooks/usePlanZoom';
 import { usePlanAreaEffects } from '../hooks/usePlanAreaEffects';
@@ -35,11 +35,13 @@ type Props = {
   /** Padding relativo (0..1) para el encuadre inicial. Ej: 0.1 => 10% a cada lado. */
   fitPadding?: number; // default: 0.1
   /** Padding relativo (0..1) para foco (aula / punto guía). */
-  focusPadding?: number; // default: 0.18 (lo pasamos abajo)
+  focusPadding?: number; // default: 0.18
   /** Modo de encuadre "Ver todo" */
   fitMode?: 'canvas' | 'content'; // default: 'canvas'
   /** Ventana (radio en unidades canvas) para el Punto Guía */
   guideRadius?: number; // default: 90
+  /** Ancla inferior personalizada para chevrons del selector de piso (viewBox 100x100). */
+  floorBadgeBottomY?: number; // NEW (opcional)
 };
 
 const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
@@ -56,6 +58,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     focusPadding = 0.18,
     fitMode = 'canvas',
     guideRadius = 90,
+    floorBadgeBottomY, // NEW
   },
   ref
 ) {
@@ -71,7 +74,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     setZoomParams,
     fitAll,
     focusZone,
-    focusGuidePoint, // 👈 NUEVO
+    focusGuidePoint,
   } = usePlanZoom({
     planData,
     floors,
@@ -93,16 +96,14 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     fitAll,
   });
 
-  // Animación de pan/zoom entre objetivos
+  // Animación de pan/zoom
   const { view: animatedView, setTarget } =
     usePlanAreaAnimation?.(zoomParams) ?? { view: null, setTarget: () => {} };
 
-  // Estado "en vivo" para gestos (NO pisa la animación)
+  // Estado "en vivo" para gestos
   const [live, setLive] = useState<ZoomParams>(null);
 
   useEffect(() => {
-    // Nuevo objetivo programado (fit/focus/guía): limpiar interacción del usuario
-    // y actualizar la animación hacia ese objetivo.
     setLive(null);
     setTarget?.(zoomParams);
   }, [zoomParams?.key, setTarget]);
@@ -118,8 +119,9 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
 
   // Accesibilidad: anunciar piso
   useEffect(() => {
-    if (floors[floorIndex]) {
-      AccessibilityInfo.announceForAccessibility?.(`Piso ${floorIndex + 1} de ${floors.length}`);
+    if (floors[floorIndex]) {AccessibilityInfo.announceForAccessibility?.(
+       `${floorLabel(floorIndex)} de ${floors.length}`
+     );
     }
   }, [floorIndex, floors]);
 
@@ -129,7 +131,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     onLayoutBox(width, height);
   };
 
-  // Prioridad de visualización: live → animado → objetivo directo
+  // Prioridad: live → animado → objetivo directo
   const displayZoomParams = live ?? animatedView ?? zoomParams;
 
   return (
@@ -148,7 +150,6 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
             }}
             zoomParams={displayZoomParams}
             onTransformChange={(t) => {
-              // Mantener la key estable para evitar remounts del viewer.
               setLive(prev =>
                 prev
                   ? { ...prev, ...t }
@@ -167,7 +168,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
                 const next = floorIndex - 1;
                 onChangeFloor(next);
                 setZoomParams(null);
-                showTip(`Piso ${next + 1} de ${floors.length}`);
+                showTip(`${floorLabel(next)} `);
               }
             }}
             onNext={() => {
@@ -175,9 +176,11 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
                 const next = floorIndex + 1;
                 onChangeFloor(next);
                 setZoomParams(null);
-                showTip(`Piso ${next + 1} de ${floors.length}`);
+                showTip(`Piso ${next}`);
               }
             }}
+            //override opcional del ancla inferior de chevrons
+            bottomY={floorBadgeBottomY}
           />
 
           {/* Botón “Punto guía” alineado a la izquierda */}
