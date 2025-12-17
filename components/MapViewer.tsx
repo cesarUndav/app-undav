@@ -22,6 +22,10 @@ type Props = {
   minScale?: number;
   maxScale?: number;
   testID?: string;
+
+  // NUEVO: overlay de conexiones
+  connectionOverlay?: React.ComponentType<any> | null;
+  showConnections?: boolean;
 };
 
 function MapViewer({
@@ -37,7 +41,11 @@ function MapViewer({
   minScale,
   maxScale,
   testID,
+
+  connectionOverlay: ConnectionOverlay,
+  showConnections = false,
 }: Props) {
+  // Fallback robusto
   const fallbackZoom = useMemo(() => {
     const w = Math.max(1, containerW);
     const h = Math.max(1, containerH);
@@ -49,6 +57,7 @@ function MapViewer({
     [zoomParams, fallbackZoom]
   );
 
+  // Zonas preparadas
   const zones = useMemo(
     () =>
       planData.zones.map((z) => {
@@ -60,7 +69,7 @@ function MapViewer({
     [planData.zones, selectedZoneId]
   );
 
-  // Path (polígono) de la zona seleccionada
+  // Path de la zona seleccionada
   const selectedPathPts = useMemo(() => {
     if (!selectedZoneId) return null;
     const sel = planData.zones.find(z => z.id === selectedZoneId);
@@ -99,7 +108,7 @@ function MapViewer({
           }
         }}
       >
-        {/* Base del plano */}
+        {/* 1) Base del plano */}
         <SvgComponent
           width={planData.width}
           height={planData.height}
@@ -107,9 +116,19 @@ function MapViewer({
           preserveAspectRatio="none"
         />
 
-        {/* Overlay interactivo */}
+        {/* 2) Overlay de conexiones (opcional) — sobre la base, debajo de zonas */}
+        {showConnections && ConnectionOverlay && (
+          <ConnectionOverlay
+            width={planData.width}
+            height={planData.height}
+            viewBox={`0 0 ${planData.width} ${planData.height}`}
+            preserveAspectRatio="none"
+          />
+        )}
+
+        {/* 3) Overlay interactivo (ruta + zonas) */}
         <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-          {/* 1) Ruta (path) debajo de las zonas */}
+          {/* 3.a) Ruta (path) debajo de las zonas */}
           {selectedPathPts && (
             <Polygon
               points={toPointsStr(selectedPathPts as any)}
@@ -120,7 +139,7 @@ function MapViewer({
             />
           )}
 
-          {/* 2) Zonas (aulas, etc.) */}
+          {/* 3.b) Zonas (aulas, etc.) */}
           {zones.map(({ z, selected, style, pointsStr }) => {
             if (renderZone) {
               return <React.Fragment key={z.id}>{renderZone(z, selected)}</React.Fragment>;

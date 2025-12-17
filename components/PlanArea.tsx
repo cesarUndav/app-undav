@@ -2,13 +2,14 @@
 // File: components/PlanArea.tsx
 // ==============================
 import React, { useEffect, useImperativeHandle, useState } from 'react';
-import { View, StyleSheet, LayoutChangeEvent, AccessibilityInfo } from 'react-native';
+import { View, StyleSheet, LayoutChangeEvent, AccessibilityInfo, TouchableOpacity } from 'react-native';
 
 import MapViewer from './MapViewer';
 import FloorBadgeControls from './FloorBadgeControls';
 import Tooltip from './Tooltip';
 import FitAllButton from './FitAllButton';
 import GuidePointButton from './GuidePointButton';
+import CustomText from './CustomText';
 import { floorLabel } from '../lib/floors';
 import { PlanData } from '../app/mapsConfig';
 import { usePlanZoom } from '../hooks/usePlanZoom';
@@ -16,6 +17,7 @@ import { usePlanAreaEffects } from '../hooks/usePlanAreaEffects';
 import { useTooltip } from '../hooks/useTooltip';
 import { usePlanAreaAnimation } from '../hooks/usePlanAreaAnimation';
 import type { ZoomParams } from '../hooks/usePlanZoom';
+import { mapButtonStyles } from '../theme/mapStyles';
 
 export type PlanAreaHandle = {
   zoomToZone: (zoneId: string) => void;
@@ -41,7 +43,12 @@ type Props = {
   /** Ventana (radio en unidades canvas) para el Punto Guía */
   guideRadius?: number; // default: 90
   /** Ancla inferior personalizada para chevrons del selector de piso (viewBox 100x100). */
-  floorBadgeBottomY?: number; // NEW (opcional)
+  floorBadgeBottomY?: number;
+
+  /** NUEVO: overlay de conexiones entre edificios (SVG transparente del piso actual) */
+  showConnections?: boolean;
+  onToggleConnections?: () => void;
+  connectionOverlay?: React.ComponentType<any> | null;
 };
 
 const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
@@ -58,7 +65,12 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     focusPadding = 0.18,
     fitMode = 'canvas',
     guideRadius = 90,
-    floorBadgeBottomY, // NEW
+    floorBadgeBottomY,
+
+    // conexiones
+    showConnections = false,
+    onToggleConnections,
+    connectionOverlay,
   },
   ref
 ) {
@@ -119,9 +131,10 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
 
   // Accesibilidad: anunciar piso
   useEffect(() => {
-    if (floors[floorIndex]) {AccessibilityInfo.announceForAccessibility?.(
-       `${floorLabel(floorIndex)} de ${floors.length}`
-     );
+    if (floors[floorIndex]) {
+      AccessibilityInfo.announceForAccessibility?.(
+        `${floorLabel(floorIndex)} de ${floors.length}`
+      );
     }
   }, [floorIndex, floors]);
 
@@ -158,6 +171,10 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
                   : { key: 'live', ...t }
               );
             }}
+
+            // 👇 NUEVO: pasar overlay y flag a MapViewer (deberás tener esas props allí)
+            connectionOverlay={connectionOverlay}
+            showConnections={showConnections}
           />
 
           <FloorBadgeControls
@@ -168,7 +185,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
                 const next = floorIndex - 1;
                 onChangeFloor(next);
                 setZoomParams(null);
-                showTip(`${floorLabel(next)} `);
+                showTip(floorLabel(next));
               }
             }}
             onNext={() => {
@@ -176,10 +193,10 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
                 const next = floorIndex + 1;
                 onChangeFloor(next);
                 setZoomParams(null);
-                showTip(`Piso ${next}`);
+                showTip(floorLabel(next));
               }
             }}
-            //override opcional del ancla inferior de chevrons
+            // override opcional del ancla inferior de chevrons
             bottomY={floorBadgeBottomY}
           />
 
@@ -199,6 +216,21 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
             }}
           />
 
+          {/* Botón “Mostrar/Ocultar conexiones” (solo si hay overlay y handler) */}
+          {connectionOverlay && onToggleConnections && (
+            <TouchableOpacity
+              onPress={onToggleConnections}
+              activeOpacity={0.85}
+              style={[mapButtonStyles.base, styles.connBtn]}
+              accessibilityRole="button"
+              accessibilityLabel={showConnections ? 'Ocultar conexiones' : 'Mostrar conexiones'}
+            >
+              <CustomText style={mapButtonStyles.text}>
+                {showConnections ? 'Ocultar conexiones' : 'Mostrar conexiones'}
+              </CustomText>
+            </TouchableOpacity>
+          )}
+
           {tooltip && <Tooltip text={tooltip} opacity={fade} />}
         </>
       )}
@@ -208,6 +240,13 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
 
 const styles = StyleSheet.create({
   box: { flex: 1, marginTop: 12, marginHorizontal: 16, borderRadius: 12, overflow: 'hidden' },
+  // Botón de conexiones: abajo a la izquierda, un poco encima del botón de "Punto guía"
+  connBtn: {
+    position: 'absolute',
+    left: 16,
+    bottom: 60, // queda por encima de GuidePointButton (que suele estar más abajo)
+    paddingHorizontal: 14,
+  },
 });
 
 export default React.memo(PlanArea);

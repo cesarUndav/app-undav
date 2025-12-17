@@ -10,6 +10,7 @@ import PlanArea from '../components/PlanArea';
 import {
   edificios,
   coordsMap,
+  connectionOverlays,    
   BuildingKey,
   FloorKey,
   PlanData,
@@ -22,7 +23,7 @@ function bottomYForBuilding(b: '' | BuildingKey): number {
     case 'PineyroA':  return 78;
     case 'PineyroB':  return 68;
     case 'PineyroC':  return 68;
-    default:          return 78; // valor por defecto razonable
+    default:          return 78;
   }
 }
 
@@ -40,6 +41,9 @@ export default function Planos() {
   const [floorIndex, setFloorIndex] = useState(0);
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
+
+  // 👇 NUEVO: mostrar/ocultar conexiones entre edificios (solo si hay overlay disponible)
+  const [showConnections, setShowConnections] = useState(false);
 
   // Datos del plano actual (con FloorKey)
   const planData = useMemo<PlanData | null>(() => {
@@ -71,6 +75,21 @@ export default function Planos() {
   // Y de chevrón para este edificio
   const floorBadgeBottomY = bottomYForBuilding(building);
 
+  // 👇 SVG de conexiones para edificio + piso actual (o null si no aplica)
+  const floorKey: FloorKey | undefined = currentFloors[floorIndex]?.key;
+  const connectionOverlay = useMemo(() => {
+    if (!building || !floorKey) return null;
+    const group = connectionOverlays?.[building]; // Partial<Record<FloorKey, FC<any>>>
+    return group?.[floorKey] ?? null;             // puede ser null si ese piso no tiene conexiones
+  }, [building, floorKey]);
+
+  // Si cambio de edificio o de piso y el overlay no existe, apago el flag
+  React.useEffect(() => {
+    if (!connectionOverlay && showConnections) {
+      setShowConnections(false);
+    }
+  }, [connectionOverlay, showConnections]);
+
   // Selección de zona (aula normal o link a otro edificio/piso)
   const handleSelectZone = (id: string) => {
     const z = planData?.zones.find(zz => zz.id === id);
@@ -78,18 +97,14 @@ export default function Planos() {
 
     if (hasLinkTo(z)) {
       const { building: bk, floor } = z.linkTo;
-      // cambiar edificio
       setBuilding(bk);
-      // ir al índice de piso correcto
       const idx = edificios[bk].floors.findIndex(f => f.key === String(floor));
       setFloorIndex(idx >= 0 ? idx : 0);
-      // limpiar selección para que el nuevo plano haga fit inicial
       setSelectedZoneId(null);
       setShowRooms(false);
       return;
     }
 
-    // aula “normal”: seleccionar (PlanArea hará foco)
     setSelectedZoneId(id);
     setShowRooms(false);
   };
@@ -148,7 +163,7 @@ export default function Planos() {
       <View style={{ flex: 1 }}>
         {planData && (
           <PlanArea
-            onSelectZone={handleSelectZone}   
+            onSelectZone={handleSelectZone}
             planData={planData}
             floors={currentFloors}
             floorIndex={floorIndex}
@@ -162,6 +177,11 @@ export default function Planos() {
             focusPadding={0.18}
             fitMode="canvas"
             floorBadgeBottomY={floorBadgeBottomY}
+
+            
+            showConnections={showConnections}
+            onToggleConnections={() => setShowConnections(v => !v)}
+            connectionOverlay={connectionOverlay} // puede ser null: PlanArea debe chequearlo
           />
         )}
       </View>

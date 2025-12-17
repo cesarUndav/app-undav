@@ -71,8 +71,8 @@ export interface PlanData {
 
 export interface ZoneLinkTo {
   building: BuildingKey;
-  floor: FloorKey;             
-}  
+  floor: FloorKey;
+}
 
 export type BuildingKey = 'Espana' | 'Arenales' | 'PineyroA' | 'PineyroB' | 'PineyroC';
 
@@ -122,7 +122,7 @@ export const edificios: Record<BuildingKey, { label: string; floors: FloorEntry[
       { key: '0', SvgComponent: PineyroA0 },
       { key: '1', SvgComponent: PineyroA1 },
       { key: '2', SvgComponent: PineyroA2 },
-      { key: '3', SvgComponent: PineyroA3 },
+      { key: '3', SvgComponent: PineyroA3 }, // este no tiene conexiones
     ],
   },
   PineyroB: {
@@ -143,7 +143,7 @@ export const edificios: Record<BuildingKey, { label: string; floors: FloorEntry[
   },
 };
 
-// Mapping de datos por edificio/piso (usa toPlanData para tipar bien)
+// Mapping de datos por edificio/piso
 export const coordsMap: Record<BuildingKey, Partial<Record<FloorKey, PlanData>>> = {
   Espana: {
     '0': toPlanData(espana0Data),
@@ -153,7 +153,7 @@ export const coordsMap: Record<BuildingKey, Partial<Record<FloorKey, PlanData>>>
     '1': toPlanData(arenales1Data),
     '2': toPlanData(arenales2Data),
     '3': toPlanData(arenales3Data),
-    '4': toPlanData(arenales4Data), // ← piso con zones: [] OK
+    '4': toPlanData(arenales4Data),
     '5': toPlanData(arenales5Data),
   },
   PineyroA: {
@@ -172,4 +172,41 @@ export const coordsMap: Record<BuildingKey, Partial<Record<FloorKey, PlanData>>>
     '1': toPlanData(pineyroC1Data),
     '2': toPlanData(pineyroC2Data),
   },
+};
+
+/* =========================
+   OVERLAYS DE CONEXIONES
+   ========================= */
+// Imports de overlays (solo PB/1/2 para A/B/C; el piso 3 de A NO tiene)
+import PineyroA0Conn from '../assets/maps/PineyroA/pineyroA0connections.svg';
+import PineyroA1Conn from '../assets/maps/PineyroA/pineyroA1connections.svg';
+import PineyroA2Conn from '../assets/maps/PineyroA/pineyroA2connections.svg';
+
+import PineyroB0Conn from '../assets/maps/PineyroB/pineyroB0connections.svg';
+import PineyroB1Conn from '../assets/maps/PineyroB/pineyroB1connections.svg';
+import PineyroB2Conn from '../assets/maps/PineyroB/pineyroB2connections.svg';
+
+import PineyroC0Conn from '../assets/maps/PineyroC/pineyroC0connections.svg';
+import PineyroC1Conn from '../assets/maps/PineyroC/pineyroC1connections.svg';
+import PineyroC2Conn from '../assets/maps/PineyroC/pineyroC2connections.svg';
+
+// Registry: solo Pineyro (A/B/C), pisos 0-2
+export const connectionOverlays: Partial<Record<BuildingKey, Partial<Record<FloorKey, React.FC<any>>>>> = {
+  PineyroA: {
+    '0': PineyroA0Conn,
+    '1': PineyroA1Conn,
+    '2': PineyroA2Conn,
+    // '3': (intencionalmente sin overlay)
+  },
+  PineyroB: {
+    '0': PineyroB0Conn,
+    '1': PineyroB1Conn,
+    '2': PineyroB2Conn,
+  },
+  PineyroC: {
+    '0': PineyroC0Conn,
+    '1': PineyroC1Conn,
+    '2': PineyroC2Conn,
+  },
+  // Espana / Arenales: sin overlays
 };

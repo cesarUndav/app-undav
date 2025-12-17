@@ -177,7 +177,7 @@ export const selectorStyles = StyleSheet.create({
 
 /* === Estilo del “camino” (polígono de ruta) === */
 export const route_style = {
-  fill: '#192447b5',
+  fill: '#1d72b8ff',
   stroke: '#ffffff',
   strokeWidth: 0,
 } as const;
