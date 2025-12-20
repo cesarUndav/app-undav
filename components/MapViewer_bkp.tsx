@@ -1,11 +1,16 @@
-// MapViewer.tsx
+// ==============================
+// File: components/MapViewer.tsx
+// ==============================
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Svg, Polygon } from 'react-native-svg';
+import { Svg } from 'react-native-svg';
 import ControlledPanZoom from './ControlledPanZoom';
 import { PlanData, ZoneType } from '../app/mapsConfig';
-import { zoneStyleById, route_style } from '../theme/mapStyles';
+import ZonePolygon from './PlanArea/ZonePolygon';
+import RoutePolygon from './PlanArea/RoutePolygon';
+import { zoneStyleById } from '../theme/mapStyles';
 import { pointInPolygon, toPointsStr } from '../lib/zoomMath';
+
 
 type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
 
@@ -18,14 +23,15 @@ type Props = {
   onZonePress: (zoneId: string) => void;
   zoomParams: ZoomTarget;
   onTransformChange?: (t: { zoom: number; x: number; y: number }) => void;
+
+  /** Permite renderizar contenido SVG custom por zona. Si retorna algo, se usa en vez del <ZonePolygon> por defecto. */
   renderZone?: (zone: ZoneType, selected: boolean) => React.ReactNode;
+
+  /** Límites opcionales del zoom (se pasan a ControlledPanZoom). */
   minScale?: number;
   maxScale?: number;
-  testID?: string;
 
-  // NUEVO: overlay de conexiones
-  connectionOverlay?: React.ComponentType<any> | null;
-  showConnections?: boolean;
+  testID?: string;
 };
 
 function MapViewer({
@@ -41,11 +47,8 @@ function MapViewer({
   minScale,
   maxScale,
   testID,
-
-  connectionOverlay: ConnectionOverlay,
-  showConnections = false,
 }: Props) {
-  // Fallback robusto
+  // Fallback robusto (evita división por 0)
   const fallbackZoom = useMemo(() => {
     const w = Math.max(1, containerW);
     const h = Math.max(1, containerH);
@@ -57,7 +60,7 @@ function MapViewer({
     [zoomParams, fallbackZoom]
   );
 
-  // Zonas preparadas
+  // Prepara datos por zona
   const zones = useMemo(
     () =>
       planData.zones.map((z) => {
@@ -69,12 +72,13 @@ function MapViewer({
     [planData.zones, selectedZoneId]
   );
 
-  // Path de la zona seleccionada
-  const selectedPathPts = useMemo(() => {
+  // Polígono de ruta (path) del aula seleccionada
+  const selectedPathStr = useMemo(() => {
     if (!selectedZoneId) return null;
-    const sel = planData.zones.find(z => z.id === selectedZoneId);
-    if (!sel?.path || !Array.isArray(sel.path) || sel.path.length < 3) return null;
-    return sel.path as number[][];
+    const sel = planData.zones.find(z => z.id === selectedZoneId) as any;
+    const path: number[][] | undefined = sel?.path;
+    if (!Array.isArray(path) || path.length < 3) return null;
+    return path.map(p => p.join(',')).join(' ');
   }, [planData.zones, selectedZoneId]);
 
   const handleZonePress = useCallback(
@@ -98,17 +102,17 @@ function MapViewer({
         maxScale={maxScale}
         onTransformChange={onTransformChange}
         onTapCanvas={({ cx, cy }) => {
-          // hit-test desde la última zona a la primera
+          // hit-test desde la última zona a la primera (por si solapan)
           for (let i = planData.zones.length - 1; i >= 0; i--) {
             const z = planData.zones[i];
-            if (pointInPolygon(cx, cy, z.points as any)) {
+            if (pointInPolygon(cx, cy, z.points)) {
               onZonePress(z.id);
               break;
             }
           }
         }}
       >
-        {/* 1) Base del plano */}
+        {/* Dibujo base del plano */}
         <SvgComponent
           width={planData.width}
           height={planData.height}
@@ -116,45 +120,24 @@ function MapViewer({
           preserveAspectRatio="none"
         />
 
-        {/* 2) Overlay de conexiones (opcional) — sobre la base, debajo de zonas */}
-        {showConnections && ConnectionOverlay && (
-          <ConnectionOverlay
-            width={planData.width}
-            height={planData.height}
-            viewBox={`0 0 ${planData.width} ${planData.height}`}
-            preserveAspectRatio="none"
-          />
-        )}
-
-        {/* 3) Overlay interactivo (ruta + zonas) */}
+        {/* Overlay interactivo */}
         <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-          {/* 3.a) Ruta (path) debajo de las zonas */}
-          {selectedPathPts && (
-            <Polygon
-              points={toPointsStr(selectedPathPts as any)}
-              fill={route_style.fill}
-              stroke={route_style.stroke}
-              strokeWidth={route_style.strokeWidth}
-              vectorEffect="non-scaling-stroke"
-            />
-          )}
+          {/* Ruta (path) del aula seleccionada, debajo de las zonas */}
+          {selectedPathStr && <RoutePolygon pointsStr={selectedPathStr} />}
 
-          {/* 3.b) Zonas (aulas, etc.) */}
+          {/* Zonas (aulas, etc.) */}
           {zones.map(({ z, selected, style, pointsStr }) => {
             if (renderZone) {
+              // Render custom (debe devolver elementos SVG válidos)
               return <React.Fragment key={z.id}>{renderZone(z, selected)}</React.Fragment>;
             }
             return (
-              <Polygon
+              <ZonePolygon
                 key={z.id}
-                points={pointsStr}
+                id={z.id}
+                pointsStr={pointsStr}
                 fill={style.fill}
-                stroke={style.stroke}
-                strokeWidth={style.strokeWidth}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-                onPress={() => handleZonePress(z.id)}
+                onPress={handleZonePress}
               />
             );
           })}
@@ -163,6 +146,7 @@ function MapViewer({
     </View>
   );
 }
+
 
 const styles = StyleSheet.create({
   wrapper: {

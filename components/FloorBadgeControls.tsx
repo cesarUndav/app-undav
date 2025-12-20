@@ -1,28 +1,28 @@
-// ==============================
-// File: components/FloorBadgeControls.tsx
-// ==============================
+// components/FloorBadgeControls.tsx
 import React, { memo } from 'react';
-import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, Pressable, StyleSheet } from 'react-native';
 import Svg, { Polygon, Polyline } from 'react-native-svg';
 import CustomText from './CustomText';
+import { floorLabel } from '../lib/floors';
 import { colors, floorBadgeStyles } from '../theme/mapStyles';
 
 type Props = {
-  floorIndex: number;    // 0 = PB, 1 = Piso 1, ...
-  maxFloors: number;     // total de plantas (1..4)
-  onPrev: () => void;    // bajar piso
-  onNext: () => void;    // subir piso
+  floorIndex: number;
+  maxFloors: number;
+  onPrev: () => void;
+  onNext: () => void;
+  bottomY?: number; 
 };
 
 const HIT = { top: 10, right: 10, bottom: 10, left: 10 };
 
-// --- Iconos chevron ---
+// Iconos
 const ArrowUp = ({ disabled }: { disabled?: boolean }) => (
   <Svg width={20} height={20} viewBox="0 0 24 24">
     <Polyline
       points="6,14 12,8 18,14"
       fill="none"
-      stroke={disabled ? colors.inactive : colors.active}
+      stroke={disabled ? colors.inactive : colors.arrowActive}
       strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -35,7 +35,7 @@ const ArrowDown = ({ disabled }: { disabled?: boolean }) => (
     <Polyline
       points="6,10 12,16 18,10"
       fill="none"
-      stroke={disabled ? colors.inactive : colors.active}
+      stroke={disabled ? colors.inactive : colors.arrowActive}
       strokeWidth={2.5}
       strokeLinecap="round"
       strokeLinejoin="round"
@@ -48,84 +48,92 @@ function FloorBadgeControls({
   maxFloors,
   onPrev,
   onNext,
+  bottomY,
 }: Props) {
   const canDown = floorIndex > 0;
   const canUp = floorIndex < maxFloors - 1;
 
-  // Cantidad de chevrons (máx 3 → 4 plantas soportadas)
-  const chevrons = Math.max(0, Math.min(3, maxFloors - 1));
+  // === chevrons de tamaño y separación constantes ===
+  const CHEVRON_STEP = 8;                        // distancia fija entre chevrons
+  const CHEVRON_BOTTOM_Y = bottomY ?? 78;        // usa override si llega
+  const chevrons = Math.max(0, maxFloors - 1);   // cantidad real
 
-  // y de cada chevron (de abajo hacia arriba)
-  const bottomY = 78;
-  const step = 8;
-  const yForChevron = (idxFromBottom: number) => bottomY - idxFromBottom * step;
+  // idxFromBottom: 0 = abajo … (chevrons - 1) = arriba
+  const yForChevron = (idxFromBottom: number) =>
+    CHEVRON_BOTTOM_Y - idxFromBottom * CHEVRON_STEP;
 
-  // Qué resaltar
   const highlightTop = floorIndex === maxFloors - 1;
   const highlightChevronIndexFromBottom = floorIndex;
 
   return (
     <View style={styles.wrap} pointerEvents="box-none">
-      {/* Subir */}
-      <TouchableOpacity
-        onPress={onNext}
-        disabled={!canUp}
-        style={[
-          floorBadgeStyles.circleBtnBase,
-          styles.circleBtnPos,
-          !canUp && floorBadgeStyles.circleBtnDisabled,
-        ]}
-        hitSlop={HIT}
-        accessibilityRole="button"
-        accessibilityLabel="Subir piso"
-      >
-        <ArrowUp disabled={!canUp} />
-      </TouchableOpacity>
+      {/* CÁPSULA TRANSLÚCIDA */}
+      <View style={floorBadgeStyles.capsule} pointerEvents="box-none">
+        {/* Subir */}
+        <Pressable
+          onPress={onNext}
+          disabled={!canUp}
+          hitSlop={HIT}
+          accessibilityRole="button"
+          accessibilityLabel="Subir piso"
+          android_ripple={{ color: 'rgba(255,255,255,0.15)' }}
+          style={({ pressed }) => [
+            floorBadgeStyles.circleBtnBase,
+            styles.circleBtnPos,
+            !canUp && floorBadgeStyles.circleBtnDisabled,
+            pressed && canUp && floorBadgeStyles.circleBtnPressed,
+          ]}
+          >
+          <ArrowUp disabled={!canUp} />
+        </Pressable>
 
-      {/* Icono + etiqueta */}
-      <View style={styles.badgeBlock} pointerEvents="none">
-        <Svg width={56} height={56} viewBox="0 0 100 100">
-          {/* Rombo (planta superior) */}
-          <Polygon
-            points="50,32 80,52 50,72 20,52"
-            fill="none"
-            stroke={highlightTop ? colors.active : colors.inactive}
-            strokeWidth={highlightTop ? 5 : 3}
-          />
-          {/* Chevrons (plantas inferiores) */}
-          {Array.from({ length: chevrons }).map((_, i) => {
-            const y = yForChevron(i);
-            const active = !highlightTop && i === highlightChevronIndexFromBottom;
-            return (
-              <Polyline
-                key={`ch-${i}`}
-                points={`20,${y} 50,${y + 20} 80,${y}`}
-                fill="none"
-                stroke={active ? colors.active : colors.inactive}
-                strokeWidth={active ? 5 : 3}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-              />
-            );
-          })}
-        </Svg>
-        <CustomText style={floorBadgeStyles.label}>{`Piso ${floorIndex + 1}`}</CustomText>
+        {/* Icono + etiqueta */}
+        <View style={styles.badgeBlock} pointerEvents="none">
+          <Svg width={56} height={76} viewBox="0 0 100 100">
+            {/* Rombo (piso superior) */}
+            <Polygon
+              points="50,32 80,52 50,72 20,52"
+              fill="none"
+              stroke={highlightTop ? colors.active : colors.inactive}
+              strokeWidth={highlightTop ? 5 : 3}
+            />
+            {/* Chevrons con paso fijo */}
+            {Array.from({ length: chevrons }).map((_, i) => {
+              const y = yForChevron(i);
+              const active = !highlightTop && i === highlightChevronIndexFromBottom;
+              return (
+                <Polyline
+                  key={`ch-${i}`}
+                  points={`20,${y} 50,${y + 20} 80,${y}`}
+                  fill="none"
+                  stroke={active ? colors.active : colors.inactive}
+                  strokeWidth={active ? 5 : 3}
+                  strokeLinejoin="round"
+                  strokeLinecap="round"
+                />
+              );
+            })}
+          </Svg>
+          <CustomText style={floorBadgeStyles.label}>{floorIndex === 0 ? 'P.B.' : `Piso ${floorIndex}`}</CustomText>
+        </View>
+
+        {/* Bajar */}
+        <Pressable
+          onPress={onPrev}
+          disabled={!canDown}
+          hitSlop={HIT}
+          accessibilityRole="button"
+          accessibilityLabel="Bajar piso"
+          android_ripple={{ color: 'rgba(255,255,255,0.15)' }}
+          style={({ pressed }) => [
+            floorBadgeStyles.circleBtnBase,
+            !canDown && floorBadgeStyles.circleBtnDisabled,
+            pressed && canDown && floorBadgeStyles.circleBtnPressed,
+          ]}
+        >
+          <ArrowDown disabled={!canDown} />
+        </Pressable>
       </View>
-
-      {/* Bajar */}
-      <TouchableOpacity
-        onPress={onPrev}
-        disabled={!canDown}
-        style={[
-          floorBadgeStyles.circleBtnBase,
-          !canDown && floorBadgeStyles.circleBtnDisabled,
-        ]}
-        hitSlop={HIT}
-        accessibilityRole="button"
-        accessibilityLabel="Bajar piso"
-      >
-        <ArrowDown disabled={!canDown} />
-      </TouchableOpacity>
     </View>
   );
 }
@@ -135,15 +143,15 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     bottom: 16,
+    // El contenedor externo NO tiene fondo; la cápsula interna sí.
     alignItems: 'center',
-    gap: 10, // separa subir / badge / bajar
   },
   circleBtnPos: {
-    // si querés que "subir" se vea un poco separado del badge:
-    marginBottom: 0,
+    marginBottom: -20,
   },
   badgeBlock: {
     alignItems: 'center',
+    marginVertical: 6,
   },
 });
 

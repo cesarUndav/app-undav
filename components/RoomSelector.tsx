@@ -1,7 +1,7 @@
 // ==============================
 // File: components/RoomSelector.tsx
 // ==============================
-import React from 'react';
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import CustomText from './CustomText';
 import { ZoneType } from '../app/mapsConfig';
@@ -22,8 +22,21 @@ export default function RoomSelector({
   rooms,
   onSelect,
 }: Props) {
-  // 👇 MISMA LÓGICA QUE TENÍAS
-  const label = disabled
+  // 1) Orden alfabético natural (insensible a mayúsculas, con soporte numérico)
+  const sortedRooms = useMemo(
+    () =>
+      [...rooms].sort(
+        (a, b) =>
+          a.name.localeCompare(b.name, 'es', { numeric: true, sensitivity: 'base' }) ||
+          a.id.localeCompare(b.id, 'es', { numeric: true, sensitivity: 'base' })
+      ),
+    [rooms]
+  );
+
+  // 2) Deshabilitar si no hay aulas
+  const isDisabled = disabled || sortedRooms.length === 0;
+
+  const label = isDisabled
     ? 'Mostrar Aulas'
     : show
     ? 'Seleccionar Aula'
@@ -32,25 +45,35 @@ export default function RoomSelector({
   return (
     <View style={[s.wrapper, extra.roomWrapper]}>
       <TouchableOpacity
-        disabled={disabled}
-        onPress={() => { if (!disabled) onToggle(); }}
-        style={[s.button, disabled && s.buttonDisabled]}
+        disabled={isDisabled}
+        onPress={() => {
+          if (!isDisabled) onToggle();
+        }}
+        style={[s.button, isDisabled && s.buttonDisabled]}
         activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel={label}
+        accessibilityLabel={
+          isDisabled
+            ? 'Aulas no disponibles'
+            : label
+        }
       >
-        <CustomText style={[s.text, disabled && s.textDisabled]}>
+        <CustomText style={[s.text, isDisabled && s.textDisabled]}>
           {label}
         </CustomText>
       </TouchableOpacity>
 
-      {!disabled && show && (
+      {/* 3) Scrollbar visible para indicar que hay más opciones */}
+      {!isDisabled && show && (
         <ScrollView
           style={[s.menu, extra.menu, { top: BTN_H + MENU_OFFSET }]}
-          keyboardShouldPersistTaps="handled"
           contentContainerStyle={s.menuContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={true}
+          persistentScrollbar={true}
+          indicatorStyle="black"
         >
-          {rooms.map((zone) => (
+          {sortedRooms.map((zone) => (
             <TouchableOpacity
               key={zone.id}
               style={s.item}
@@ -67,12 +90,11 @@ export default function RoomSelector({
   );
 }
 
-// Pequeños ajustes locales para diferenciar del selector de edificios
-// (z-index y separación vertical). El resto vive en theme/planHeaderStyles.
+// Ajustes locales (z-index y separación). Estilos base en theme/planHeaderStyles.
 const extra = StyleSheet.create({
   roomWrapper: {
     marginTop: 8,
-    zIndex: 20, // por debajo del selector de edificios (que usa 30)
+    zIndex: 20, // debajo del selector de edificios (que usa 30)
   },
   menu: {
     zIndex: 20,

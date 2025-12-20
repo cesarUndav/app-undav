@@ -4,16 +4,16 @@ import { Pressable, Text, StyleSheet, GestureResponderEvent, Platform } from 're
 
 type Props = { onPress: (e: GestureResponderEvent) => void };
 
-export default function FitAllButton({ onPress }: Props) {
+export default function GuidePointButton({ onPress }: Props) {
   return (
     <Pressable
       accessibilityRole="button"
-      accessibilityLabel="Ver todo el plano"
+      accessibilityLabel="Ir al punto guía"
       onPress={onPress}
       style={({ pressed }) => [styles.btn, pressed && styles.btnPressed]}
       android_ripple={{ color: 'rgba(255,255,255,0.15)', borderless: false }}
     >
-      <CustomText style={styles.txt}>Ver todo</CustomText>
+      <CustomText style={styles.txt}>Punto guía</CustomText>
     </Pressable>
   );
 }
@@ -22,7 +22,7 @@ const styles = StyleSheet.create({
   btn: {
     position: 'absolute',
     bottom: 12,
-    alignSelf: 'center',
+    left: 16,            // 👈 alineado a la izquierda
     paddingHorizontal: 14,
     height: 36,
     borderRadius: 18,
@@ -37,7 +37,7 @@ const styles = StyleSheet.create({
   },
   btnPressed: {
     backgroundColor: Platform.select({
-      ios: '#2e4385ff',      
+      ios: '#2e4385ff',
       android: '#2e4385ff',
       default: '#2e4385ff',
     }),
