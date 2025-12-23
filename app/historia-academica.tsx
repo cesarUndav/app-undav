@@ -61,7 +61,8 @@ export default function HistoriaAcademica() {
   useEffect(() => {
     const fetchHistoria = async () => {
       try {
-        const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
+        //const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
+        const url = "https://guargestinf.undav.edu.ar/api/appundav/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
         const json = JsonStringAObjeto(await ObtenerJsonString(url));
 
         const listaActividad: Actividad[] = [];

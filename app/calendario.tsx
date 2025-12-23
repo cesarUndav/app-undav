@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useCallback, useRef } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { View, StyleSheet, ScrollView } from 'react-native';
 
 import CustomText from '../components/CustomText';
@@ -7,21 +7,15 @@ import BotonTexto from '@/components/BotonTexto';
 import CalendarioMensual from '../components/CalendarioMensual';
 import FondoGradiente from '@/components/FondoGradiente';
 
-import {
-  JsonStringAObjeto,
-  ObtenerJsonString,
-  UrlObtenerAgenda,
-} from '@/data/DatosUsuarioGuarani_VIEJO';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
-import { eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
+import { eventoAgendaToFechaString, eventoAgendaTituloColor, listaCompleta } from '@/data/agenda';
 
 export type Actividad = {
   id: string;
   body: string;
   title: string;
+  esFeriado?: boolean; // AGREGADO
 };
 
 function fechaSumarDias(diasASumar: number, fechaOpcional?: Date): Date {
@@ -49,8 +43,7 @@ function obtenerFechasDelMes(mes: number, anio: number): string[] {
 }
 
 export default function Calendario() {
-  const diaHoy = new Date(); // el día actual
-  //const diaHoy = new Date("2025-10-10");
+  const diaHoy = new Date();
   const hoyStr = DateToISOStringNoTime(diaHoy);
 
   const [loading, setLoading] = useState(true);
@@ -60,108 +53,79 @@ export default function Calendario() {
   const [tituloPagina, setTituloPagina] = useState('');
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(diaHoy);
 
-  // Para evitar recargar el mismo mes más de una vez
   const mesesCargadosRef = useRef<Set<string>>(new Set());
 
-  const fetchActividadesDelMes = useCallback(async (mes: number, anio: number) => {
-    const claveMes = `${anio}-${mes}`;
-    if (mesesCargadosRef.current.has(claveMes)) return;
+  // Cargar eventos académicos y procesar TODOS los meses del año
+  useEffect(() => {
+    const cargarTodosLosEventos = async () => {
+      setLoading(true);
+      
+      // Cargar eventos de la API
+      const { cargarEventosAcademicos } = await import('@/data/agenda');
+      await cargarEventosAcademicos();
+      console.log('Eventos académicos cargados');
 
-    setLoading(true);
+      // Obtener todos los eventos
+      const todosLosEventos = listaCompleta();
+      console.log('Total eventos disponibles:', todosLosEventos.length);
 
-    const personaIdStr = await AsyncStorage.getItem("idPersona");
-    if (!personaIdStr) {
-      console.warn("No se encontró ID de persona");
-      setLoading(false);
-      return;
-    }
+      // Procesar todos los eventos y organizarlos por fecha
+      const actividadesTemp: { [fecha: string]: Actividad[] } = {};
 
-    const fechasDelMes = obtenerFechasDelMes(mes, anio);
-    const actividadesTemp: { [fecha: string]: Actividad[] } = {};
+      todosLosEventos.forEach((evento, idx) => {
+        if (!evento.fechaInicio || !evento.fechaFin) return;
 
-    try {
-await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
-  const url = UrlObtenerAgenda(personaIdStr, fechaStr);
-  const json = JsonStringAObjeto(await ObtenerJsonString(url));
+        const fechaIniStr = DateToISOStringNoTime(new Date(evento.fechaInicio));
+        const fechaFinStr = DateToISOStringNoTime(new Date(evento.fechaFin));
 
-  // Actividades SIU
-  const actividadesSIU: Actividad[] = json.error
-    ? []
-    : json.map((elem: any, idx: number) => ({
-        id: `${index * 1000 + idx}`,
-        title: `${elem.tipo_actividad} de ${elem.actividad}`,
-        body: `${elem.horario} hs`,
-      }));
+        //console.log(evento.titulo,"->", fechaIniStr, fechaFinStr)
 
-  // Eventos del calendario local que coincidan con la fecha
-  const eventosCalendario = listaCompleta().filter(evento => {
-    return evento.fechaInicio && DateToISOStringNoTime(new Date(evento.fechaInicio)) === fechaStr;
-  });
+        // Si el evento dura un solo día
+        if (fechaIniStr === fechaFinStr) {
+          if (!actividadesTemp[fechaIniStr]) actividadesTemp[fechaIniStr] = [];
+          actividadesTemp[fechaIniStr].push({
+            id: `e-${idx}`,
+            title: evento.titulo,
+            body: eventoAgendaToFechaString(evento),
+            esFeriado: evento.esFeriado,
+          });
+        } 
+        // Si el evento dura múltiples días
+        else {
+          // Agregar marcador de inicio
+          if (!actividadesTemp[fechaIniStr]) actividadesTemp[fechaIniStr] = [];
+          actividadesTemp[fechaIniStr].push({
+            id: `e-${idx}-ini`,
+            title: `[Inicio] ${evento.titulo}`,
+            body: eventoAgendaToFechaString(evento),
+            esFeriado: evento.esFeriado,
+          });
 
-  // EVENTOS
-  const actividadesEvento: Actividad[] = [];
-
-  listaCompleta().forEach((evento, idx) => {
-    const fechaIniStr = DateToISOStringNoTime(new Date(evento.fechaInicio));
-    const fechaFinStr = DateToISOStringNoTime(new Date(evento.fechaFin));
-
-    if (fechaIniStr === fechaFinStr && fechaIniStr === fechaStr) {
-      actividadesEvento.push({
-        id: `e-${index * 1000 + idx}`,
-        title: evento.titulo,
-        body: `Evento - ${eventoAgendaToFechaString(evento)}`,
+          // Agregar marcador de fin
+          if (!actividadesTemp[fechaFinStr]) actividadesTemp[fechaFinStr] = [];
+          actividadesTemp[fechaFinStr].push({
+            id: `e-${idx}-fin`,
+            title: `[Fin] ${evento.titulo}`,
+            body: eventoAgendaToFechaString(evento),
+            esFeriado: evento.esFeriado,
+          });
+        }
       });
-    }
 
-    if (fechaIniStr !== fechaFinStr) {
-      if (fechaIniStr === fechaStr) {
-        actividadesEvento.push({
-          id: `e-${index * 1000 + idx}-ini`,
-          title: `[Inicio] ${evento.titulo}`,
-          body: eventoAgendaToFechaString(evento),
-        });
-      }
-      if (fechaFinStr === fechaStr) {
-        actividadesEvento.push({
-          id: `e-${index * 1000 + idx}-fin`,
-          title: `[Fin] ${evento.titulo}`,
-          body: eventoAgendaToFechaString(evento),
-        });
-      }
-    }
-  });
+      setActividadesPorFecha(actividadesTemp);
 
-
-
-  // Combinar ambas
-  const todasLasActividades = [...actividadesSIU, ...actividadesEvento];
-
-  actividadesTemp[fechaStr] = todasLasActividades;
-}));
-
-
-      setActividadesPorFecha(prev => ({ ...prev, ...actividadesTemp }));
-
+      // Calcular cantidades por fecha
       const nuevasCantidades: { [fecha: string]: number } = {};
       for (const fecha in actividadesTemp) {
         nuevasCantidades[fecha] = actividadesTemp[fecha].length;
       }
-      setCantidadActividadesPorFecha(prev => ({ ...prev, ...nuevasCantidades }));
+      setCantidadActividadesPorFecha(nuevasCantidades);
 
-      mesesCargadosRef.current.add(claveMes);
-    } catch (err) {
-      console.error("Error al cargar actividades del mes:", err);
-    } finally {
       setLoading(false);
-    }
-  }, []);
+    };
 
-  // Cargar mes inicial
-  useEffect(() => {
-    const mes = diaHoy.getMonth();
-    const anio = diaHoy.getFullYear();
-    fetchActividadesDelMes(mes, anio);
-  }, [fetchActividadesDelMes]);
+    cargarTodosLosEventos();
+  }, []);
 
   // Cargar actividades del día seleccionado
   useEffect(() => {
@@ -193,42 +157,47 @@ await Promise.all(fechasDelMes.map(async (fechaStr, index) => {
   return (
     <FondoGradiente>
       <LoadingWrapper loading={loading}>
-
         <CalendarioMensual
           actividadesPorDia={cantidadActividadesPorFecha}
           diaSeleccionadoActualmente={fechaSeleccionada}
           diaHoy={diaHoy}
           onSelectDay={setFechaSeleccionada}
-          onSelectMonthChange={(nuevoMes, nuevoAnio) => {
-            fetchActividadesDelMes(nuevoMes, nuevoAnio);
-          }}
+          onSelectMonthChange={() => {}} // Ya no necesitamos cargar por mes
         />
 
         <View style={styles.titleContainer}>
           <CustomText style={styles.title}>{tituloPagina}</CustomText>
         </View>
-        </LoadingWrapper>
+      </LoadingWrapper>
 
       <View style={{ flex: 1, justifyContent: 'flex-end' }}>
         <ScrollView contentContainerStyle={styles.listaContainer}>
-          {listaActividadesDiaSeleccionado.map((evento, index) => {
+          {listaActividadesDiaSeleccionado.map((actividad, index) => {
             const esUltimo = index === listaActividadesDiaSeleccionado.length - 1;
             const estiloExtra = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
+            
+            // Determinar el color del título basado en si es feriado
+            const colorTitulo = actividad.esFeriado ? "#6CACE4" : undefined;
+            
             return (
               <ListaItem
-                key={evento.id}
-                title={evento.title}
-                subtitle={evento.body.toString()}
+                key={actividad.id}
+                title={actividad.title}
+                subtitle={actividad.body.toString()}
                 styleExtra={estiloExtra}
+                titleColor={colorTitulo} // NECESITAS AGREGAR ESTE PROP A ListaItem
               />
             );
           })}
         </ScrollView>
         <View style={{marginTop: 10}}>
-          <BotonTexto route='/calend.-academico-resoluciones' label={"Resoluciones Calendario Académico"} styleExtra={{borderBottomRightRadius: 20}}/>
+          <BotonTexto 
+            route='/calend.-academico-resoluciones' 
+            label={"Resoluciones Calendario Académico"} 
+            styleExtra={{borderBottomRightRadius: 20}}
+          />
         </View>
       </View>
-
     </FondoGradiente>
   );
 }

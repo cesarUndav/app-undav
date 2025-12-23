@@ -16,6 +16,7 @@ import HistoryHeader, { PathToTitle } from '@/components/NavigationHistoryHeader
 import BottomBar from '@/components/BottomBar';
 import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from '@/data/DatosUsuarioGuarani';
 import { azulMedioUndav } from '@/constants/Colors';
+import { AgendaProvider } from "@/src/context/AgendaContext";
 
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
@@ -84,6 +85,7 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <AgendaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
         {usandoStackNavigator ? (
           <>
@@ -101,6 +103,7 @@ export default function Layout() {
           </>
         )}
       </SafeAreaView>
+      </AgendaProvider>
     </GestureHandlerRootView>
   );
 }

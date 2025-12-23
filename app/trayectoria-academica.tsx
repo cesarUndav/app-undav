@@ -9,8 +9,8 @@ import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 export default function TrayectoriaAcademica() {
   return (
     <FondoScrollGradiente>
-      <BotonTexto label={'Historia Académica'} route='/historia-academica'/>
       <BotonTexto label={'Plan de Estudio'} route='/plan-de-estudio'/>
+      {/* <BotonTexto label={'Historia Académica'} route='/historia-academica'/> */}
     </FondoScrollGradiente>
   );
 }
