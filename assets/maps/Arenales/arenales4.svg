@@ -4,7 +4,7 @@
     <rect x="0" y="0" class="st0" width="842" height="632.8" style="fill: rgb(234, 225, 225);"/>
   </g>
   <g id="VER_y_CALL" transform="matrix(1, 0, 0, 1, 99.132195, -70.606728)"/>
-  <g id="PATIOS">
+  <g id="PATIOS" transform="matrix(1, 0, 0, 1, 0, 0.96789)">
     <polygon class="st1" points="714.7,58.4 574.4,58.4 574.1,58.4 490.9,58.4 490.9,218 574.2,218 574.3,400.8 490.9,400.8 &#10;&#9;&#9;490.9,545.8 574.4,545.8 797.2,546.2 &#9;" style="fill: none; stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
     <polygon class="st2" points="797.2,546.2 571.4,545.8 571.1,58.4 714.7,58.4 &#9;" style="fill: rgb(73, 73, 73);"/>
   </g>
@@ -34,14 +34,14 @@
     <line class="st13" x1="491.4" y1="212.4" x2="491.4" y2="282.6" style="fill: none; stroke: rgb(0, 0, 0); stroke-miterlimit: 10; stroke-width: 2px;"/>
   </g>
   <g id="AULAS">
-    <rect x="170.4" y="58.4" class="st14" width="233.5" height="154" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
-    <rect x="170.4" y="212.4" class="st14" width="134.5" height="133.3" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
-    <rect x="170.4" y="345.7" class="st14" width="134.5" height="200.2" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
-    <rect x="404.3" y="389.6" class="st14" width="166.8" height="156.1" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
+    <rect x="170.4" y="58.4" class="st14" width="233.5" height="154" style="stroke: rgb(0, 0, 0); stroke-miterlimit: 10; fill: rgb(73, 73, 73);"/>
+    <rect x="170.4" y="212.4" class="st14" width="134.5" height="133.3" style="stroke: rgb(0, 0, 0); stroke-miterlimit: 10; fill: rgb(73, 73, 73);"/>
+    <rect x="170.4" y="345.7" class="st14" width="134.5" height="200.2" style="stroke: rgb(0, 0, 0); stroke-miterlimit: 10; fill: rgb(73, 73, 73);"/>
+    <rect x="404.3" y="389.6" class="st14" width="166.8" height="156.1" style="stroke: rgb(0, 0, 0); stroke-miterlimit: 10; fill: rgb(73, 73, 73);"/>
     <rect x="304.9" y="394.3" class="st14" width="69.8" height="76.4" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
     <rect x="304.9" y="471" class="st14" width="69.8" height="75" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
     <rect x="375" y="492.4" class="st14" width="29.1" height="53.6" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
-    <rect x="404" y="58.4" class="st14" width="167.8" height="154" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
+    <rect x="404" y="58.4" class="st14" width="167.8" height="154" style="stroke: rgb(0, 0, 0); stroke-miterlimit: 10; fill: rgb(73, 73, 73);"/>
     <rect x="304.9" y="258.2" class="st14" width="48.7" height="87.4" style="fill: rgb(248, 247, 247); stroke: rgb(0, 0, 0); stroke-miterlimit: 10;"/>
   </g>
   <g id="Detalle_ofic">

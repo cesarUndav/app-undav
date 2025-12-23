@@ -42,7 +42,7 @@ export default function Planos() {
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
 
-  // 👇 NUEVO: mostrar/ocultar conexiones entre edificios (solo si hay overlay disponible)
+  // Mostrar/ocultar conexiones entre edificios (solo si hay overlay disponible)
   const [showConnections, setShowConnections] = useState(false);
 
   // Datos del plano actual (con FloorKey)
@@ -71,6 +71,12 @@ export default function Planos() {
     if (!planData) return [] as NonNullable<PlanData>['zones'];
     return planData.zones.filter(z => z.id.toLowerCase().startsWith('aula'));
   }, [planData]);
+
+  const roomsDisabled = !planData || roomsList.length === 0;
+
+  React.useEffect(() => {
+    if (roomsDisabled && showRooms) setShowRooms(false);
+  }, [roomsDisabled, showRooms]);
 
   // Y de chevrón para este edificio
   const floorBadgeBottomY = bottomYForBuilding(building);
@@ -131,6 +137,7 @@ export default function Planos() {
         showRooms={showRooms}
         roomsDisabled={!building || !planData}
         onToggleRooms={() => {
+          if (roomsDisabled) return;
           setShowRooms(prev => {
             const next = !prev;
             if (next) setShowMenu(false);

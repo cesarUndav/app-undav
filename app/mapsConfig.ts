@@ -102,11 +102,11 @@ function toPlanData(d: any): PlanData {
 // Definición de edificios y pisos disponibles
 export const edificios: Record<BuildingKey, { label: string; floors: FloorEntry[] }> = {
   Espana: {
-    label: 'España',
+    label: 'Sede España',
     floors: [{ key: '0', SvgComponent: Espana0 }],
   },
   Arenales: {
-    label: 'Arenales',
+    label: 'Sede Arenales',
     floors: [
       { key: '0', SvgComponent: Arenales0 },
       { key: '1', SvgComponent: Arenales1 },
@@ -117,16 +117,16 @@ export const edificios: Record<BuildingKey, { label: string; floors: FloorEntry[
     ],
   },
   PineyroA: {
-    label: 'Piñeyro Cuerpo A',
+    label: 'Sede Piñeyro Cuerpo A',
     floors: [
       { key: '0', SvgComponent: PineyroA0 },
       { key: '1', SvgComponent: PineyroA1 },
       { key: '2', SvgComponent: PineyroA2 },
-      { key: '3', SvgComponent: PineyroA3 }, // este no tiene conexiones
+      { key: '3', SvgComponent: PineyroA3 }, 
     ],
   },
   PineyroB: {
-    label: 'Piñeyro Cuerpo B',
+    label: 'Sede Piñeyro Cuerpo B',
     floors: [
       { key: '0', SvgComponent: PineyroB0 },
       { key: '1', SvgComponent: PineyroB1 },
@@ -134,7 +134,7 @@ export const edificios: Record<BuildingKey, { label: string; floors: FloorEntry[
     ],
   },
   PineyroC: {
-    label: 'Piñeyro Cuerpo C',
+    label: 'Sede Piñeyro Cuerpo C',
     floors: [
       { key: '0', SvgComponent: PineyroC0 },
       { key: '1', SvgComponent: PineyroC1 },

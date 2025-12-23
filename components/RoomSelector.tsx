@@ -1,11 +1,10 @@
-// ==============================
-// File: components/RoomSelector.tsx
-// ==============================
-import React, { useMemo } from 'react';
-import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
+// components/RoomSelector.tsx
+import React from 'react';
+import { View, TouchableOpacity, ScrollView } from 'react-native';
 import CustomText from './CustomText';
 import { ZoneType } from '../app/mapsConfig';
-import { dropdownStyles as s, BTN_H, MENU_OFFSET } from '../theme/planHeaderStyles';
+import { selectorStyles } from '../theme/mapStyles';
+import ChevronDown from './icons/ChevronDown';
 
 interface Props {
   disabled?: boolean;
@@ -22,66 +21,41 @@ export default function RoomSelector({
   rooms,
   onSelect,
 }: Props) {
-  // 1) Orden alfabético natural (insensible a mayúsculas, con soporte numérico)
-  const sortedRooms = useMemo(
-    () =>
-      [...rooms].sort(
-        (a, b) =>
-          a.name.localeCompare(b.name, 'es', { numeric: true, sensitivity: 'base' }) ||
-          a.id.localeCompare(b.id, 'es', { numeric: true, sensitivity: 'base' })
-      ),
-    [rooms]
-  );
-
-  // 2) Deshabilitar si no hay aulas
-  const isDisabled = disabled || sortedRooms.length === 0;
-
-  const label = isDisabled
+  const label = disabled
     ? 'Mostrar Aulas'
     : show
     ? 'Seleccionar Aula'
     : 'Mostrar Aulas';
 
   return (
-    <View style={[s.wrapper, extra.roomWrapper]}>
+    <View style={[selectorStyles.wrapper, { zIndex: 20 }]}>
       <TouchableOpacity
-        disabled={isDisabled}
-        onPress={() => {
-          if (!isDisabled) onToggle();
-        }}
-        style={[s.button, isDisabled && s.buttonDisabled]}
+        disabled={disabled}
+        onPress={() => { if (!disabled) onToggle(); }}
+        style={selectorStyles.button}
         activeOpacity={0.8}
         accessibilityRole="button"
-        accessibilityLabel={
-          isDisabled
-            ? 'Aulas no disponibles'
-            : label
-        }
+        accessibilityLabel="Abrir selector de aulas"
       >
-        <CustomText style={[s.text, isDisabled && s.textDisabled]}>
-          {label}
-        </CustomText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: disabled ? 0.6 : 1 }}>
+          <CustomText style={selectorStyles.buttonText} numberOfLines={1}>
+            {label}
+          </CustomText>
+          <ChevronDown />
+        </View>
       </TouchableOpacity>
 
-      {/* 3) Scrollbar visible para indicar que hay más opciones */}
-      {!isDisabled && show && (
-        <ScrollView
-          style={[s.menu, extra.menu, { top: BTN_H + MENU_OFFSET }]}
-          contentContainerStyle={s.menuContent}
-          keyboardShouldPersistTaps="handled"
-          showsVerticalScrollIndicator={true}
-          persistentScrollbar={true}
-          indicatorStyle="black"
-        >
-          {sortedRooms.map((zone) => (
+      {!disabled && show && (
+        <ScrollView style={selectorStyles.menu} keyboardShouldPersistTaps="handled">
+          {rooms.map(zone => (
             <TouchableOpacity
               key={zone.id}
-              style={s.item}
+              style={selectorStyles.item}
               onPress={() => onSelect(zone.id)}
               accessibilityRole="button"
-              accessibilityLabel={`Seleccionar ${zone.name}`}
+              accessibilityLabel={`Ir a ${zone.name}`}
             >
-              <CustomText style={s.itemText}>{zone.name}</CustomText>
+              <CustomText style={selectorStyles.itemText}>{zone.name}</CustomText>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -89,14 +63,3 @@ export default function RoomSelector({
     </View>
   );
 }
-
-// Ajustes locales (z-index y separación). Estilos base en theme/planHeaderStyles.
-const extra = StyleSheet.create({
-  roomWrapper: {
-    marginTop: 8,
-    zIndex: 20, // debajo del selector de edificios (que usa 30)
-  },
-  menu: {
-    zIndex: 20,
-  },
-});

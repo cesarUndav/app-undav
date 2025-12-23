@@ -239,14 +239,23 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
 });
 
 const styles = StyleSheet.create({
-  box: { flex: 1, marginTop: 12, marginHorizontal: 16, borderRadius: 12, overflow: 'hidden' },
-  // Botón de conexiones: abajo a la izquierda, un poco encima del botón de "Punto guía"
+  box: {
+    flex: 1,
+    marginTop: 12,
+    marginHorizontal: 16,
+    borderRadius: 12,
+    overflow: 'hidden',
+  },
+
+  // Botón de conexiones: ARRIBA y CENTRADO horizontalmente
   connBtn: {
     position: 'absolute',
-    left: 16,
-    bottom: 60, // queda por encima de GuidePointButton (que suele estar más abajo)
+    top: 10,
+    alignSelf: 'center', // centra el Touchable horizontalmente
+    zIndex: 6,           // por encima del mapa/gestos
     paddingHorizontal: 14,
   },
 });
+
 
 export default React.memo(PlanArea);
