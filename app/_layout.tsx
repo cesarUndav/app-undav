@@ -85,6 +85,7 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
+      <AgendaProvider>
       <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
         {usandoStackNavigator ? (
           <>
@@ -102,6 +103,7 @@ export default function Layout() {
           </>
         )}
       </SafeAreaView>
+      </AgendaProvider>
     </GestureHandlerRootView>
   );
 }
