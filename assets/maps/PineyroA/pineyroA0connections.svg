@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
-<svg xmlns="http://www.w3.org/2000/svg" width="1000px" height="1000px" preserveAspectRatio="none" viewBox="0 0 1280 986">
-  <rect x="400" width="300" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
-  <rect x="900" y="700" width="200" height="100" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
-  <rect x="190" y="700" width="20" height="90" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
-  <rect x="650" y="200" width="20" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
-  <rect x="800" y="800" width="100" height="20" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
-  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px; visibility: hidden;" x="5.908" y="189.078" transform="matrix(12.411764, 0, 0, 12.16, -16.95208, -1699.425903)">A</text>
-  <path style="fill: rgb(219, 172, 3); stroke: rgb(201, 81, 81);" d="M 576.433 442.765 L 579.512 357.899 L 592.548 360.269 L 590.646 442.532 L 850.899 440.856 L 844.974 805.866 L 829.567 807.05 L 833.123 457.447 L 303.385 458.632 L 292.719 699.206 L 180.135 701.577 L 180.837 683.098 L 274.225 683.098 L 285.608 442.04 L 576.433 442.765 Z"/>
-  <path style="stroke: rgb(190, 86, 86); fill: rgb(219, 161, 3);" d="M 847.153 674.32 L 846.685 689.017 L 291.065 698.014 L 292.484 684.517 L 847.153 674.32 Z"/>
+<!-- Generator: Adobe Illustrator 25.4.1, SVG Export Plug-In . SVG Version: 6.00 Build 0)  -->
+<svg version="1.1" xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" x="0px" y="0px"
+	 viewBox="0 0 1153 1435" style="enable-background:new 0 0 1153 1435;" xml:space="preserve">
+<style type="text/css">
+	.st0{fill:#FF00C3;}
+</style>
+<g id="DE_C_a_B">
+</g>
+<g id="DE_A_a_C">
+	<path class="st0" d="M628.3,635.5L628.3,635.5l3.1-3.3L609,611l-0.5-54.4H502.8l-0.5-99.8l-67.6,0.3l-25.9-78.6l-69.1-26.6
+		l-1.6,4.2l-3.9,2.3l9.8,16.6v252.2l-3.4,83.4l4.5,0.2l0,4.5l259.1-1.1l4-30.9l24.1-45.6L628.3,635.5z M428.1,466.1l65.2-0.3
+		l0.5,99.8h105.7l0.5,49.3l14.1,13.4l-27.3-5.6H352.9V372.5l-4.5-7.5l53.1,20.4L428.1,466.1z M599.4,680.5l-3.2,24.7l-246.5,1
+		l3-74.5h233.2l35.4,7.2L599.4,680.5z"/>
+</g>
 </svg>

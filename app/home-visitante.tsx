@@ -49,11 +49,16 @@ export default function HomeEstudiante() {
           
           <View style={styles.buttonsRow}>
             <BotonIconoTexto
+              label={"PLANOS"}
+              funcionOnPress={() => router.push('/planos')}
+              Icon={SedesIcon}
+            />
+            {/* <BotonIconoTexto
               label={"DEBUG_HOME-ESTUDIANTE"}
               funcionOnPress={() => router.push('/home-estudiante')}
               Icon={SedesIcon}
               iconColor='red'
-            />
+            /> */}
             <BotonIconoTexto
               label={"TUTORIAL DE\nPREINSCRIPCIÓN"}
               funcionOnPress={() => router.push('/preinscripcion')}

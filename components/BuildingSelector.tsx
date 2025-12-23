@@ -1,53 +1,54 @@
 // components/BuildingSelector.tsx
 import React from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import { View, TouchableOpacity } from 'react-native';
 import CustomText from './CustomText';
 import { edificios, BuildingKey } from '../app/mapsConfig';
-import { selectorStyles as styles } from '../theme/mapStyles';
+import { selectorStyles } from '../theme/mapStyles';
+import ChevronDown from './icons/ChevronDown';
 
 interface Props {
-  building: '' | BuildingKey;
+  building: BuildingKey | '';
   showMenu: boolean;
   onToggle: () => void;
   onSelect: (b: BuildingKey) => void;
 }
 
 export default function BuildingSelector({
-  building,
-  showMenu,
-  onToggle,
-  onSelect,
+  building, showMenu, onToggle, onSelect
 }: Props) {
   const label = building ? edificios[building].label : 'Seleccionar Sede';
 
   return (
-    <View style={styles.wrapper}>
+    <View style={selectorStyles.wrapper}>
       <TouchableOpacity
-        style={styles.button}
+        style={selectorStyles.button}
         onPress={onToggle}
         accessibilityRole="button"
-        accessibilityLabel="Seleccionar edificio"
+        accessibilityLabel="Seleccionar sede, abre lista"
+        activeOpacity={0.8}
       >
-        <CustomText style={styles.buttonText}>{label}</CustomText>
+        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
+          <CustomText style={selectorStyles.buttonText} numberOfLines={1}>
+            {label}
+          </CustomText>
+          <ChevronDown />
+        </View>
       </TouchableOpacity>
 
       {showMenu && (
-        <ScrollView
-          style={styles.menu}
-          keyboardShouldPersistTaps="handled"
-        >
+        <View style={selectorStyles.menu}>
           {Object.entries(edificios).map(([key, info]) => (
             <TouchableOpacity
               key={key}
-              style={styles.item}
+              style={selectorStyles.item}
               onPress={() => onSelect(key as BuildingKey)}
               accessibilityRole="button"
-              accessibilityLabel={`Seleccionar ${info.label}`}
+              accessibilityLabel={`Cambiar a ${info.label}`}
             >
-              <CustomText style={styles.itemText}>{info.label}</CustomText>
+              <CustomText style={selectorStyles.itemText}>{info.label}</CustomText>
             </TouchableOpacity>
           ))}
-        </ScrollView>
+        </View>
       )}
     </View>
   );

@@ -54,9 +54,7 @@ export default function Sedes() {
 
   return (
     <FondoScrollGradiente gap={15} style={{padding:15}}>
-            <TouchableOpacity style={[styles.button, {backgroundColor: azulClaro}]} onPress={() => router.push("../planos")}>
-              <CustomText weight="bold" style={styles.buttonText}>planos</CustomText>
-            </TouchableOpacity>
+
 
         {sedes.map((sede, index) => (
           <View key={index} style={styles.card}>
