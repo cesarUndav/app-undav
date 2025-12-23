@@ -1,11 +1,14 @@
-// components/RoomSelector.tsx
-import React from 'react';
+// ==============================
+// File: components/RoomSelector.tsx
+// ==============================
+import React, { useMemo } from 'react';
 import { View, TouchableOpacity, ScrollView, StyleSheet } from 'react-native';
 import CustomText from './CustomText';
 import { ZoneType } from '../app/mapsConfig';
+import { dropdownStyles as s, BTN_H, MENU_OFFSET } from '../theme/planHeaderStyles';
 
 interface Props {
-  disabled?:boolean;
+  disabled?: boolean;
   show: boolean;
   onToggle: () => void;
   rooms: ZoneType[];
@@ -19,35 +22,66 @@ export default function RoomSelector({
   rooms,
   onSelect,
 }: Props) {
-  const label = disabled
-    ? 'Mostrar Aulas'                 // Desactivado: solo texto
+  // 1) Orden alfabético natural (insensible a mayúsculas, con soporte numérico)
+  const sortedRooms = useMemo(
+    () =>
+      [...rooms].sort(
+        (a, b) =>
+          a.name.localeCompare(b.name, 'es', { numeric: true, sensitivity: 'base' }) ||
+          a.id.localeCompare(b.id, 'es', { numeric: true, sensitivity: 'base' })
+      ),
+    [rooms]
+  );
+
+  // 2) Deshabilitar si no hay aulas
+  const isDisabled = disabled || sortedRooms.length === 0;
+
+  const label = isDisabled
+    ? 'Mostrar Aulas'
     : show
-    ? 'Seleccionar Aula'              // Desplegado
-    : 'Mostrar Aulas';                // Cerrado
+    ? 'Seleccionar Aula'
+    : 'Mostrar Aulas';
 
   return (
-    <View style={styles.wrapper}>
+    <View style={[s.wrapper, extra.roomWrapper]}>
       <TouchableOpacity
-        disabled={disabled}           // 👈 desactiva press feedback
-        onPress={() => { if (!disabled) onToggle(); }}  // 👈 no abre menú si disabled
-        style={[styles.button, disabled && styles.buttonDisabled]}
+        disabled={isDisabled}
+        onPress={() => {
+          if (!isDisabled) onToggle();
+        }}
+        style={[s.button, isDisabled && s.buttonDisabled]}
         activeOpacity={0.8}
+        accessibilityRole="button"
+        accessibilityLabel={
+          isDisabled
+            ? 'Aulas no disponibles'
+            : label
+        }
       >
-        <CustomText style={[styles.text, disabled && styles.textDisabled]}>
+        <CustomText style={[s.text, isDisabled && s.textDisabled]}>
           {label}
         </CustomText>
       </TouchableOpacity>
 
-      {/* Menú solo si NO está desactivado */}
-      {!disabled &&  show && (
-        <ScrollView style={styles.menu} keyboardShouldPersistTaps="handled">
-          {rooms.map(zone => (
+      {/* 3) Scrollbar visible para indicar que hay más opciones */}
+      {!isDisabled && show && (
+        <ScrollView
+          style={[s.menu, extra.menu, { top: BTN_H + MENU_OFFSET }]}
+          contentContainerStyle={s.menuContent}
+          keyboardShouldPersistTaps="handled"
+          showsVerticalScrollIndicator={true}
+          persistentScrollbar={true}
+          indicatorStyle="black"
+        >
+          {sortedRooms.map((zone) => (
             <TouchableOpacity
               key={zone.id}
-              style={styles.item}
+              style={s.item}
               onPress={() => onSelect(zone.id)}
+              accessibilityRole="button"
+              accessibilityLabel={`Seleccionar ${zone.name}`}
             >
-              <CustomText style={styles.itemText}>{zone.name}</CustomText>
+              <CustomText style={s.itemText}>{zone.name}</CustomText>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -56,55 +90,13 @@ export default function RoomSelector({
   );
 }
 
-
-const BTN_H = 44;
-const MENU_OFFSET = 4;
-
-const styles =  StyleSheet.create({
-  wrapper: {
-    position: 'relative',
-    height: BTN_H,
-    marginTop: 8,      // separación entre dropdowns
-    zIndex: 20,        // por debajo del de edificio
-  },
+// Ajustes locales (z-index y separación). Estilos base en theme/planHeaderStyles.
+const extra = StyleSheet.create({
   roomWrapper: {
-    paddingHorizontal: 0,
-    zIndex: 20 ,
-    elevation: 4,
-  },
-  button: {
-    height: BTN_H,
-    borderWidth: 1,
-    borderColor: '#ccc',
-    borderRadius: 6,
-    justifyContent: 'center',
-    paddingHorizontal: 12,
-    backgroundColor: '#fff',
-  },
-  buttonDisabled: {
-    backgroundColor: '#f5f5f5',
-    borderColor: '#ddd',
-  },
-  text: { 
-    fontSize: 16, 
-    color: '#333'
-  },
-  textDisabled: {
-    color: '#aaa',
+    marginTop: 8,
+    zIndex: 20, // debajo del selector de edificios (que usa 30)
   },
   menu: {
-      position: 'absolute',
-      top: BTN_H + MENU_OFFSET,
-      left: 0,
-      right: 0,
-      backgroundColor: '#fff',
-      borderWidth: 1,
-      borderColor: '#ccc',
-      borderRadius: 6,
-      maxHeight: 200,
-      zIndex: 20,
-      elevation: 5,
-    },
-  item: { paddingVertical: 10, paddingHorizontal: 12 },
-  itemText: { fontSize: 16, color: '#333' },
+    zIndex: 20,
+  },
 });

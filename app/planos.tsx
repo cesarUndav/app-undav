@@ -1,25 +1,37 @@
-// screens/Planos.tsx
-import React, { useState, useRef, useMemo } from 'react';
-import {
-  View,
-  Dimensions,
-  StyleSheet,
-  Animated,
-  TouchableOpacity,
-} from 'react-native';
-import BuildingSelector from '../components/BuildingSelector';
-import RoomSelector from '../components/RoomSelector';
-import FloorBadgeControls from '../components/FloorBadgeControls';
-import MapViewer from '../components/MapViewer';
-import Tooltip from '../components/Tooltip';
+// ==============================
+// File: app/.../Planos.tsx
+// ==============================
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+import PlanHeader from '../components/PlanArea/PlanHeader';
 import SearchModal from '../components/SearchModal';
-import SearchIcon from '../assets/icons/search.svg';
+import PlanArea from '../components/PlanArea';
+
 import {
   edificios,
   coordsMap,
+  connectionOverlays,    
   BuildingKey,
+  FloorKey,
   PlanData,
 } from '../app/mapsConfig';
+
+// Helper: ancla inferior de chevrons por edificio
+function bottomYForBuilding(b: '' | BuildingKey): number {
+  switch (b) {
+    case 'Arenales':  return 92;
+    case 'PineyroA':  return 78;
+    case 'PineyroB':  return 68;
+    case 'PineyroC':  return 68;
+    default:          return 78;
+  }
+}
+
+// Type guard simple por si el JSON incluye enlaces inter-plano
+type LinkTo = { building: BuildingKey; floor: FloorKey | string | number };
+function hasLinkTo(z: any): z is { linkTo: LinkTo } {
+  return z && typeof z === 'object' && 'linkTo' in z && z.linkTo;
+}
 
 export default function Planos() {
   // --- Estados básicos ---
@@ -27,176 +39,162 @@ export default function Planos() {
   const [showMenu, setShowMenu] = useState(false);
   const [showRooms, setShowRooms] = useState(false);
   const [floorIndex, setFloorIndex] = useState(0);
-
-  // Tooltip
-  const [tooltip, setTooltip] = useState<string | null>(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-
-  // Zoom & selección de aula
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
-  const [zoomParams, setZoomParams] = useState<{
-    key: string;
-    zoom: number;
-    x: number;
-    y: number;
-  } | null>(null);
-
-  // Nuevo estado: modal de búsqueda
   const [showSearchModal, setShowSearchModal] = useState(false);
 
-  const panZoomRef = useRef<any>(null);
-  const { width: winW, height: winH } = Dimensions.get('window');
-  const containerW = winW - 32;
-  const containerH = winH - 300;
+  // 👇 NUEVO: mostrar/ocultar conexiones entre edificios (solo si hay overlay disponible)
+  const [showConnections, setShowConnections] = useState(false);
 
-  // Datos del plano actual
+  // Datos del plano actual (con FloorKey)
   const planData = useMemo<PlanData | null>(() => {
     if (!building) return null;
-    const key = edificios[building].floors[floorIndex].key;
-    return coordsMap[building][key] || null;
+    const floors = edificios[building]?.floors ?? [];
+    const safeIndex = Math.min(Math.max(floorIndex, 0), Math.max(floors.length - 1, 0));
+    const floorKey: FloorKey | undefined = floors[safeIndex]?.key;
+    return floorKey ? coordsMap[building]?.[floorKey] ?? null : null;
   }, [building, floorIndex]);
 
-  const currentFloors = building ? edificios[building].floors : [];
+  const currentFloors = useMemo(
+    () => (building ? edificios[building].floors : []),
+    [building]
+  );
 
+  // firma única edificio+piso
+  const mapId = useMemo(() => {
+    const floorKey = currentFloors[floorIndex]?.key ?? 'nofloor';
+    const b = building || 'nobuilding';
+    return `${b}-${floorKey}`;
+  }, [building, currentFloors, floorIndex]);
+
+  // Lista de aulas
   const roomsList = useMemo(() => {
-    if (!planData) return [];
-    return planData.zones.filter(z =>
-      z.id.toLowerCase().startsWith('aula')
-    );
+    if (!planData) return [] as NonNullable<PlanData>['zones'];
+    return planData.zones.filter(z => z.id.toLowerCase().startsWith('aula'));
   }, [planData]);
 
-  // Tooltip
-  const showTip = (text: string) => {
-    setTooltip(text);
-    fadeAnim.setValue(0);
-    Animated.sequence([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.delay(2000),
-      Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start(() => setTooltip(null));
-  };
+  // Y de chevrón para este edificio
+  const floorBadgeBottomY = bottomYForBuilding(building);
 
-  // Selección de aula
-  const handleSelectZone = (zoneId: string) => {
-    setSelectedZoneId(zoneId);
-    calculateZoomToZone(zoneId);
+  // 👇 SVG de conexiones para edificio + piso actual (o null si no aplica)
+  const floorKey: FloorKey | undefined = currentFloors[floorIndex]?.key;
+  const connectionOverlay = useMemo(() => {
+    if (!building || !floorKey) return null;
+    const group = connectionOverlays?.[building]; // Partial<Record<FloorKey, FC<any>>>
+    return group?.[floorKey] ?? null;             // puede ser null si ese piso no tiene conexiones
+  }, [building, floorKey]);
+
+  // Si cambio de edificio o de piso y el overlay no existe, apago el flag
+  React.useEffect(() => {
+    if (!connectionOverlay && showConnections) {
+      setShowConnections(false);
+    }
+  }, [connectionOverlay, showConnections]);
+
+  // Selección de zona (aula normal o link a otro edificio/piso)
+  const handleSelectZone = (id: string) => {
+    const z = planData?.zones.find(zz => zz.id === id);
+    if (!z) return;
+
+    if (hasLinkTo(z)) {
+      const { building: bk, floor } = z.linkTo;
+      setBuilding(bk);
+      const idx = edificios[bk].floors.findIndex(f => f.key === String(floor));
+      setFloorIndex(idx >= 0 ? idx : 0);
+      setSelectedZoneId(null);
+      setShowRooms(false);
+      return;
+    }
+
+    setSelectedZoneId(id);
     setShowRooms(false);
-  };
-
-  const calculateZoomToZone = (zoneId: string) => {
-    if (!planData) return;
-    const zone = planData.zones.find(z => z.id === zoneId)!;
-    const xs = zone.points.map(p => p[0]);
-    const ys = zone.points.map(p => p[1]);
-    const minX = Math.min(...xs), maxX = Math.max(...xs);
-    const minY = Math.min(...ys), maxY = Math.max(...ys);
-    const zoneW = maxX - minX, zoneH = maxY - minY;
-    const centerX = minX + zoneW / 2, centerY = minY + zoneH / 2;
-
-    const scaleX = containerW / zoneW;
-    const scaleY = containerH / zoneH;
-    const newZoom = Math.min(scaleX, scaleY) * 0.8;
-
-    const newX = containerW / 2 - centerX * newZoom;
-    const newY = containerH / 2 - centerY * newZoom;
-
-    setZoomParams({
-      key: `${building}-${floorIndex}-${zoneId}`,
-      zoom: newZoom,
-      x: newX,
-      y: newY,
-    });
   };
 
   return (
     <View style={styles.container}>
-      {/* Header con selectores (75%) + lupa (25% aprox) */}
-      <View style={styles.topControls}>
-        {/* Columna izquierda */}
-        <View style={styles.selectorsContainer}>
-          <BuildingSelector
-            building={building}
-            showMenu={showMenu}
-            onToggle={() => setShowMenu(v => !v)}
-            onSelect={(bk) => {
-              setBuilding(bk);
-              setFloorIndex(0);
-              setSelectedZoneId(null);
-              setZoomParams(null);
-              setShowMenu(false);
+      {/* Header */}
+      <PlanHeader
+        building={building}
+        showMenu={showMenu}
+        onToggleBuildings={() => {
+          setShowMenu(prev => {
+            const next = !prev;
+            if (next) setShowRooms(false);
+            return next;
+          });
+        }}
+        onSelectBuilding={(bk) => {
+          setBuilding(bk);
+          setFloorIndex(0);
+          setSelectedZoneId(null);
+          setShowMenu(false);
+        }}
+        showRooms={showRooms}
+        roomsDisabled={!building || !planData}
+        onToggleRooms={() => {
+          setShowRooms(prev => {
+            const next = !prev;
+            if (next) setShowMenu(false);
+            return next;
+          });
+        }}
+        rooms={building ? roomsList : []}
+        onSelectRoom={(id) => {
+          setSelectedZoneId(id);
+          setShowRooms(false);
+        }}
+        onOpenSearch={() => setShowSearchModal(true)}
+      />
+
+      {/* Backdrop global para cerrar menús tocando fuera */}
+      {(showMenu || showRooms) && (
+        <View style={{ ...StyleSheet.absoluteFillObject, zIndex: 15 }} pointerEvents="auto">
+          <View
+            style={{ flex: 1 }}
+            onStartShouldSetResponder={() => true}
+            onResponderRelease={() => {
+              if (showMenu) setShowMenu(false);
+              if (showRooms) setShowRooms(false);
             }}
           />
-
-          {(
-            <RoomSelector
-              disabled={!building}    
-              show={showRooms}
-              onToggle={() => setShowRooms(v => !v)}
-              rooms={building ? roomsList : []} 
-              onSelect={handleSelectZone}
-            />
-          )}
         </View>
+      )}
 
-        {/* Columna derecha: botón lupa cuadrado */}
-        <View style={styles.searchButtonContainer}>
-          <TouchableOpacity
-            style={styles.searchButton}
-            onPress={() => setShowSearchModal(true)}
-            activeOpacity={0.8}
-          >
-            <SearchIcon width={28} height={28} />
-          </TouchableOpacity>
-        </View>
+      {/* Área del plano */}
+      <View style={{ flex: 1 }}>
+        {planData && (
+          <PlanArea
+            onSelectZone={handleSelectZone}
+            planData={planData}
+            floors={currentFloors}
+            floorIndex={floorIndex}
+            mapId={mapId}
+            onChangeFloor={(i) => {
+              setFloorIndex(i);
+              setSelectedZoneId(null);
+            }}
+            selectedZoneId={selectedZoneId}
+            fitPadding={0.10}
+            focusPadding={0.18}
+            fitMode="canvas"
+            floorBadgeBottomY={floorBadgeBottomY}
+
+            
+            showConnections={showConnections}
+            onToggleConnections={() => setShowConnections(v => !v)}
+            connectionOverlay={connectionOverlay} // puede ser null: PlanArea debe chequearlo
+          />
+        )}
       </View>
 
-      {/* MAP + CONTROLES */}
-      {planData && (
-  <>
-    <MapViewer
-      SvgComponent={currentFloors[floorIndex].SvgComponent}
-      planData={planData}
-      containerW={containerW}
-      containerH={containerH}
-      selectedZoneId={selectedZoneId}
-      onZonePress={handleSelectZone}
-      zoomParams={zoomParams}
-    />
-
-    {/* Nuevo control de plantas en esquina inferior derecha */}
-    <FloorBadgeControls
-      floorIndex={floorIndex}
-      maxFloors={currentFloors.length}
-      onPrev={() => {
-        if (floorIndex > 0) {
-          setFloorIndex(i => i - 1);
-          setSelectedZoneId(null);
-          setZoomParams(null);
-        }
-      }}
-      onNext={() => {
-        if (floorIndex < currentFloors.length - 1) {
-          setFloorIndex(i => i + 1);
-          setSelectedZoneId(null);
-          setZoomParams(null);
-        }
-      }}
-    />
-
-    {tooltip && <Tooltip text={tooltip} opacity={fadeAnim} />}
-  </>
-)}
-
-      {/* SEARCH MODAL */}
+      {/* Modal búsqueda */}
       <SearchModal
         visible={showSearchModal}
         onClose={() => setShowSearchModal(false)}
         onSelect={(bk, floorKey, zoneId) => {
-          // actualizar edificio, piso y aula
           setBuilding(bk);
           const fi = edificios[bk].floors.findIndex(f => f.key === floorKey);
           setFloorIndex(fi >= 0 ? fi : 0);
-          handleSelectZone(zoneId);
+          setSelectedZoneId(zoneId);
           setShowSearchModal(false);
         }}
       />
@@ -204,41 +202,6 @@ export default function Planos() {
   );
 }
 
-const PAD_X = 16;
-const PAD_TOP = 16;
-const GAP = 12;
-const DROPDOWN_H = 44;                 // altura de cada dropdown
-const SEARCH_BOX = DROPDOWN_H * 2 + GAP; // lado del botón cuadrado
-
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f2f2f2' },
-
-  topControls: {
-    flexDirection: 'row',
-    paddingHorizontal: PAD_X,
-    paddingTop: PAD_TOP,
-    alignItems: 'flex-start',
-  },
-  selectorsContainer: {
-    flex: 1,                  // ocupa ~75%
-    marginRight: GAP,         // separa de la lupa
-  },
-
-  // columna derecha (contenedor cuadrado con borde/fondo)
-  searchButtonContainer: {
-    width: SEARCH_BOX,
-    height: SEARCH_BOX,
-    borderRadius: 8,
-    backgroundColor: '#fff',
-    borderWidth: 1,
-    borderColor: '#e5e5e5',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  searchButton: {
-    width: '100%',
-    height: '100%',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
+  container: { flex: 1, backgroundColor: '#f2f2f2', position: 'relative' },
 });

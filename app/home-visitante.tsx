@@ -79,6 +79,11 @@ export default function HomeEstudiante() {
               Icon={RedesIcon}
             />
             <BotonIconoTexto
+              label={"REDES"}
+              funcionOnPress={() => router.push('/redes')}
+              Icon={RedesIcon}
+            />
+            <BotonIconoTexto
               label={"SEDES"}
               funcionOnPress={() => router.push('/sedes')}
               Icon={SedesIcon}
