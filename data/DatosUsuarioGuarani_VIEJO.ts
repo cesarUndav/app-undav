@@ -36,7 +36,8 @@ export async function ObtenerJsonString(url:string) {
   return JSON.stringify(data);
 }
 
-const urlBase = "http://172.16.1.43/guarani/3.17/rest/v2/";
+//const urlBase = "http://172.16.1.43/guarani/3.17/rest/v2/";
+const urlBase = "https://guargestinf.undav.edu.ar/api/appundav";
 
 export function UrlObtenerIdPersona(numero_documento:string, tipo_documento:number=0, pais:number=0) {
   return urlBase+"personas?pais="+pais+"&tipo_documento="+tipo_documento+"&numero_documento="+numero_documento;

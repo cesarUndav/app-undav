@@ -1,5 +1,4 @@
 import React from 'react';
-import { StyleSheet, ScrollView, Touchable, TouchableOpacity } from 'react-native';
 
 import BotonTexto from '../components/BotonTexto';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';

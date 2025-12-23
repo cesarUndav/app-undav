@@ -15,6 +15,7 @@ import HistoryHeader, { PathToTitle } from "@/components/NavigationHistoryHeader
 import BottomBar from "@/components/BottomBar";
 import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from "@/data/DatosUsuarioGuarani";
 import { azulMedioUndav } from "@/constants/Colors";
+import { AgendaProvider } from "@/src/context/AgendaContext";
 
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
@@ -84,13 +85,15 @@ export default function Layout() {
   if (!usandoStackNavigator)
   {
     return (
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-        {showHeader && <HistoryHeader title={headerHistoryTitle} />}
-        <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
-        <Slot />
-        {/* {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)} */}
-        {showBottomBar && (!visitante && <BottomBar/>)}
-      </SafeAreaView>
+      <AgendaProvider>
+        <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+          {showHeader && <HistoryHeader title={headerHistoryTitle} />}
+          <StatusBar backgroundColor='#FFFFFF' barStyle="dark-content" />
+          <Slot />
+          {/* {showBottomBar && (visitante ? <BottomBarVisitante /> : <BottomBar />)} */}
+          {showBottomBar && (!visitante && <BottomBar/>)}
+        </SafeAreaView>
+      </AgendaProvider>
     );
   }
   else

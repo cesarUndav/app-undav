@@ -3,7 +3,10 @@
 ###
 #@hostname = localhost/api/appundav
 #server
-@hostname = 172.16.1.43/api/appundav/
+#VIEJA URL: @hostname = http://172.16.1.43/api/appundav/
+#NUEVA URL: https://guargestinf.undav.edu.ar/api/appundav/
+
+@hostname = https://guargestinf.undav.edu.ar/api/appundav/
 
 ### ESTUDIANTE DE PRUEBA
 ##@TIPO_DOC = 0
@@ -19,7 +22,8 @@
 #####################################################################
 ###
 ### OBTIENE TOKEN (loglocalhost/api/appundav
-POST http://{{hostname}}persona/validuser HTTP/1.1
+
+POST {{hostname}}persona/validuser HTTP/1.1
 Content-Type: application/json
 
 {
@@ -33,26 +37,26 @@ Content-Type: application/json
 
 ###
 ### SHOW PERSONA
-GET http://{{hostname}}persona/{{PERSONA_ID}} HTTP/1.1
+GET {{hostname}}persona/{{PERSONA_ID}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 ### SHOW TODAS LAS PERSONA
-GET http://{{hostname}}persona HTTP/1.1
+GET {{hostname}}persona HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ###
 ### DELETE PERSONA (BORRADO LOGICO)
-DELETE  http://{{hostname}}persona/{{PERSONA_ID}} HTTP/1.1
+DELETE  {{hostname}}persona/{{PERSONA_ID}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 #####################################################################
 ### PROPUESTAS Y MATERIAS  55 abogacia
 #####################################################################
-GET  http://{{hostname}}propuesta/55 HTTP/1.1
+GET  {{hostname}}propuesta/55 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -64,7 +68,7 @@ Authorization: Bearer {{TOKEN}}
 ###
 ### CREATE ANOTACION PARA UNA PERSONA
 ###
-POST http://{{hostname}}anotaciones HTTP/1.1
+POST {{hostname}}anotaciones HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -78,14 +82,14 @@ Authorization: Bearer {{TOKEN}}
 
 ###
 ### SHOW TODAS LAS ANOTACIONES DE UNA PERSONA
-GET http://{{hostname}}anotaciones/{{PERSONA_ID}} HTTP/1.1
+GET {{hostname}}anotaciones/{{PERSONA_ID}} HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 
 ###
 ### TRAE ANOTACION PUNTUAL DE UNA PERSONA
-GET  http://{{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
+GET {{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -93,7 +97,7 @@ Authorization: Bearer {{TOKEN}}
 ###
 ### UPDATE
 ###
-PUT http://{{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
+PUT {{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -108,7 +112,7 @@ Authorization: Bearer {{TOKEN}}
 ###
 ### DELETE logico - actualiza fecha de borrado. deleted_at
 ###
-DELETE  http://{{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
+DELETE  {{hostname}}anotaciones/{{PERSONA_ID}}/2 HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
@@ -117,12 +121,12 @@ Authorization: Bearer {{TOKEN}}
 ###
 ### TRAE INFORMACION DEL PLAN Y MATERIAS DEL PLAN
 ###
-GET  http://{{hostname}}propuesta/{{PLAN_ID}}/plan HTTP/1.1
+GET  {{hostname}}propuesta/{{PLAN_ID}}/plan HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}
 
 ### ENVIA MAIL AL ESTUDIANTE/PERSONA (PREVIO DEFINIR TOKEN)
 ###
-GET http://{{hostname}}persona/{{PERSONA_ID}}/sendmail HTTP/1.1
+GET {{hostname}}persona/{{PERSONA_ID}}/sendmail HTTP/1.1
 Content-Type: application/json
 Authorization: Bearer {{TOKEN}}

@@ -1,24 +1,43 @@
-// la declaracion de fecha debería ser:
-// fechaInicio: new Date('2025-3-1'); // RESPETAR FORMATO: AÑO-MES-DIA
-// por cuestiones de DEV se está haciendo con:
-// fechaInicio: devHoyMasDias(n);
+// notificaciones.ts
+import { api, NoticiaAPI } from "./apiFlaskClient";
+
 export type Notificacion = {
   id: string;
   titulo: string;
   fecha: Date;
   tipo?: string;
+  contenido?: string;
 };
 
-// vars dev
-let devDiaActual = hoyMasDias(0);
-let devUltimoId = 3;
-// func dev
-function diasAMilisegundos(dias:number) {return 86400000 * dias; }
-function hoyMasDias(dias:number) { return new Date(Date.now() + diasAMilisegundos(dias)); }
-function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.getTime() + diasAMilisegundos(dias)); }
+// Función para transformar NoticiaAPI a Notificacion
+function transformarNoticia(noticia: NoticiaAPI): Notificacion {
+  return {
+    id: String(noticia.id),
+    titulo: noticia.nombre,
+    fecha: new Date(noticia.fecha_modificado),
+    tipo: "noticia",
+    contenido: noticia.contenido,
+  };
+}
 
+// Variable global para almacenar noticias cargadas desde la API
+export let listaNoticiasAPI: Notificacion[] = [];
 
-// listas
+// Función para cargar noticias desde la API
+export async function cargarNoticias(): Promise<Notificacion[]> {
+  try {
+    const noticiasAPI: NoticiaAPI[] = await api.getNoticias();
+    const noticiasTransformadas = noticiasAPI.map(transformarNoticia);
+    listaNoticiasAPI = noticiasTransformadas;
+    console.log(`✅ ${noticiasTransformadas.length} noticias cargadas desde la API`);
+    return noticiasTransformadas;
+  } catch (error) {
+    console.error("❌ Error al cargar noticias desde la API:", error);
+    return [];
+  }
+}
+
+// Lista de notificaciones de desarrollo (para testing)
 export const listaEventosAgenda: Notificacion[] = [
   { id: "A1", titulo: "Inscripción a materias abierta", fecha: new Date("2025-02-10") },
   { id: "A2", titulo: "Publicación de notas del 1° parcial", fecha: new Date("2025-04-18") },
@@ -44,15 +63,21 @@ export const listaEventosAgenda: Notificacion[] = [
   { id: "S4", titulo: "Reestablecido el acceso al campus virtual", fecha: new Date("2025-05-06") }
 ];
 
-// aux listas
-
-function ordenarEventosPorFechaFin(listaEventos: Notificacion[], ascendiente:Boolean=true) {
-  if (ascendiente) return listaEventos.sort((a,b) => a.fecha.getTime() - b.fecha.getTime());
-  else return listaEventos.sort((a,b) => b.fecha.getTime() - a.fecha.getTime());
+// Función para combinar noticias de API y locales (dev)
+export function todasLasNotificaciones(): Notificacion[] {
+  return [...listaNoticiasAPI, ...listaEventosAgenda];
 }
-function eventoFinalizado(evento:Notificacion): Boolean {
+
+// aux listas
+function ordenarEventosPorFechaFin(listaEventos: Notificacion[], ascendiente: boolean = true) {
+  if (ascendiente) return listaEventos.sort((a, b) => a.fecha.getTime() - b.fecha.getTime());
+  else return listaEventos.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
+}
+
+function eventoFinalizado(evento: Notificacion): boolean {
   return diasHastaFechaActual(evento.fecha) < -1;
 }
+
 // aux fechas
 function diasHastaFechaActual(targetDate: Date): number {
   const now = new Date();
@@ -60,38 +85,54 @@ function diasHastaFechaActual(targetDate: Date): number {
   const diffDays = Math.floor(diffMs / 86400000); // 1000 * 60 * 60 * 24
   return diffDays;
 }
+
 export function DateToFechaString(fecha: Date, separador: string = "/"): string {
-  return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${separador}${fecha.getFullYear()}`;
+  return `${fecha.getDate()}${separador}${fecha.getMonth() + 1}${separador}${fecha.getFullYear()}`;
 }
-function charPlural(plural:string, valorAEvaluar:number) {
+
+function charPlural(plural: string, valorAEvaluar: number) {
   if (valorAEvaluar > 1 || valorAEvaluar < -1) return plural;
   else return "";
 }
 
 // export listas
-export function historialNotificaciones(): Notificacion[]{
-  return ordenarEventosPorFechaFin(listaEventosAgenda.filter(
-    (evento) => eventoFinalizado(evento) == true), false);
-  }
+export function historialNotificaciones(): Notificacion[] {
+  return ordenarEventosPorFechaFin(
+    todasLasNotificaciones().filter((evento) => eventoFinalizado(evento)),
+    false
+  );
+}
+
+export function notificacionesFuturas(): Notificacion[] {
+  return ordenarEventosPorFechaFin(
+    todasLasNotificaciones().filter((evento) => !eventoFinalizado(evento)),
+    true
+  );
+}
 
 // export funcs
 let notifCount = -1;
-export function getNotificationCount() {return notifCount; }
-export function setNotificationCount(amount:number) { notifCount = amount; }
+export function getNotificationCount() {
+  return notifCount;
+}
+export function setNotificationCount(amount: number) {
+  notifCount = amount;
+}
 
-export function notificacionToFechaString(notif:Notificacion): string {
+export function notificacionToFechaString(notif: Notificacion): string {
   let intervaloFechaStr = "";
   intervaloFechaStr = `${DateToFechaString(notif.fecha)}`;
 
   let diasStr = "";
   const diasHastaInicio = diasHastaFechaActual(notif.fecha) + 1;
   if (diasHastaInicio > 0) {
-    diasStr = `falta${charPlural("n",diasHastaInicio)} ${diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;
-  }
-  else {
-    if (diasHastaInicio == 0) { diasStr = "hoy"; }
-    else { diasStr = `hace ${-diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;}
-    
+    diasStr = `falta${charPlural("n", diasHastaInicio)} ${diasHastaInicio} día${charPlural("s", diasHastaInicio)}`;
+  } else {
+    if (diasHastaInicio == 0) {
+      diasStr = "hoy";
+    } else {
+      diasStr = `hace ${-diasHastaInicio} día${charPlural("s", diasHastaInicio)}`;
+    }
   }
   return `${intervaloFechaStr} (${diasStr})`;
 }

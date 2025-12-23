@@ -70,7 +70,8 @@ export function UsuarioEsAutenticado(): boolean {
   return infoBaseUsuarioActual.idPersona !== "";
 }
 
-const URL_BASE = "http://172.16.1.43/api/appundav";
+//const URL_BASE = "http://172.16.1.43/api/appundav/";
+const URL_BASE = "https://guargestinf.undav.edu.ar/api/appundav/";
 
 function capitalizeWords(str: string): string {
   return str
@@ -87,7 +88,7 @@ export function setUsuarioActual(user: User) {
 
 // Función para loguear usuario y obtener token + "persona" (idPersona)
 export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, idPersona: number }> {
-  const url = `${URL_BASE}/persona/validuser`;
+  const url = `${URL_BASE}persona/validuser`;
   
   const response = await fetch(url, {
     method: "POST",
@@ -134,7 +135,7 @@ export async function validarPersona(usuario: string, clave: string) {
 
 // Obtener datos personales con token JWT (para iOS y Android)
 export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: number): Promise<void> {
-  const url = `${URL_BASE}/persona/${personaId}`;
+  const url = `${URL_BASE}persona/${personaId}`;
 
   const response = await fetch(url, {
     headers: {
@@ -181,7 +182,7 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
   //const planId = 435;
   console.log("plan:",planId,"token:",token);
 
-  const url = `${URL_BASE}/propuesta/${planId}/plan`;
+  const url = `${URL_BASE}propuesta/${planId}/plan`;
   const response = await fetch(url, {
     headers: {
       "Content-Type": "application/json",

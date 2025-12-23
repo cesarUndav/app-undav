@@ -48,12 +48,18 @@ export default function HomeEstudiante() {
         <View style={[styles.buttonsRowParent, {paddingBottom: 20}]}> 
           
           <View style={styles.buttonsRow}>
-            <BotonIconoTexto
+            {/* <BotonIconoTexto
               label={"DEBUG_HOME-ESTUDIANTE"}
               funcionOnPress={() => router.push('/home-estudiante')}
               Icon={SedesIcon}
               iconColor='red'
             />
+            <BotonIconoTexto
+              label={"DEBUG_API_FLASK"}
+              funcionOnPress={() => router.push('/pruebaFlask')}
+              Icon={SedesIcon}
+              iconColor='red'
+            /> */}
             <BotonIconoTexto
               label={"TUTORIAL DE\nPREINSCRIPCIÓN"}
               funcionOnPress={() => router.push('/preinscripcion')}
@@ -85,11 +91,11 @@ export default function HomeEstudiante() {
               funcionOnPress={() => router.push('/contacto')}
               Icon={ContactoIcon}
             />
-            <BotonIconoTexto
+            {/* <BotonIconoTexto
               label={"PREGUNTAS\nFRECUENTES"}
               funcionOnPress={() => router.push('/preguntas-frecuentes')}
               Icon={PreguntasIcon}
-            />
+            /> */}
             <BotonIconoTexto
               label={"NOTICIAS"}
               funcionOnPress={() => router.push('/notificaciones')}
