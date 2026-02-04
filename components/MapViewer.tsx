@@ -1,11 +1,11 @@
-// MapViewer.tsx
+// components/MapViewer.tsx
 import React, { memo, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
-import { Svg, Polygon } from 'react-native-svg';
 import ControlledPanZoom from './ControlledPanZoom';
 import { PlanData, ZoneType } from '../app/mapsConfig';
-import { zoneStyleById, route_style } from '../theme/mapStyles';
-import { pointInPolygon, toPointsStr } from '../lib/zoomMath';
+import { toPointsStr } from '../lib/zoomMath';
+import { hitTestZoneIdAtPoint } from '../lib/hitTest';
+import InteractiveOverlay from './PlanArea/InteractiveOverlay';
 
 type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
 
@@ -23,7 +23,7 @@ type Props = {
   maxScale?: number;
   testID?: string;
 
-  // NUEVO: overlay de conexiones
+  // Overlay de conexiones opcional
   connectionOverlay?: React.ComponentType<any> | null;
   showConnections?: boolean;
 };
@@ -41,7 +41,6 @@ function MapViewer({
   minScale,
   maxScale,
   testID,
-
   connectionOverlay: ConnectionOverlay,
   showConnections = false,
 }: Props) {
@@ -57,22 +56,10 @@ function MapViewer({
     [zoomParams, fallbackZoom]
   );
 
-  // Zonas preparadas
-  const zones = useMemo(
-    () =>
-      planData.zones.map((z) => {
-        const selected = z.id === selectedZoneId;
-        const style = zoneStyleById(z.id, selected);
-        const pointsStr = toPointsStr(z.points as any);
-        return { z, selected, style, pointsStr };
-      }),
-    [planData.zones, selectedZoneId]
-  );
-
-  // Path de la zona seleccionada
+  // Path (polígono) de la zona seleccionada
   const selectedPathPts = useMemo(() => {
     if (!selectedZoneId) return null;
-    const sel = planData.zones.find(z => z.id === selectedZoneId);
+    const sel = planData.zones.find((z) => z.id === selectedZoneId);
     if (!sel?.path || !Array.isArray(sel.path) || sel.path.length < 3) return null;
     return sel.path as number[][];
   }, [planData.zones, selectedZoneId]);
@@ -98,14 +85,8 @@ function MapViewer({
         maxScale={maxScale}
         onTransformChange={onTransformChange}
         onTapCanvas={({ cx, cy }) => {
-          // hit-test desde la última zona a la primera
-          for (let i = planData.zones.length - 1; i >= 0; i--) {
-            const z = planData.zones[i];
-            if (pointInPolygon(cx, cy, z.points as any)) {
-              onZonePress(z.id);
-              break;
-            }
-          }
+          const id = hitTestZoneIdAtPoint(planData.zones, cx, cy);
+          if (id) onZonePress(id);
         }}
       >
         {/* 1) Base del plano */}
@@ -126,39 +107,16 @@ function MapViewer({
           />
         )}
 
-        {/* 3) Overlay interactivo (ruta + zonas) */}
-        <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-          {/* 3.a) Ruta (path) debajo de las zonas */}
-          {selectedPathPts && (
-            <Polygon
-              points={toPointsStr(selectedPathPts as any)}
-              fill={route_style.fill}
-              stroke={route_style.stroke}
-              strokeWidth={route_style.strokeWidth}
-              vectorEffect="non-scaling-stroke"
-            />
-          )}
-
-          {/* 3.b) Zonas (aulas, etc.) */}
-          {zones.map(({ z, selected, style, pointsStr }) => {
-            if (renderZone) {
-              return <React.Fragment key={z.id}>{renderZone(z, selected)}</React.Fragment>;
-            }
-            return (
-              <Polygon
-                key={z.id}
-                points={pointsStr}
-                fill={style.fill}
-                stroke={style.stroke}
-                strokeWidth={style.strokeWidth}
-                strokeLinejoin="round"
-                strokeLinecap="round"
-                vectorEffect="non-scaling-stroke"
-                onPress={() => handleZonePress(z.id)}
-              />
-            );
-          })}
-        </Svg>
+        {/* 3) Overlay interactivo (path + zonas) */}
+        <InteractiveOverlay
+          width={planData.width}
+          height={planData.height}
+          zones={planData.zones}
+          selectedZoneId={selectedZoneId}
+          selectedPathPts={selectedPathPts}
+          onZonePress={handleZonePress}
+          renderZone={renderZone}
+        />
       </ControlledPanZoom>
     </View>
   );
