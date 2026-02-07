@@ -1,3 +1,4 @@
+// _layout.tsx
 import 'react-native-gesture-handler'; // <-- PRIMERA línea siempre
 import { Slot, Stack, usePathname, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -16,7 +17,10 @@ import HistoryHeader, { PathToTitle } from '@/components/NavigationHistoryHeader
 import BottomBar from '@/components/BottomBar';
 import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from '@/data/DatosUsuarioGuarani';
 import { azulMedioUndav } from '@/constants/Colors';
-import { AgendaProvider } from "@/src/context/AgendaContext";
+import { AgendaProvider } from '@/src/context/AgendaContext';
+
+// NUEVO: TutorialProvider
+import { TutorialProvider } from '@/components/tutorial/TutorialProvider';
 
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
@@ -30,7 +34,7 @@ export default function Layout() {
   const router = useRouter();
 
   const headerHistoryTitle = PathToTitle(pathName);
-  const desactivarHistoryHeaderEnRutas = ['/', '/loginAutenticado','/loginMail','/home-estudiante', '/home-visitante'];
+  const desactivarHistoryHeaderEnRutas = ['/', '/loginAutenticado', '/loginMail', '/home-estudiante', '/home-visitante'];
   const showHeader = !desactivarHistoryHeaderEnRutas.includes(pathName);
 
   const desactivarBottomBarEnRutas = ['/', '/loginAutenticado', '/loginMail'];
@@ -85,25 +89,28 @@ export default function Layout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <AgendaProvider>
-      <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-        {usandoStackNavigator ? (
-          <>
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-            <Stack screenOptions={{ animation: Platform.OS === 'android' ? 'none' : 'default' }}>
-              <Slot />
-            </Stack>
-          </>
-        ) : (
-          <>
-            {showHeader && <HistoryHeader title={headerHistoryTitle} />}
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-            <Slot />
-            {showBottomBar && (!visitante && <BottomBar />)}
-          </>
-        )}
-      </SafeAreaView>
-      </AgendaProvider>
+      {/* NUEVO: el provider del tutorial envuelve toda la UI */}
+      <TutorialProvider>
+        <AgendaProvider>
+          <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
+            {usandoStackNavigator ? (
+              <>
+                <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+                <Stack screenOptions={{ animation: Platform.OS === 'android' ? 'none' : 'default' }}>
+                  <Slot />
+                </Stack>
+              </>
+            ) : (
+              <>
+                {showHeader && <HistoryHeader title={headerHistoryTitle} />}
+                <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+                <Slot />
+                {showBottomBar && (!visitante && <BottomBar />)}
+              </>
+            )}
+          </SafeAreaView>
+        </AgendaProvider>
+      </TutorialProvider>
     </GestureHandlerRootView>
   );
 }

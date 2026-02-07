@@ -1,11 +1,12 @@
+// PlanHeader.tsx
 import React, { memo } from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, Text } from 'react-native';
 
 import BuildingSelector from '../BuildingSelector';
 import RoomSelector from '../RoomSelector';
 import SearchIcon from '../../assets/icons/search.svg';
 import { BuildingKey, PlanData } from '../../app/mapsConfig';
-import { planHeaderV2Styles as styles } from '../../theme/mapStyles';
+import { planHeaderStyles as styles } from '../../theme/planHeaderStyles';
 
 type Props = {
   building: '' | BuildingKey;
@@ -24,6 +25,15 @@ type Props = {
 
   // Search modal
   onOpenSearch: () => void;
+
+  // NUEVO: disparar tutorial
+  onOpenTutorial: () => void;
+
+  // Coachmarks refs (opcionales)
+  buildingSelectorRef?: React.Ref<any>;
+  showAulasButtonRef?: React.Ref<any>;
+  searchButtonRef?: React.Ref<any>;
+  helpButtonRef?: React.Ref<any>;
 };
 
 function PlanHeader({
@@ -39,34 +49,30 @@ function PlanHeader({
   onSelectRoom,
 
   onOpenSearch,
+  onOpenTutorial,
+
+  // refs
+  buildingSelectorRef,
+  showAulasButtonRef,
+  searchButtonRef,
+  helpButtonRef,
 }: Props) {
   return (
     <View style={styles.container}>
-      {/* Fila 1: Edificio a ancho completo */}
-      <View style={styles.row}>
+      {/* Fila 1: Edificio + lupa */}
+      <View style={styles.rowInline}>
         <View style={styles.buildingCol}>
           <BuildingSelector
             building={building}
             showMenu={showMenu}
             onToggle={onToggleBuildings}
             onSelect={onSelectBuilding}
-          />
-        </View>
-      </View>
-
-      {/* Fila 2: Aulas + botón azul */}
-      <View style={styles.rowInline}>
-        <View style={styles.roomsCol}>
-          <RoomSelector
-            disabled={roomsDisabled}
-            show={showRooms}
-            onToggle={onToggleRooms}
-            rooms={!roomsDisabled ? rooms : []}
-            onSelect={onSelectRoom}
+            coachmarkRef={buildingSelectorRef}
           />
         </View>
 
         <TouchableOpacity
+          ref={searchButtonRef}
           accessibilityRole="button"
           accessibilityLabel="Abrir búsqueda de aulas"
           onPress={onOpenSearch}
@@ -75,6 +81,32 @@ function PlanHeader({
           hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
         >
           <SearchIcon width={22} height={22} fill="#fff" stroke="#fff" />
+        </TouchableOpacity>
+      </View>
+
+      {/* Fila 2: Aulas + ayuda */}
+      <View style={styles.rowInline}>
+        <View style={styles.roomsCol}>
+          <RoomSelector
+            disabled={roomsDisabled}
+            show={showRooms}
+            onToggle={onToggleRooms}
+            rooms={!roomsDisabled ? rooms : []}
+            onSelect={onSelectRoom}
+            coachmarkRef={showAulasButtonRef}
+          />
+        </View>
+
+        <TouchableOpacity
+          ref={helpButtonRef}
+          accessibilityRole="button"
+          accessibilityLabel="Ver tutorial de Planos"
+          onPress={onOpenTutorial}
+          activeOpacity={0.85}
+          style={styles.helpBtn}
+          hitSlop={{ top: 8, right: 8, bottom: 8, left: 8 }}
+        >
+          <Text style={styles.helpIcon}>?</Text>
         </TouchableOpacity>
       </View>
     </View>

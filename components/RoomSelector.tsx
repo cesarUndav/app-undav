@@ -12,6 +12,9 @@ interface Props {
   onToggle: () => void;
   rooms: ZoneType[];
   onSelect: (zoneId: string) => void;
+
+  // Coachmark ref (opcional)
+  coachmarkRef?: React.Ref<any>;
 }
 
 export default function RoomSelector({
@@ -20,6 +23,7 @@ export default function RoomSelector({
   onToggle,
   rooms,
   onSelect,
+  coachmarkRef,
 }: Props) {
   const label = disabled
     ? 'Mostrar Aulas'
@@ -30,6 +34,7 @@ export default function RoomSelector({
   return (
     <View style={[selectorStyles.wrapper, { zIndex: 20 }]}>
       <TouchableOpacity
+        ref={coachmarkRef}
         disabled={disabled}
         onPress={() => { if (!disabled) onToggle(); }}
         style={selectorStyles.button}

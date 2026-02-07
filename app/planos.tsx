@@ -3,35 +3,20 @@
 // ==============================
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+
 import PlanHeader from '../components/PlanArea/PlanHeader';
 import SearchModal from '../components/SearchModal';
 import PlanArea from '../components/PlanArea';
 
 import {
   edificios,
-  coordsMap,
-  connectionOverlays,    
   BuildingKey,
   FloorKey,
-  PlanData,
 } from '../app/mapsConfig';
 
-// Helper: ancla inferior de chevrons por edificio
-function bottomYForBuilding(b: '' | BuildingKey): number {
-  switch (b) {
-    case 'Arenales':  return 92;
-    case 'PineyroA':  return 78;
-    case 'PineyroB':  return 68;
-    case 'PineyroC':  return 68;
-    default:          return 78;
-  }
-}
-
-// Type guard simple por si el JSON incluye enlaces inter-plano
-type LinkTo = { building: BuildingKey; floor: FloorKey | string | number };
-function hasLinkTo(z: any): z is { linkTo: LinkTo } {
-  return z && typeof z === 'object' && 'linkTo' in z && z.linkTo;
-}
+import { hasLinkTo } from '../lib/planos/linkTo';
+import { usePlanosDerived } from '../hooks/planos/usePlanosDerived';
+import { usePlanosTutorial } from '../hooks/planos/usePlanosTutorial';
 
 export default function Planos() {
   // --- Estados básicos ---
@@ -42,59 +27,34 @@ export default function Planos() {
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
 
-  // Mostrar/ocultar conexiones entre edificios (solo si hay overlay disponible)
+  // Conexiones
   const [showConnections, setShowConnections] = useState(false);
 
-  // Datos del plano actual (con FloorKey)
-  const planData = useMemo<PlanData | null>(() => {
-    if (!building) return null;
-    const floors = edificios[building]?.floors ?? [];
-    const safeIndex = Math.min(Math.max(floorIndex, 0), Math.max(floors.length - 1, 0));
-    const floorKey: FloorKey | undefined = floors[safeIndex]?.key;
-    return floorKey ? coordsMap[building]?.[floorKey] ?? null : null;
-  }, [building, floorIndex]);
+  // ✅ Derivados del plano
+  const {
+    planData,
+    currentFloors,
+    mapId,
+    roomsList,
+    roomsDisabled,
+    floorBadgeBottomY,
+    connectionOverlay,
+  } = usePlanosDerived({
+    building,
+    floorIndex,
+    showRooms,
+    setShowRooms,
+    showConnections,
+    setShowConnections,
+  });
 
-  const currentFloors = useMemo(
-    () => (building ? edificios[building].floors : []),
-    [building]
-  );
-
-  // firma única edificio+piso
-  const mapId = useMemo(() => {
-    const floorKey = currentFloors[floorIndex]?.key ?? 'nofloor';
-    const b = building || 'nobuilding';
-    return `${b}-${floorKey}`;
-  }, [building, currentFloors, floorIndex]);
-
-  // Lista de aulas
-  const roomsList = useMemo(() => {
-    if (!planData) return [] as NonNullable<PlanData>['zones'];
-    return planData.zones.filter(z => z.id.toLowerCase().startsWith('aula'));
-  }, [planData]);
-
-  const roomsDisabled = !planData || roomsList.length === 0;
-
-  React.useEffect(() => {
-    if (roomsDisabled && showRooms) setShowRooms(false);
-  }, [roomsDisabled, showRooms]);
-
-  // Y de chevrón para este edificio
-  const floorBadgeBottomY = bottomYForBuilding(building);
-
-  // 👇 SVG de conexiones para edificio + piso actual (o null si no aplica)
-  const floorKey: FloorKey | undefined = currentFloors[floorIndex]?.key;
-  const connectionOverlay = useMemo(() => {
-    if (!building || !floorKey) return null;
-    const group = connectionOverlays?.[building]; // Partial<Record<FloorKey, FC<any>>>
-    return group?.[floorKey] ?? null;             // puede ser null si ese piso no tiene conexiones
-  }, [building, floorKey]);
-
-  // Si cambio de edificio o de piso y el overlay no existe, apago el flag
-  React.useEffect(() => {
-    if (!connectionOverlay && showConnections) {
-      setShowConnections(false);
-    }
-  }, [connectionOverlay, showConnections]);
+  // ✅ Tutorial (solo manual con “?”)
+  const { refs, handleOpenTutorial } = usePlanosTutorial({
+    building,
+    planData,
+    setShowMenu,
+    setShowRooms,
+  });
 
   // Selección de zona (aula normal o link a otro edificio/piso)
   const handleSelectZone = (id: string) => {
@@ -150,6 +110,10 @@ export default function Planos() {
           setShowRooms(false);
         }}
         onOpenSearch={() => setShowSearchModal(true)}
+        onOpenTutorial={handleOpenTutorial}
+        buildingSelectorRef={refs.buildingSelectorRef}
+        showAulasButtonRef={refs.showAulasButtonRef}
+        searchButtonRef={refs.searchButtonRef}
       />
 
       {/* Backdrop global para cerrar menús tocando fuera */}
@@ -184,11 +148,13 @@ export default function Planos() {
             focusPadding={0.18}
             fitMode="canvas"
             floorBadgeBottomY={floorBadgeBottomY}
-
-            
             showConnections={showConnections}
             onToggleConnections={() => setShowConnections(v => !v)}
-            connectionOverlay={connectionOverlay} // puede ser null: PlanArea debe chequearlo
+            connectionOverlay={connectionOverlay}
+            mapViewportRef={refs.mapViewportRef}
+            guidePointButtonRef={refs.guidePointButtonRef}
+            fitAllButtonRef={refs.fitAllButtonRef}
+            floorControlsRef={refs.floorControlsRef}
           />
         )}
       </View>
@@ -197,7 +163,7 @@ export default function Planos() {
       <SearchModal
         visible={showSearchModal}
         onClose={() => setShowSearchModal(false)}
-        onSelect={(bk, floorKey, zoneId) => {
+        onSelect={(bk: BuildingKey, floorKey: FloorKey, zoneId: string) => {
           setBuilding(bk);
           const fi = edificios[bk].floors.findIndex(f => f.key === floorKey);
           setFloorIndex(fi >= 0 ? fi : 0);
