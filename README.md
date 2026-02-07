@@ -73,7 +73,7 @@ La fuente se aplica globalmente usando un componente personalizado: `CustomText`
 
 ---
 
-## ✅ Próximos pasos
+## Próximos pasos
 
 - [ ] Conectar el login con SIU-Guaraní vía OAuth2
 - [ ] Mostrar materias y horarios desde la API

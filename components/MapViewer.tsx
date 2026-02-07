@@ -3,7 +3,6 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import ControlledPanZoom from './ControlledPanZoom';
 import { PlanData, ZoneType } from '../app/mapsConfig';
-import { toPointsStr } from '../lib/zoomMath';
 import { hitTestZoneIdAtPoint } from '../lib/hitTest';
 import InteractiveOverlay from './PlanArea/InteractiveOverlay';
 
@@ -26,6 +25,9 @@ type Props = {
   // Overlay de conexiones opcional
   connectionOverlay?: React.ComponentType<any> | null;
   showConnections?: boolean;
+
+  // Coachmark ref: viewport del plano
+  viewportRef?: React.Ref<any>;
 };
 
 function MapViewer({
@@ -43,6 +45,9 @@ function MapViewer({
   testID,
   connectionOverlay: ConnectionOverlay,
   showConnections = false,
+
+  // ref
+  viewportRef,
 }: Props) {
   // Fallback robusto
   const fallbackZoom = useMemo(() => {
@@ -72,7 +77,11 @@ function MapViewer({
   );
 
   return (
-    <View style={[styles.wrapper, { width: containerW, height: containerH }]} testID={testID}>
+    <View
+      ref={viewportRef}
+      style={[styles.wrapper, { width: containerW, height: containerH }]}
+      testID={testID}
+    >
       <ControlledPanZoom
         width={planData.width}
         height={planData.height}

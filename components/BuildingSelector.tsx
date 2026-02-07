@@ -11,16 +11,24 @@ interface Props {
   showMenu: boolean;
   onToggle: () => void;
   onSelect: (b: BuildingKey) => void;
+
+  // Coachmark ref (opcional)
+  coachmarkRef?: React.Ref<any>;
 }
 
 export default function BuildingSelector({
-  building, showMenu, onToggle, onSelect
+  building,
+  showMenu,
+  onToggle,
+  onSelect,
+  coachmarkRef,
 }: Props) {
   const label = building ? edificios[building].label : 'Seleccionar Sede';
 
   return (
     <View style={selectorStyles.wrapper}>
       <TouchableOpacity
+        ref={coachmarkRef}
         style={selectorStyles.button}
         onPress={onToggle}
         accessibilityRole="button"

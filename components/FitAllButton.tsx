@@ -1,12 +1,19 @@
+// components/FitAllButton.tsx
 import React from 'react';
 import CustomText from './CustomText';
-import { Pressable, Text, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
+import { Pressable, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
 
-type Props = { onPress: (e: GestureResponderEvent) => void };
+type Props = {
+  onPress: (e: GestureResponderEvent) => void;
 
-export default function FitAllButton({ onPress }: Props) {
+  // Coachmark ref
+  coachmarkRef?: React.Ref<any>;
+};
+
+export default function FitAllButton({ onPress, coachmarkRef }: Props) {
   return (
     <Pressable
+      ref={coachmarkRef}
       accessibilityRole="button"
       accessibilityLabel="Ver todo el plano"
       onPress={onPress}
@@ -37,7 +44,7 @@ const styles = StyleSheet.create({
   },
   btnPressed: {
     backgroundColor: Platform.select({
-      ios: '#2e4385ff',      
+      ios: '#2e4385ff',
       android: '#2e4385ff',
       default: '#2e4385ff',
     }),

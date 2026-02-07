@@ -1,12 +1,19 @@
+// components/GuidePointButton.tsx
 import React from 'react';
 import CustomText from './CustomText';
-import { Pressable, Text, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
+import { Pressable, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
 
-type Props = { onPress: (e: GestureResponderEvent) => void };
+type Props = {
+  onPress: (e: GestureResponderEvent) => void;
 
-export default function GuidePointButton({ onPress }: Props) {
+  // Coachmark ref
+  coachmarkRef?: React.Ref<any>;
+};
+
+export default function GuidePointButton({ onPress, coachmarkRef }: Props) {
   return (
     <Pressable
+      ref={coachmarkRef}
       accessibilityRole="button"
       accessibilityLabel="Ir al punto guía"
       onPress={onPress}
@@ -22,7 +29,7 @@ const styles = StyleSheet.create({
   btn: {
     position: 'absolute',
     bottom: 12,
-    left: 16,            // 👈 alineado a la izquierda
+    left: 16,
     paddingHorizontal: 14,
     height: 36,
     borderRadius: 18,

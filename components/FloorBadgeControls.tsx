@@ -3,7 +3,6 @@ import React, { memo } from 'react';
 import { View, Pressable, StyleSheet } from 'react-native';
 import Svg, { Polygon, Polyline } from 'react-native-svg';
 import CustomText from './CustomText';
-import { floorLabel } from '../lib/floors';
 import { colors, floorBadgeStyles } from '../theme/mapStyles';
 
 type Props = {
@@ -11,7 +10,10 @@ type Props = {
   maxFloors: number;
   onPrev: () => void;
   onNext: () => void;
-  bottomY?: number; 
+  bottomY?: number;
+
+  // Coachmark ref (wrapper completo)
+  coachmarkRef?: React.Ref<any>;
 };
 
 const HIT = { top: 10, right: 10, bottom: 10, left: 10 };
@@ -49,14 +51,15 @@ function FloorBadgeControls({
   onPrev,
   onNext,
   bottomY,
+  coachmarkRef,
 }: Props) {
   const canDown = floorIndex > 0;
   const canUp = floorIndex < maxFloors - 1;
 
   // === chevrons de tamaño y separación constantes ===
-  const CHEVRON_STEP = 8;                        // distancia fija entre chevrons
-  const CHEVRON_BOTTOM_Y = bottomY ?? 78;        // usa override si llega
-  const chevrons = Math.max(0, maxFloors - 1);   // cantidad real
+  const CHEVRON_STEP = 8;
+  const CHEVRON_BOTTOM_Y = bottomY ?? 78;
+  const chevrons = Math.max(0, maxFloors - 1);
 
   // idxFromBottom: 0 = abajo … (chevrons - 1) = arriba
   const yForChevron = (idxFromBottom: number) =>
@@ -66,7 +69,7 @@ function FloorBadgeControls({
   const highlightChevronIndexFromBottom = floorIndex;
 
   return (
-    <View style={styles.wrap} pointerEvents="box-none">
+    <View ref={coachmarkRef} style={styles.wrap} pointerEvents="box-none">
       {/* CÁPSULA TRANSLÚCIDA */}
       <View style={floorBadgeStyles.capsule} pointerEvents="box-none">
         {/* Subir */}
@@ -83,7 +86,7 @@ function FloorBadgeControls({
             !canUp && floorBadgeStyles.circleBtnDisabled,
             pressed && canUp && floorBadgeStyles.circleBtnPressed,
           ]}
-          >
+        >
           <ArrowUp disabled={!canUp} />
         </Pressable>
 
@@ -114,7 +117,9 @@ function FloorBadgeControls({
               );
             })}
           </Svg>
-          <CustomText style={floorBadgeStyles.label}>{floorIndex === 0 ? 'P.B.' : `Piso ${floorIndex}`}</CustomText>
+          <CustomText style={floorBadgeStyles.label}>
+            {floorIndex === 0 ? 'P.B.' : `Piso ${floorIndex}`}
+          </CustomText>
         </View>
 
         {/* Bajar */}
@@ -143,7 +148,6 @@ const styles = StyleSheet.create({
     position: 'absolute',
     right: 16,
     bottom: 16,
-    // El contenedor externo NO tiene fondo; la cápsula interna sí.
     alignItems: 'center',
   },
   circleBtnPos: {
