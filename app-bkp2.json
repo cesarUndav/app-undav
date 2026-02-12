@@ -8,7 +8,6 @@
     "icon": "./assets/images/favicon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
-    "owner": "cesarvacirca",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -60,10 +59,10 @@
     },
     "extra": {
       "router": {},
-      "env": "development",
       "eas": {
-        "projectId": "6eb0eac1-5bed-4156-a09d-a919920381c3"
-      }
+        "projectId": "9a93fa72-baef-4516-95f8-51ecb2a021ec"
+      },
+      "env": "development"
     }
   }
 }

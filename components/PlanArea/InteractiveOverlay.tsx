@@ -1,7 +1,6 @@
 // components/PlanArea/InteractiveOverlay.tsx
 import React, { memo } from 'react';
-import { StyleSheet } from 'react-native';
-import { Svg, Polygon } from 'react-native-svg';
+import { G, Polygon } from 'react-native-svg';
 import { ZoneType } from '../../app/mapsConfig';
 import { toPointsStr } from '../../lib/zoomMath';
 import { route_style, zoneStyleById } from '../../theme/mapStyles';
@@ -13,13 +12,12 @@ type Props = {
   selectedZoneId: string | null;
   selectedPathPts: number[][] | null;
   onZonePress: (id: string) => void;
-  /** Render alternativo por zona (si retorna algo, reemplaza al <Polygon> por defecto) */
   renderZone?: (zone: ZoneType, selected: boolean) => React.ReactNode;
 };
 
 function InteractiveOverlay({
-  width,
-  height,
+  width: _width,
+  height: _height,
   zones,
   selectedZoneId,
   selectedPathPts,
@@ -27,8 +25,7 @@ function InteractiveOverlay({
   renderZone,
 }: Props) {
   return (
-    <Svg width={width} height={height} style={StyleSheet.absoluteFill}>
-      {/* Ruta debajo de las zonas */}
+    <G>
       {selectedPathPts && selectedPathPts.length >= 3 && (
         <Polygon
           points={toPointsStr(selectedPathPts as any)}
@@ -39,14 +36,16 @@ function InteractiveOverlay({
         />
       )}
 
-      {/* Zonas */}
       {zones.map((z) => {
         const selected = z.id === selectedZoneId;
+
         if (renderZone) {
           const node = renderZone(z, selected);
           if (node) return <React.Fragment key={z.id}>{node}</React.Fragment>;
         }
+
         const style = zoneStyleById(z.id, selected);
+
         return (
           <Polygon
             key={z.id}
@@ -61,7 +60,7 @@ function InteractiveOverlay({
           />
         );
       })}
-    </Svg>
+    </G>
   );
 }
 

@@ -133,11 +133,11 @@ function MapViewer({
 
 const styles = StyleSheet.create({
   wrapper: {
+    // La “máscara” (borderRadius/overflow) la maneja ControlledPanZoom.
+    // Mantener este wrapper solo para tamaño/ref.
     flex: 1,
-    backgroundColor: '#fff',
-    borderRadius: 12,
-    overflow: 'hidden',
   },
 });
+
 
 export default memo(MapViewer);
