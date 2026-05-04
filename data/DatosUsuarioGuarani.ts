@@ -1,6 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 
+import { DigestClient } from "@/app/lib/DigestClient";
+
 export interface User {
   idPersona: string;
   documento: string;
@@ -59,7 +61,13 @@ export interface Plan {
   cnt_materias: number,
   materias: Materia[]
 }
-
+function capitalizeWords(str: string): string {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 export let visitante: boolean = true;
 
 export function setVisitante(v: boolean): void {
@@ -70,48 +78,159 @@ export function UsuarioEsAutenticado(): boolean {
   return infoBaseUsuarioActual.idPersona !== "";
 }
 
-//const URL_BASE = "http://172.16.1.43/api/appundav/";
-const URL_BASE = "https://guargestinf.undav.edu.ar/api/appundav/";
 
-function capitalizeWords(str: string): string {
-  return str
-    .toLowerCase()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+//const URL_BASE = "http://172.16.1.43/api/appundav/";
+//const URL_BASE = "https://guargestinf.undav.edu.ar/api/appundav/";
+const URL_BASE = process.env.EXPO_PUBLIC_API_APPUNDAV_URL;
+
+export function JsonStringAObjeto(jsonString:string) {
+  return JSON.parse(jsonString);
+}
+const client = new DigestClient("app_undav", "app123456");
+export async function ObtenerJsonString(url:string) {
+  const res = await client.fetchWithDigest(url);
+  const data = await res.json();
+  return JSON.stringify(data);
 }
 
 // Para actualizar infoBaseUsuarioActual desde fuera si hace falta
 export function setUsuarioActual(user: User) {
   infoBaseUsuarioActual = { ...user };
 }
+async function pruebasServer() {
+    try {
+      console.log("TEST GOOGLE...");
+      const g = await fetch("https://google.com")
+      console.log("GOOGLE STATUS:", g.status);
+      
+      console.log("TEST HOST...");
+      const r = await fetch("https://guargestinf.undav.edu.ar");
+      console.log("HOST STATUS:", r.status);
+      
+      const b = await fetch("https://httpbin.org/get");
+      console.log(await b.text());
+
+    } catch (err) {
+      console.log("HOST ERROR:", err);
+    }
+  }
 
 // Función para loguear usuario y obtener token + "persona" (idPersona)
-export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, idPersona: number }> {
+export async function validarPersonaYTraerData(
+  usuario: string,
+  clave: string
+): Promise<{ token: string; idPersona: number }>
+{
+  await pruebasServer();
+
   const url = `${URL_BASE}persona/validuser`;
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usuario, clave }),
+
+  const body = JSON.stringify({
+    usuario: String(usuario),
+    clave: String(clave)
   });
 
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Credenciales inválidas. (${response.status}) ${errorBody}`);
+  console.log("=================================");
+  console.log("LOGIN DEBUG");
+  console.log("URL_BASE:", URL_BASE);
+  console.log("FINAL URL:", url);
+  console.log("USUARIO:", usuario);
+  console.log("BODY:", body);
+  console.log("=================================");
+
+  const start = Date.now();
+
+  try {
+    const response = await fetch(url, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        "Accept": "application/json"
+      },
+      body: body
+    });
+
+    const elapsed = Date.now() - start;
+
+    console.log("FETCH OK");
+    console.log("STATUS:", response.status);
+    console.log("TIME:", elapsed, "ms");
+    console.log("HEADERS:", response.headers);
+
+    const text = await response.text();
+    console.log("RAW RESPONSE:", text);
+
+    let data: any;
+
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      console.log("JSON PARSE ERROR:", e);
+      throw new Error("Servidor no devolvió JSON válido");
+    }
+
+    console.log("PARSED DATA:", data);
+
+    if (!response.ok) {
+      throw new Error(`HTTP ${response.status} - ${text}`);
+    }
+
+    if (!data.token || !data.persona) {
+      throw new Error("Respuesta incompleta del servidor");
+    }
+
+    return {
+      token: data.token,
+      idPersona: data.persona
+    };
+
+  } catch (err) {
+
+    const elapsed = Date.now() - start;
+
+    console.log("=================================");
+    console.log("FETCH ERROR");
+    console.log("TIME BEFORE FAIL:", elapsed, "ms");
+    console.log("ERROR OBJECT:", err);
+    console.log("ERROR STRING:", String(err));
+    console.log("=================================");
+
+    throw err;
   }
-
-  const data = await response.json();
-
-  if (!data.token || !data.persona) {
-    throw new Error("Respuesta incompleta del servidor");
-  }
-
-  return {
-    token: data.token,
-    idPersona: data.persona
-  };
 }
+
+export async function OLD_validarPersonaYTraerData(
+  usuario: string,
+  clave: string
+): Promise<{ token: string; idPersona: number }> {
+
+  const url = `${URL_BASE}persona/validuser`;
+  console.log("INTENTANDO URL:", url);
+
+  try {
+
+    const response = await fetch(url, {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ usuario, clave }),
+    });
+
+    console.log("RESPONSE STATUS:", response.status);
+
+    const data = await response.json();
+    console.log("DATA:", data);
+
+    return {
+      token: data.token,
+      idPersona: data.persona
+    };
+
+  } catch (err) {
+    console.log("FETCH ERROR:", err);
+    throw err;
+  }
+}
+
 async function guardarSesion(token: string, personaId: number):Promise<void> {
   try {
     await AsyncStorage.setItem("token", token);

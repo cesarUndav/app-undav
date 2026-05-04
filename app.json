@@ -35,7 +35,12 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.anonymous.appundav"
+      "package": "com.anonymous.appundav",
+      "permissions": [
+        "android.permission.INTERNET",
+        "android.permission.ACCESS_NETWORK_STATE"
+      ],
+      "usesCleartextTraffic": false
     },
     "web": {
       "bundler": "metro",
@@ -67,3 +72,4 @@
     }
   }
 }
+

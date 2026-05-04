@@ -1,7 +1,7 @@
 type Params = Record<string, any> | [string, any][];
 
-//const urlBase = "http://172.16.1.43/api/appundav/";
-const urlBase = "https://guargestinf.undav.edu.ar/api/appundav/";
+const urlBase = process.env.EXPO_PUBLIC_API_URL;
+console.log("URL BASE (FLASK): "+urlBase);
 
 export async function apiRequest(method:string, route:string, parameters:Params = {}, token:string): Promise<any> {
   
