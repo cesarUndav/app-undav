@@ -37,7 +37,7 @@ export interface StartOptions {
 }
 
 export type WindowRect = LayoutRectangle;
-
+  
 export interface TutorialController {
   start: (steps: CoachmarkStep[], options?: StartOptions) => void;
   stop: () => void; // cancelar a mitad (NO marca seen)
