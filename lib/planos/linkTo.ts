@@ -1,5 +1,5 @@
 // lib/planos/linkTo.ts
-import type { BuildingKey, FloorKey } from '../../app/mapsConfig';
+import type { BuildingKey, FloorKey } from '../mapsConfig';
 
 export type LinkTo = { building: BuildingKey; floor: FloorKey | string | number };
 

@@ -1,4 +1,6 @@
-import { useMemo, useRef } from 'react';
+// components/gestures/usePanGesture.ts
+
+import { useEffect, useMemo, useRef } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 
 type Transform = { zoom: number; x: number; y: number };
@@ -14,38 +16,83 @@ export function usePanGesture(opts: {
 }) {
   const {
     enabled = true,
-    zoom, x, y,
+    zoom,
+    x,
+    y,
     onTransformChange,
-    onGestureStart, onGestureEnd,
+    onGestureStart,
+    onGestureEnd,
   } = opts;
 
-  // refs anclados al comienzo del gesto
+  const zoomRef = useRef(zoom);
+  const xRef = useRef(x);
+  const yRef = useRef(y);
+  const onTransformChangeRef = useRef(onTransformChange);
+  const onGestureStartRef = useRef(onGestureStart);
+  const onGestureEndRef = useRef(onGestureEnd);
+
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+
+  useEffect(() => {
+    xRef.current = x;
+  }, [x]);
+
+  useEffect(() => {
+    yRef.current = y;
+  }, [y]);
+
+  useEffect(() => {
+    onTransformChangeRef.current = onTransformChange;
+  }, [onTransformChange]);
+
+  useEffect(() => {
+    onGestureStartRef.current = onGestureStart;
+  }, [onGestureStart]);
+
+  useEffect(() => {
+    onGestureEndRef.current = onGestureEnd;
+  }, [onGestureEnd]);
+
   const z0Ref = useRef(zoom);
   const x0Ref = useRef(x);
   const y0Ref = useRef(y);
 
   const pan = useMemo(() => {
-    if (!enabled) return Gesture.Pan().enabled(false);
+    const g = Gesture.Pan()
+      .runOnJS(true)
+      .enabled(enabled);
 
-    return Gesture.Pan()
-      .minDistance(8) // no robe taps
+    if (!enabled) return g;
+
+    return g
+      .maxPointers(1)
+      .minDistance(8)
       .onBegin(() => {
-        z0Ref.current = zoom;
-        x0Ref.current = x;
-        y0Ref.current = y;
-        onGestureStart?.();
+        z0Ref.current = zoomRef.current;
+        x0Ref.current = xRef.current;
+        y0Ref.current = yRef.current;
+        onGestureStartRef.current?.();
       })
       .onUpdate((e) => {
-        if (!onTransformChange) return;
-        const z0 = z0Ref.current;
+        const cb = onTransformChangeRef.current;
+        if (!cb) return;
+
+        const z0 = z0Ref.current || 1;
         const nx = x0Ref.current + e.translationX / z0;
         const ny = y0Ref.current + e.translationY / z0;
-        onTransformChange({ zoom, x: nx, y: ny });
+
+        cb({
+          zoom: zoomRef.current,
+          x: nx,
+          y: ny,
+        });
       })
       .onFinalize(() => {
-        onGestureEnd?.();
+        onGestureEndRef.current?.();
       });
-  }, [enabled, zoom, x, y, onTransformChange, onGestureStart, onGestureEnd]);
+  }, [enabled]);
 
   return pan;
 }

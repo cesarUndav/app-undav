@@ -1,4 +1,4 @@
-// components/PlanArea/PlanAreaControls.tsx
+// components/planArea/PlanAreaControls.tsx
 import React from 'react';
 import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
 

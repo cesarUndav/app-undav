@@ -1,10 +1,10 @@
-// ==============================
-// File: app/.../Planos.tsx
-// ==============================
+
+// planos.tsx
+
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import PlanHeader from '../components/PlanArea/PlanHeader';
+import PlanHeader from '../components/planArea/PlanHeader';
 import SearchModal from '../components/SearchModal';
 import PlanArea from '../components/PlanArea';
 
@@ -12,7 +12,7 @@ import {
   edificios,
   BuildingKey,
   FloorKey,
-} from '../app/mapsConfig';
+} from '../lib/mapsConfig';
 
 import { hasLinkTo } from '../lib/planos/linkTo';
 import { usePlanosDerived } from '../hooks/planos/usePlanosDerived';

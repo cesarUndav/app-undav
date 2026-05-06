@@ -5,7 +5,7 @@ import { View, TouchableOpacity, Text } from 'react-native';
 import BuildingSelector from '../BuildingSelector';
 import RoomSelector from '../RoomSelector';
 import SearchIcon from '../../assets/icons/search.svg';
-import { BuildingKey, PlanData } from '../../app/mapsConfig';
+import { BuildingKey, PlanData } from '../../lib/mapsConfig';
 import { planHeaderStyles as styles } from '../../theme/planHeaderStyles';
 
 type Props = {

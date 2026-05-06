@@ -1,4 +1,4 @@
-import { DigestClient } from "@/app/lib/DigestClient";
+import { DigestClient } from "@/lib/DigestClient";
 import { Platform } from "react-native";
 
 

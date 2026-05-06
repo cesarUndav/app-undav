@@ -1,5 +1,5 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import * as apiRequest from "@/app/lib/apiRequest"  // adjust path as needed
+import * as apiRequest from "@/lib/apiRequest"  // adjust path as needed
 
 export async function getData() {
   try {

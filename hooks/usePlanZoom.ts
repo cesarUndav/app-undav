@@ -1,6 +1,6 @@
 // hooks/usePlanZoom.ts
 import { useCallback, useState, useRef } from 'react';
-import { PlanData } from '../app/mapsConfig';
+import { PlanData } from '../lib/mapsConfig';
 import { clamp01, bboxFromPoints, unionRects, rectCenter, fitRectScale, panForCenter } from '../lib/zoomMath';
 
 

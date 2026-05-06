@@ -1,7 +1,7 @@
-// components/PlanArea/InteractiveOverlay.tsx
+// components/planArea/InteractiveOverlay.tsx
 import React, { memo } from 'react';
 import { G, Polygon } from 'react-native-svg';
-import { ZoneType } from '../../app/mapsConfig';
+import { ZoneType } from '../../lib/mapsConfig';
 import { toPointsStr } from '../../lib/zoomMath';
 import { route_style, zoneStyleById } from '../../theme/mapStyles';
 
@@ -21,11 +21,11 @@ function InteractiveOverlay({
   zones,
   selectedZoneId,
   selectedPathPts,
-  onZonePress,
+  onZonePress: _onZonePress,
   renderZone,
 }: Props) {
   return (
-    <G>
+    <G pointerEvents="none">
       {selectedPathPts && selectedPathPts.length >= 3 && (
         <Polygon
           points={toPointsStr(selectedPathPts as any)}
@@ -33,6 +33,7 @@ function InteractiveOverlay({
           stroke={route_style.stroke}
           strokeWidth={route_style.strokeWidth}
           vectorEffect="non-scaling-stroke"
+          pointerEvents="none"
         />
       )}
 
@@ -56,7 +57,7 @@ function InteractiveOverlay({
             strokeLinejoin="round"
             strokeLinecap="round"
             vectorEffect="non-scaling-stroke"
-            onPress={() => onZonePress(z.id)}
+            pointerEvents="none"
           />
         );
       })}

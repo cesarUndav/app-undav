@@ -2,7 +2,7 @@
 import React from 'react';
 import { Alert } from 'react-native';
 
-import type { BuildingKey, PlanData } from '../../app/mapsConfig';
+import type { BuildingKey, PlanData } from '../../lib/mapsConfig';
 
 import { useTutorial } from '../../components/tutorial/TutorialProvider';
 import { createPlanosSteps } from '../../components/tutorial/steps/planosSteps';
