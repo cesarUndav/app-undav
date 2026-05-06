@@ -4,7 +4,7 @@ import {
   Modal, View, SectionList, Pressable, TextInput
 } from 'react-native';
 import CustomText from './CustomText';
-import { BuildingKey, FloorKey } from '../app/mapsConfig';
+import { BuildingKey, FloorKey } from '../lib/mapsConfig';
 import { floorLabel } from '../lib/floors';
 
 // lógica modularizada

@@ -12,16 +12,13 @@ import Arenales2 from '../assets/maps/Arenales/arenales2.svg';
 import Arenales3 from '../assets/maps/Arenales/arenales3.svg';
 import Arenales4 from '../assets/maps/Arenales/arenales4.svg';
 import Arenales5 from '../assets/maps/Arenales/arenales5.svg';
-
 import PineyroA0 from '../assets/maps/PineyroA/pineyroA0.svg';
 import PineyroA1 from '../assets/maps/PineyroA/pineyroA1.svg';
 import PineyroA2 from '../assets/maps/PineyroA/pineyroA2.svg';
 import PineyroA3 from '../assets/maps/PineyroA/pineyroA3.svg';
-
 import PineyroB0 from '../assets/maps/PineyroB/pineyroB0.svg';
 import PineyroB1 from '../assets/maps/PineyroB/pineyroB1.svg';
 import PineyroB2 from '../assets/maps/PineyroB/pineyroB2.svg';
-
 import PineyroC0 from '../assets/maps/PineyroC/pineyroC0.svg';
 import PineyroC1 from '../assets/maps/PineyroC/pineyroC1.svg';
 import PineyroC2 from '../assets/maps/PineyroC/pineyroC2.svg';

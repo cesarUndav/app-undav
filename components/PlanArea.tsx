@@ -6,14 +6,14 @@ import { View, StyleSheet, LayoutChangeEvent, AccessibilityInfo } from 'react-na
 
 import MapViewer from './MapViewer';
 import { floorLabel } from '../lib/floors';
-import { PlanData } from '../app/mapsConfig';
+import { PlanData } from '../lib/mapsConfig';
 import { usePlanZoom } from '../hooks/usePlanZoom';
 import { usePlanAreaEffects } from '../hooks/usePlanAreaEffects';
 import { useTooltip } from '../hooks/useTooltip';
 import { usePlanAreaAnimation } from '../hooks/usePlanAreaAnimation';
 import type { ZoomParams } from '../hooks/usePlanZoom';
 
-import PlanAreaControls from './PlanArea/PlanAreaControls';
+import PlanAreaControls from './planArea/PlanAreaControls';
 
 export type PlanAreaHandle = {
   zoomToZone: (zoneId: string) => void;
@@ -228,8 +228,8 @@ const styles = StyleSheet.create({
     flex: 1,
     marginTop: 12,
     marginHorizontal: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
+    // borderRadius: 12,
+    // overflow: 'hidden',
   },
 });
 

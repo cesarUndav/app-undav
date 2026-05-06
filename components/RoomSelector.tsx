@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, TouchableOpacity, ScrollView } from 'react-native';
 import CustomText from './CustomText';
-import { ZoneType } from '../app/mapsConfig';
+import { ZoneType } from '../lib/mapsConfig';
 import { selectorStyles } from '../theme/mapStyles';
 import ChevronDown from './icons/ChevronDown';
 

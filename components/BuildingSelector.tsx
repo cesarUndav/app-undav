@@ -2,7 +2,7 @@
 import React from 'react';
 import { View, TouchableOpacity } from 'react-native';
 import CustomText from './CustomText';
-import { edificios, BuildingKey } from '../app/mapsConfig';
+import { edificios, BuildingKey } from '../lib/mapsConfig';
 import { selectorStyles } from '../theme/mapStyles';
 import ChevronDown from './icons/ChevronDown';
 

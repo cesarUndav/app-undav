@@ -1,9 +1,12 @@
-import { useMemo, useRef } from 'react';
+// components/gestures/usePinchGesture.ts
+
+import { useEffect, useMemo, useRef } from 'react';
 import { Gesture } from 'react-native-gesture-handler';
 
 type Transform = { zoom: number; x: number; y: number };
 
-const clamp = (v: number, lo: number, hi: number) => Math.max(lo, Math.min(hi, v));
+const clamp = (v: number, lo: number, hi: number) =>
+  Math.max(lo, Math.min(hi, v));
 
 export function usePinchGesture(opts: {
   enabled?: boolean;
@@ -20,63 +23,114 @@ export function usePinchGesture(opts: {
 }) {
   const {
     enabled = true,
-    zoom, x, y,
-    containerW, containerH,
-    minScale = 0.5, maxScale = 2.5,
+    zoom,
+    x,
+    y,
+    containerW,
+    containerH,
+    minScale = 0.5,
+    maxScale = 2.5,
     onTransformChange,
-    onGestureStart, onGestureEnd,
+    onGestureStart,
+    onGestureEnd,
   } = opts;
 
-  // refs anclados al comienzo del gesto
+  const zoomRef = useRef(zoom);
+  const xRef = useRef(x);
+  const yRef = useRef(y);
+  const onTransformChangeRef = useRef(onTransformChange);
+  const onGestureStartRef = useRef(onGestureStart);
+  const onGestureEndRef = useRef(onGestureEnd);
+  const wRef = useRef(containerW);
+  const hRef = useRef(containerH);
+
+  useEffect(() => {
+    zoomRef.current = zoom;
+  }, [zoom]);
+
+  useEffect(() => {
+    xRef.current = x;
+  }, [x]);
+
+  useEffect(() => {
+    yRef.current = y;
+  }, [y]);
+
+  useEffect(() => {
+    onTransformChangeRef.current = onTransformChange;
+  }, [onTransformChange]);
+
+  useEffect(() => {
+    onGestureStartRef.current = onGestureStart;
+  }, [onGestureStart]);
+
+  useEffect(() => {
+    onGestureEndRef.current = onGestureEnd;
+  }, [onGestureEnd]);
+
+  useEffect(() => {
+    wRef.current = containerW;
+  }, [containerW]);
+
+  useEffect(() => {
+    hRef.current = containerH;
+  }, [containerH]);
+
   const z0Ref = useRef(zoom);
-  const x0Ref = useRef(x);
-  const y0Ref = useRef(y);
-  const pivotPxRef = useRef<{ x: number; y: number } | null>(null);
+  const c0Ref = useRef<{ cx: number; cy: number } | null>(null);
 
   const pinch = useMemo(() => {
-    if (!enabled) return Gesture.Pinch().enabled(false);
+    const g = Gesture.Pinch()
+      .runOnJS(true)
+      .enabled(enabled);
 
-    return Gesture.Pinch()
+    if (!enabled) return g;
+
+    return g
       .onBegin((e) => {
-        z0Ref.current = zoom;
-        x0Ref.current = x;
-        y0Ref.current = y;
-        pivotPxRef.current = { x: e.focalX, y: e.focalY };
-        onGestureStart?.();
+        const z0 = zoomRef.current || 1;
+        const x0 = xRef.current;
+        const y0 = yRef.current;
+
+        const fx = Number.isFinite(e.focalX) ? e.focalX : wRef.current / 2;
+        const fy = Number.isFinite(e.focalY) ? e.focalY : hRef.current / 2;
+
+        z0Ref.current = z0;
+
+        c0Ref.current = {
+          cx: fx / z0 - x0,
+          cy: fy / z0 - y0,
+        };
+
+        onGestureStartRef.current?.();
       })
       .onUpdate((e) => {
-        if (!onTransformChange) return;
+        const cb = onTransformChangeRef.current;
+        const base = c0Ref.current;
 
-        const z0 = z0Ref.current;
-        const x0 = x0Ref.current;
-        const y0 = y0Ref.current;
+        if (!cb || !base) return;
 
-        // nueva escala (clamp)
-        const z1 = clamp(z0 * (e.scale ?? 1), minScale, maxScale);
+        const z0 = z0Ref.current || 1;
+        const scale = Number.isFinite(e.scale) ? e.scale : 1;
+        const z1 = clamp(z0 * scale, minScale, maxScale);
 
-        const anchor = pivotPxRef.current ?? { x: containerW / 2, y: containerH / 2 };
-        // punto del canvas bajo el ancla al iniciar
-        const c0x = anchor.x / z0 - x0;
-        const c0y = anchor.y / z0 - y0;
+        const fx = Number.isFinite(e.focalX) ? e.focalX : wRef.current / 2;
+        const fy = Number.isFinite(e.focalY) ? e.focalY : hRef.current / 2;
 
-        // nuevo pan para mantener c0 bajo el ancla
-        const nx = anchor.x / z1 - c0x;
-        const ny = anchor.y / z1 - c0y;
+        const nx = fx / z1 - base.cx;
+        const ny = fy / z1 - base.cy;
 
-        onTransformChange({ zoom: z1, x: nx, y: ny });
+        cb({
+          zoom: z1,
+          x: nx,
+          y: ny,
+        });
       })
       .onFinalize(() => {
-        pivotPxRef.current = null;
-        onGestureEnd?.();
+        c0Ref.current = null;
+        onGestureEndRef.current?.();
       });
-  }, [
-    enabled,
-    zoom, x, y,
-    containerW, containerH,
-    minScale, maxScale,
-    onTransformChange,
-    onGestureStart, onGestureEnd,
-  ]);
+  }, [enabled, minScale, maxScale]);
 
   return pinch;
 }
