@@ -1,34 +1,30 @@
 // components/plan-area/InteractiveOverlay.tsx
+
 import React, { memo } from 'react';
 import { G, Polygon } from 'react-native-svg';
-import { ZoneType } from '../../lib/mapsConfig';
+
+import { Pt, ZoneType } from '../../lib/mapsConfig';
 import { toPointsStr } from '../../lib/zoomMath';
 import { route_style, zoneStyleById } from '../../theme/mapStyles';
 
 type Props = {
-  width: number;
-  height: number;
   zones: ZoneType[];
   selectedZoneId: string | null;
   selectedPathPts: number[][] | null;
-  onZonePress: (id: string) => void;
   renderZone?: (zone: ZoneType, selected: boolean) => React.ReactNode;
 };
 
 function InteractiveOverlay({
-  width: _width,
-  height: _height,
   zones,
   selectedZoneId,
   selectedPathPts,
-  onZonePress: _onZonePress,
   renderZone,
 }: Props) {
   return (
     <G pointerEvents="none">
       {selectedPathPts && selectedPathPts.length >= 3 && (
         <Polygon
-          points={toPointsStr(selectedPathPts as any)}
+          points={toPointsStr(selectedPathPts as Pt[])}
           fill={route_style.fill}
           stroke={route_style.stroke}
           strokeWidth={route_style.strokeWidth}
@@ -37,20 +33,23 @@ function InteractiveOverlay({
         />
       )}
 
-      {zones.map((z) => {
-        const selected = z.id === selectedZoneId;
+      {zones.map((zone) => {
+        const selected = zone.id === selectedZoneId;
 
         if (renderZone) {
-          const node = renderZone(z, selected);
-          if (node) return <React.Fragment key={z.id}>{node}</React.Fragment>;
+          const customNode = renderZone(zone, selected);
+
+          if (customNode) {
+            return <React.Fragment key={zone.id}>{customNode}</React.Fragment>;
+          }
         }
 
-        const style = zoneStyleById(z.id, selected);
+        const style = zoneStyleById(zone.id, selected);
 
         return (
           <Polygon
-            key={z.id}
-            points={toPointsStr(z.points as any)}
+            key={zone.id}
+            points={toPointsStr(zone.points as Pt[])}
             fill={style.fill}
             stroke={style.stroke}
             strokeWidth={style.strokeWidth}

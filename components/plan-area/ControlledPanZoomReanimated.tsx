@@ -10,24 +10,18 @@ import Animated, {
 } from 'react-native-reanimated';
 import { Svg, G } from 'react-native-svg';
 
-type Props = {
-  width: number;
-  height: number;
+import { panZoomStyles } from '../../theme/panZoomStyles';
+import type { PanZoomBaseProps, Transform } from './panZoomTypes';
+import {
+  DEFAULT_MAX_SCALE,
+  DEFAULT_MIN_SCALE,
+  PAN_MIN_DISTANCE,
+  SINGLE_POINTER,
+  TAP_MAX_DISTANCE,
+} from './panZoomConstants';
 
-  containerW: number;
-  containerH: number;
-
-  zoom: number;
-  x: number;
-  y: number;
-
-  minScale?: number;
-  maxScale?: number;
-
-  onTransformEnd?: (t: { zoom: number; x: number; y: number }) => void;
-  onTapCanvas?: (pt: { cx: number; cy: number }) => void;
-
-  children: React.ReactNode;
+type Props = PanZoomBaseProps & {
+  onTransformEnd?: (t: Transform) => void;
 };
 
 const clamp = (value: number, min: number, max: number) => {
@@ -43,8 +37,8 @@ export default function ControlledPanZoomReanimated({
   zoom,
   x,
   y,
-  minScale = 0.5,
-  maxScale = 2.5,
+  minScale = DEFAULT_MIN_SCALE,
+  maxScale = DEFAULT_MAX_SCALE,
   onTransformEnd,
   onTapCanvas,
   children,
@@ -94,8 +88,8 @@ export default function ControlledPanZoomReanimated({
   };
 
   const panGesture = Gesture.Pan()
-    .maxPointers(1)
-    .minDistance(8)
+    .maxPointers(SINGLE_POINTER)
+    .minDistance(PAN_MIN_DISTANCE)
     .onBegin(() => {
       'worklet';
 
@@ -170,7 +164,7 @@ export default function ControlledPanZoomReanimated({
     });
 
   const tapGesture = Gesture.Tap()
-    .maxDistance(8)
+    .maxDistance(TAP_MAX_DISTANCE)
     .onEnd((e, success) => {
       'worklet';
 
@@ -192,7 +186,7 @@ export default function ControlledPanZoomReanimated({
   return (
     <View
       style={[
-        styles.wrapper,
+        panZoomStyles.clippedWrapper,
         {
           width: containerW,
           height: containerH,
@@ -203,7 +197,7 @@ export default function ControlledPanZoomReanimated({
         <View style={StyleSheet.absoluteFill} collapsable={false}>
           <Animated.View
             style={[
-              styles.animatedLayer,
+              panZoomStyles.animatedLayer,
               {
                 width,
                 height,
@@ -211,32 +205,18 @@ export default function ControlledPanZoomReanimated({
               animatedStyle,
             ]}
             collapsable={false}
-            // renderToHardwareTextureAndroid
           >
-             <Svg
+            <Svg
               pointerEvents="none"
               width={width}
               height={height}
               viewBox={`0 0 ${width} ${height}`}
             >
               <G>{children}</G>
-            </Svg> 
-            
+            </Svg>
           </Animated.View>
         </View>
       </GestureDetector>
     </View>
   );
 }
-
-const styles = StyleSheet.create({
-  wrapper: {
-    backgroundColor: '#fff',
-    overflow: 'hidden',
-  },
-  animatedLayer: {
-    position: 'absolute',
-    left: 0,
-    top: 0,
-  },
-});

@@ -10,7 +10,6 @@ function MapViewerContent({
   planData,
   selectedZoneId,
   selectedPathPts,
-  onZonePress,
   renderZone,
   connectionOverlay: ConnectionOverlay,
   showConnections = false,
@@ -34,12 +33,9 @@ function MapViewerContent({
       )}
 
       <InteractiveOverlay
-        width={planData.width}
-        height={planData.height}
         zones={planData.zones}
         selectedZoneId={selectedZoneId}
         selectedPathPts={selectedPathPts}
-        onZonePress={onZonePress}
         renderZone={renderZone}
       />
     </>
