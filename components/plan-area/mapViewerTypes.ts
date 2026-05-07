@@ -39,7 +39,6 @@ export type MapViewerContentProps = {
   planData: PlanData;
   selectedZoneId: string | null;
   selectedPathPts: number[][] | null;
-  onZonePress: (zoneId: string) => void;
   renderZone?: (zone: ZoneType, selected: boolean) => React.ReactNode;
   connectionOverlay?: React.ComponentType<any> | null;
   showConnections?: boolean;

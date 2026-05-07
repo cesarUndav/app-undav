@@ -9,9 +9,7 @@ import MapViewerContent from './plan-area/MapViewerContent';
 
 import { hitTestZoneIdAtPoint } from '../lib/hitTest';
 
-import type {
-  MapViewerProps,
-} from './plan-area/mapViewerTypes';
+import type { MapViewerProps } from './plan-area/mapViewerTypes';
 
 function MapViewer({
   BaseMapComponent,
@@ -60,13 +58,6 @@ function MapViewer({
     return selectedZone.path as number[][];
   }, [planData.zones, selectedZoneId]);
 
-  const handleZonePress = useCallback(
-    (id: string) => {
-      onZonePress(id);
-    },
-    [onZonePress]
-  );
-
   const handleTapCanvas = useCallback(
     ({ cx, cy }: { cx: number; cy: number }) => {
       const id = hitTestZoneIdAtPoint(planData.zones, cx, cy);
@@ -84,7 +75,6 @@ function MapViewer({
       planData={planData}
       selectedZoneId={selectedZoneId}
       selectedPathPts={selectedPathPts}
-      onZonePress={handleZonePress}
       renderZone={renderZone}
       connectionOverlay={connectionOverlay}
       showConnections={showConnections}
