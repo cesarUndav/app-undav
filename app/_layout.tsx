@@ -1,4 +1,21 @@
 // _layout.tsx
+
+// ESTO DEBE IR EN LA LÍNEA 1 DE TU ARCHIVO PRINCIPAL
+if (typeof global.fetch !== 'undefined' && (global.fetch as any).polyfill) {
+  // Guardamos las referencias originales por si acaso
+  const _global = global as any;
+  
+  // Forzamos la eliminación del polyfill que causa el error 567
+  delete _global.fetch;
+  delete _global.Headers;
+  delete _global.Request;
+  delete _global.Response;
+  
+  console.log("⚠️ Polyfill whatwg-fetch detectado y eliminado. Usando motor nativo.");
+} else {
+  console.log("Polyfill NO detectado.");
+}
+
 import 'react-native-gesture-handler'; // <-- PRIMERA línea siempre
 import { Slot, Stack, usePathname, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
@@ -47,7 +64,7 @@ export default function Layout() {
       }
       try {
         const token = await AsyncStorage.getItem('token');
-        const personaIdStr = await AsyncStorage.getItem('persona_id');
+        const personaIdStr = await AsyncStorage.getItem('idPersona');
 
         if (token && personaIdStr) {
           const personaId = parseInt(personaIdStr, 10);

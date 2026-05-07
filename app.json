@@ -19,12 +19,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSAppTransportSecurity": {
-          "NSExceptionDomains": {
-            "172.16.1.43": {
-              "NSIncludesSubdomains": true,
-              "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
-            }
-          }
+          "NSAllowsArbitraryLoads": true 
         },
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -37,10 +32,10 @@
       },
       "package": "com.anonymous.appundav",
       "permissions": [
-        "android.permission.INTERNET",
-        "android.permission.ACCESS_NETWORK_STATE"
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
       ],
-      "usesCleartextTraffic": false
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",
