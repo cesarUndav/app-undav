@@ -5,30 +5,13 @@ import { View, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 
 import ControlledPanZoom from './plan-area/ControlledPanZoom';
+import MapViewerContent from './plan-area/MapViewerContent';
 
-import { PlanData, ZoneType } from '../lib/mapsConfig';
 import { hitTestZoneIdAtPoint } from '../lib/hitTest';
-import InteractiveOverlay from './plan-area/InteractiveOverlay';
 
-type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
-
-type Props = {
-  BaseMapComponent: React.ComponentType<any>;
-  planData: PlanData;
-  containerW: number;
-  containerH: number;
-  selectedZoneId: string | null;
-  onZonePress: (zoneId: string) => void;
-  zoomParams: ZoomTarget;
-  onTransformChange?: (t: { zoom: number; x: number; y: number }) => void;
-  renderZone?: (zone: ZoneType, selected: boolean) => React.ReactNode;
-  minScale?: number;
-  maxScale?: number;
-  testID?: string;
-  connectionOverlay?: React.ComponentType<any> | null;
-  showConnections?: boolean;
-  viewportRef?: React.Ref<any>;
-};
+import type {
+  MapViewerProps,
+} from './plan-area/mapViewerTypes';
 
 function MapViewer({
   BaseMapComponent,
@@ -43,15 +26,16 @@ function MapViewer({
   minScale,
   maxScale,
   testID,
-  connectionOverlay: ConnectionOverlay,
+  connectionOverlay,
   showConnections = false,
   viewportRef,
-}: Props) {
+}: MapViewerProps) {
   const isExpoGo = Constants.appOwnership === 'expo';
 
   const fallbackZoom = useMemo(() => {
     const w = Math.max(1, containerW);
     const h = Math.max(1, containerH);
+
     return Math.min(w / planData.width, h / planData.height);
   }, [containerW, containerH, planData.width, planData.height]);
 
@@ -62,9 +46,18 @@ function MapViewer({
 
   const selectedPathPts = useMemo(() => {
     if (!selectedZoneId) return null;
-    const sel = planData.zones.find((z) => z.id === selectedZoneId);
-    if (!sel?.path || !Array.isArray(sel.path) || sel.path.length < 3) return null;
-    return sel.path as number[][];
+
+    const selectedZone = planData.zones.find((zone) => zone.id === selectedZoneId);
+
+    if (
+      !selectedZone?.path ||
+      !Array.isArray(selectedZone.path) ||
+      selectedZone.path.length < 3
+    ) {
+      return null;
+    }
+
+    return selectedZone.path as number[][];
   }, [planData.zones, selectedZoneId]);
 
   const handleZonePress = useCallback(
@@ -77,39 +70,25 @@ function MapViewer({
   const handleTapCanvas = useCallback(
     ({ cx, cy }: { cx: number; cy: number }) => {
       const id = hitTestZoneIdAtPoint(planData.zones, cx, cy);
-      if (id) onZonePress(id);
+
+      if (id) {
+        onZonePress(id);
+      }
     },
     [planData.zones, onZonePress]
   );
 
   const content = (
-    <>
-      <BaseMapComponent
-        width={planData.width}
-        height={planData.height}
-        viewBox={`0 0 ${planData.width} ${planData.height}`}
-        preserveAspectRatio="none"
-      />
-
-      {showConnections && ConnectionOverlay && (
-        <ConnectionOverlay
-          width={planData.width}
-          height={planData.height}
-          viewBox={`0 0 ${planData.width} ${planData.height}`}
-          preserveAspectRatio="none"
-        />
-      )}
-
-      <InteractiveOverlay
-        width={planData.width}
-        height={planData.height}
-        zones={planData.zones}
-        selectedZoneId={selectedZoneId}
-        selectedPathPts={selectedPathPts}
-        onZonePress={handleZonePress}
-        renderZone={renderZone}
-      />
-    </>
+    <MapViewerContent
+      BaseMapComponent={BaseMapComponent}
+      planData={planData}
+      selectedZoneId={selectedZoneId}
+      selectedPathPts={selectedPathPts}
+      onZonePress={handleZonePress}
+      renderZone={renderZone}
+      connectionOverlay={connectionOverlay}
+      showConnections={showConnections}
+    />
   );
 
   const renderPanZoom = () => {
