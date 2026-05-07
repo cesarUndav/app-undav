@@ -21,7 +21,7 @@ export type PlanAreaHandle = {
 
 type Props = {
   planData: PlanData;
-  floors: { key: string; SvgComponent: React.ComponentType<any> }[];
+  floors: { key: string; BaseMapComponent: React.ComponentType<any> }[];
   floorIndex: number;
   onChangeFloor: (i: number) => void;
   selectedZoneId: string | null;
@@ -188,7 +188,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
         <>
           <MapViewer
             viewportRef={mapViewportRef}
-            SvgComponent={floors[floorIndex].SvgComponent}
+            BaseMapComponent={floors[floorIndex].BaseMapComponent}
             planData={planData}
             containerW={box.w}
             containerH={box.h}

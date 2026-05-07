@@ -30,5 +30,5 @@ export type FloorKey = '0' | '1' | '2' | '3' | '4' | '5';
 
 export interface FloorEntry {
   key: FloorKey;
-  SvgComponent: React.FC<any>;
+  BaseMapComponent: React.FC<any>;
 }

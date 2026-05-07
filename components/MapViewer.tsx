@@ -13,7 +13,7 @@ import InteractiveOverlay from './plan-area/InteractiveOverlay';
 type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
 
 type Props = {
-  SvgComponent: React.ComponentType<any>;
+  BaseMapComponent: React.ComponentType<any>;
   planData: PlanData;
   containerW: number;
   containerH: number;
@@ -31,7 +31,7 @@ type Props = {
 };
 
 function MapViewer({
-  SvgComponent,
+  BaseMapComponent,
   planData,
   containerW,
   containerH,
@@ -84,7 +84,7 @@ function MapViewer({
 
   const content = (
     <>
-      <SvgComponent
+      <BaseMapComponent
         width={planData.width}
         height={planData.height}
         viewBox={`0 0 ${planData.width} ${planData.height}`}
