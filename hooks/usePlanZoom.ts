@@ -8,7 +8,7 @@ export type ZoomParams = { key: string; zoom: number; x: number; y: number } | n
 
 type UsePlanZoomArgs = {
   planData: PlanData;
-  floors: { key: string; SvgComponent: React.ComponentType<any> }[];
+  floors: { key: string; BaseMapComponent: React.ComponentType<any> }[];
   floorIndex: number;
   mapId: string;
   /** Padding del encuadre general (Ver todo) */

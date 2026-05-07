@@ -1,7 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 
-import { DigestClient } from "@/app/lib/DigestClient";
+import { DigestClient } from "@/lib/DigestClient";
 
 export interface User {
   idPersona: string;
