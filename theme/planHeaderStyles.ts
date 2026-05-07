@@ -4,10 +4,6 @@ import { StyleSheet } from 'react-native';
 export const BTN_H = 44;
 export const MENU_OFFSET = 4;
 
-/**
- * Estilos del header de Planos (PlanHeader.tsx)
- * Nota: aquí vive el layout del header, NO en mapStyles.
- */
 export const planHeaderStyles = StyleSheet.create({
   container: {
     paddingHorizontal: 16,
@@ -95,10 +91,6 @@ export const planHeaderStyles = StyleSheet.create({
   },
 });
 
-/**
- * Si este dropdownStyles aún se usa en algún lado, dejalo.
- * Si ya no se usa, se puede eliminar más adelante.
- */
 export const dropdownStyles = StyleSheet.create({
   wrapper: { position: 'relative', height: BTN_H, zIndex: 30 },
   button: {
