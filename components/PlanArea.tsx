@@ -13,7 +13,7 @@ import { useTooltip } from '../hooks/useTooltip';
 import { usePlanAreaAnimation } from '../hooks/usePlanAreaAnimation';
 import type { ZoomParams } from '../hooks/usePlanZoom';
 
-import PlanAreaControls from './planArea/PlanAreaControls';
+import PlanAreaControls from './plan-area/PlanAreaControls';
 
 export type PlanAreaHandle = {
   zoomToZone: (zoneId: string) => void;

@@ -1,4 +1,4 @@
-// components/planArea/InteractiveOverlay.tsx
+// components/plan-area/InteractiveOverlay.tsx
 import React, { memo } from 'react';
 import { G, Polygon } from 'react-native-svg';
 import { ZoneType } from '../../lib/mapsConfig';

@@ -1,4 +1,4 @@
-// components/planArea/ArrowAlongVector.tsx
+// components/plan-area/ArrowAlongVector.tsx
 import React, { memo } from 'react';
 import { G, Polygon } from 'react-native-svg';
 // IMPORTA tu SVG con la ruta CORRECTA desde este archivo:
