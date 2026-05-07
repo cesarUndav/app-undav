@@ -1,27 +1,8 @@
 // ==============================
-// File: app/mapsConfig.ts
+// File: lib/mapsConfig.ts
 // ==============================
 import React from 'react';
-
-// SVGs (pisos)
-import Espana0 from '../assets/maps/Espana/espana0.svg';
-
-import Arenales0 from '../assets/maps/Arenales/arenales0.svg';
-import Arenales1 from '../assets/maps/Arenales/arenales1.svg';
-import Arenales2 from '../assets/maps/Arenales/arenales2.svg';
-import Arenales3 from '../assets/maps/Arenales/arenales3.svg';
-import Arenales4 from '../assets/maps/Arenales/arenales4.svg';
-import Arenales5 from '../assets/maps/Arenales/arenales5.svg';
-import PineyroA0 from '../assets/maps/PineyroA/pineyroA0.svg';
-import PineyroA1 from '../assets/maps/PineyroA/pineyroA1.svg';
-import PineyroA2 from '../assets/maps/PineyroA/pineyroA2.svg';
-import PineyroA3 from '../assets/maps/PineyroA/pineyroA3.svg';
-import PineyroB0 from '../assets/maps/PineyroB/pineyroB0.svg';
-import PineyroB1 from '../assets/maps/PineyroB/pineyroB1.svg';
-import PineyroB2 from '../assets/maps/PineyroB/pineyroB2.svg';
-import PineyroC0 from '../assets/maps/PineyroC/pineyroC0.svg';
-import PineyroC1 from '../assets/maps/PineyroC/pineyroC1.svg';
-import PineyroC2 from '../assets/maps/PineyroC/pineyroC2.svg';
+import { Image as SvgImage } from 'react-native-svg';
 
 // JSON PlanData
 import espana0Data from '../assets/maps/Espana/espana0.json';
@@ -45,6 +26,79 @@ import pineyroB2Data from '../assets/maps/PineyroB/pineyroB2.json';
 import pineyroC0Data from '../assets/maps/PineyroC/pineyroC0.json';
 import pineyroC1Data from '../assets/maps/PineyroC/pineyroC1.json';
 import pineyroC2Data from '../assets/maps/PineyroC/pineyroC2.json';
+
+// Overlays de conexiones — se mantienen como SVG
+import PineyroA0Conn from '../assets/maps/PineyroA/pineyroA0connections.svg';
+import PineyroA1Conn from '../assets/maps/PineyroA/pineyroA1connections.svg';
+import PineyroA2Conn from '../assets/maps/PineyroA/pineyroA2connections.svg';
+
+import PineyroB0Conn from '../assets/maps/PineyroB/pineyroB0connections.svg';
+import PineyroB1Conn from '../assets/maps/PineyroB/pineyroB1connections.svg';
+import PineyroB2Conn from '../assets/maps/PineyroB/pineyroB2connections.svg';
+
+import PineyroC0Conn from '../assets/maps/PineyroC/pineyroC0connections.svg';
+import PineyroC1Conn from '../assets/maps/PineyroC/pineyroC1connections.svg';
+import PineyroC2Conn from '../assets/maps/PineyroC/pineyroC2connections.svg';
+
+// ==============================
+// Base maps PNG
+// ==============================
+const espana0Png = require('../assets/maps/Espana/espana0.png');
+
+const arenales0Png = require('../assets/maps/Arenales/arenales0.png');
+const arenales1Png = require('../assets/maps/Arenales/arenales1.png');
+const arenales2Png = require('../assets/maps/Arenales/arenales2.png');
+const arenales3Png = require('../assets/maps/Arenales/arenales3.png');
+const arenales4Png = require('../assets/maps/Arenales/arenales4.png');
+const arenales5Png = require('../assets/maps/Arenales/arenales5.png');
+
+const pineyroA0Png = require('../assets/maps/PineyroA/pineyroA0.png');
+const pineyroA1Png = require('../assets/maps/PineyroA/pineyroA1.png');
+const pineyroA2Png = require('../assets/maps/PineyroA/pineyroA2.png');
+const pineyroA3Png = require('../assets/maps/PineyroA/pineyroA3.png');
+
+const pineyroB0Png = require('../assets/maps/PineyroB/pineyroB0.png');
+const pineyroB1Png = require('../assets/maps/PineyroB/pineyroB1.png');
+const pineyroB2Png = require('../assets/maps/PineyroB/pineyroB2.png');
+
+const pineyroC0Png = require('../assets/maps/PineyroC/pineyroC0.png');
+const pineyroC1Png = require('../assets/maps/PineyroC/pineyroC1.png');
+const pineyroC2Png = require('../assets/maps/PineyroC/pineyroC2.png');
+
+function createPngPlanComponent(source: any): React.FC<any> {
+  return function PngPlanComponent({ width, height }: { width: number; height: number }) {
+    return React.createElement(SvgImage, {
+      x: 0,
+      y: 0,
+      width,
+      height,
+      href: source,
+      preserveAspectRatio: 'none',
+    });
+  };
+}
+
+const Espana0 = createPngPlanComponent(espana0Png);
+
+const Arenales0 = createPngPlanComponent(arenales0Png);
+const Arenales1 = createPngPlanComponent(arenales1Png);
+const Arenales2 = createPngPlanComponent(arenales2Png);
+const Arenales3 = createPngPlanComponent(arenales3Png);
+const Arenales4 = createPngPlanComponent(arenales4Png);
+const Arenales5 = createPngPlanComponent(arenales5Png);
+
+const PineyroA0 = createPngPlanComponent(pineyroA0Png);
+const PineyroA1 = createPngPlanComponent(pineyroA1Png);
+const PineyroA2 = createPngPlanComponent(pineyroA2Png);
+const PineyroA3 = createPngPlanComponent(pineyroA3Png);
+
+const PineyroB0 = createPngPlanComponent(pineyroB0Png);
+const PineyroB1 = createPngPlanComponent(pineyroB1Png);
+const PineyroB2 = createPngPlanComponent(pineyroB2Png);
+
+const PineyroC0 = createPngPlanComponent(pineyroC0Png);
+const PineyroC1 = createPngPlanComponent(pineyroC1Png);
+const PineyroC2 = createPngPlanComponent(pineyroC2Png);
 
 // ====== Tipos ======
 export type Pt = [number, number];
@@ -73,11 +127,13 @@ export interface ZoneLinkTo {
 
 export type BuildingKey = 'Espana' | 'Arenales' | 'PineyroA' | 'PineyroB' | 'PineyroC';
 
-// Claves de piso tipadas como literales (0..5 para cubrir Arenales)
 export type FloorKey = '0' | '1' | '2' | '3' | '4' | '5';
 
 export interface FloorEntry {
   key: FloorKey;
+
+  // Se mantiene el nombre SvgComponent para no modificar todavía otros archivos.
+  // Ahora puede renderizar SVG o PNG dentro del SVG principal.
   SvgComponent: React.FC<any>;
 }
 
@@ -85,7 +141,7 @@ export interface FloorEntry {
 function toPlanData(d: any): PlanData {
   const po =
     Array.isArray(d?.pathOrigin) && d.pathOrigin.length >= 2
-      ? [Number(d.pathOrigin[0]), Number(d.pathOrigin[1])] as [number, number]
+      ? ([Number(d.pathOrigin[0]), Number(d.pathOrigin[1])] as [number, number])
       : undefined;
 
   return {
@@ -119,7 +175,7 @@ export const edificios: Record<BuildingKey, { label: string; floors: FloorEntry[
       { key: '0', SvgComponent: PineyroA0 },
       { key: '1', SvgComponent: PineyroA1 },
       { key: '2', SvgComponent: PineyroA2 },
-      { key: '3', SvgComponent: PineyroA3 }, 
+      { key: '3', SvgComponent: PineyroA3 },
     ],
   },
   PineyroB: {
@@ -174,18 +230,6 @@ export const coordsMap: Record<BuildingKey, Partial<Record<FloorKey, PlanData>>>
 /* =========================
    OVERLAYS DE CONEXIONES
    ========================= */
-// Imports de overlays (solo PB/1/2 para A/B/C; el piso 3 de A NO tiene)
-import PineyroA0Conn from '../assets/maps/PineyroA/pineyroA0connections.svg';
-import PineyroA1Conn from '../assets/maps/PineyroA/pineyroA1connections.svg';
-import PineyroA2Conn from '../assets/maps/PineyroA/pineyroA2connections.svg';
-
-import PineyroB0Conn from '../assets/maps/PineyroB/pineyroB0connections.svg';
-import PineyroB1Conn from '../assets/maps/PineyroB/pineyroB1connections.svg';
-import PineyroB2Conn from '../assets/maps/PineyroB/pineyroB2connections.svg';
-
-import PineyroC0Conn from '../assets/maps/PineyroC/pineyroC0connections.svg';
-import PineyroC1Conn from '../assets/maps/PineyroC/pineyroC1connections.svg';
-import PineyroC2Conn from '../assets/maps/PineyroC/pineyroC2connections.svg';
 
 // Registry: solo Pineyro (A/B/C), pisos 0-2
 export const connectionOverlays: Partial<Record<BuildingKey, Partial<Record<FloorKey, React.FC<any>>>>> = {
@@ -193,7 +237,7 @@ export const connectionOverlays: Partial<Record<BuildingKey, Partial<Record<Floo
     '0': PineyroA0Conn,
     '1': PineyroA1Conn,
     '2': PineyroA2Conn,
-    // '3': (intencionalmente sin overlay)
+    // '3': intencionalmente sin overlay
   },
   PineyroB: {
     '0': PineyroB0Conn,

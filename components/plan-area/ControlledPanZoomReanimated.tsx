@@ -1,4 +1,4 @@
-// components/planArea/ControlledPanZoomReanimated.tsx
+// components/plan-area/ControlledPanZoomReanimated.tsx
 
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
@@ -213,14 +213,15 @@ export default function ControlledPanZoomReanimated({
             collapsable={false}
             // renderToHardwareTextureAndroid
           >
-            <Svg
+             <Svg
               pointerEvents="none"
               width={width}
               height={height}
               viewBox={`0 0 ${width} ${height}`}
             >
               <G>{children}</G>
-            </Svg>
+            </Svg> 
+            
           </Animated.View>
         </View>
       </GestureDetector>

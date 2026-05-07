@@ -4,7 +4,7 @@
 import React, { useMemo, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
 
-import PlanHeader from '../components/planArea/PlanHeader';
+import PlanHeader from '../components/plan-area/PlanHeader';
 import SearchModal from '../components/SearchModal';
 import PlanArea from '../components/PlanArea';
 
@@ -30,7 +30,7 @@ export default function Planos() {
   // Conexiones
   const [showConnections, setShowConnections] = useState(false);
 
-  // ✅ Derivados del plano
+  // Derivados del plano
   const {
     planData,
     currentFloors,

@@ -10,7 +10,7 @@ export function zoneStyleById(id: string, selected: boolean) {
   }
   const lower = id.toLowerCase();
   if (lower.startsWith('aula')) {
-    return { fill: 'rgba(0,120,255,0.08)', stroke: '#2b7cff', strokeWidth: 1 } as const;
+    return { fill: 'rgba(0,120,255,0.08)', stroke: '#2b7cff', strokeWidth: 2 } as const;
   }
   return { fill: 'rgba(0,0,0,0.001)', stroke: 'rgba(0,0,0,0)', strokeWidth: 1 } as const;
 }

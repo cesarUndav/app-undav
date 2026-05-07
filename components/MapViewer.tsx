@@ -4,11 +4,11 @@ import React, { memo, useCallback, useMemo } from 'react';
 import { View, StyleSheet } from 'react-native';
 import Constants from 'expo-constants';
 
-import ControlledPanZoom from './planArea/ControlledPanZoom';
+import ControlledPanZoom from './plan-area/ControlledPanZoom';
 
 import { PlanData, ZoneType } from '../lib/mapsConfig';
 import { hitTestZoneIdAtPoint } from '../lib/hitTest';
-import InteractiveOverlay from './planArea/InteractiveOverlay';
+import InteractiveOverlay from './plan-area/InteractiveOverlay';
 
 type ZoomTarget = { key: string; zoom: number; x: number; y: number } | null;
 
@@ -134,7 +134,7 @@ function MapViewer({
     }
 
     const ControlledPanZoomReanimated =
-      require('./planArea/ControlledPanZoomReanimated').default;
+      require('./plan-area/ControlledPanZoomReanimated').default;
 
     return (
       <ControlledPanZoomReanimated
