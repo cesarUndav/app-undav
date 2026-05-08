@@ -1,5 +1,5 @@
 // lib/searchRooms.ts
-import { edificios, coordsMap, BuildingKey, FloorKey, ZoneType } from '../app/mapsConfig';
+import { edificios, coordsMap, BuildingKey, FloorKey, ZoneType } from './mapsConfig';
 
 // ===== Tipos reutilizables =====
 export type AulaItem = ZoneType & { buildingKey: BuildingKey; floorKey: FloorKey };

@@ -1,52 +1,32 @@
-// ==============================
-// File: components/PlanArea.tsx
-// ==============================
-import React, { useEffect, useImperativeHandle, useMemo, useState, useCallback } from 'react';
-import { View, StyleSheet, LayoutChangeEvent, AccessibilityInfo } from 'react-native';
+// components/PlanArea.tsx
 
+import React, {
+  useEffect,
+  useImperativeHandle,
+  useMemo,
+  useState,
+  useCallback,
+} from 'react';
+import { View, LayoutChangeEvent, AccessibilityInfo } from 'react-native';
+
+import { planAreaStyles } from '../theme/planAreaStyles';
 import MapViewer from './MapViewer';
 import { floorLabel } from '../lib/floors';
-import { PlanData } from '../app/mapsConfig';
+
 import { usePlanZoom } from '../hooks/usePlanZoom';
 import { usePlanAreaEffects } from '../hooks/usePlanAreaEffects';
 import { useTooltip } from '../hooks/useTooltip';
 import { usePlanAreaAnimation } from '../hooks/usePlanAreaAnimation';
 import type { ZoomParams } from '../hooks/usePlanZoom';
 
-import PlanAreaControls from './PlanArea/PlanAreaControls';
+import PlanAreaControls from './plan-area/PlanAreaControls';
+import { usePlanAreaHandlers } from './plan-area/usePlanAreaHandlers';
+import type {
+  PlanAreaHandle,
+  PlanAreaProps,
+} from './plan-area/planAreaTypes';
 
-export type PlanAreaHandle = {
-  zoomToZone: (zoneId: string) => void;
-};
-
-type Props = {
-  planData: PlanData;
-  floors: { key: string; SvgComponent: React.ComponentType<any> }[];
-  floorIndex: number;
-  onChangeFloor: (i: number) => void;
-  selectedZoneId: string | null;
-  onSelectZone: (zoneId: string) => void;
-  mapId: string;
-
-  initialFit?: boolean; // default: true
-  fitPadding?: number; // default: 0.1
-  focusPadding?: number; // default: 0.18
-  fitMode?: 'canvas' | 'content'; // default: 'canvas'
-  guideRadius?: number; // default: 90
-  floorBadgeBottomY?: number;
-
-  showConnections?: boolean;
-  onToggleConnections?: () => void;
-  connectionOverlay?: React.ComponentType<any> | null;
-
-  // Coachmarks refs (opcionales)
-  mapViewportRef?: React.Ref<any>;
-  guidePointButtonRef?: React.Ref<any>;
-  fitAllButtonRef?: React.Ref<any>;
-  floorControlsRef?: React.Ref<any>;
-};
-
-const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
+const PlanArea = React.forwardRef<PlanAreaHandle, PlanAreaProps>(function PlanArea(
   {
     planData,
     floors,
@@ -76,7 +56,7 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
   const { tooltip, fade, showTip } = useTooltip();
 
   const zoneLabel = useMemo(
-    () => (id: string) => planData.zones.find(z => z.id === id)?.name ?? id,
+    () => (id: string) => planData.zones.find((z) => z.id === id)?.name ?? id,
     [planData.zones]
   );
 
@@ -132,63 +112,45 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
     }
   }, [floorIndex, floors]);
 
-  const onLayout = useCallback((e: LayoutChangeEvent) => {
-    const { width, height } = e.nativeEvent.layout;
-    onLayoutBox(width, height);
-  }, [onLayoutBox]);
+  const onLayout = useCallback(
+    (e: LayoutChangeEvent) => {
+      const { width, height } = e.nativeEvent.layout;
+      onLayoutBox(width, height);
+    },
+    [onLayoutBox]
+  );
 
   const displayZoomParams = live ?? animatedView ?? zoomParams;
 
-  const handleZonePress = useCallback((id: string) => {
-    onSelectZone(id);
-    showTip(`${zoneLabel(id)}`);
-  }, [onSelectZone, showTip, zoneLabel]);
-
-  const handleTransformChange = useCallback((t: { zoom: number; x: number; y: number }) => {
-    setLive(prev =>
-      prev
-        ? { ...prev, ...t }
-        : (animatedView ?? zoomParams)
-        ? { ...(animatedView ?? zoomParams)!, ...t }
-        : { key: 'live', ...t }
-    );
-  }, [animatedView, zoomParams]);
-
-  const handlePrevFloor = useCallback(() => {
-    if (floorIndex > 0) {
-      const next = floorIndex - 1;
-      onChangeFloor(next);
-      setZoomParams(null);
-      showTip(floorLabel(next));
-    }
-  }, [floorIndex, onChangeFloor, setZoomParams, showTip]);
-
-  const handleNextFloor = useCallback(() => {
-    if (floorIndex < floors.length - 1) {
-      const next = floorIndex + 1;
-      onChangeFloor(next);
-      setZoomParams(null);
-      showTip(floorLabel(next));
-    }
-  }, [floorIndex, floors.length, onChangeFloor, setZoomParams, showTip]);
-
-  const handlePressGuidePoint = useCallback(() => {
-    focusGuidePoint();
-    showTip('Punto guía');
-  }, [focusGuidePoint, showTip]);
-
-  const handlePressFitAll = useCallback(() => {
-    fitAll();
-    showTip('Vista general');
-  }, [fitAll, showTip]);
+  const {
+    handleZonePress,
+    handleTransformChange,
+    handlePrevFloor,
+    handleNextFloor,
+    handlePressGuidePoint,
+    handlePressFitAll,
+  } = usePlanAreaHandlers({
+    floorIndex,
+    floorsLength: floors.length,
+    onChangeFloor,
+    onSelectZone,
+    showTip,
+    zoneLabel,
+    setZoomParams,
+    fitAll,
+    focusGuidePoint,
+    animatedView,
+    zoomParams,
+    setLive,
+  });
 
   return (
-    <View style={styles.box} onLayout={onLayout}>
+    <View style={planAreaStyles.box} onLayout={onLayout}>
       {box.w > 0 && box.h > 0 && (
         <>
           <MapViewer
             viewportRef={mapViewportRef}
-            SvgComponent={floors[floorIndex].SvgComponent}
+            BaseMapComponent={floors[floorIndex].BaseMapComponent}
             planData={planData}
             containerW={box.w}
             containerH={box.h}
@@ -221,16 +183,6 @@ const PlanArea = React.forwardRef<PlanAreaHandle, Props>(function PlanArea(
       )}
     </View>
   );
-});
-
-const styles = StyleSheet.create({
-  box: {
-    flex: 1,
-    marginTop: 12,
-    marginHorizontal: 16,
-    borderRadius: 12,
-    overflow: 'hidden',
-  },
 });
 
 export default React.memo(PlanArea);

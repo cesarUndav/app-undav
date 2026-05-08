@@ -1,6 +1,6 @@
 // hooks/usePlanZoom.ts
 import { useCallback, useState, useRef } from 'react';
-import { PlanData } from '../app/mapsConfig';
+import { PlanData } from '../lib/mapsConfig';
 import { clamp01, bboxFromPoints, unionRects, rectCenter, fitRectScale, panForCenter } from '../lib/zoomMath';
 
 
@@ -8,7 +8,7 @@ export type ZoomParams = { key: string; zoom: number; x: number; y: number } | n
 
 type UsePlanZoomArgs = {
   planData: PlanData;
-  floors: { key: string; SvgComponent: React.ComponentType<any> }[];
+  floors: { key: string; BaseMapComponent: React.ComponentType<any> }[];
   floorIndex: number;
   mapId: string;
   /** Padding del encuadre general (Ver todo) */

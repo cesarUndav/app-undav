@@ -9,7 +9,7 @@ import {
   BuildingKey,
   FloorKey,
   PlanData,
-} from '../../app/mapsConfig';
+} from '../../lib/mapsConfig';
 
 // Helper: ancla inferior de chevrons por edificio
 function bottomYForBuilding(b: '' | BuildingKey): number {
