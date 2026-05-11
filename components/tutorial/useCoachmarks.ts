@@ -1,12 +1,19 @@
-import { useCallback, useEffect, useMemo, useRef, useState } from "react";
-import { useWindowDimensions } from "react-native";
+// components/tutorial/useCoachmarks.ts
+
+import { useCallback, useEffect, useMemo, useRef, useState } from 'react';
+import { useWindowDimensions } from 'react-native';
 import type {
   CoachmarkStep,
   FinishReason,
   StartOptions,
   WindowRect,
-} from "../../types/tutorial";
-import { measureTargetInWindow } from "./measure";
+} from '../../types/tutorial';
+import { measureTargetInWindow } from './measure';
+import { isValidWindowRect, waitForNextFrame } from './coachmarkUtils';
+import {
+  findNextValidCoachmarkStep,
+  type CoachmarkDirection,
+} from './coachmarkStepResolver';
 
 type Snapshot = {
   index: number;
@@ -28,6 +35,13 @@ export function useCoachmarks() {
   const indexRef = useRef(0);
   const optionsRef = useRef<StartOptions | undefined>(undefined);
 
+  /**
+   * Identificador de ejecución.
+   * Cada vez que el tutorial inicia, se cierra o finaliza, cambia.
+   * Sirve para ignorar mediciones async viejas.
+   */
+  const runIdRef = useRef(0);
+
   useEffect(() => {
     stepsRef.current = steps;
   }, [steps]);
@@ -48,164 +62,207 @@ export function useCoachmarks() {
     return steps[snapshot.index] ?? null;
   }, [steps, snapshot.index]);
 
-  const findNextValid = useCallback(
-    async (fromIndex: number, direction: 1 | -1) => {
-      const list = stepsRef.current;
-      let i = fromIndex;
-
-      while (i >= 0 && i < list.length) {
-        const step = list[i];
-
-        if (step.shouldSkip?.()) {
-          i += direction;
-          continue;
-        }
-
-        const rect = await measureTargetInWindow(step.targetRef);
-        if (rect && rect.width > 1 && rect.height > 1) {
-          return { index: i, rect };
-        }
-
-        // No medible => saltar
-        i += direction;
-      }
-
-      return null;
-    },
-    []
-  );
-
-  const goToIndex = useCallback(
-    async (targetIndex: number, direction: 1 | -1) => {
-      const res = await findNextValid(targetIndex, direction);
-      if (!res) {
-        // No hay más pasos válidos. Cerramos sin marcar "seen" (caso raro).
-        setVisible(false);
-        setSteps([]);
-        setSnapshot({ index: 0, rect: null });
-        setStartOptions(undefined);
-        return;
-      }
-
-      setSnapshot({ index: res.index, rect: res.rect });
-    },
-    [findNextValid]
-  );
-
-  const stop = useCallback(() => {
-    // Cancelar a mitad => NO onFinish
+  const clearTutorialState = useCallback(() => {
     setVisible(false);
     setSteps([]);
     setSnapshot({ index: 0, rect: null });
     setStartOptions(undefined);
   }, []);
 
+  const isCurrentRunActive = useCallback((runId: number) => {
+    return runId === runIdRef.current && visibleRef.current;
+  }, []);
+
+  const findNextValid = useCallback(
+    async (
+      fromIndex: number,
+      direction: CoachmarkDirection,
+      runId: number
+    ) => {
+      return findNextValidCoachmarkStep({
+        steps: stepsRef.current,
+        fromIndex,
+        direction,
+        shouldContinue: () => isCurrentRunActive(runId),
+      });
+    },
+    [isCurrentRunActive]
+  );
+
+  const goToIndex = useCallback(
+    async (
+      targetIndex: number,
+      direction: CoachmarkDirection,
+      runId?: number
+    ) => {
+      const activeRunId = runId ?? runIdRef.current;
+
+      const result = await findNextValid(
+        targetIndex,
+        direction,
+        activeRunId
+      );
+
+      if (!isCurrentRunActive(activeRunId)) {
+        return;
+      }
+
+      if (!result) {
+        clearTutorialState();
+        return;
+      }
+
+      setSnapshot({
+        index: result.index,
+        rect: result.rect,
+      });
+    },
+    [clearTutorialState, findNextValid, isCurrentRunActive]
+  );
+
+  const stop = useCallback(() => {
+    runIdRef.current += 1;
+    clearTutorialState();
+  }, [clearTutorialState]);
+
   const finish = useCallback(
     async (reason: FinishReason) => {
+      const runId = runIdRef.current;
       const opts = optionsRef.current;
+
       try {
         await opts?.onFinish?.(reason);
       } finally {
-        setVisible(false);
-        setSteps([]);
-        setSnapshot({ index: 0, rect: null });
-        setStartOptions(undefined);
+        if (runId === runIdRef.current) {
+          runIdRef.current += 1;
+          clearTutorialState();
+        }
       }
     },
-    []
+    [clearTutorialState]
   );
 
   const start = useCallback(
     (inputSteps: CoachmarkStep[], options?: StartOptions) => {
-      const normalized = (inputSteps ?? []).filter(Boolean);
+      const normalizedSteps = (inputSteps ?? []).filter(Boolean);
 
-      setSteps(normalized);
+      if (normalizedSteps.length === 0) {
+        return;
+      }
+
+      const nextRunId = runIdRef.current + 1;
+      runIdRef.current = nextRunId;
+
+      setSteps(normalizedSteps);
       setStartOptions(options);
       setVisible(true);
       setSnapshot({ index: 0, rect: null });
 
-      // Asíncrono: ir al primer paso válido
-      (async () => {
-        // pequeña espera para asegurar layout
-        await new Promise<void>((r) => requestAnimationFrame(() => r()));
-        if (!visibleRef.current && !visible) {
-          // Si algo cerró inmediatamente, no seguimos
+      void (async () => {
+        await waitForNextFrame();
+
+        if (nextRunId !== runIdRef.current) {
           return;
         }
-        await goToIndex(0, 1);
+
+        /**
+         * Refleja inmediatamente el estado visible para que las operaciones async
+         * iniciadas en este mismo frame no dependan del próximo render.
+         */
+        visibleRef.current = true;
+
+        await goToIndex(0, 1, nextRunId);
       })();
     },
-    [goToIndex, visible]
+    [goToIndex]
   );
 
   const next = useCallback(() => {
     const list = stepsRef.current;
-    const i = indexRef.current;
+    const currentIndex = indexRef.current;
 
-    if (i >= list.length - 1) {
-      void finish("completed");
+    if (currentIndex >= list.length - 1) {
+      void finish('completed');
       return;
     }
 
-    void (async () => {
-      await goToIndex(i + 1, 1);
-    })();
+    void goToIndex(currentIndex + 1, 1);
   }, [finish, goToIndex]);
 
   const prev = useCallback(() => {
-    const i = indexRef.current;
-    if (i <= 0) return;
+    const currentIndex = indexRef.current;
 
-    void (async () => {
-      await goToIndex(i - 1, -1);
-    })();
+    if (currentIndex <= 0) {
+      return;
+    }
+
+    void goToIndex(currentIndex - 1, -1);
   }, [goToIndex]);
 
   const skip = useCallback(() => {
-    void finish("skipped");
+    void finish('skipped');
   }, [finish]);
 
   const remeasureCurrent = useCallback(async () => {
-    if (!visibleRef.current) return;
+    if (!visibleRef.current) {
+      return;
+    }
 
-    const step = stepsRef.current[indexRef.current];
-    if (!step) return;
+    const runId = runIdRef.current;
+    const currentIndex = indexRef.current;
+    const step = stepsRef.current[currentIndex];
+
+    if (!step) {
+      return;
+    }
 
     if (step.shouldSkip?.()) {
-      await goToIndex(indexRef.current + 1, 1);
+      await goToIndex(currentIndex + 1, 1, runId);
       return;
     }
 
     const rect = await measureTargetInWindow(step.targetRef);
-    if (!rect) {
-      await goToIndex(indexRef.current + 1, 1);
+
+    if (!isCurrentRunActive(runId)) {
       return;
     }
 
-    setSnapshot((s) => ({ ...s, rect }));
-  }, [goToIndex]);
+    if (!isValidWindowRect(rect)) {
+      await goToIndex(currentIndex + 1, 1, runId);
+      return;
+    }
 
-  // Rotación / resize => re-medimos el paso actual
+    setSnapshot((current) => ({
+      ...current,
+      rect,
+    }));
+  }, [goToIndex, isCurrentRunActive]);
+
   useEffect(() => {
-    if (!visible) return;
+    if (!visible) {
+      return;
+    }
+
     void (async () => {
-      await new Promise<void>((r) => requestAnimationFrame(() => r()));
+      await waitForNextFrame();
       await remeasureCurrent();
     })();
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [dims.width, dims.height]);
+  }, [dims.width, dims.height, visible, remeasureCurrent]);
 
   const allowOverlayTap = useMemo(() => {
     const step = currentStep;
     const opts = startOptions;
-    if (!step) return false;
+
+    if (!step) {
+      return false;
+    }
+
     return step.allowOverlayTap ?? opts?.allowOverlayTap ?? false;
   }, [currentStep, startOptions]);
 
   const isActive = useCallback(() => visibleRef.current, []);
 
   return {
-    // Controller (para Context)
     start,
     stop,
     next,
@@ -213,7 +270,6 @@ export function useCoachmarks() {
     skip,
     isActive,
 
-    // Props para overlay
     overlayProps: {
       visible,
       step: currentStep,
@@ -224,7 +280,7 @@ export function useCoachmarks() {
       onNext: next,
       onPrev: prev,
       onSkip: skip,
-      onRequestClose: stop, // back Android => cancelar sin marcar seen
+      onRequestClose: stop,
     },
   };
 }

@@ -1,4 +1,5 @@
 // components/tutorial/overlay/geometry.ts
+
 import type { EdgeInsets } from 'react-native-safe-area-context';
 import type { CoachmarkStep, WindowRect } from '../../../types/tutorial';
 
