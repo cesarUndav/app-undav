@@ -16,8 +16,17 @@ export type Transform = {
   y: number;
 };
 
+export type BaseMapComponentProps = {
+  width: number;
+  height: number;
+  viewBox?: string;
+  preserveAspectRatio?: string;
+  onLoad?: () => void;
+  onError?: () => void;
+};
+
 export type MapViewerProps = {
-  BaseMapComponent: React.ComponentType<any>;
+  BaseMapComponent: React.ComponentType<BaseMapComponentProps>;
   planData: PlanData;
   containerW: number;
   containerH: number;
@@ -35,7 +44,7 @@ export type MapViewerProps = {
 };
 
 export type MapViewerContentProps = {
-  BaseMapComponent: React.ComponentType<any>;
+  BaseMapComponent: React.ComponentType<BaseMapComponentProps>;
   planData: PlanData;
   selectedZoneId: string | null;
   selectedPathPts: number[][] | null;
