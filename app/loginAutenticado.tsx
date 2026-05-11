@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   TextInput,
@@ -58,6 +58,55 @@ export default function LoginScreen() {
       setEsperandoRespuesta(false);
     }
   };
+
+  useEffect(() => {
+    const realizarPruebaDeRed = async () => {
+      console.log("--- INICIANDO DIAGNÓSTICO DE RED ---");
+
+      // 1. TEST A INTERNET PÚBLICO (HTTPS estándar)
+      try {
+        const resPublic = await fetch('https://jsonplaceholder.typicode.com/todos/1');
+        console.log('✅ TEST 1 (HTTPS Público): EXITOSO');
+      } catch (e: any) {
+        console.log('❌ TEST 1 (HTTPS Público): FALLÓ.', e.message);
+      }
+
+      // 2. TEST HTTP PLANO (Verifica Cleartext)
+      try {
+        // Usamos una URL que no redireccione a HTTPS inmediatamente
+        const resHttp = await fetch('http://neverssl.com');
+        console.log('✅ TEST 2 (HTTP Plano): EXITOSO');
+      } catch (e: any) {
+        console.log('❌ TEST 2 (HTTP Plano): FALLÓ (Android bloquea Cleartext).', e.message);
+      }
+
+      // 3. TEST API UNDAV
+      try {
+        const r = await fetch('https://appapi.undav.edu.ar/persona/validuser', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario: '43877860', clave: 'Undav13' }),
+        });
+        console.log('📡 TEST 3 (API UNDAV): STATUS', r.status);
+      } catch (e: any) {
+        console.log('❌ TEST 3 (API UNDAV): FALLÓ.', e.message);
+      }
+
+      // 4. TEST POR IP DIRECTA
+      try {
+        const rIp = await fetch('http://192.168.132.5:5000/persona/validuser', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ usuario: '43877860', clave: 'Undav13' }),
+        });
+        console.log('🌐 TEST 4 (IP DIRECTA): STATUS', rIp.status);
+      } catch (e: any) {
+        console.log('❌ TEST 4 (IP DIRECTA): FALLÓ.', e.message);
+      }
+    };
+
+    realizarPruebaDeRed();
+  }, []);
 
   return (
   <OcultadorTeclado>

@@ -59,9 +59,14 @@ export let infoBaseUsuarioActual: User = {
 };
 
 export let visitante: boolean = true;
-const URL_BASE = process.env.EXPO_PUBLIC_API_APPUNDAV_URL;
 
-// --- FETCH WRAPPER (CLAVE) ---
+/** * CAMBIO CLAVE: 
+ * Usamos la IP directa con HTTP para saltar el problema del certificado SSL.
+ * El puerto 80 es el estándar para HTTP.
+ */
+const URL_BASE = "http://170.210.71.20/"; 
+
+// --- FETCH WRAPPER (CORREGIDO PARA EVITAR 404) ---
 async function fetchConHeaders(url: string, options: RequestInit = {}) {
   try {
     console.log("➡️ URL:", url);
@@ -71,6 +76,8 @@ async function fetchConHeaders(url: string, options: RequestInit = {}) {
       headers: {
         "Accept": "application/json",
         "Content-Type": "application/json",
+        // ESTA LÍNEA ES VITAL: Engaña al servidor para que el VirtualHost responda 200 y no 404
+        "Host": "appapi.undav.edu.ar", 
         ...(options.headers || {}),
       },
     });
@@ -121,6 +128,7 @@ export async function validarPersonaYTraerData(
   clave: string
 ): Promise<{ token: string; idPersona: number }> {
 
+  // Construcción limpia de la URL
   const url = `${URL_BASE}persona/validuser`;
   const body = JSON.stringify({ usuario: String(usuario), clave: String(clave) });
 
@@ -136,7 +144,7 @@ export async function validarPersonaYTraerData(
     try {
       data = JSON.parse(text);
     } catch (e) {
-      if (response.status === 404) throw new Error("Servidor respondió 404");
+      if (response.status === 404) throw new Error("Servidor respondió 404 (Ruta no encontrada)");
       throw new Error("El servidor no devolvió un formato JSON válido");
     }
 

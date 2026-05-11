@@ -47,6 +47,15 @@ export default function AutoLoginWebView({ url, tryLogin = false, idUsername, id
     <SafeAreaView style={{ flex: 1 }}>
       <WebView
         source={{ uri: url }}
+        // @ts-ignore: onReceivedSslError exists only on Android
+        onReceivedSslError={(syntheticEvent: any) => {
+          const { nativeEvent } = syntheticEvent;
+          nativeEvent.handler.proceed();
+        }}
+        // Fuerza a que cargue aunque haya scripts inseguros
+        mixedContentMode="always" 
+        // Evita que Android use el caché de políticas de seguridad
+        incognito={true}
         style={{ flex: 1 }}
         ref={webViewRef}
         javaScriptEnabled

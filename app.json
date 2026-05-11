@@ -35,7 +35,8 @@
         "INTERNET",
         "ACCESS_NETWORK_STATE"
       ],
-      "usesCleartextTraffic": true
+      "usesCleartextTraffic": true,
+      "networkSecurityConfig": "./network_config.xml"
     },
     "web": {
       "bundler": "metro",
@@ -67,4 +68,3 @@
     }
   }
 }
-
