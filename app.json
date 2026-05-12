@@ -3,7 +3,6 @@
     "name": "UNDAV App",
     "slug": "app-undav",
     "version": "1.0.0",
-    "entryPoint": "expo-router/entry",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
     "scheme": "myapp",
