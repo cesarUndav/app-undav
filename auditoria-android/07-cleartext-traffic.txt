@@ -1,0 +1,5 @@
+Consola: 
+PS C:\Users\cvacirca\Desktop\App undav\app-undav> Select-String -Path "android\**\*.xml" `
+>>   -Pattern "usesCleartextTraffic|cleartext" `
+>>   -CaseSensitive:$false |
+>>   Out-File auditoria-android\07-cleartext-traffic.txt

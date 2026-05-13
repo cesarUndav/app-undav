@@ -1,0 +1,5 @@
+Consola: 
+PS C:\Users\cvacirca\Desktop\App undav\app-undav> Select-String -Path "android\**\*.xml" `
+>>   -Pattern "uses-permission|INTERNET|ACCESS_NETWORK_STATE|SYSTEM_ALERT_WINDOW|ACCESS_FINE_LOCATION|ACCESS_COARSE_LOCATION" `
+>>   -CaseSensitive:$false |
+>>   Out-File auditoria-android\06-permisos-android.txt

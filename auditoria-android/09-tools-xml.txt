@@ -1,0 +1,5 @@
+Consola: 
+PS C:\Users\cvacirca\Desktop\App undav\app-undav> Select-String -Path "android\**\*.xml" `
+>>   -Pattern "tools:replace|tools:ignore|tools:targetApi|GoogleAppIndexingWarning" `
+>>   -CaseSensitive:$false |
+>>   Out-File auditoria-android\09-tools-xml.txt
