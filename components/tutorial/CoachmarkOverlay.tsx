@@ -1,6 +1,16 @@
 // components/tutorial/CoachmarkOverlay.tsx
+
 import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Animated, Modal, Pressable, StyleSheet, View, useWindowDimensions } from 'react-native';
+import {
+  Animated,
+  Modal,
+  Platform,
+  Pressable,
+  StatusBar,
+  StyleSheet,
+  View,
+  useWindowDimensions,
+} from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import type { CoachmarkStep, WindowRect } from '../../types/tutorial';
 
@@ -33,27 +43,69 @@ export function CoachmarkOverlay(props: Props) {
   const insets = useSafeAreaInsets();
   const { width: W, height: H } = useWindowDimensions();
 
-  const [tooltipSize, setTooltipSize] = useState<TooltipSize>({ width: 280, height: 140 });
+  const [tooltipSize, setTooltipSize] = useState<TooltipSize>({
+    width: 280,
+    height: 140,
+  });
 
   const fade = useRef(new Animated.Value(0)).current;
   const scale = useRef(new Animated.Value(0.98)).current;
 
+  const androidOffsetY =
+    Platform.OS === 'android' ? StatusBar.currentHeight ?? 0 : 0;
+
+  /**
+   * En Android, measureInWindow y Modal pueden trabajar con referencias
+   * verticales distintas. Sumamos la altura de la status bar al rect medido
+   * y también extendemos el alto del overlay para evitar una franja inferior
+   * sin cubrir.
+   */
+  const overlayHeight = H + androidOffsetY;
+
   useEffect(() => {
     if (!visible) return;
+
     fade.setValue(0);
     scale.setValue(0.98);
 
     Animated.parallel([
-      Animated.timing(fade, { toValue: 1, duration: 180, useNativeDriver: true }),
-      Animated.timing(scale, { toValue: 1, duration: 180, useNativeDriver: true }),
+      Animated.timing(fade, {
+        toValue: 1,
+        duration: 180,
+        useNativeDriver: true,
+      }),
+      Animated.timing(scale, {
+        toValue: 1,
+        duration: 180,
+        useNativeDriver: true,
+      }),
     ]).start();
   }, [visible, fade, scale, index]);
 
   const isLast = index === total - 1;
 
-  const paddedRect = useMemo(() => computePaddedRect(rect, step, W, H), [rect, step, W, H]);
+  const normalizedRect = useMemo(() => {
+    if (!rect) return null;
 
-  const tooltipMaxWidth = useMemo(() => computeTooltipMaxWidth(step, W), [step, W]);
+    if (Platform.OS !== 'android') {
+      return rect;
+    }
+
+    return {
+      ...rect,
+      y: rect.y + androidOffsetY,
+    };
+  }, [rect, androidOffsetY]);
+
+  const paddedRect = useMemo(
+    () => computePaddedRect(normalizedRect, step, W, overlayHeight),
+    [normalizedRect, step, W, overlayHeight]
+  );
+
+  const tooltipMaxWidth = useMemo(
+    () => computeTooltipMaxWidth(step, W),
+    [step, W]
+  );
 
   const tooltipPosition = useMemo(
     () =>
@@ -62,17 +114,21 @@ export function CoachmarkOverlay(props: Props) {
         step,
         tooltipSize,
         W,
-        H,
+        H: overlayHeight,
         insets,
       }),
-    [paddedRect, step, tooltipSize, W, H, insets]
+    [paddedRect, step, tooltipSize, W, overlayHeight, insets]
   );
 
-  const spotlight = useMemo(() => computeSpotlight(paddedRect, step), [paddedRect, step]);
+  const spotlight = useMemo(
+    () => computeSpotlight(paddedRect, step),
+    [paddedRect, step]
+  );
 
   const handleOverlayPress = () => {
     if (!visible) return;
     if (!props.allowOverlayTap) return;
+
     props.onNext();
   };
 
@@ -83,24 +139,24 @@ export function CoachmarkOverlay(props: Props) {
       visible={visible}
       transparent
       animationType="none"
-      statusBarTranslucent
+      statusBarTranslucent={Platform.OS === 'ios'}
       onRequestClose={props.onRequestClose}
     >
-      <View style={styles.root} accessibilityViewIsModal={false}>
-        {/* Overlay clickable */}
+      <View
+        style={[styles.root, { height: overlayHeight }]}
+        accessibilityViewIsModal={false}
+      >
         <Pressable
           style={StyleSheet.absoluteFill}
           onPress={handleOverlayPress}
           accessible={false}
           importantForAccessibility="no"
         >
-          {/* SVG overlay (sin pointer events) */}
           <View pointerEvents="none" style={StyleSheet.absoluteFill}>
-            <SpotlightMask width={W} height={H} spotlight={spotlight} />
+            <SpotlightMask width={W} height={overlayHeight} spotlight={spotlight} />
           </View>
         </Pressable>
 
-        {/* Tooltip */}
         <TooltipCard
           text={step?.text ?? ''}
           index={index}
@@ -116,7 +172,6 @@ export function CoachmarkOverlay(props: Props) {
           onNext={props.onNext}
           onSkip={props.onSkip}
           onMeasured={(size) => {
-            // Evitar updates ruidosos
             if (
               Math.abs(size.width - tooltipSize.width) > 1 ||
               Math.abs(size.height - tooltipSize.height) > 1
