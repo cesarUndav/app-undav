@@ -1,6 +1,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 
+// --- Interfaces ---
 export interface User {
   idPersona: string;
   documento: string;
@@ -13,18 +14,6 @@ export interface User {
   password: string
 }
 
-export let infoBaseUsuarioActual: User = {
-  idPersona: "",
-  documento: "",
-  nombreCompleto: "",
-  email: "",
-  legajo: "",
-  propuestas: [],
-  indicePropuestaSeleccionada: -1,
-  usuario: "",
-  password: ""
-};
-
 export interface Propuesta {
   alumno: number;
   propuesta: number;
@@ -32,21 +21,6 @@ export interface Propuesta {
   nombre_abreviado: string;
   regular: "S" | "N";
   plan_version: number;
-}
-
-export interface RespuestaPropuestas {
-  propuestas: Propuesta[];
-}
-
-export interface Materia {
-  nombre: string,
-  nombre_abreviado: string,
-  anio_de_cursada: number,
-  periodo_de_cursada: number,
-  horas_semanales: string,
-  horas_totales: string,
-  permite_rendir_libre: string,
-  permite_promocion: string,
 }
 
 export interface Plan {
@@ -60,7 +34,71 @@ export interface Plan {
   materias: Materia[]
 }
 
+export interface Materia {
+  nombre: string,
+  nombre_abreviado: string,
+  anio_de_cursada: number,
+  periodo_de_cursada: number,
+  horas_semanales: string,
+  horas_totales: string,
+  permite_rendir_libre: string,
+  permite_promocion: string,
+}
+
+// --- Estado Global ---
+export let infoBaseUsuarioActual: User = {
+  idPersona: "",
+  documento: "",
+  nombreCompleto: "",
+  email: "",
+  legajo: "",
+  propuestas: [],
+  indicePropuestaSeleccionada: -1,
+  usuario: "",
+  password: ""
+};
+
 export let visitante: boolean = true;
+
+/** * CAMBIO CLAVE: 
+ * Usamos la IP directa con HTTP para saltar el problema del certificado SSL.
+ * El puerto 80 es el estándar para HTTP.
+ */
+const URL_BASE = "http://170.210.71.20/"; 
+
+// --- FETCH WRAPPER (CORREGIDO PARA EVITAR 404) ---
+async function fetchConHeaders(url: string, options: RequestInit = {}) {
+  try {
+    console.log("➡️ URL:", url);
+
+    const response = await fetch(url, {
+      ...options,
+      headers: {
+        "Accept": "application/json",
+        "Content-Type": "application/json",
+        // ESTA LÍNEA ES VITAL: Engaña al servidor para que el VirtualHost responda 200 y no 404
+        "Host": "appapi.undav.edu.ar", 
+        ...(options.headers || {}),
+      },
+    });
+
+    console.log("⬅️ STATUS:", response.status);
+
+    return response;
+  } catch (error) {
+    console.log("❌ FETCH ERROR:", error);
+    throw error;
+  }
+}
+
+// --- Helpers ---
+function capitalizeWords(str: string): string {
+  return str
+    .toLowerCase()
+    .split(" ")
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
+    .join(" ");
+}
 
 export function setVisitante(v: boolean): void {
   visitante = v;
@@ -70,55 +108,7 @@ export function UsuarioEsAutenticado(): boolean {
   return infoBaseUsuarioActual.idPersona !== "";
 }
 
-const URL_BASE = "http://172.16.1.43/api/appundav";
-
-function capitalizeWords(str: string): string {
-  return str
-    .toLowerCase()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
-}
-
-// Para actualizar infoBaseUsuarioActual desde fuera si hace falta
-export function setUsuarioActual(user: User) {
-  infoBaseUsuarioActual = { ...user };
-}
-
-// Función para loguear usuario y obtener token + "persona" (idPersona)
-export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, idPersona: number }> {
-  const url = `${URL_BASE}/persona/validuser`;
-  
-  const response = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ usuario, clave }),
-  });
-
-  if (!response.ok) {
-    const errorBody = await response.text();
-    throw new Error(`Credenciales inválidas. (${response.status}) ${errorBody}`);
-  }
-
-  const data = await response.json();
-
-  if (!data.token || !data.persona) {
-    throw new Error("Respuesta incompleta del servidor");
-  }
-
-  return {
-    token: data.token,
-    idPersona: data.persona
-  };
-}
-async function guardarSesion(token: string, personaId: number):Promise<void> {
-  try {
-    await AsyncStorage.setItem("token", token);
-    await AsyncStorage.setItem("idPersona", personaId.toString());
-  } catch (err) {
-    console.error("Error guardando sesión:", err);
-  }
-};
+// --- Lógica de API ---
 
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
@@ -126,104 +116,120 @@ export async function validarPersona(usuario: string, clave: string) {
 
   infoBaseUsuarioActual.usuario = usuario.toString();
   infoBaseUsuarioActual.password = clave.toString();
-  
+
   setVisitante(false);
   await ObtenerDatosBaseUsuarioConToken(token, idPersona);
-  return {token, idPersona};
+
+  return { token, idPersona };
 }
 
-// Obtener datos personales con token JWT (para iOS y Android)
-export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: number): Promise<void> {
-  const url = `${URL_BASE}/persona/${personaId}`;
+export async function validarPersonaYTraerData(
+  usuario: string,
+  clave: string
+): Promise<{ token: string; idPersona: number }> {
 
-  const response = await fetch(url, {
+  // Construcción limpia de la URL
+  const url = `${URL_BASE}persona/validuser`;
+  const body = JSON.stringify({ usuario: String(usuario), clave: String(clave) });
+
+  try {
+    const response = await fetchConHeaders(url, {
+      method: "POST",
+      body: body
+    });
+
+    const text = await response.text();
+    let data: any;
+
+    try {
+      data = JSON.parse(text);
+    } catch (e) {
+      if (response.status === 404) throw new Error("Servidor respondió 404 (Ruta no encontrada)");
+      throw new Error("El servidor no devolvió un formato JSON válido");
+    }
+
+    if (!response.ok) throw new Error(data.error || `Error HTTP ${response.status}`);
+    if (!data.token || !data.persona) throw new Error("Respuesta de API incompleta");
+
+    return { token: data.token, idPersona: data.persona };
+  } catch (err) {
+    console.log("Error en validarPersonaYTraerData:", err);
+    throw err;
+  }
+}
+
+export async function ObtenerDatosBaseUsuarioConToken(token: string, personaId: number): Promise<void> {
+  const url = `${URL_BASE}persona/${personaId}`;
+
+  const response = await fetchConHeaders(url, {
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      "Authorization": `Bearer ${token}`,
     }
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
-  }
+  if (!response.ok) throw new Error(`Error al obtener perfil (${response.status})`);
 
   const datos = await response.json();
   const prop = datos.propuestas;
-  
+
   infoBaseUsuarioActual = {
+    ...infoBaseUsuarioActual,
     idPersona: personaId.toString(),
-    // se cargan los datos obtenidos:
     legajo: datos.legajo,
-    nombreCompleto: capitalizeWords(`${datos.nombres_elegido? datos.nombres_elegido:datos.nombres} ${datos.apellido_elegido?datos.apellido_elegido:datos.apellido}`),
+    nombreCompleto: capitalizeWords(`${datos.nombres_elegido || datos.nombres} ${datos.apellido_elegido || datos.apellido}`),
     documento: datos.nro_documento,
     email: datos.email,
-    //tel: datos.telefono_celular,
-    //
     propuestas: prop,
-    // elige la "propuesta" (carrera) más reciente:
     indicePropuestaSeleccionada: prop.length - 1,
-    // no realiza cambios en las siguientes variables:
-    usuario: infoBaseUsuarioActual.usuario,
-    password: infoBaseUsuarioActual.password
   };
-  
+
   visitante = false;
 }
 
 export async function ObtenerMateriasConPlan(): Promise<Plan> {
   const token = await AsyncStorage.getItem("token");
-  
-  //const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length -1].plan_version;
-  
-  //console.log("PROPS: ",infoBaseUsuarioActual);
   const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].plan_version;
-  //const planId = 435;
-  console.log("plan:",planId,"token:",token);
 
-  const url = `${URL_BASE}/propuesta/${planId}/plan`;
-  const response = await fetch(url, {
+  const url = `${URL_BASE}propuesta/${planId}/plan`;
+
+  const response = await fetchConHeaders(url, {
     headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${token}`
+      "Authorization": `Bearer ${token}`,
     }
   });
 
-  if (!response.ok) {
-    const errorText = await response.text();
-    throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
+  if (!response.ok) throw new Error("Error obteniendo plan de materias");
+  return await response.json() as Plan;
+}
+
+// --- Sesión y Logout ---
+
+async function guardarSesion(token: string, personaId: number): Promise<void> {
+  try {
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("idPersona", personaId.toString());
+  } catch (err) {
+    console.error("Error guardando sesión en storage:", err);
   }
-  const respuestaPlan = await response.json();
-  const plan:Plan = respuestaPlan;
-  return respuestaPlan as Plan;
 }
 
 export async function Logout() {
   visitante = true;
   infoBaseUsuarioActual = {
-    idPersona: "",
-    documento: "",
-    nombreCompleto: "",
-    email: "",
-    legajo: "",
-    propuestas: [],
-    indicePropuestaSeleccionada: -1,
-    usuario: "",
-    password: "",
+    idPersona: "", documento: "", nombreCompleto: "", email: "",
+    legajo: "", propuestas: [], indicePropuestaSeleccionada: -1,
+    usuario: "", password: "",
   };
   await AsyncStorage.removeItem("token");
-  await AsyncStorage.removeItem("idPersona"); // O AsyncStorage.clear();
+  await AsyncStorage.removeItem("idPersona");
 }
 
-// El que quiere celeste, que le cueste:
-export let modoOscuro:boolean = false;
-
+// --- UI / Dark Mode ---
+export let modoOscuro: boolean = false;
 export let colorFondoTop: string = "#fff";
 export let colorFondoBottom: string = "#ddd";
 
-const celeste: string = "#91c9f7";
-
-export function setDarkMode(dark: boolean):void {
+export function setDarkMode(dark: boolean): void {
   modoOscuro = dark;
   if (modoOscuro) {
     colorFondoTop = "#000";
@@ -232,5 +238,8 @@ export function setDarkMode(dark: boolean):void {
     colorFondoTop = "#fff";
     colorFondoBottom = grisUndav;
   }
-} 
-export function enModoOscuro():boolean {return modoOscuro;}
+}
+
+export function enModoOscuro(): boolean {
+  return modoOscuro;
+}

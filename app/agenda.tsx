@@ -1,13 +1,19 @@
-// app-undav/app/agenda.tsx
 import React, { useCallback, useState } from 'react';
-import { View, StyleSheet, TouchableOpacity, Modal, TextInput, Platform, Alert } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, Modal, TextInput, Platform, Alert, ActivityIndicator } from 'react-native';
 
 import CustomText from '../components/CustomText';
-import { agregarEventoPersonalizado, editarEventoPersonalizado, EventoAgenda, listaCompleta, listaEnCurso, listaEventosPersonalizados, listaFuturo, listaPasado, obtenerEventoConId, quitarEventoPersonalizado} from '../data/agenda';
+// ❌ ELIMINAMOS las importaciones de listaEnCurso, listaFuturo, listaPasado, listaCompleta
+//    porque vamos a usar las funciones locales del contexto para mantener la reactividad.
+// ⚠️ Mantenemos las funciones de manejo de eventos personalizados (porque aún son locales)
+import { agregarEventoPersonalizado, editarEventoPersonalizado, EventoAgenda, listaEnCurso as obtenerListaEnCurso, listaFuturo as obtenerListaFuturo, listaPasado as obtenerListaPasado, obtenerEventoConId, quitarEventoPersonalizado} from '../data/agenda';
 import { useFocusEffect } from 'expo-router';
+
+// 🚀 IMPORTAMOS EL HOOK Y LA LÓGICA DE CONTEXTO
+import { useAgenda } from '../src/context/AgendaContext'; 
+
 import AgendaItem from '@/components/AgendaItem';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulLogoUndav, grisBorde } from '@/constants/Colors';
+import { azulLogoUndav, grisBorde, negroAzulado } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { bottomBarStyles } from '@/components/BottomBar';
@@ -16,17 +22,20 @@ import AgendaItemEditable from '@/components/AgendaItemEditable';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import DateTimePicker from '@react-native-community/datetimepicker';
 
-import DropdownCategorias from '@/components/DropdownCategoria';
 import { useCategoriasPersistentes, Categoria } from '@/hooks/useCategoriasPersistentes';
 
 
 const filterBtnColor = azulLogoUndav
 export default function Agenda() {
   
+
+  const { eventosFuturos, isLoading, error, refetchEventos } = useAgenda(); 
+
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
   const [mostrarPersonalizados, setMostrarPersonalizados] = useState(true);
   const [mostrarAcademicos, setMostrarAcademicos] = useState(true);
+
   // categorias
   const {
     categorias,
@@ -83,7 +92,9 @@ export default function Agenda() {
 
     if (modoEdicion) editarEventoPersonalizado(idEventoAbierto, t, d, fi, ff);
     else agregarEventoPersonalizado(t, d, fi, ff);
-    //setListaEventos([...listaEventosPersonalizados]);
+    
+    refetchEventos();
+    
     setModalVisible(false);
     limpiarVariablesModal();
   };
@@ -95,6 +106,7 @@ export default function Agenda() {
         style: "destructive",
         onPress: () => {
           quitarEventoPersonalizado(idEventoAbierto);
+          refetchEventos();
           setModalVisible(false);
           limpiarVariablesModal();
         },
@@ -157,53 +169,57 @@ export default function Agenda() {
     ))
     else return <CustomText style={styles.title}>No hay eventos de este tipo</CustomText>
   }
-
-  useFocusEffect( // cada vez que entramos a esta pantalla
-    useCallback(() => {
-      //setListaEventos(listaEventosCalendarioAcademico);
-    }, [listaCompleta()]) // por las dudas paso esto, pero no se si es necesario pq ahora uso una función para devolver la listacompleta()
-  );
   
   return (
     <>
     <FondoScrollGradiente>
-    {
+  {
+    // 🚀 4. MOSTRAR ESTADO DE CARGA/ERROR
+    isLoading ? (
+      <ActivityIndicator size="large" color={azulLogoUndav} style={{marginTop: 50}} />
+    ) : error ? (
+      <CustomText style={styles.title}>Error al cargar los eventos: {error}</CustomText>
+    ) : (
+      // Si no hay error ni carga pendiente, mostramos las secciones:
       mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
       <>
-        <DropdownSeccion titulo="EN CURSO" styleContenido={styles.dropdownContenido} >
-          {mostrarLista(listaEnCurso())}
-        </DropdownSeccion>
+      {/* 🚀 5. USAR LAS FUNCIONES ACTUALIZADAS */}
+      {/* Aunque usemos las funciones de data/agenda, el contexto garantiza 
+              que la lista global se actualizó, forzando la re-ejecución de este return. */}
+      <DropdownSeccion titulo="EN CURSO" styleContenido={styles.dropdownContenido} >
+        {mostrarLista(obtenerListaEnCurso())}
+      </DropdownSeccion>
 
-        <DropdownSeccion titulo="PRÓXIMO" styleContenido={styles.dropdownContenido}>
-          {mostrarLista(listaFuturo().filter((e) => !listaEnCurso().includes(e)))}
-        </DropdownSeccion>
+      <DropdownSeccion titulo="PRÓXIMO" styleContenido={styles.dropdownContenido}>
+        {mostrarLista(obtenerListaFuturo().filter((e) => !obtenerListaEnCurso().includes(e)))}
+      </DropdownSeccion>
 
-        <DropdownSeccion titulo="FINALIZADO" styleContenido={styles.dropdownContenido} inicialmenteAbierto={false}>
-          {mostrarLista(listaPasado())}
-        </DropdownSeccion>
-      </>
-
-    ):(
-      <CustomText style={styles.title}>
-        No hay ningún tipo de evento seleccionado en los filtros.
-      </CustomText>
+      <DropdownSeccion titulo="FINALIZADO" styleContenido={styles.dropdownContenido} inicialmenteAbierto={false}>
+        {mostrarLista(obtenerListaPasado())}
+      </DropdownSeccion>
+    </>
+      ) : (
+        <CustomText style={styles.title}>
+          No hay ningún tipo de evento seleccionado en los filtros.
+        </CustomText>
+      )
     )
     }
     </FondoScrollGradiente>
 
     {/* botones FLOTANTES */}
-    <View style={styles.floatingBox}>
+    <View style={stylesFlotante.floatingBox}>
 
       {mostrarFiltros && 
-        <View style={styles.filterOptionsParent}>
-          <TouchableOpacity onPress={() => setMostrarFeriados(!mostrarFeriados)} style={[styles.filterOption, { backgroundColor: mostrarFeriados ? filterBtnColor : "gray" }]}>
-            <CustomText style={styles.filterOptionText}>Feriados</CustomText>
+        <View style={stylesFlotante.filterOptionsParent}>
+          <TouchableOpacity onPress={() => setMostrarFeriados(!mostrarFeriados)} style={[stylesFlotante.filterOption, { backgroundColor: mostrarFeriados ? filterBtnColor : "gray" }]}>
+            <CustomText style={stylesFlotante.filterOptionText}>Feriados</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)} style={[styles.filterOption, { backgroundColor: mostrarPersonalizados ? filterBtnColor : "gray" }]}>
-            <CustomText style={styles.filterOptionText}>Personalizados</CustomText>
+          <TouchableOpacity onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)} style={[stylesFlotante.filterOption, { backgroundColor: mostrarPersonalizados ? filterBtnColor : "gray" }]}>
+            <CustomText style={stylesFlotante.filterOptionText}>Personalizados</CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => setMostrarAcademicos(!mostrarAcademicos)} style={[styles.filterOption, { backgroundColor: mostrarAcademicos ? filterBtnColor : "gray" }, {borderBottomRightRadius: 10}]}>
-            <CustomText style={styles.filterOptionText}>Académicos</CustomText>
+          <TouchableOpacity onPress={() => setMostrarAcademicos(!mostrarAcademicos)} style={[stylesFlotante.filterOption, { backgroundColor: mostrarAcademicos ? filterBtnColor : "gray" }, {borderBottomRightRadius: 10}]}>
+            <CustomText style={stylesFlotante.filterOptionText}>Académicos</CustomText>
           </TouchableOpacity>
         </View>
       }
@@ -309,35 +325,7 @@ export default function Agenda() {
   );
 }
 
-const styles = StyleSheet.create({
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: "negroAzulado",
-    alignSelf: 'center',
-    textAlign:"center",
-    marginVertical: 0
-  },
-  dropdownHeader: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
-    backgroundColor: azulLogoUndav,
-    paddingHorizontal: 20,
-    paddingVertical: 16,
-    marginBottom: 0,
-    borderBottomEndRadius: 20
-  },
-  dropdownContenido: {
-    gap: 4
-  },
-  agendaBtnContainer: {
-    paddingVertical: 8,
-    paddingHorizontal: 8,
-    gap: 8,
-    flexDirection: 'row',
-    flexWrap: 'wrap'
-  },
+const stylesFlotante = StyleSheet.create({
   floatingBox: {
     position: 'absolute',
     bottom: 15 + bottomBarStyles.container.height,
@@ -372,7 +360,37 @@ const styles = StyleSheet.create({
     paddingVertical: 10,
     paddingHorizontal: 12,
   },
+});
 
+const styles = StyleSheet.create({
+  title: {
+    fontSize: 16,
+    fontWeight: 'bold',
+    color: "negroAzulado",
+    alignSelf: 'center',
+    textAlign:"center",
+    marginVertical: 0
+  },
+  dropdownHeader: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+    backgroundColor: azulLogoUndav,
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    marginBottom: 0,
+    borderBottomEndRadius: 20
+  },
+  dropdownContenido: {
+    gap: 4
+  },
+  agendaBtnContainer: {
+    paddingVertical: 8,
+    paddingHorizontal: 8,
+    gap: 8,
+    flexDirection: 'row',
+    flexWrap: 'wrap'
+  },
   openBtn: {
     backgroundColor: azulLogoUndav,
     borderRadius: 30,
@@ -458,3 +476,4 @@ const stylesP = StyleSheet.create({
     paddingVertical: 12
   },
 });
+

@@ -4,6 +4,16 @@
 
 import { enModoOscuro } from "./DatosUsuarioGuarani";
 import { listaEventosAgenda } from "./notificaciones";
+import { api } from "./apiFlaskClient";
+
+// Exportamos un tipo que representa el objeto Evento tal como viene de la API.
+export type EventoAPIFlask = {
+  id: number; // La API devuelve un ID numérico (db.Integer)
+  titulo: string;
+  fecha_inicio: string; // La API devuelve la fecha como string (ISO 8601)
+  fecha_fin: string; // La API devuelve la fecha como string (ISO 8601)
+  feriado: boolean; // Bool feriado de API
+};
 
 // fechaInicio: devHoyMasDias(n);
 export type EventoAgenda = {
@@ -11,7 +21,7 @@ export type EventoAgenda = {
   titulo: string;
   fechaInicio: Date;
   fechaFin: Date;
-  esFeriado?: Boolean;
+  esFeriado: boolean;
   descripcion?: string;
   notificar?: false;
   categoria?: number;
@@ -27,74 +37,107 @@ function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.get
 
 
 // listas // FORMATO: new Date(AÑO, MES -1, DIA). EJEMPLO: 1/1/2025 => new Date(2025, 0, 1)
-export const listaEventosCalendarioAcademico: EventoAgenda[] = [
-  //academicas
-  { id: "1", titulo: "Etapa diagnóstica – 1º cuatrimestre", fechaInicio: new Date(2025, 1, 3), fechaFin: new Date(2025, 2, 7) },
-  { id: "2", titulo: "Inscripción finales presenciales", fechaInicio: new Date(2025, 1, 12), fechaFin: new Date(2025, 1, 22) },
-  { id: "3", titulo: "Inscripción finales a distancia", fechaInicio: new Date(2025, 1, 10), fechaFin: new Date(2025, 1, 13) },
-  { id: "4", titulo: "Exámenes finales febrero", fechaInicio: new Date(2025, 1, 17), fechaFin: new Date(2025, 1, 22) },
-  { id: "5", titulo: "Actividades académicas de verano", fechaInicio: new Date(2025, 1, 3), fechaFin: new Date(2025, 1, 28) },
-  { id: "6", titulo: "Inscripción a asignaturas – 1º cuatrimestre", fechaInicio: new Date(2025, 2, 10), fechaFin: new Date(2025, 2, 18) },
-  { id: "7", titulo: "Inicio del 1º cuatrimestre", fechaInicio: new Date(2025, 2, 20), fechaFin: new Date(2025, 2, 20) },
-  { id: "7b", titulo: "Fin del 1º cuatrimestre", fechaInicio: new Date(2025, 6, 5), fechaFin: new Date(2025, 6, 5) },
-  { id: "8", titulo: "Inscripción finales mayo", fechaInicio: new Date(2025, 3, 21), fechaFin: new Date(2025, 3, 25) },
-  { id: "9", titulo: "Exámenes finales mayo", fechaInicio: new Date(2025, 4, 12), fechaFin: new Date(2025, 4, 17) },
-  { id: "10", titulo: "Etapa diagnóstica – 2º cuatrimestre", fechaInicio: new Date(2025, 5, 9), fechaFin: new Date(2025, 6, 11) },
-  { id: "11", titulo: "Inscripción finales presenciales julio", fechaInicio: new Date(2025, 6, 10), fechaFin: new Date(2025, 6, 12) },
-  { id: "12", titulo: "Inscripción finales a distancia julio", fechaInicio: new Date(2025, 6, 7), fechaFin: new Date(2025, 6, 10) },
-  { id: "13", titulo: "Exámenes finales julio", fechaInicio: new Date(2025, 6, 14), fechaFin: new Date(2025, 6, 19) },
-  { id: "14", titulo: "Receso invernal", fechaInicio: new Date(2025, 6, 21), fechaFin: new Date(2025, 6, 26) },
-  { id: "15", titulo: "Inscripción a asignaturas – 2º cuatrimestre", fechaInicio: new Date(2025, 7, 4), fechaFin: new Date(2025, 7, 8) },
-  { id: "16", titulo: "Inicio del 2º cuatrimestre", fechaInicio: new Date(2025, 7, 11), fechaFin: new Date(2025, 7, 11) },
-  { id: "16b", titulo: "Fin del 2º cuatrimestre", fechaInicio: new Date(2025, 10, 29), fechaFin: new Date(2025, 10, 29) },
-  { id: "17", titulo: "Inscripción finales octubre", fechaInicio: new Date(2025, 8, 15), fechaFin: new Date(2025, 8, 19) },
-  { id: "18", titulo: "Exámenes finales octubre", fechaInicio: new Date(2025, 8, 29), fechaFin: new Date(2025, 9, 4) },
-  { id: "19", titulo: "Inscripción finales presenciales diciembre", fechaInicio: new Date(2025, 11, 4), fechaFin: new Date(2025, 11, 7) },
-  { id: "20", titulo: "Inscripción finales a distancia diciembre", fechaInicio: new Date(2025, 11, 1), fechaFin: new Date(2025, 11, 4) },
-  { id: "21", titulo: "Exámenes finales diciembre", fechaInicio: new Date(2025, 11, 9), fechaFin: new Date(2025, 11, 15) },
+// export const listaEventosCalendarioAcademico: EventoAgenda[] = [
+//   //academicas
+//   { id: "1", titulo: "Etapa diagnóstica – 1º cuatrimestre", fechaInicio: new Date(2025, 1, 3), fechaFin: new Date(2025, 2, 7) },
+//   { id: "2", titulo: "Inscripción finales presenciales", fechaInicio: new Date(2025, 1, 12), fechaFin: new Date(2025, 1, 22) },
+//   { id: "3", titulo: "Inscripción finales a distancia", fechaInicio: new Date(2025, 1, 10), fechaFin: new Date(2025, 1, 13) },
+//   { id: "4", titulo: "Exámenes finales febrero", fechaInicio: new Date(2025, 1, 17), fechaFin: new Date(2025, 1, 22) },
+//   { id: "5", titulo: "Actividades académicas de verano", fechaInicio: new Date(2025, 1, 3), fechaFin: new Date(2025, 1, 28) },
+//   { id: "6", titulo: "Inscripción a asignaturas – 1º cuatrimestre", fechaInicio: new Date(2025, 2, 10), fechaFin: new Date(2025, 2, 18) },
+//   { id: "7", titulo: "Inicio del 1º cuatrimestre", fechaInicio: new Date(2025, 2, 20), fechaFin: new Date(2025, 2, 20) },
+//   { id: "7b", titulo: "Fin del 1º cuatrimestre", fechaInicio: new Date(2025, 6, 5), fechaFin: new Date(2025, 6, 5) },
+//   { id: "8", titulo: "Inscripción finales mayo", fechaInicio: new Date(2025, 3, 21), fechaFin: new Date(2025, 3, 25) },
+//   { id: "9", titulo: "Exámenes finales mayo", fechaInicio: new Date(2025, 4, 12), fechaFin: new Date(2025, 4, 17) },
+//   { id: "10", titulo: "Etapa diagnóstica – 2º cuatrimestre", fechaInicio: new Date(2025, 5, 9), fechaFin: new Date(2025, 6, 11) },
+//   { id: "11", titulo: "Inscripción finales presenciales julio", fechaInicio: new Date(2025, 6, 10), fechaFin: new Date(2025, 6, 12) },
+//   { id: "12", titulo: "Inscripción finales a distancia julio", fechaInicio: new Date(2025, 6, 7), fechaFin: new Date(2025, 6, 10) },
+//   { id: "13", titulo: "Exámenes finales julio", fechaInicio: new Date(2025, 6, 14), fechaFin: new Date(2025, 6, 19) },
+//   { id: "14", titulo: "Receso invernal", fechaInicio: new Date(2025, 6, 21), fechaFin: new Date(2025, 6, 26) },
+//   { id: "15", titulo: "Inscripción a asignaturas – 2º cuatrimestre", fechaInicio: new Date(2025, 7, 4), fechaFin: new Date(2025, 7, 8) },
+//   { id: "16", titulo: "Inicio del 2º cuatrimestre", fechaInicio: new Date(2025, 7, 11), fechaFin: new Date(2025, 7, 11) },
+//   { id: "16b", titulo: "Fin del 2º cuatrimestre", fechaInicio: new Date(2025, 10, 29), fechaFin: new Date(2025, 10, 29) },
+//   { id: "17", titulo: "Inscripción finales octubre", fechaInicio: new Date(2025, 8, 15), fechaFin: new Date(2025, 8, 19) },
+//   { id: "18", titulo: "Exámenes finales octubre", fechaInicio: new Date(2025, 8, 29), fechaFin: new Date(2025, 9, 4) },
+//   { id: "19", titulo: "Inscripción finales presenciales diciembre", fechaInicio: new Date(2025, 11, 4), fechaFin: new Date(2025, 11, 7) },
+//   { id: "20", titulo: "Inscripción finales a distancia diciembre", fechaInicio: new Date(2025, 11, 1), fechaFin: new Date(2025, 11, 4) },
+//   { id: "21", titulo: "Exámenes finales diciembre", fechaInicio: new Date(2025, 11, 9), fechaFin: new Date(2025, 11, 15) },
 
-  // Feriados nacionales
-  { id: "F1", titulo: "Año Nuevo", fechaInicio: new Date(2025, 0, 1), fechaFin: new Date(2025, 0, 1), esFeriado: true },
-  { id: "F2", titulo: "Carnaval", fechaInicio: new Date(2025, 2, 3), fechaFin: new Date(2025, 2, 4), esFeriado: true },
-  { id: "F3", titulo: "Día de la Memoria", fechaInicio: new Date(2025, 2, 24), fechaFin: new Date(2025, 2, 24), esFeriado: true },
-  { id: "F4", titulo: "Veteranos de Malvinas", fechaInicio: new Date(2025, 3, 2), fechaFin: new Date(2025, 3, 2), esFeriado: true },
-  { id: "F5", titulo: "Fundación Avellaneda", fechaInicio: new Date(2025, 3, 7), fechaFin: new Date(2025, 3, 7), esFeriado: true },
-  { id: "F6", titulo: "Jueves Santo", fechaInicio: new Date(2025, 3, 17), fechaFin: new Date(2025, 3, 17), esFeriado: true },
-  { id: "F7", titulo: "Viernes Santo", fechaInicio: new Date(2025, 3, 18), fechaFin: new Date(2025, 3, 18), esFeriado: true },
-  { id: "F8", titulo: "Día del Trabajador", fechaInicio: new Date(2025, 4, 1), fechaFin: new Date(2025, 4, 1), esFeriado: true },
-  { id: "F9", titulo: "Pase a la Inmortalidad de Güemes", fechaInicio: new Date(2025, 5, 17), fechaFin: new Date(2025, 5, 17), esFeriado: true },
-  { id: "F10", titulo: "Paso a la Inmortalidad de Belgrano", fechaInicio: new Date(2025, 5, 20), fechaFin: new Date(2025, 5, 20), esFeriado: true },
-  { id: "F11", titulo: "Día de la Independencia", fechaInicio: new Date(2025, 6, 9), fechaFin: new Date(2025, 6, 9), esFeriado: true },
-  { id: "F12", titulo: "Fiestas Patronales Avellaneda", fechaInicio: new Date(2025, 7, 15), fechaFin: new Date(2025, 7, 15), esFeriado: true },
-  { id: "F13", titulo: "Paso a la Inmortalidad de San Martín", fechaInicio: new Date(2025, 7, 17), fechaFin: new Date(2025, 7, 17), esFeriado: true },
-  { id: "F14", titulo: "Día del Respeto a la Diversidad Cultural", fechaInicio: new Date(2025, 9, 12), fechaFin: new Date(2025, 9, 12), esFeriado: true },
-  { id: "F15", titulo: "Día no laboral con fines turísticos", fechaInicio: new Date(2025, 10, 21), fechaFin: new Date(2025, 10, 21), esFeriado: true },
-  { id: "F16", titulo: "Día de la Soberanía Nacional", fechaInicio: new Date(2025, 10, 24), fechaFin: new Date(2025, 10, 24), esFeriado: true },
-  { id: "F17", titulo: "Inmaculada Concepción", fechaInicio: new Date(2025, 11, 8), fechaFin: new Date(2025, 11, 8), esFeriado: true },
-  { id: "F18", titulo: "Navidad", fechaInicio: new Date(2025, 11, 25), fechaFin: new Date(2025, 11, 25), esFeriado: true },
-];
+//   // Feriados nacionales
+//   { id: "F1", titulo: "Año Nuevo", fechaInicio: new Date(2025, 0, 1), fechaFin: new Date(2025, 0, 1), esFeriado: true },
+//   { id: "F2", titulo: "Carnaval", fechaInicio: new Date(2025, 2, 3), fechaFin: new Date(2025, 2, 4), esFeriado: true },
+//   { id: "F3", titulo: "Día de la Memoria", fechaInicio: new Date(2025, 2, 24), fechaFin: new Date(2025, 2, 24), esFeriado: true },
+//   { id: "F4", titulo: "Veteranos de Malvinas", fechaInicio: new Date(2025, 3, 2), fechaFin: new Date(2025, 3, 2), esFeriado: true },
+//   { id: "F5", titulo: "Fundación Avellaneda", fechaInicio: new Date(2025, 3, 7), fechaFin: new Date(2025, 3, 7), esFeriado: true },
+//   { id: "F6", titulo: "Jueves Santo", fechaInicio: new Date(2025, 3, 17), fechaFin: new Date(2025, 3, 17), esFeriado: true },
+//   { id: "F7", titulo: "Viernes Santo", fechaInicio: new Date(2025, 3, 18), fechaFin: new Date(2025, 3, 18), esFeriado: true },
+//   { id: "F8", titulo: "Día del Trabajador", fechaInicio: new Date(2025, 4, 1), fechaFin: new Date(2025, 4, 1), esFeriado: true },
+//   { id: "F9", titulo: "Pase a la Inmortalidad de Güemes", fechaInicio: new Date(2025, 5, 17), fechaFin: new Date(2025, 5, 17), esFeriado: true },
+//   { id: "F10", titulo: "Paso a la Inmortalidad de Belgrano", fechaInicio: new Date(2025, 5, 20), fechaFin: new Date(2025, 5, 20), esFeriado: true },
+//   { id: "F11", titulo: "Día de la Independencia", fechaInicio: new Date(2025, 6, 9), fechaFin: new Date(2025, 6, 9), esFeriado: true },
+//   { id: "F12", titulo: "Fiestas Patronales Avellaneda", fechaInicio: new Date(2025, 7, 15), fechaFin: new Date(2025, 7, 15), esFeriado: true },
+//   { id: "F13", titulo: "Paso a la Inmortalidad de San Martín", fechaInicio: new Date(2025, 7, 17), fechaFin: new Date(2025, 7, 17), esFeriado: true },
+//   { id: "F14", titulo: "Día del Respeto a la Diversidad Cultural", fechaInicio: new Date(2025, 9, 12), fechaFin: new Date(2025, 9, 12), esFeriado: true },
+//   { id: "F15", titulo: "Día no laboral con fines turísticos", fechaInicio: new Date(2025, 10, 21), fechaFin: new Date(2025, 10, 21), esFeriado: true },
+//   { id: "F16", titulo: "Día de la Soberanía Nacional", fechaInicio: new Date(2025, 10, 24), fechaFin: new Date(2025, 10, 24), esFeriado: true },
+//   { id: "F17", titulo: "Inmaculada Concepción", fechaInicio: new Date(2025, 11, 8), fechaFin: new Date(2025, 11, 8), esFeriado: true },
+//   { id: "F18", titulo: "Navidad", fechaInicio: new Date(2025, 11, 25), fechaFin: new Date(2025, 11, 25), esFeriado: true },
+// ];
+export let listaEventosCalendarioAcademico: EventoAgenda[] = [];
 
 export let listaEventosPersonalizados: EventoAgenda[] = [
   {
   id: "p0",
     titulo: 'Evento Personalizado 1',
     fechaInicio: devHoyMasDiasPermanente(0),
-    fechaFin: devHoyMasDiasPermanente(0)
+    fechaFin: devHoyMasDiasPermanente(0),
+    esFeriado: false
   },{
     id: "p1",
     titulo: 'Evento Personalizado 2',
     fechaInicio: devHoyMasDiasPermanente(3),
-    fechaFin: devHoyMasDiasPermanente(3)
+    fechaFin: devHoyMasDiasPermanente(3),
+    esFeriado: false
   },
     {
   id: "p2",
     titulo: 'Evento Personalizado 3',
     fechaInicio: devHoyMasDiasPermanente(10),
-    fechaFin: devHoyMasDiasPermanente(15)
+    fechaFin: devHoyMasDiasPermanente(15),
+    esFeriado: false
   }
 ];
 
 // funciones
+
+// EventoAPIFlask -> EventoAgenda
+function transformarEvento(evento: EventoAPIFlask): EventoAgenda {
+  return {
+      id: String(evento.id), // Convertir a string para usar como key en React
+      titulo: evento.titulo,
+      // Usar new Date() en la cadena ISO para obtener el objeto Date
+      fechaInicio: new Date(evento.fecha_inicio),
+      fechaFin: new Date(evento.fecha_fin),
+      esFeriado: evento.feriado, // Asumimos que los eventos de esta tabla no son feriados
+  };
+}
+// Carga Eventos desde API y Actualiza la variable Global "listaEventosCalendarioAcademico"
+export async function cargarEventosAcademicos(): Promise<EventoAgenda[]> {
+    try {
+        // 1. Llamar a la API para obtener los eventos
+        const eventosAPI: EventoAPIFlask[] = await api.getEventos();
+        // 2. Transformar los datos de la API al formato de la UI
+        const eventosTransformados = eventosAPI.map(transformarEvento);
+        //console.log(eventosTransformados);
+        // 3. Actualizar la variable global (IMPORTANTE: Esto debe hacerse para que listaCompleta funcione)
+        listaEventosCalendarioAcademico = eventosTransformados;
+        return eventosTransformados;
+    } catch (error) {
+        console.error("Error al cargar eventos académicos desde la API:", error);
+        // Podrías devolver una lista vacía o una lista de fallback si falla la API
+        return [];
+    }
+}
 
 export function agregarEventoPersonalizado(titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
   
@@ -111,7 +154,8 @@ export function agregarEventoPersonalizado(titulo:string, descripcion:string, fe
     titulo: titulo,
     descripcion: descripcion,
     fechaInicio: fi,
-    fechaFin: ff
+    fechaFin: ff,
+    esFeriado: false
   };
   devUltimoId += 1;
   listaEventosPersonalizados.push(nuevoEvento);
@@ -156,19 +200,19 @@ function ordenarPorFechaFin(a:EventoAgenda, b:EventoAgenda):number {
   //   return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
   // }
 }
-function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente:Boolean=true) {
+function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente:boolean=true) {
   if (ascendiente) {
     return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b));
   }
   else return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b)).reverse();
 }
-function eventoDuraUnDia(evento:EventoAgenda): Boolean {
+function eventoDuraUnDia(evento:EventoAgenda): boolean {
   return Boolean(evento.fechaInicio.getDate() == evento.fechaFin.getDate());
 }
-function eventoEnCurso(evento:EventoAgenda): Boolean {
+function eventoEnCurso(evento:EventoAgenda): boolean {
   return (diasHastaFechaActual(evento.fechaInicio) <= -1 && !eventoFinalizado(evento));
 }
-function eventoFinalizado(evento:EventoAgenda): Boolean {
+function eventoFinalizado(evento:EventoAgenda): boolean {
   return diasHastaFechaActual(evento.fechaFin) < -1;
 }
 // aux fechas
@@ -190,7 +234,10 @@ function charPlural(plural:string, valorAEvaluar:number) {
 // export function listaFuturoFiltros(mostrarFeriados:Boolean): EventoAgenda[] {
 //   return ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false)); }
 export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); };
+
 export function listaFuturo(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
+export function listaFuturoVIEJO(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
+
 export function listaPasado(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoFinalizado(evento)), false);}
 export function listaEnCurso(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoEnCurso(evento)));} 
 
@@ -225,7 +272,8 @@ export function eventoAgendaToFechaString(evento:EventoAgenda): string {
   return `${intervaloFechaStr} (${diasStr})`;
 }
 export function eventoAgendaTituloColor(evento:EventoAgenda): string {
-  return evento.esFeriado? "#6CACE4": (enModoOscuro() ? "#fff":"#000");
+  return evento.esFeriado? "#6CACE4": "#000";
+  //return evento.esFeriado? "#6CACE4": (enModoOscuro() ? "#fff":"#000");
 }
 export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   // const colorFeriado = "#6CACE4";

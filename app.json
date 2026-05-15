@@ -7,6 +7,7 @@
     "icon": "./assets/images/favicon.png",
     "scheme": "myapp",
     "userInterfaceStyle": "automatic",
+    "owner": "cesarvacirca",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -17,12 +18,7 @@
       "supportsTablet": true,
       "infoPlist": {
         "NSAppTransportSecurity": {
-          "NSExceptionDomains": {
-            "172.16.1.43": {
-              "NSIncludesSubdomains": true,
-              "NSTemporaryExceptionAllowsInsecureHTTPLoads": true
-            }
-          }
+          "NSAllowsArbitraryLoads": true 
         },
         "ITSAppUsesNonExemptEncryption": false
       },
@@ -33,7 +29,13 @@
         "foregroundImage": "./assets/images/adaptive-icon.png",
         "backgroundColor": "#FFFFFF"
       },
-      "package": "com.anonymous.appundav"
+      "package": "com.anonymous.appundav",
+      "permissions": [
+        "INTERNET",
+        "ACCESS_NETWORK_STATE"
+      ],
+      "usesCleartextTraffic": true,
+      "networkSecurityConfig": "./network_config.xml"
     },
     "web": {
       "bundler": "metro",
@@ -58,8 +60,9 @@
     },
     "extra": {
       "router": {},
+      "env": "development",
       "eas": {
-        "projectId": "9a93fa72-baef-4516-95f8-51ecb2a021ec"
+        "projectId": "6eb0eac1-5bed-4156-a09d-a919920381c3"
       }
     }
   }

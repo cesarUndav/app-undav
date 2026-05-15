@@ -53,7 +53,8 @@ export default function HomeEstudiante() {
           />
           <BotonIconoTexto
             label={"TRAYECTORIA\nACADÉMICA"}
-            funcionOnPress={() => router.push('/trayectoria-academica')}
+            funcionOnPress={() => router.push('/plan-de-estudio')}
+            // funcionOnPress={() => router.push('/trayectoria-academica')}
             Icon={TrayectoriaIcon}
           />
         </View>

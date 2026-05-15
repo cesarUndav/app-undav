@@ -1,118 +1,237 @@
-import { DigestClient } from "@/app/lib/DigestClient";
-import { Platform } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { grisUndav } from "@/constants/Colors";
 
-
-interface User {
+export interface User {
   idPersona: string;
   documento: string;
   nombreCompleto: string;
   email: string;
-  tel: string;
   legajo: string;
-}
-export let usuarioActual: User={idPersona: "", documento: "", nombreCompleto: "", email: "", tel: "", legajo: "" };
-export function UsuarioAutenticado():Boolean {return usuarioActual.idPersona != "";}
-// auth y requests
-
-export let visitante:Boolean = true;
-
-export function setVisitante(v:Boolean):void {visitante = v; }
-
-const celeste:string = '#91c9f7';
-const gris:string = '#b1b2b1';
-
-export let colorFondo:string = "#b1b2b1";
-export let fondoEsCeleste:boolean = false;
-
-export function setColorFondoCeleste(esCeleste:boolean) {
-  fondoEsCeleste = esCeleste;
-  esCeleste ? colorFondo = celeste : colorFondo = gris;
+  propuestas: Propuesta[];
+  indicePropuestaSeleccionada: number,
+  usuario: string,
+  password: string
 }
 
-const client = new DigestClient("app_undav", "app123456");
-export async function ObtenerJsonString(url:string) {
-  const res = await client.fetchWithDigest(url);
-  const data = await res.json();
-  return JSON.stringify(data);
+export let infoBaseUsuarioActual: User = {
+  idPersona: "",
+  documento: "",
+  nombreCompleto: "",
+  email: "",
+  legajo: "",
+  propuestas: [],
+  indicePropuestaSeleccionada: -1,
+  usuario: "",
+  password: ""
+};
+
+export interface Propuesta {
+  alumno: number;
+  propuesta: number;
+  nombre: string;
+  nombre_abreviado: string;
+  regular: "S" | "N";
+  plan_version: number;
 }
 
-const urlBase = "http://172.16.1.43/guarani/3.17/rest/v2/";
-
-export function UrlObtenerIdPersona(numero_documento:string, tipo_documento:number=0, pais:number=0) {
-  return urlBase+"personas?pais="+pais+"&tipo_documento="+tipo_documento+"&numero_documento="+numero_documento;
-}
-export function UrlObtenerDatosPersona(persona:string) {
-  return "http://172.16.1.43/guarani/3.17/rest/v2/personas/"+persona+"/datospersonales";
-}
-export function UrlObtenerMailTel(numero_documento:string, tipo_documento:number=0) {
-  return urlBase+"alumnos?tipo_documento="+tipo_documento+"&numero_documento="+numero_documento;
-}
-export function UrlObtenerAgenda(persona:string, fecha:string) {
-  return urlBase+"personas/"+persona+"/agenda?fecha="+fecha;
+export interface RespuestaPropuestas {
+  propuestas: Propuesta[];
 }
 
-export function JsonStringAObjeto(jsonString:string) {
-  return JSON.parse(jsonString);
-}
-export function JsonACampo(json:JSON) {
-    return JSON.parse(JSON.stringify(json));
+export interface Materia {
+  nombre: string,
+  nombre_abreviado: string,
+  anio_de_cursada: number,
+  periodo_de_cursada: number,
+  horas_semanales: string,
+  horas_totales: string,
+  permite_rendir_libre: string,
+  permite_promocion: string,
 }
 
-// aux parseo
+export interface Plan {
+  plan: number,
+  version_actual: number,
+  nombre: string,
+  duracion_teorica: string,
+  duracion_en_anios: number,
+  duracion_en_meses: number,
+  cnt_materias: number,
+  materias: Materia[]
+}
+
+export let visitante: boolean = true;
+
+export function setVisitante(v: boolean): void {
+  visitante = v;
+}
+
+export function UsuarioEsAutenticado(): boolean {
+  return infoBaseUsuarioActual.idPersona !== "";
+}
+
+//const URL_BASE = "http://172.16.1.43/api/appundav/";
+const URL_BASE = "https://guargestinf.undav.edu.ar/api/appundav/";
+
 function capitalizeWords(str: string): string {
   return str
     .toLowerCase()
-    .split(' ')
+    .split(" ")
     .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(' ');
+    .join(" ");
 }
 
-// AUTENTICACIÓN:
-export async function ObtenerCorreoConDocumento(documentoUsuario:string):Promise<string> {
-  if (Platform.OS == "android") {
-    // obtener id "persona" a partir de DNI:
-    const jsonPersona = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerIdPersona(documentoUsuario, 0, 0)));
-    usuarioActual.idPersona = jsonPersona.persona;
-    // obtener datos personales a partir de id Persona:
-    const jsonDatosPersonales = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerDatosPersona(usuarioActual.idPersona)));
-    
-    const email:string = jsonDatosPersonales.mail;
-    if (email == undefined) return "undefined";
-    else return email;
-    //else return email.split("@")[0]+"\n@"+email.split("@")[1];
-  }
-  else {
-    console.log("salteando auth en IOS");
-    return "";
-  }
+// Para actualizar infoBaseUsuarioActual desde fuera si hace falta
+export function setUsuarioActual(user: User) {
+  infoBaseUsuarioActual = { ...user };
 }
 
-export async function ObtenerDatosUsuarioActual(documentoUsuario:string) {
-  console.log("iniciando auth:");
-  if (Platform.OS == "android") {
-    // obtener id "persona" a partir de DNI:
-    const jsonPersona = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerIdPersona(documentoUsuario, 0, 0)));
-    usuarioActual.idPersona = jsonPersona.persona;
-    // obtener datos personales a partir de id Persona:
-    const jsonDatosPersonales = JsonStringAObjeto(await ObtenerJsonString(UrlObtenerDatosPersona(usuarioActual.idPersona)));
-    //aplicar datos:
-    usuarioActual.nombreCompleto = capitalizeWords((jsonDatosPersonales.nombres+" "+jsonDatosPersonales.apellido).toLowerCase());
-    usuarioActual.legajo = jsonDatosPersonales.legajo;
-    usuarioActual.email = jsonDatosPersonales.mail;
-    usuarioActual.tel = jsonDatosPersonales.telefono_celular;
-    usuarioActual.documento = ((jsonDatosPersonales.documento).split(/\s+/)[1]);
-    // DEBUG LOG
-    console.log(usuarioActual);
-    
-    visitante = false;
-    
-    //console.log("Datos personales:\n" + JSON.stringify(jsonDatosPersonales));
-  } else {
-    console.log("salteando auth en IOS");
+// Función para loguear usuario y obtener token + "persona" (idPersona)
+export async function validarPersonaYTraerData(usuario: string, clave: string): Promise<{ token: string, idPersona: number }> {
+  const url = `${URL_BASE}persona/validuser`;
+  
+  const response = await fetch(url, {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ usuario, clave }),
+  });
+
+  if (!response.ok) {
+    const errorBody = await response.text();
+    throw new Error(`Credenciales inválidas. (${response.status}) ${errorBody}`);
+  }
+
+  const data = await response.json();
+
+  if (!data.token || !data.persona) {
+    throw new Error("Respuesta incompleta del servidor");
+  }
+
+  return {
+    token: data.token,
+    idPersona: data.persona
+  };
+}
+async function guardarSesion(token: string, personaId: number):Promise<void> {
+  try {
+    await AsyncStorage.setItem("token", token);
+    await AsyncStorage.setItem("idPersona", personaId.toString());
+  } catch (err) {
+    console.error("Error guardando sesión:", err);
   }
 };
 
-export function Logout() {
-  visitante = true;
-  usuarioActual = {idPersona: "", documento: "", nombreCompleto: "", email: "", tel: "", legajo: "" };
+export async function validarPersona(usuario: string, clave: string) {
+  const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
+  await guardarSesion(token, idPersona);
+
+  infoBaseUsuarioActual.usuario = usuario.toString();
+  infoBaseUsuarioActual.password = clave.toString();
+  
+  setVisitante(false);
+  await ObtenerDatosBaseUsuarioConToken(token, idPersona);
+  return {token, idPersona};
 }
+
+// Obtener datos personales con token JWT (para iOS y Android)
+export async function ObtenerDatosBaseUsuarioConToken(token: string,personaId: number): Promise<void> {
+  const url = `${URL_BASE}persona/${personaId}`;
+
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
+  }
+
+  const datos = await response.json();
+  const prop = datos.propuestas;
+  
+  infoBaseUsuarioActual = {
+    idPersona: personaId.toString(),
+    // se cargan los datos obtenidos:
+    legajo: datos.legajo,
+    nombreCompleto: capitalizeWords(`${datos.nombres_elegido? datos.nombres_elegido:datos.nombres} ${datos.apellido_elegido?datos.apellido_elegido:datos.apellido}`),
+    documento: datos.nro_documento,
+    email: datos.email,
+    //tel: datos.telefono_celular,
+    //
+    propuestas: prop,
+    // elige la "propuesta" (carrera) más reciente:
+    indicePropuestaSeleccionada: prop.length - 1,
+    // no realiza cambios en las siguientes variables:
+    usuario: infoBaseUsuarioActual.usuario,
+    password: infoBaseUsuarioActual.password
+  };
+  
+  visitante = false;
+}
+
+export async function ObtenerMateriasConPlan(): Promise<Plan> {
+  const token = await AsyncStorage.getItem("token");
+  
+  //const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.propuestas.length -1].plan_version;
+  
+  //console.log("PROPS: ",infoBaseUsuarioActual);
+  const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].plan_version;
+  //const planId = 435;
+  console.log("plan:",planId,"token:",token);
+
+  const url = `${URL_BASE}propuesta/${planId}/plan`;
+  const response = await fetch(url, {
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${token}`
+    }
+  });
+
+  if (!response.ok) {
+    const errorText = await response.text();
+    throw new Error(`Error al obtener datos del usuario (${response.status}): ${errorText}`);
+  }
+  const respuestaPlan = await response.json();
+  const plan:Plan = respuestaPlan;
+  return respuestaPlan as Plan;
+}
+
+export async function Logout() {
+  visitante = true;
+  infoBaseUsuarioActual = {
+    idPersona: "",
+    documento: "",
+    nombreCompleto: "",
+    email: "",
+    legajo: "",
+    propuestas: [],
+    indicePropuestaSeleccionada: -1,
+    usuario: "",
+    password: "",
+  };
+  await AsyncStorage.removeItem("token");
+  await AsyncStorage.removeItem("idPersona"); // O AsyncStorage.clear();
+}
+
+// El que quiere celeste, que le cueste:
+export let modoOscuro:boolean = false;
+
+export let colorFondoTop: string = "#fff";
+export let colorFondoBottom: string = "#ddd";
+
+const celeste: string = "#91c9f7";
+
+export function setDarkMode(dark: boolean):void {
+  modoOscuro = dark;
+  if (modoOscuro) {
+    colorFondoTop = "#000";
+    colorFondoBottom = "#000";
+  } else {
+    colorFondoTop = "#fff";
+    colorFondoBottom = grisUndav;
+  }
+} 
+export function enModoOscuro():boolean {return modoOscuro;}

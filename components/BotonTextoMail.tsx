@@ -21,7 +21,7 @@ export default function BotonTextoMail({
   verticalPadding = 12,
   fontSize = 16,
   fontColor = 'white',
-  color = "#a00",
+  color = "rgb(63, 0, 105)",
   styleExtra
 
 }: BotonTextoProps) {

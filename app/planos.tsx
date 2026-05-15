@@ -1,206 +1,180 @@
-{/*planos.tsx*/}
-import React, { useState, useRef, useMemo } from 'react';
-import {
-  View,
-  StyleSheet,
-  Dimensions,
-  Animated,
-  Text,
-  TouchableOpacity,
-  ScrollView,
-} from 'react-native';
-import { Svg, Polygon } from 'react-native-svg';
-import SvgPanZoom from 'react-native-svg-pan-zoom';
-import CustomText from "../components/CustomText";
-{/*Alias para permitir children en TS*/}
-const PanZoom: React.ComponentType<any> = SvgPanZoom;
 
-{/*Importa config centralizada*/}
+// planos.tsx
+
+import React, { useMemo, useState } from 'react';
+import { View, StyleSheet } from 'react-native';
+
+import PlanHeader from '../components/plan-area/PlanHeader';
+import SearchModal from '../components/SearchModal';
+import PlanArea from '../components/PlanArea';
+
 import {
   edificios,
-  coordsMap,
   BuildingKey,
-  PlanData,
-  ZoneType
-} from './mapsConfig';
-import FondoGradiente from '@/components/FondoGradiente';
+  FloorKey,
+} from '../lib/mapsConfig';
+
+import { hasLinkTo } from '../lib/planos/linkTo';
+import { usePlanosDerived } from '../hooks/planos/usePlanosDerived';
+import { usePlanosTutorial } from '../hooks/planos/usePlanosTutorial';
 
 export default function Planos() {
-  const [building, setBuilding] = useState<"" | BuildingKey>("");
+  // --- Estados básicos ---
+  const [building, setBuilding] = useState<'' | BuildingKey>('');
   const [showMenu, setShowMenu] = useState(false);
   const [showRooms, setShowRooms] = useState(false);
   const [floorIndex, setFloorIndex] = useState(0);
-  const [tooltip, setTooltip] = useState<string | null>(null);
-  const fadeAnim = useRef(new Animated.Value(0)).current;
-  const panZoomRef = useRef<any>(null);
+  const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
+  const [showSearchModal, setShowSearchModal] = useState(false);
 
-  const { width: winW, height: winH } = Dimensions.get('screen');
-  const containerW = winW -30;
-  const containerH = winH - 256;
+  // Conexiones
+  const [showConnections, setShowConnections] = useState(false);
 
-  const toggleMenu = () => setShowMenu(v => !v);
-  const toggleRooms = () => setShowRooms(v => !v);
+  // Derivados del plano
+  const {
+    planData,
+    currentFloors,
+    mapId,
+    roomsList,
+    roomsDisabled,
+    floorBadgeBottomY,
+    connectionOverlay,
+  } = usePlanosDerived({
+    building,
+    floorIndex,
+    showRooms,
+    setShowRooms,
+    showConnections,
+    setShowConnections,
+  });
 
-  {/*Obtiene datos del plano seleccionado*/}
-  const planData = useMemo<PlanData | null>(() => {
-    if (!building) return null;
-    const key = edificios[building].floors[floorIndex].key;
-    return coordsMap[building][key] || null;
-  }, [building, floorIndex]);
+  // ✅ Tutorial (solo manual con “?”)
+  const { refs, handleOpenTutorial } = usePlanosTutorial({
+    building,
+    planData,
+    setShowMenu,
+    setShowRooms,
+  });
 
-  {/*Obtiene pisos actuales para evitar acceso con clave indefinida*/}
-  const currentFloors = building ? edificios[building].floors : [];
+  // Selección de zona (aula normal o link a otro edificio/piso)
+  const handleSelectZone = (id: string) => {
+    const z = planData?.zones.find(zz => zz.id === id);
+    if (!z) return;
 
-  {/*Lista de aulas actuales*/}
-  const roomsList = useMemo(() => {
-    if (!planData) return [];
-    return planData.zones.filter(z => z.id.toLowerCase().startsWith('aula'));
-  }, [planData]);
+    if (hasLinkTo(z)) {
+      const { building: bk, floor } = z.linkTo;
+      setBuilding(bk);
+      const idx = edificios[bk].floors.findIndex(f => f.key === String(floor));
+      setFloorIndex(idx >= 0 ? idx : 0);
+      setSelectedZoneId(null);
+      setShowRooms(false);
+      return;
+    }
 
-  {/*Muestra tooltip*/}
-  const showTip = (text: string) => {
-    setTooltip(text);
-    fadeAnim.setValue(0);
-    Animated.sequence([
-      Animated.timing(fadeAnim, { toValue: 1, duration: 200, useNativeDriver: true }),
-      Animated.delay(2000),
-      Animated.timing(fadeAnim, { toValue: 0, duration: 200, useNativeDriver: true }),
-    ]).start(() => setTooltip(null));
+    setSelectedZoneId(id);
+    setShowRooms(false);
   };
-
-  {/*Dibuja zonas interactivas*/}
-  const renderZones = () => {
-    if (!planData) return null;
-    return planData.zones.map((zone: ZoneType) => (
-      <Polygon
-        key={zone.id}
-        points={zone.points.map(p => p.join(',')).join(' ')}
-        fill="transparent"
-        onPress={() => showTip(zone.name)}
-      />
-    ));
-  };
-
-  {/* SVG componente de la planta actual*/}
-  const SelectedSvg = building && planData
-    ? currentFloors[floorIndex].SvgComponent
-    : null;
 
   return (
-    <FondoGradiente>
+    <View style={styles.container}>
+      {/* Header */}
+      <PlanHeader
+        building={building}
+        showMenu={showMenu}
+        onToggleBuildings={() => {
+          setShowMenu(prev => {
+            const next = !prev;
+            if (next) setShowRooms(false);
+            return next;
+          });
+        }}
+        onSelectBuilding={(bk) => {
+          setBuilding(bk);
+          setFloorIndex(0);
+          setSelectedZoneId(null);
+          setShowMenu(false);
+        }}
+        showRooms={showRooms}
+        roomsDisabled={!building || !planData}
+        onToggleRooms={() => {
+          if (roomsDisabled) return;
+          setShowRooms(prev => {
+            const next = !prev;
+            if (next) setShowMenu(false);
+            return next;
+          });
+        }}
+        rooms={building ? roomsList : []}
+        onSelectRoom={(id) => {
+          setSelectedZoneId(id);
+          setShowRooms(false);
+        }}
+        onOpenSearch={() => setShowSearchModal(true)}
+        onOpenTutorial={handleOpenTutorial}
+        buildingSelectorRef={refs.buildingSelectorRef}
+        showAulasButtonRef={refs.showAulasButtonRef}
+        searchButtonRef={refs.searchButtonRef}
+      />
 
-    <View style={{position: "absolute", left: 0, right: 0, paddingVertical: 10, gap: 6}}>
-      {/* Selector de edificio */}
-      <View style={styles.dropdownWrapper}>
-        <TouchableOpacity style={styles.dropdownButton} onPress={toggleMenu}>
-          <CustomText style={styles.dropdownButtonText}>
-            {building ? edificios[building].label : 'Seleccionar Edificio'}
-          </CustomText>
-        </TouchableOpacity>
-        {showMenu && (
-          <ScrollView style={styles.dropdownMenu}>
-            {Object.entries(edificios).map(([key, info]) => (
-              <TouchableOpacity
-                key={key}
-                style={styles.dropdownItem}
-                onPress={() => {
-                  setBuilding(key as BuildingKey);
-                  setFloorIndex(0);
-                  setShowMenu(false);
-                }}>
-                <CustomText style={styles.dropdownItemText}>{info.label}</CustomText>
-              </TouchableOpacity>
-            ))}
-          </ScrollView>
-        )}
-      </View>
-
-      {/* Selector de aulas */}
-      {building && (
-        <View style={styles.dropdownWrapper}>
-          <TouchableOpacity style={styles.dropdownButton} onPress={toggleRooms}>
-            <CustomText style={styles.dropdownButtonText}>
-              {showRooms ? 'Seleccionar Aula' : 'Mostrar Aulas'}
-            </CustomText>
-          </TouchableOpacity>
-          {showRooms && (
-            <ScrollView style={styles.dropdownMenu}>
-              {roomsList.map(zone => (
-                <TouchableOpacity
-                  key={zone.id}
-                  style={styles.dropdownItem}
-                  onPress={() => { setShowRooms(false); showTip(zone.name); }}>
-                  <CustomText style={styles.dropdownItemText}>{zone.name}</CustomText>
-                </TouchableOpacity>
-              ))}
-            </ScrollView>
-          )}
+      {/* Backdrop global para cerrar menús tocando fuera */}
+      {(showMenu || showRooms) && (
+        <View style={{ ...StyleSheet.absoluteFillObject, zIndex: 15 }} pointerEvents="auto">
+          <View
+            style={{ flex: 1 }}
+            onStartShouldSetResponder={() => true}
+            onResponderRelease={() => {
+              if (showMenu) setShowMenu(false);
+              if (showRooms) setShowRooms(false);
+            }}
+          />
         </View>
       )}
-    </View>
 
-    {/* Visualización del plano */}
-    {SelectedSvg && planData && (
-      <View style={[styles.mapWrapper, { width: containerW, height: containerH}]}> 
-        <PanZoom
-          key={`${building}-${floorIndex}`}
-          ref={panZoomRef}
-          canvasWidth={planData.width}
-          canvasHeight={planData.height}
-          minScale={0.25}
-          maxScale={2.5}
-          initialZoom={Math.min(containerW/planData.width, containerH/planData.height)}
-          initialX={0}
-          initialY={0}
-        >
-          <SelectedSvg width={planData.width} height={planData.height} />
-          <Svg width={planData.width} height={planData.height} style={StyleSheet.absoluteFill}>
-            {renderZones()}
-          </Svg>
-        </PanZoom>
-      </View>
-    )}
-
-    <View>
-      {currentFloors.length > 1 && (
-          <View style={styles.floorControls}>
-            <TouchableOpacity
-              onPress={() => floorIndex > 0 && (setFloorIndex(i => i-1) )}
-              disabled={floorIndex === 0}>
-              <CustomText style={styles.floorButton}>Anterior</CustomText>
-            </TouchableOpacity>
-            <CustomText style={styles.floorLabel}>{`Planta ${floorIndex+1}`}</CustomText>
-            <TouchableOpacity
-              onPress={() => floorIndex < currentFloors.length-1 && (setFloorIndex(i => i+1) )}
-              disabled={floorIndex === currentFloors.length-1}>
-              <CustomText style={styles.floorButton}>Siguiente</CustomText>
-            </TouchableOpacity>
-          </View>
+      {/* Área del plano */}
+      <View style={{ flex: 1 }}>
+        {planData && (
+          <PlanArea
+            onSelectZone={handleSelectZone}
+            planData={planData}
+            floors={currentFloors}
+            floorIndex={floorIndex}
+            mapId={mapId}
+            onChangeFloor={(i) => {
+              setFloorIndex(i);
+              setSelectedZoneId(null);
+            }}
+            selectedZoneId={selectedZoneId}
+            fitPadding={0.10}
+            focusPadding={0.18}
+            fitMode="canvas"
+            floorBadgeBottomY={floorBadgeBottomY}
+            showConnections={showConnections}
+            onToggleConnections={() => setShowConnections(v => !v)}
+            connectionOverlay={connectionOverlay}
+            mapViewportRef={refs.mapViewportRef}
+            guidePointButtonRef={refs.guidePointButtonRef}
+            fitAllButtonRef={refs.fitAllButtonRef}
+            floorControlsRef={refs.floorControlsRef}
+          />
         )}
+      </View>
+
+      {/* Modal búsqueda */}
+      <SearchModal
+        visible={showSearchModal}
+        onClose={() => setShowSearchModal(false)}
+        onSelect={(bk: BuildingKey, floorKey: FloorKey, zoneId: string) => {
+          setBuilding(bk);
+          const fi = edificios[bk].floors.findIndex(f => f.key === floorKey);
+          setFloorIndex(fi >= 0 ? fi : 0);
+          setSelectedZoneId(zoneId);
+          setShowSearchModal(false);
+        }}
+      />
     </View>
-
-    {/* Tooltip */}
-    {tooltip && (
-      <Animated.View style={[styles.tooltip, { opacity: fadeAnim }]}>  
-        <CustomText style={styles.tooltipText}>{tooltip}</CustomText>
-      </Animated.View>
-    )}
-
-    </FondoGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  dropdownWrapper: { paddingHorizontal: 16, zIndex:30, elevation:5 },
-  dropdownButton: { height:40, borderWidth:1, borderColor:'#ccc', borderRadius:6, justifyContent:'center', paddingHorizontal:12, backgroundColor:'#fff' },
-  dropdownButtonText: { fontSize:16, color:'#333' },
-  dropdownMenu: { marginTop:4, backgroundColor:'#fff', borderWidth:1, borderColor:'#ccc', borderRadius:6, maxHeight:200 },
-  dropdownItem: { paddingVertical:10, paddingHorizontal:12 },
-  dropdownItemText: { fontSize:16, color:'#333' },
-  mapWrapper: { marginTop: 96, backgroundColor:'#fff', borderRadius:12, overflow:'hidden', shadowColor:'#000', shadowOffset:{ width:0, height:2 }, shadowOpacity:0.1, shadowRadius:4, elevation:3 },
-  floorControls: { position:'absolute', bottom:15, left:0, right:0, flexDirection:'row', justifyContent:'space-around' },
-  floorButton: { padding:8, backgroundColor:'#2196F3', color:'#fff', borderRadius:4 },
-  floorLabel: { alignSelf:'center', fontWeight:'600', color: "#fff", backgroundColor: "black" },
-  tooltip: { position:'absolute', top:60, left:20, right:20, backgroundColor:'rgba(0,0,0,0.7)', padding:8, borderRadius:4 },
-  tooltipText: { color:'#fff', textAlign:'center' },
+  container: { flex: 1, backgroundColor: '#f2f2f2', position: 'relative' },
 });

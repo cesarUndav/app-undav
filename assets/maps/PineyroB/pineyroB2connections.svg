@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<svg xmlns="http://www.w3.org/2000/svg" width="1000px" height="1000px" preserveAspectRatio="none" viewBox="0 0 1280 986">
+  <rect x="400" width="300" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="900" y="700" width="200" height="100" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="190" y="700" width="20" height="90" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="650" y="200" width="20" height="200" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <rect x="800" y="800" width="100" height="20" style="fill: rgb(216, 216, 216); stroke: rgb(0, 0, 0); visibility: hidden;"/>
+  <text style="white-space: pre; fill: rgb(51, 51, 51); font-family: Arial, sans-serif; font-size: 28px; visibility: hidden;" x="5.908" y="189.078" transform="matrix(12.411764, 0, 0, 12.16, -16.95208, -1699.425903)">A</text>
+  <path style="fill: rgb(219, 172, 3); stroke: rgb(201, 81, 81);" d="M 576.433 442.765 L 579.512 357.899 L 592.548 360.269 L 590.646 442.532 L 850.899 440.856 L 844.974 805.866 L 829.567 807.05 L 833.123 457.447 L 303.385 458.632 L 292.719 699.206 L 180.135 701.577 L 180.837 683.098 L 274.225 683.098 L 285.608 442.04 L 576.433 442.765 Z"/>
+  <path style="stroke: rgb(190, 86, 86); fill: rgb(219, 161, 3);" d="M 847.153 674.32 L 846.685 689.017 L 291.065 698.014 L 292.484 684.517 L 847.153 674.32 Z"/>
+</svg>

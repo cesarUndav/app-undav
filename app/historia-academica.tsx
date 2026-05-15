@@ -4,7 +4,7 @@ import CustomText from '../components/CustomText';
 import {
   JsonStringAObjeto,
   ObtenerJsonString
-} from '@/data/DatosUsuarioGuarani_VIEJO';
+} from '@/data/DatosUsuarioGuarani';
 import {
   infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
@@ -30,6 +30,7 @@ export type Actividad = {
   nota: number,
   fecha: string
 }
+
 
 export default function HistoriaAcademica() {
   const [loading, setLoading] = useState(true);
@@ -61,7 +62,10 @@ export default function HistoriaAcademica() {
   useEffect(() => {
     const fetchHistoria = async () => {
       try {
-        const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
+        const urlAppUndavBase = process.env.API_APPUNDAV_URL;
+        console.log("URL APi APPUNDAV (guargestinf): "+urlAppUndavBase)
+        //const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
+        const url = urlAppUndavBase +"personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
         const json = JsonStringAObjeto(await ObtenerJsonString(url));
 
         const listaActividad: Actividad[] = [];
