@@ -1,7 +1,8 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
+import axios, { AxiosError } from "axios";
 
-// --- Interfaces ---
+// --- Interfaces (Se mantienen igual) ---
 export interface User {
   idPersona: string;
   documento: string;
@@ -47,66 +48,50 @@ export interface Materia {
 
 // --- Estado Global ---
 export let infoBaseUsuarioActual: User = {
-  idPersona: "",
-  documento: "",
-  nombreCompleto: "",
-  email: "",
-  legajo: "",
-  propuestas: [],
-  indicePropuestaSeleccionada: -1,
-  usuario: "",
-  password: ""
+  idPersona: "", documento: "", nombreCompleto: "", email: "",
+  legajo: "", propuestas: [], indicePropuestaSeleccionada: -1,
+  usuario: "", password: ""
 };
 
 export let visitante: boolean = true;
 
-/** * CAMBIO CLAVE: 
- * Usamos la IP directa con HTTP para saltar el problema del certificado SSL.
- * El puerto 80 es el estándar para HTTP.
- */
-const URL_BASE = "http://170.210.71.20/"; 
+const URL_BASE = process.env.EXPO_PUBLIC_API_APPUNDAV_URL;
 
-// --- FETCH WRAPPER (CORREGIDO PARA EVITAR 404) ---
-async function fetchConHeaders(url: string, options: RequestInit = {}) {
-  try {
-    console.log("➡️ URL:", url);
+// --- CONFIGURACIÓN DE AXIOS LIMPIA ---
+const api = axios.create({
+  baseURL: URL_BASE,
+  headers: {
+    'Accept': 'application/json',
+    'Content-Type': 'application/json',
+    // ELIMINAMOS EL HOST Y EL USER-AGENT MANUAL
+  },
+  timeout: 15000,
+});
 
-    const response = await fetch(url, {
-      ...options,
-      headers: {
-        "Accept": "application/json",
-        "Content-Type": "application/json",
-        // ESTA LÍNEA ES VITAL: Engaña al servidor para que el VirtualHost responda 200 y no 404
-        "Host": "appapi.undav.edu.ar", 
-        ...(options.headers || {}),
-      },
-    });
+// Interceptor para debugging (opcional, similar a tus logs de antes)
+api.interceptors.request.use(config => {
+  console.log(`➡️ [${config.method?.toUpperCase()}] URL: ${config.baseURL}${config.url}`);
+  return config;
+});
 
-    console.log("⬅️ STATUS:", response.status);
-
+api.interceptors.response.use(
+  response => {
+    console.log(`⬅️ STATUS: ${response.status}`);
     return response;
-  } catch (error) {
-    console.log("❌ FETCH ERROR:", error);
-    throw error;
+  },
+  (error: AxiosError) => {
+    console.log(`❌ ERROR: ${error.message} - Status: ${error.response?.status}`);
+    return Promise.reject(error);
   }
-}
+);
 
 // --- Helpers ---
 function capitalizeWords(str: string): string {
-  return str
-    .toLowerCase()
-    .split(" ")
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+  return str.toLowerCase().split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 }
 
-export function setVisitante(v: boolean): void {
-  visitante = v;
-}
-
-export function UsuarioEsAutenticado(): boolean {
-  return infoBaseUsuarioActual.idPersona !== "";
-}
+export function setVisitante(v: boolean): void { visitante = v; }
+export function UsuarioEsAutenticado(): boolean { return infoBaseUsuarioActual.idPersona !== ""; }
 
 // --- Lógica de API ---
 
@@ -127,83 +112,66 @@ export async function validarPersonaYTraerData(
   usuario: string,
   clave: string
 ): Promise<{ token: string; idPersona: number }> {
-
-  // Construcción limpia de la URL
-  const url = `${URL_BASE}persona/validuser`;
-  const body = JSON.stringify({ usuario: String(usuario), clave: String(clave) });
-
   try {
-    const response = await fetchConHeaders(url, {
-      method: "POST",
-      body: body
+    const response = await api.post("/persona/validuser", {
+      usuario: String(usuario),
+      clave: String(clave)
     });
 
-    const text = await response.text();
-    let data: any;
+    const data = response.data;
 
-    try {
-      data = JSON.parse(text);
-    } catch (e) {
-      if (response.status === 404) throw new Error("Servidor respondió 404 (Ruta no encontrada)");
-      throw new Error("El servidor no devolvió un formato JSON válido");
-    }
-
-    if (!response.ok) throw new Error(data.error || `Error HTTP ${response.status}`);
     if (!data.token || !data.persona) throw new Error("Respuesta de API incompleta");
 
     return { token: data.token, idPersona: data.persona };
-  } catch (err) {
-    console.log("Error en validarPersonaYTraerData:", err);
-    throw err;
+  } catch (err: any) {
+    if (err.response?.status === 404) throw new Error("Servidor respondió 404 (Ruta no encontrada)");
+    const errorMsg = err.response?.data?.error || err.message || "Error en la conexión";
+    console.log("Error detallado en validarPersonaYTraerData:", errorMsg);
+    throw new Error(errorMsg);
   }
 }
 
 export async function ObtenerDatosBaseUsuarioConToken(token: string, personaId: number): Promise<void> {
-  const url = `${URL_BASE}persona/${personaId}`;
+  try {
+    const response = await api.get(`/persona/${personaId}`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
 
-  const response = await fetchConHeaders(url, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    }
-  });
+    const datos = response.data;
+    const prop = datos.propuestas;
 
-  if (!response.ok) throw new Error(`Error al obtener perfil (${response.status})`);
+    infoBaseUsuarioActual = {
+      ...infoBaseUsuarioActual,
+      idPersona: personaId.toString(),
+      legajo: datos.legajo,
+      nombreCompleto: capitalizeWords(`${datos.nombres_elegido || datos.nombres} ${datos.apellido_elegido || datos.apellido}`),
+      documento: datos.nro_documento,
+      email: datos.email,
+      propuestas: prop,
+      indicePropuestaSeleccionada: prop.length - 1,
+    };
 
-  const datos = await response.json();
-  const prop = datos.propuestas;
-
-  infoBaseUsuarioActual = {
-    ...infoBaseUsuarioActual,
-    idPersona: personaId.toString(),
-    legajo: datos.legajo,
-    nombreCompleto: capitalizeWords(`${datos.nombres_elegido || datos.nombres} ${datos.apellido_elegido || datos.apellido}`),
-    documento: datos.nro_documento,
-    email: datos.email,
-    propuestas: prop,
-    indicePropuestaSeleccionada: prop.length - 1,
-  };
-
-  visitante = false;
+    visitante = false;
+  } catch (err: any) {
+    throw new Error(`Error al obtener perfil: ${err.message}`);
+  }
 }
 
 export async function ObtenerMateriasConPlan(): Promise<Plan> {
   const token = await AsyncStorage.getItem("token");
   const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].plan_version;
 
-  const url = `${URL_BASE}propuesta/${planId}/plan`;
-
-  const response = await fetchConHeaders(url, {
-    headers: {
-      "Authorization": `Bearer ${token}`,
-    }
-  });
-
-  if (!response.ok) throw new Error("Error obteniendo plan de materias");
-  return await response.json() as Plan;
+  try {
+    const response = await api.get(`/propuesta/${planId}/plan`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    return response.data as Plan;
+  } catch (err: any) {
+    throw new Error("Error obteniendo plan de materias");
+  }
 }
 
 // --- Sesión y Logout ---
-
 async function guardarSesion(token: string, personaId: number): Promise<void> {
   try {
     await AsyncStorage.setItem("token", token);
@@ -240,6 +208,4 @@ export function setDarkMode(dark: boolean): void {
   }
 }
 
-export function enModoOscuro(): boolean {
-  return modoOscuro;
-}
+export function enModoOscuro(): boolean { return modoOscuro; }
