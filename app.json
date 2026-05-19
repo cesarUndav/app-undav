@@ -34,8 +34,7 @@
         "INTERNET",
         "ACCESS_NETWORK_STATE"
       ],
-      "usesCleartextTraffic": true,
-      "networkSecurityConfig": "./network_config.xml"
+      "usesCleartextTraffic": true
     },
     "web": {
       "bundler": "metro",
@@ -53,7 +52,15 @@
         }
       ],
       "expo-secure-store",
-      "expo-font"
+      "expo-font",
+      [
+        "expo-build-properties",
+        {
+          "android": {
+            "usesCleartextTraffic": true
+          }
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

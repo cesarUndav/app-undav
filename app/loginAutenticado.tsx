@@ -24,6 +24,7 @@ import { setNotificationCount } from "@/data/notificaciones";
 
 export default function LoginScreen() {
 
+  const URL_BASE = process.env.EXPO_PUBLIC_API_APPUNDAV_URL; 
   const router = useRouter();
   const [esperandoRespuesta, setEsperandoRespuesta] = useState(false);
   const [documentoIngresado, setDocumentoIngresado] = useState("");
@@ -59,54 +60,269 @@ export default function LoginScreen() {
     }
   };
 
-  useEffect(() => {
-    const realizarPruebaDeRed = async () => {
-      console.log("--- INICIANDO DIAGNÓSTICO DE RED ---");
+useEffect(() => {
 
-      // 1. TEST A INTERNET PÚBLICO (HTTPS estándar)
-      try {
-        const resPublic = await fetch('https://jsonplaceholder.typicode.com/todos/1');
-        console.log('✅ TEST 1 (HTTPS Público): EXITOSO');
-      } catch (e: any) {
-        console.log('❌ TEST 1 (HTTPS Público): FALLÓ.', e.message);
-      }
+  const timeoutFetch = async (
+    url: string,
+    options: RequestInit = {},
+    timeout = 15000
+  ) => {
+    const controller = new AbortController();
 
-      // 2. TEST HTTP PLANO (Verifica Cleartext)
-      try {
-        // Usamos una URL que no redireccione a HTTPS inmediatamente
-        const resHttp = await fetch('http://neverssl.com');
-        console.log('✅ TEST 2 (HTTP Plano): EXITOSO');
-      } catch (e: any) {
-        console.log('❌ TEST 2 (HTTP Plano): FALLÓ (Android bloquea Cleartext).', e.message);
-      }
+    const id = setTimeout(() => {
+      controller.abort();
+    }, timeout);
 
-      // 3. TEST API UNDAV
-      try {
-        const r = await fetch('https://appapi.undav.edu.ar/persona/validuser', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuario: '43877860', clave: 'Undav13' }),
-        });
-        console.log('📡 TEST 3 (API UNDAV): STATUS', r.status);
-      } catch (e: any) {
-        console.log('❌ TEST 3 (API UNDAV): FALLÓ.', e.message);
-      }
+    try {
+      const response = await fetch(url, {
+        ...options,
+        signal: controller.signal,
+      });
 
-      // 4. TEST POR IP DIRECTA
-      try {
-        const rIp = await fetch('http://192.168.132.5:5000/persona/validuser', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ usuario: '43877860', clave: 'Undav13' }),
-        });
-        console.log('🌐 TEST 4 (IP DIRECTA): STATUS', rIp.status);
-      } catch (e: any) {
-        console.log('❌ TEST 4 (IP DIRECTA): FALLÓ.', e.message);
-      }
-    };
+      clearTimeout(id);
 
-    realizarPruebaDeRed();
-  }, []);
+      return response;
+    } catch (e) {
+      clearTimeout(id);
+      throw e;
+    }
+  };
+
+  const logResponse = async (name: string, response: Response) => {
+    console.log(`\n========== ${name} ==========`);
+
+    console.log("URL FINAL:", response.url);
+    console.log("STATUS:", response.status);
+    console.log("OK:", response.ok);
+    console.log("REDIRECTED:", response.redirected);
+
+    try {
+      const text = await response.text();
+
+      console.log(
+        "BODY:",
+        text.substring(0, 300)
+      );
+    } catch (e) {
+      console.log("NO SE PUDO LEER BODY");
+    }
+
+    console.log("=============================\n");
+  };
+
+  const logError = (name: string, e: any) => {
+    console.log(`\n========== ERROR ${name} ==========`);
+
+    console.log("MESSAGE:", e?.message);
+    console.log("NAME:", e?.name);
+
+    if (e?.stack) {
+      console.log("STACK:", e.stack);
+    }
+
+    if (e?.response) {
+      console.log("RESPONSE:", e.response);
+    }
+
+    if (e?.request) {
+      console.log("REQUEST:", e.request);
+    }
+
+    console.log("FULL ERROR:", JSON.stringify(e, null, 2));
+
+    console.log("===================================\n");
+  };
+
+  const realizarPruebaDeRed = async () => {
+
+    console.log("\n\n🚀 INICIANDO DIAGNÓSTICO COMPLETO 🚀\n");
+
+    console.log("URL_BASE:", URL_BASE);
+
+    //
+    // TEST 1
+    //
+    try {
+
+      console.log("TEST 1 -> INTERNET HTTPS");
+
+      const r = await timeoutFetch(
+        "https://jsonplaceholder.typicode.com/todos/1",
+        {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            Connection: "close",
+            "Accept-Encoding": "identity",
+            "User-Agent": "Mozilla/5.0",
+          },
+        }
+      );
+
+      await logResponse("TEST 1 HTTPS PUBLICO", r);
+
+    } catch (e) {
+      logError("TEST 1 HTTPS PUBLICO", e);
+    }
+
+    //
+    // TEST 2
+    //
+    try {
+
+      console.log("TEST 2 -> HTTP");
+
+      const r = await timeoutFetch(
+        "http://google.com",
+        {
+          method: "GET",
+          headers: {
+            Connection: "close",
+          },
+        }
+      );
+
+      await logResponse("TEST 2 HTTP", r);
+
+    } catch (e) {
+      logError("TEST 2 HTTP", e);
+    }
+
+    //
+    // TEST 3
+    //
+    try {
+
+      console.log("TEST 3 -> API UNDAV HTTPS");
+
+      const url = `${URL_BASE}/persona/validuser`;
+
+      console.log("URL:", url);
+
+      const r = await timeoutFetch(
+        url,
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Connection: "close",
+            "Accept-Encoding": "identity",
+            "User-Agent": "Mozilla/5.0",
+          },
+          body: JSON.stringify({
+            usuario: "43877860",
+            clave: "Undav13",
+          }),
+        },
+        20000
+      );
+
+      await logResponse("TEST 3 API UNDAV HTTPS", r);
+
+    } catch (e) {
+      logError("TEST 3 API UNDAV HTTPS", e);
+    }
+
+    //
+    // TEST 4
+    //
+    try {
+
+      console.log("TEST 4 -> API UNDAV POR DOMINIO SIMPLE");
+
+      const r = await timeoutFetch(
+        "https://appapi.undav.edu.ar",
+        {
+          method: "GET",
+          headers: {
+            Connection: "close",
+            "Accept-Encoding": "identity",
+            "User-Agent": "Mozilla/5.0",
+          },
+        },
+        20000
+      );
+
+      await logResponse("TEST 4 DOMINIO SIMPLE", r);
+
+    } catch (e) {
+      logError("TEST 4 DOMINIO SIMPLE", e);
+    }
+
+    //
+    // TEST 5
+    //
+    try {
+
+      console.log("TEST 5 -> IP DIRECTA HTTP");
+
+      const r = await timeoutFetch(
+        "http://170.210.71.25/persona/validuser",
+        {
+          method: "POST",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+            Connection: "close",
+            "Accept-Encoding": "identity",
+            "User-Agent": "Mozilla/5.0",
+          },
+          body: JSON.stringify({
+            usuario: "43877860",
+            clave: "Undav13",
+          }),
+        },
+        20000
+      );
+
+      await logResponse("TEST 5 IP DIRECTA HTTP", r);
+
+    } catch (e) {
+      logError("TEST 5 IP DIRECTA HTTP", e);
+    }
+
+    //
+    // TEST 6 AXIOS
+    //
+    try {
+
+      console.log("TEST 6 -> AXIOS HTTPS");
+
+      const axios = require("axios").default;
+
+      const r = await axios({
+        url: `${URL_BASE}/persona/validuser`,
+        method: "POST",
+        timeout: 20000,
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+          Connection: "close",
+          "Accept-Encoding": "identity",
+          "User-Agent": "Mozilla/5.0",
+        },
+        data: {
+          usuario: "43877860",
+          clave: "Undav13",
+        },
+      });
+
+      console.log("\n========== TEST 6 AXIOS ==========");
+      console.log("STATUS:", r.status);
+      console.log("DATA:", r.data);
+      console.log("==================================\n");
+
+    } catch (e) {
+      logError("TEST 6 AXIOS", e);
+    }
+
+    console.log("\n🏁 FIN DEL DIAGNÓSTICO 🏁\n");
+  };
+
+  realizarPruebaDeRed();
+
+}, []);
 
   return (
   <OcultadorTeclado>
