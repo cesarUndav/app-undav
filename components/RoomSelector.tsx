@@ -1,6 +1,12 @@
 // components/RoomSelector.tsx
+
 import React from 'react';
-import { View, TouchableOpacity, ScrollView } from 'react-native';
+import {
+  View,
+  TouchableOpacity,
+  ScrollView,
+  StyleSheet,
+} from 'react-native';
 import CustomText from './CustomText';
 import { ZoneType } from '../lib/mapsConfig';
 import { selectorStyles } from '../theme/mapStyles';
@@ -12,8 +18,6 @@ interface Props {
   onToggle: () => void;
   rooms: ZoneType[];
   onSelect: (zoneId: string) => void;
-
-  // Coachmark ref (opcional)
   coachmarkRef?: React.Ref<any>;
 }
 
@@ -32,27 +36,42 @@ export default function RoomSelector({
     : 'Mostrar Aulas';
 
   return (
-    <View style={[selectorStyles.wrapper, { zIndex: 20 }]}>
+    <View style={[selectorStyles.wrapper, styles.wrapper]}>
       <TouchableOpacity
         ref={coachmarkRef}
         disabled={disabled}
-        onPress={() => { if (!disabled) onToggle(); }}
+        onPress={() => {
+          if (!disabled) onToggle();
+        }}
         style={selectorStyles.button}
         activeOpacity={0.8}
         accessibilityRole="button"
         accessibilityLabel="Abrir selector de aulas"
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', opacity: disabled ? 0.6 : 1 }}>
-          <CustomText style={selectorStyles.buttonText} numberOfLines={1}>
+        <View
+          style={[
+            styles.buttonContent,
+            disabled && styles.buttonContentDisabled,
+          ]}
+        >
+          <CustomText
+            weight="bold"
+            style={selectorStyles.buttonText}
+            numberOfLines={1}
+          >
             {label}
           </CustomText>
+
           <ChevronDown />
         </View>
       </TouchableOpacity>
 
       {!disabled && show && (
-        <ScrollView style={selectorStyles.menu} keyboardShouldPersistTaps="handled">
-          {rooms.map(zone => (
+        <ScrollView
+          style={selectorStyles.menu}
+          keyboardShouldPersistTaps="handled"
+        >
+          {rooms.map((zone) => (
             <TouchableOpacity
               key={zone.id}
               style={selectorStyles.item}
@@ -60,7 +79,9 @@ export default function RoomSelector({
               accessibilityRole="button"
               accessibilityLabel={`Ir a ${zone.name}`}
             >
-              <CustomText style={selectorStyles.itemText}>{zone.name}</CustomText>
+              <CustomText weight="bold" style={selectorStyles.itemText}>
+                {zone.name}
+              </CustomText>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -68,3 +89,17 @@ export default function RoomSelector({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  wrapper: {
+    zIndex: 20,
+  },
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+  buttonContentDisabled: {
+    opacity: 0.6,
+  },
+});

@@ -1,3 +1,5 @@
+// components/BottomBar.tsx
+
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -8,14 +10,14 @@ import { getNotificationCount } from '@/data/notificaciones';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 const routes = [
-  "/home-estudiante",
-  "/calendario",
-  "/notificaciones",
-  "/accesos-directos",
-  "/perfil",
+  '/home-estudiante',
+  '/calendario',
+  '/notificaciones',
+  '/accesos-directos',
+  '/perfil',
 ] as const;
 
-type Route = typeof routes[number];
+type Route = (typeof routes)[number];
 type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
 type ButtonWithSVG = {
@@ -23,23 +25,46 @@ type ButtonWithSVG = {
   Icon: React.FC<any>;
   IconName?: never;
 };
+
 type ButtonWithIonicon = {
   route: Route;
   IconName: IoniconName;
   Icon?: never;
 };
+
 type Button = ButtonWithSVG | ButtonWithIonicon;
+
+export const tamanioIcono = 50;
+export const opacidadSeleccionado = 1;
+export const colorSeleccionado = azulClaro;
+
+const colorIcono = '#999';
 
 export default function BottomBar() {
   const router = useRouter();
   const pathname = usePathname();
 
   const buttons: Button[] = [
-    { route: "/home-estudiante", Icon: require('../assets/icons/ico-svg/inicio.svg').default },
-    { route: "/calendario", Icon: require('../assets/icons/ico-svg/calendario.svg').default },
-    { route: "/notificaciones", Icon: require('../assets/icons/notifications.svg').default },
-    { route: "/accesos-directos", Icon: require('../assets/icons/ico-svg/enlaces.svg').default },
-    { route: "/perfil", Icon: require('../assets/icons/person.svg').default },
+    {
+      route: '/home-estudiante',
+      Icon: require('../assets/icons/ico-svg/inicio.svg').default,
+    },
+    {
+      route: '/calendario',
+      Icon: require('../assets/icons/ico-svg/calendario.svg').default,
+    },
+    {
+      route: '/notificaciones',
+      Icon: require('../assets/icons/notifications.svg').default,
+    },
+    {
+      route: '/accesos-directos',
+      Icon: require('../assets/icons/ico-svg/enlaces.svg').default,
+    },
+    {
+      route: '/perfil',
+      Icon: require('../assets/icons/person.svg').default,
+    },
   ];
 
   return (
@@ -47,24 +72,35 @@ export default function BottomBar() {
       {buttons.map(({ route, Icon, IconName }) => {
         const disabled = pathname === route;
         const iconColor = disabled ? colorSeleccionado : colorIcono;
-        const esIconoNotificaciones: boolean = route == "/notificaciones";
+        const esIconoNotificaciones = route === '/notificaciones';
 
         return (
           <TouchableOpacity
             key={route}
-            style={[bottomBarStyles.btn, disabled && { opacity: opacidadSeleccionado }]}
+            style={[
+              bottomBarStyles.btn,
+              disabled && { opacity: opacidadSeleccionado },
+            ]}
             onPress={() => !disabled && router.push(route)}
             disabled={disabled}
-            //activeOpacity={1} // se puede usar esto para quitar animacion
           >
-            {Icon ? 
-            <Icon width={tamanioIcono} height={tamanioIcono} fill={iconColor} />
-            :
-            <Ionicons name={IconName!} size={tamanioIcono-20} color={iconColor} />}
+            {Icon ? (
+              <Icon
+                width={tamanioIcono}
+                height={tamanioIcono}
+                fill={iconColor}
+              />
+            ) : (
+              <Ionicons
+                name={IconName!}
+                size={tamanioIcono - 20}
+                color={iconColor}
+              />
+            )}
 
             {esIconoNotificaciones && getNotificationCount() > 0 && (
               <View style={bottomBarStyles.notificationBubble}>
-                <CustomText style={bottomBarStyles.notificationText}>
+                <CustomText weight="bold" style={bottomBarStyles.notificationText}>
                   {getNotificationCount()}
                 </CustomText>
               </View>
@@ -76,30 +112,24 @@ export default function BottomBar() {
   );
 }
 
-export const tamanioIcono = 50;
-export const opacidadSeleccionado = 1;
-export const colorSeleccionado = azulClaro;
-const colorIcono = "#999";
-
 export const bottomBarStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     justifyContent: 'space-around',
     height: 56,
     borderTopWidth: 1,
     borderTopColor: grisBorde,
-    ...getShadowStyle(2)
+    ...getShadowStyle(2),
   },
   btn: {
     alignItems: 'center',
     justifyContent: 'center',
     width: 70,
-    // backgroundColor: "green"
   },
   notificationBubble: {
-    backgroundColor: "#d00",
-    position: "absolute",
+    backgroundColor: '#d00',
+    position: 'absolute',
     top: 6,
     right: 12,
     height: 22,
@@ -110,11 +140,9 @@ export const bottomBarStyles = StyleSheet.create({
     zIndex: 10,
   },
   notificationText: {
-    color: "#fff",
+    color: '#fff',
     fontSize: 13,
-    fontWeight: "bold",
-    textAlign:"center",
-    textAlignVertical:"center"
-  }
-
+    textAlign: 'center',
+    textAlignVertical: 'center',
+  },
 });

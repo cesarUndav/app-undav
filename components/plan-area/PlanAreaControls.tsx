@@ -1,6 +1,7 @@
 // components/plan-area/PlanAreaControls.tsx
+
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, Animated } from 'react-native';
+import { StyleSheet, TouchableOpacity, Animated } from 'react-native';
 
 import FloorBadgeControls from '../FloorBadgeControls';
 import FitAllButton from '../FitAllButton';
@@ -10,7 +11,6 @@ import CustomText from '../CustomText';
 import { mapButtonStyles } from '../../theme/mapStyles';
 
 type Props = {
-  // Piso
   floorIndex: number;
   maxFloors: number;
   onPrevFloor: () => void;
@@ -18,18 +18,15 @@ type Props = {
   floorBadgeBottomY?: number;
   floorControlsRef?: React.Ref<any>;
 
-  // Botones
   onPressGuidePoint: () => void;
   onPressFitAll: () => void;
   guidePointButtonRef?: React.Ref<any>;
   fitAllButtonRef?: React.Ref<any>;
 
-  // Conexiones
   connectionOverlay?: React.ComponentType<any> | null;
   showConnections?: boolean;
   onToggleConnections?: () => void;
 
-  // Tooltip
   tooltip: string | null;
   fade: Animated.Value;
 };
@@ -81,9 +78,11 @@ export default function PlanAreaControls({
           activeOpacity={0.85}
           style={[mapButtonStyles.base, styles.connBtn]}
           accessibilityRole="button"
-          accessibilityLabel={showConnections ? 'Ocultar conexiones' : 'Mostrar conexiones'}
+          accessibilityLabel={
+            showConnections ? 'Ocultar conexiones' : 'Mostrar conexiones'
+          }
         >
-          <CustomText style={mapButtonStyles.text}>
+          <CustomText weight="bold" style={mapButtonStyles.text}>
             {showConnections ? 'Ocultar conexiones' : 'Mostrar conexiones'}
           </CustomText>
         </TouchableOpacity>
@@ -95,7 +94,6 @@ export default function PlanAreaControls({
 }
 
 const styles = StyleSheet.create({
-  // Botón de conexiones: ARRIBA y CENTRADO horizontalmente
   connBtn: {
     position: 'absolute',
     top: 10,

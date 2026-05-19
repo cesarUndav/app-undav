@@ -1,4 +1,6 @@
-import React, { useState } from "react";
+// app/perfil.tsx
+
+import React, { useState } from 'react';
 import {
   View,
   StyleSheet,
@@ -7,28 +9,46 @@ import {
   Switch,
   Alert,
   Platform,
-} from "react-native";
-import { router } from "expo-router";
-import CustomText from "../components/CustomText";
-import FondoGradiente from "@/components/FondoGradiente";
-import {
-  Logout,
-  infoBaseUsuarioActual,
-} from "@/data/DatosUsuarioGuarani";
-import { getShadowStyle } from "@/constants/ShadowStyle";
+} from 'react-native';
+import { router } from 'expo-router';
+import CustomText from '../components/CustomText';
+import FondoGradiente from '@/components/FondoGradiente';
+import { Logout, infoBaseUsuarioActual } from '@/data/DatosUsuarioGuarani';
+import { getShadowStyle } from '@/constants/ShadowStyle';
 
-// Tipado de ítems de configuración
-type TextItem = { type: "text"; label: string };
+type TextItem = {
+  type: 'text';
+  label: string;
+};
+
 type ToggleItem = {
-  type: "toggle";
+  type: 'toggle';
   label: string;
   value: boolean;
   onValueChange: (val: boolean) => void;
 };
-type LinkItem = { type: "link"; label: string; onPress: () => void };
-type ActionItem = { type: "action"; label: string; onPress: () => void };
-type SeparatorItem = { type: "separator" };
-type DropdownItem = { type: "dropdown"; label: string; content: string[] };
+
+type LinkItem = {
+  type: 'link';
+  label: string;
+  onPress: () => void;
+};
+
+type ActionItem = {
+  type: 'action';
+  label: string;
+  onPress: () => void;
+};
+
+type SeparatorItem = {
+  type: 'separator';
+};
+
+type DropdownItem = {
+  type: 'dropdown';
+  label: string;
+  content: string[];
+};
 
 type ConfigItem =
   | TextItem
@@ -46,16 +66,19 @@ export default function Configuracion() {
   const [mostrarPropuestas, setMostrarPropuestas] = useState(false);
 
   const handleLogout = () => {
-    Alert.alert("Cerrar sesión", "¿Quiere cerrar sesión?", [
+    Alert.alert('Cerrar sesión', '¿Quiere cerrar sesión?', [
       {
-        text: "Sí",
-        style: "destructive",
+        text: 'Sí',
+        style: 'destructive',
         onPress: () => {
           Logout();
-          router.replace("/");
+          router.replace('/');
         },
       },
-      { text: "No", style: "cancel" },
+      {
+        text: 'No',
+        style: 'cancel',
+      },
     ]);
   };
 
@@ -63,58 +86,61 @@ export default function Configuracion() {
     {
       data: [
         {
-          type: "text",
-          label: infoBaseUsuarioActual.nombreCompleto
+          type: 'text',
+          label: infoBaseUsuarioActual.nombreCompleto,
         },
         {
-          type: "text",
-          label: "Legajo: " + infoBaseUsuarioActual.legajo
+          type: 'text',
+          label: 'Legajo: ' + infoBaseUsuarioActual.legajo,
         },
         {
-          type: "dropdown",
-          label: "Mis Propuestas Educativas",
+          type: 'dropdown',
+          label: 'Mis Propuestas Educativas',
           content: infoBaseUsuarioActual.propuestas.map(
-              (p) =>
-                `${p.nombre}: ${p.regular === "S" ? "Regular" : "NO Regular"}`
-            )
+            (p) => `${p.nombre}: ${p.regular === 'S' ? 'Regular' : 'NO Regular'}`
+          ),
         },
         {
-          type: "text",
-          label: infoBaseUsuarioActual.email
+          type: 'text',
+          label: infoBaseUsuarioActual.email,
         },
-        { type: "separator" },
+        {
+          type: 'separator',
+        },
       ],
     },
     {
       data: [
         {
-          type: "link",
-          label: "Historia Académica",
-          onPress: () => router.push("/historia-academica"),
+          type: 'link',
+          label: 'Historia Académica',
+          onPress: () => router.push('/historia-academica'),
         },
         {
-          type: "link",
-          label: "Plan de Estudio",
-          onPress: () => router.push("/plan-de-estudio"),
+          type: 'link',
+          label: 'Plan de Estudio',
+          onPress: () => router.push('/plan-de-estudio'),
         },
         {
-          type: "link",
-          label: "Ajustes",
-          onPress: () => router.push("/ajustes"),
+          type: 'link',
+          label: 'Ajustes',
+          onPress: () => router.push('/ajustes'),
         },
         {
-          type: "link",
-          label: "Accesos Directos",
-          onPress: () => router.push("/accesos-directos"),
+          type: 'link',
+          label: 'Accesos Directos',
+          onPress: () => router.push('/accesos-directos'),
         },
-        { type: "separator" },
+        {
+          type: 'separator',
+        },
       ],
     },
     {
       data: [
         {
-          type: "action",
-          label: "Cerrar sesión",
+          type: 'action',
+          label: 'Cerrar sesión',
           onPress: handleLogout,
         },
       ],
@@ -129,56 +155,82 @@ export default function Configuracion() {
           keyExtractor={(item, index) => `${item.type}-${index}`}
           renderItem={({ item }) => {
             switch (item.type) {
-              case "text":
+              case 'text':
                 return (
                   <View style={styles.item}>
-                    <CustomText style={styles.textItem}>{item.label}</CustomText>
+                    <CustomText style={styles.textItem}>
+                      {item.label}
+                    </CustomText>
                   </View>
                 );
-              case "toggle":
+
+              case 'toggle':
                 return (
-                  <View style={[styles.item, Platform.OS != "ios" && { marginVertical: -10 }]}>
-                    <CustomText style={styles.textItem}>{item.label}</CustomText>
+                  <View
+                    style={[
+                      styles.item,
+                      Platform.OS !== 'ios' && styles.androidToggleFix,
+                    ]}
+                  >
+                    <CustomText style={styles.textItem}>
+                      {item.label}
+                    </CustomText>
+
                     <Switch
                       value={item.value}
                       onValueChange={item.onValueChange}
                     />
                   </View>
                 );
-              case "link":
+
+              case 'link':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.linkItem}>{item.label}</CustomText>
+                    <CustomText style={styles.linkItem}>
+                      {item.label}
+                    </CustomText>
                   </TouchableOpacity>
                 );
-              case "action":
+
+              case 'action':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.actionItem}>{item.label}</CustomText>
+                    <CustomText style={styles.actionItem}>
+                      {item.label}
+                    </CustomText>
                   </TouchableOpacity>
                 );
-              case "separator":
+
+              case 'separator':
                 return <View style={styles.separator} />;
-              case "dropdown":
+
+              case 'dropdown':
                 return (
-                  <View style={{ marginBottom: 0 }}>
+                  <View style={styles.dropdownContainer}>
                     <TouchableOpacity
                       style={styles.item}
                       onPress={() => setMostrarPropuestas(!mostrarPropuestas)}
                     >
-                      <CustomText style={styles.textItem}>{item.label}</CustomText>
-                      <CustomText style={{ fontSize: 22 }}>
-                        {mostrarPropuestas ? "▲ " : "▼ "}
+                      <CustomText style={styles.textItem}>
+                        {item.label}
+                      </CustomText>
+
+                      <CustomText style={styles.dropdownIcon}>
+                        {mostrarPropuestas ? '▲ ' : '▼ '}
                       </CustomText>
                     </TouchableOpacity>
+
                     {mostrarPropuestas &&
                       item.content.map((line, idx) => (
-                        <View key={idx} style={{ paddingLeft: 16, paddingVertical: 2 }}>
-                          <CustomText style={styles.textItem}>{line}</CustomText>
+                        <View key={idx} style={styles.dropdownLine}>
+                          <CustomText style={styles.textItem}>
+                            {line}
+                          </CustomText>
                         </View>
                       ))}
                   </View>
                 );
+
               default:
                 return null;
             }
@@ -195,31 +247,44 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
     paddingHorizontal: 16,
     paddingVertical: 6,
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     ...getShadowStyle(6),
   },
   list: {},
   item: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 8,
+  },
+  androidToggleFix: {
+    marginVertical: -10,
   },
   textItem: {
     fontSize: 16,
-    color: "#0b254a",
+    color: '#0b254a',
   },
   linkItem: {
     fontSize: 16,
-    color: "#0b5085",
+    color: '#0b5085',
   },
   actionItem: {
     fontSize: 16,
-    color: "#d9534f",
+    color: '#d9534f',
   },
   separator: {
     height: 1,
     marginVertical: 6,
-    backgroundColor: "#BBB",
+    backgroundColor: '#BBB',
+  },
+  dropdownContainer: {
+    marginBottom: 0,
+  },
+  dropdownIcon: {
+    fontSize: 22,
+  },
+  dropdownLine: {
+    paddingLeft: 16,
+    paddingVertical: 2,
   },
 });

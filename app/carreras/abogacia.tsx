@@ -1,4 +1,4 @@
-// abogacia.tsx
+// app/carreras/abogacia.tsx
 
 import React, { useState } from 'react';
 import {

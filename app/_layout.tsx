@@ -1,4 +1,4 @@
-// _layout.tsx
+// app/_layout.tsx
 
 // ESTO DEBE IR EN LA LÍNEA 1 DE TU ARCHIVO PRINCIPAL
 if (typeof global.fetch !== 'undefined' && (global.fetch as any).polyfill) {

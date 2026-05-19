@@ -1,3 +1,5 @@
+// app/calend.-academico-resoluciones.tsx
+
 import React, { useEffect, useState } from 'react';
 import {  StyleSheet, ScrollView } from 'react-native';
 

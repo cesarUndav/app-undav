@@ -1,28 +1,61 @@
-import React, { useState } from "react";
-import { View, StyleSheet, SectionList, TouchableOpacity, Switch, Platform } from "react-native";
-import CustomText from "../components/CustomText";
-import FondoGradiente from "@/components/FondoGradiente";
+// app/ajustes.tsx
+
+import React, { useState } from 'react';
 import {
-  modoOscuro,
-  setDarkMode
-} from "@/data/DatosUsuarioGuarani";
-import { getShadowStyle } from "@/constants/ShadowStyle";
-import { useRouter } from "expo-router";
+  View,
+  StyleSheet,
+  SectionList,
+  TouchableOpacity,
+  Switch,
+  Platform,
+} from 'react-native';
+import CustomText from '../components/CustomText';
+import FondoGradiente from '@/components/FondoGradiente';
+import { modoOscuro, setDarkMode } from '@/data/DatosUsuarioGuarani';
+import { getShadowStyle } from '@/constants/ShadowStyle';
+import { useRouter } from 'expo-router';
 
 // Tipado de ítems de configuración
-type TextItem = { type: "text"; label: string };
-type ToggleItem = { type: "toggle"; label: string; value: boolean; onValueChange: (val: boolean) => void };
-type LinkItem = { type: "link"; label: string; onPress: () => void };
-type ActionItem = { type: "action"; label: string; onPress: () => void };
-type SeparatorItem = { type: "separator" };
+type TextItem = {
+  type: 'text';
+  label: string;
+};
 
-type ConfigItem = TextItem | ToggleItem | LinkItem | ActionItem | SeparatorItem;
+type ToggleItem = {
+  type: 'toggle';
+  label: string;
+  value: boolean;
+  onValueChange: (val: boolean) => void;
+};
+
+type LinkItem = {
+  type: 'link';
+  label: string;
+  onPress: () => void;
+};
+
+type ActionItem = {
+  type: 'action';
+  label: string;
+  onPress: () => void;
+};
+
+type SeparatorItem = {
+  type: 'separator';
+};
+
+type ConfigItem =
+  | TextItem
+  | ToggleItem
+  | LinkItem
+  | ActionItem
+  | SeparatorItem;
+
 interface ConfigSection {
   data: ConfigItem[];
 }
 
 export default function Configuracion() {
-
   const router = useRouter();
 
   const [notifsOn, setNotifsOn] = useState(false);
@@ -32,14 +65,14 @@ export default function Configuracion() {
     {
       data: [
         {
-          type: "toggle",
-          label: "Recibir notificaciones",
+          type: 'toggle',
+          label: 'Recibir notificaciones',
           value: notifsOn,
           onValueChange: (val) => setNotifsOn(val),
         },
         {
-          type: "toggle",
-          label: "Modo Oscuro",
+          type: 'toggle',
+          label: 'Modo Oscuro',
           value: dark,
           onValueChange: (val) => {
             setDark(val);
@@ -47,14 +80,14 @@ export default function Configuracion() {
           },
         },
         {
-          type: "link",
-          label: "Credenciales Campus Virtual",
+          type: 'link',
+          label: 'Credenciales Campus Virtual',
           onPress() {
-            router.push("/credenciales-campus-virtual");   
-          }
-        }
-      ]
-    }
+            router.push('/credenciales-campus-virtual');
+          },
+        },
+      ],
+    },
   ];
 
   return (
@@ -65,33 +98,57 @@ export default function Configuracion() {
           keyExtractor={(item, index) => `${item.type}-${index}`}
           renderItem={({ item }) => {
             switch (item.type) {
-              case "text":
+              case 'text':
                 return (
                   <View style={styles.item}>
-                    <CustomText style={styles.textItem}>{item.label}</CustomText>
+                    <CustomText style={styles.textItem}>
+                      {item.label}
+                    </CustomText>
                   </View>
                 );
-              case "toggle":
+
+              case 'toggle':
                 return (
-                  <View style= {[styles.item, Platform.OS === "ios" ? {marginVertical: 0} : {marginVertical: -10}]}>
-                    <CustomText style={styles.textItem}>{item.label}</CustomText>
-                    <Switch value={item.value} onValueChange={item.onValueChange}/>
+                  <View
+                    style={[
+                      styles.item,
+                      Platform.OS === 'ios'
+                        ? { marginVertical: 0 }
+                        : { marginVertical: -10 },
+                    ]}
+                  >
+                    <CustomText style={styles.textItem}>
+                      {item.label}
+                    </CustomText>
+
+                    <Switch
+                      value={item.value}
+                      onValueChange={item.onValueChange}
+                    />
                   </View>
                 );
-              case "link":
+
+              case 'link':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.linkItem}>{item.label}</CustomText>
+                    <CustomText style={styles.linkItem}>
+                      {item.label}
+                    </CustomText>
                   </TouchableOpacity>
                 );
-              case "action":
+
+              case 'action':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.actionItem}>{item.label}</CustomText>
+                    <CustomText style={styles.actionItem}>
+                      {item.label}
+                    </CustomText>
                   </TouchableOpacity>
                 );
-              case "separator":
+
+              case 'separator':
                 return <View style={styles.separator} />;
+
               default:
                 return null;
             }
@@ -108,31 +165,31 @@ const styles = StyleSheet.create({
     borderBottomRightRadius: 40,
     paddingHorizontal: 16,
     paddingVertical: 6,
-    backgroundColor: "#fff",
-    ...getShadowStyle(6)
+    backgroundColor: '#fff',
+    ...getShadowStyle(6),
   },
   list: {},
   item: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
     paddingVertical: 8,
   },
   textItem: {
     fontSize: 16,
-    color: "#0b254a",
+    color: '#0b254a',
   },
   linkItem: {
     fontSize: 16,
-    color: "#0b5085",
+    color: '#0b5085',
   },
   actionItem: {
     fontSize: 16,
-    color: "#d9534f"
+    color: '#d9534f',
   },
   separator: {
     height: 1,
     marginVertical: 6,
-    backgroundColor: "#BBB",
+    backgroundColor: '#BBB',
   },
 });
