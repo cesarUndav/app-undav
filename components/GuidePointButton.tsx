@@ -1,12 +1,16 @@
 // components/GuidePointButton.tsx
+
 import React from 'react';
 import CustomText from './CustomText';
-import { Pressable, StyleSheet, GestureResponderEvent, Platform } from 'react-native';
+import {
+  Pressable,
+  StyleSheet,
+  GestureResponderEvent,
+  Platform,
+} from 'react-native';
 
 type Props = {
   onPress: (e: GestureResponderEvent) => void;
-
-  // Coachmark ref
   coachmarkRef?: React.Ref<any>;
 };
 
@@ -20,7 +24,9 @@ export default function GuidePointButton({ onPress, coachmarkRef }: Props) {
       style={({ pressed }) => [styles.btn, pressed && styles.btnPressed]}
       android_ripple={{ color: 'rgba(255,255,255,0.15)', borderless: false }}
     >
-      <CustomText style={styles.txt}>Punto guía</CustomText>
+      <CustomText weight="bold" style={styles.txt}>
+        Punto guía
+      </CustomText>
     </Pressable>
   );
 }
@@ -49,5 +55,9 @@ const styles = StyleSheet.create({
       default: '#2e4385ff',
     }),
   },
-  txt: { color: '#fff', fontSize: 14, fontWeight: '600', letterSpacing: 0.2 },
+  txt: {
+    color: '#fff',
+    fontSize: 14,
+    letterSpacing: 0.2,
+  },
 });

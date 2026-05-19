@@ -1,14 +1,16 @@
+// components/DropdownSeccion.tsx
+
 import React, { ReactNode, useState } from 'react';
 import {
   View,
   TouchableOpacity,
   StyleSheet,
   StyleProp,
-  ViewStyle
+  ViewStyle,
 } from 'react-native';
 import CustomText from './CustomText';
 import { Ionicons } from '@expo/vector-icons';
-import { azulLogoUndav, negroAzulado } from '@/constants/Colors';
+import { azulLogoUndav } from '@/constants/Colors';
 
 interface DropdownSeccionProps {
   titulo: string;
@@ -23,11 +25,11 @@ interface DropdownSeccionProps {
 const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
   titulo,
   children,
-  colorTexto = "white",
+  colorTexto = 'white',
   colorDeFondo = azulLogoUndav,
   inicialmenteAbierto = true,
   styleContenido,
-  gap = 2
+  gap = 2,
 }) => {
   const [abierto, setAbierto] = useState(inicialmenteAbierto);
 
@@ -35,13 +37,18 @@ const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
     <View>
       <TouchableOpacity
         onPress={() => setAbierto(!abierto)}
-        style={[ styles.header,
-          { 
-            backgroundColor: colorDeFondo, 
-            borderBottomEndRadius: abierto ? 0:styles.header.borderBottomEndRadius },
+        style={[
+          styles.header,
+          {
+            backgroundColor: colorDeFondo,
+            borderBottomEndRadius: abierto ? 0 : 20,
+          },
         ]}
       >
-        <CustomText style={[styles.titulo, { color: colorTexto }]}>{titulo}</CustomText>
+        <CustomText weight="bold" style={[styles.titulo, { color: colorTexto }]}>
+          {titulo}
+        </CustomText>
+
         <Ionicons
           name={abierto ? 'chevron-up' : 'chevron-down'}
           size={20}
@@ -50,8 +57,8 @@ const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
       </TouchableOpacity>
 
       {abierto && (
-        <View style={[{ gap }, styleContenido]}>
-          {abierto && <View style={[{gap}, styleContenido]}>{children}</View>}
+        <View style={[styles.contenido, { gap }, styleContenido]}>
+          {children}
         </View>
       )}
     </View>
@@ -66,15 +73,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingVertical: 16,
     marginBottom: 0,
-    borderBottomEndRadius: 20
+    borderBottomEndRadius: 20,
   },
   titulo: {
     fontSize: 16,
-    fontWeight: 'bold',
   },
-  lastItemContainer: {
-    borderBottomRightRadius: 20,
-    overflow: 'hidden', // Opcional: Necesario si child tiene background
+  contenido: {
+    gap: 2,
   },
 });
 

@@ -1,4 +1,5 @@
-// components/Header.tsx
+// components/NavigationHeader.tsx
+
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet, ViewStyle } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
@@ -6,25 +7,31 @@ import CustomText from './CustomText';
 
 interface HeaderProps {
   title: string;
-  hideBackButton?: boolean,
+  hideBackButton?: boolean;
   onBackPress: () => void;
   backgroundColor?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ title, hideBackButton, onBackPress, backgroundColor = '#fff' }) => {
+const Header: React.FC<HeaderProps> = ({
+  title,
+  hideBackButton,
+  onBackPress,
+  backgroundColor = '#fff',
+}) => {
   return (
     <View style={[headerStyles.container, { backgroundColor }]}>
       <View style={headerStyles.side}>
-        {
-        !hideBackButton && 
+        {!hideBackButton && (
           <TouchableOpacity onPress={onBackPress}>
             <Ionicons name="arrow-back" size={24} color="#1a2b50" />
           </TouchableOpacity>
-        }
+        )}
       </View>
 
       <View style={headerStyles.titleContainer}>
-        <CustomText style={headerStyles.title}>{title}</CustomText>
+        <CustomText weight="bold" style={headerStyles.title}>
+          {title}
+        </CustomText>
       </View>
     </View>
   );
@@ -56,7 +63,6 @@ const headerStyles = StyleSheet.create({
   } as ViewStyle,
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
     color: '#1a2b50',
   },
 });

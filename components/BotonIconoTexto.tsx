@@ -1,11 +1,15 @@
-import React from 'react';
-import { StyleProp, TouchableOpacity, View, ViewStyle } from 'react-native';
-import { useRouter } from 'expo-router';
-import CustomText from './CustomText';
-import { StyleSheet } from 'react-native';
-import { azulClaro, grisBorde, grisTexto } from '@/constants/Colors';
-import { getShadowStyle } from '@/constants/ShadowStyle';
+// components/BotonIconoTexto.tsx
 
+import React from 'react';
+import {
+  StyleProp,
+  TouchableOpacity,
+  View,
+  ViewStyle,
+  StyleSheet,
+} from 'react-native';
+import CustomText from './CustomText';
+import { azulClaro, grisBorde, grisTexto } from '@/constants/Colors';
 
 type BotonIconoTextoProps = {
   label: string;
@@ -25,16 +29,14 @@ export default function BotonIconoTexto({
   iconSize = 55,
   iconColor = azulClaro,
   iconTextColor = grisTexto,
-  backgroundColor = "#fff",
+  backgroundColor = '#fff',
   styleExtra,
 }: BotonIconoTextoProps) {
-  const router = useRouter();
-
   return (
     <TouchableOpacity
       accessible
-      accessibilityLabel={"Ir a " + label}
-      style={[styles.buttonBox,{backgroundColor: backgroundColor}, styleExtra]}
+      accessibilityLabel={'Ir a ' + label}
+      style={[styles.buttonBox, { backgroundColor }, styleExtra]}
       onPress={funcionOnPress}
     >
       <View style={styles.buttonBoxIconParent}>
@@ -44,57 +46,42 @@ export default function BotonIconoTexto({
       </View>
 
       <View style={styles.buttonBoxTextParent}>
-        <CustomText style={[styles.buttonText, {color: iconTextColor}]}>{label}</CustomText>
+        <CustomText
+          weight="bold"
+          style={[styles.buttonText, { color: iconTextColor }]}
+        >
+          {label}
+        </CustomText>
       </View>
-
     </TouchableOpacity>
   );
-
 }
 
 const styles = StyleSheet.create({
-    buttonBox: {
+  buttonBox: {
     flex: 1,
-    height: "100%",
-    flexDirection: "column",
+    height: '100%',
+    flexDirection: 'column',
     alignItems: 'center',
     justifyContent: 'center',
   },
-    buttonBoxIconParent: {
-    height: "72%",
-    justifyContent: "flex-end",
+  buttonBoxIconParent: {
+    height: '72%',
+    justifyContent: 'flex-end',
   },
   buttonOutline: {
-    backgroundColor: "#fff",
+    backgroundColor: '#fff',
     borderRadius: 999,
     borderWidth: 1,
     borderColor: grisBorde,
-    //...getShadowStyle(2),
     padding: 6,
     marginBottom: 4,
-
-    // alignItems: "center",
-    // alignContent: "center",
-    // justifyContent: 'center'
   },
   buttonBoxTextParent: {
-    flex: 1
+    flex: 1,
   },
   buttonText: {
     textAlign: 'center',
-    fontWeight: "bold",
-    fontSize: 11
+    fontSize: 11,
   },
-  buttonBoxBackup: {
-    flex: 1,
-    height: "100%",
-    flexDirection: "column",
-    justifyContent: 'center',
-    alignItems: 'center',
-    backgroundColor:azulClaro,
-    ...getShadowStyle(3),
-    //borderRadius: 6,
-    //borderBottomRightRadius: 20,
-    //borderRadius: "15%",
-  }
 });

@@ -1,13 +1,18 @@
 // components/SearchModal.tsx
+
 import React, { useMemo, useState } from 'react';
 import {
-  Modal, View, SectionList, Pressable, TextInput
+  Modal,
+  View,
+  SectionList,
+  Pressable,
+  TextInput,
+  StyleSheet,
 } from 'react-native';
 import CustomText from './CustomText';
 import { BuildingKey, FloorKey } from '../lib/mapsConfig';
 import { floorLabel } from '../lib/floors';
 
-// lógica modularizada
 import {
   makeBaseSections,
   filterSections,
@@ -15,22 +20,27 @@ import {
   FloorGroup,
 } from '../lib/searchRooms';
 
-// estilos centralizados
 import { searchModalStyles as s } from '../theme/mapStyles';
 
 interface Props {
   visible: boolean;
   onClose: () => void;
-  onSelect: (building: BuildingKey, floorKey: FloorKey, zoneId: string) => void;
+  onSelect: (
+    building: BuildingKey,
+    floorKey: FloorKey,
+    zoneId: string
+  ) => void;
 }
 
-export default function SearchModal({ visible, onClose, onSelect }: Props) {
+export default function SearchModal({
+  visible,
+  onClose,
+  onSelect,
+}: Props) {
   const [query, setQuery] = useState('');
 
-  /** Secciones completas (sin filtrar) */
   const baseSections: Section[] = useMemo(() => makeBaseSections(), []);
 
-  /** Filtrado por query (sólo NAME + alias) */
   const filteredSections: Section[] = useMemo(
     () => filterSections(baseSections, query),
     [baseSections, query]
@@ -41,7 +51,6 @@ export default function SearchModal({ visible, onClose, onSelect }: Props) {
   return (
     <Modal visible={visible} animationType="slide" onRequestClose={onClose}>
       <View style={s.container}>
-        {/* Barra de búsqueda */}
         <View style={s.searchRow}>
           <TextInput
             value={query}
@@ -53,34 +62,42 @@ export default function SearchModal({ visible, onClose, onSelect }: Props) {
             spellCheck={true}
             keyboardType="default"
             returnKeyType="search"
-            keyboardAppearance="light"           // o "dark" si usas tema oscuro
-            textContentType="none"               // evita autocompletado raro de iOS
-            clearButtonMode="while-editing"      // nativo de iOS dentro del campo
-            enablesReturnKeyAutomatically={true} // desactiva “Buscar” si está vacío
+            keyboardAppearance="light"
+            textContentType="none"
+            clearButtonMode="while-editing"
+            enablesReturnKeyAutomatically={true}
             style={s.searchInput}
           />
 
           {query.length > 0 && (
-            <Pressable onPress={() => setQuery('')} style={s.clearBtn} hitSlop={8}>
-              <CustomText weight="700" style={s.clearBtnTxt}>✕</CustomText>
+            <Pressable
+              onPress={() => setQuery('')}
+              style={s.clearBtn}
+              hitSlop={8}
+            >
+              <CustomText weight="bold" style={s.clearBtnTxt}>
+                ✕
+              </CustomText>
             </Pressable>
           )}
         </View>
 
-        {/* Listado por edificio → pisos → chips de aulas */}
         {hasResults ? (
           <SectionList
             sections={filteredSections}
             stickySectionHeadersEnabled={false}
             keyExtractor={(item: FloorGroup) => item.floorKey}
             renderSectionHeader={({ section }) => (
-              <CustomText weight="700" style={s.title}>{section.title}</CustomText>
+              <CustomText weight="bold" style={s.title}>
+                {section.title}
+              </CustomText>
             )}
             renderItem={({ item }) => (
               <View style={s.card}>
-                <CustomText weight="700" style={s.cardHeader}>
+                <CustomText weight="bold" style={s.cardHeader}>
                   {floorLabel(parseInt(item.floorKey, 10))}
                 </CustomText>
+
                 <View style={s.chipsRow}>
                   {item.rooms.map((room) => (
                     <Pressable
@@ -95,7 +112,7 @@ export default function SearchModal({ visible, onClose, onSelect }: Props) {
                       ]}
                       android_ripple={{ color: 'rgba(59,91,253,0.15)' }}
                     >
-                      <CustomText weight="700" style={s.chipText}>
+                      <CustomText weight="bold" style={s.chipText}>
                         {room.name}
                       </CustomText>
                     </Pressable>
@@ -103,21 +120,44 @@ export default function SearchModal({ visible, onClose, onSelect }: Props) {
                 </View>
               </View>
             )}
-            ItemSeparatorComponent={() => <View style={{ height: 12 }} />}
-            SectionSeparatorComponent={() => <View style={{ height: 16 }} />}
-            contentContainerStyle={{ paddingBottom: 24 }}
+            ItemSeparatorComponent={() => (
+              <View style={styles.itemSeparator} />
+            )}
+            SectionSeparatorComponent={() => (
+              <View style={styles.sectionSeparator} />
+            )}
+            contentContainerStyle={styles.listContent}
           />
         ) : (
           <View style={s.emptyWrap}>
-            <CustomText style={s.emptyTitle}>Sin resultados</CustomText>
-            <CustomText style={s.emptySub}>Probá con otro término de búsqueda.</CustomText>
+            <CustomText style={s.emptyTitle}>
+              Sin resultados
+            </CustomText>
+
+            <CustomText style={s.emptySub}>
+              Probá con otro término de búsqueda.
+            </CustomText>
           </View>
         )}
 
         <Pressable onPress={onClose} style={s.closeBtn}>
-          <CustomText style={s.closeText}>Cerrar</CustomText>
+          <CustomText style={s.closeText}>
+            Cerrar
+          </CustomText>
         </Pressable>
       </View>
     </Modal>
   );
 }
+
+const styles = StyleSheet.create({
+  itemSeparator: {
+    height: 12,
+  },
+  sectionSeparator: {
+    height: 16,
+  },
+  listContent: {
+    paddingBottom: 24,
+  },
+});
