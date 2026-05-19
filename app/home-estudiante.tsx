@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { View, StyleSheet, Linking, Platform } from 'react-native';
 
 import { useRouter } from 'expo-router';
 import AgendaPreview from '../components/AgendaPreviewHibrida';
@@ -68,8 +68,14 @@ export default function HomeEstudiante() {
 
           <BotonIconoTexto
             label={"SIU GUARANÍ"}
-            //funcionOnPress={() => Linking.openURL('https://academica.undav.edu.ar/g3w/')}
-            funcionOnPress={() => router.push('/web-SIU-Guarani')}
+            funcionOnPress={() => {
+              if (Platform.OS === 'android') {
+                Linking.openURL('https://academica.undav.edu.ar/g3w/')
+                  .catch(() => console.warn('No se pudo abrir el SIU Guarani en Android'));
+              } else {
+                router.push('/web-SIU-Guarani');
+              }
+            }}
             Icon={SIU_Gua_Icon}
           />
 

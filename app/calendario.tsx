@@ -192,9 +192,10 @@ export default function Calendario() {
         </ScrollView>
         <View style={{marginTop: 10}}>
           <BotonTexto 
-            route='/calend.-academico-resoluciones' 
+            //route='/calend.-academico-resoluciones' 
             label={"Resoluciones Calendario Académico"} 
             styleExtra={{borderBottomRightRadius: 20}}
+            url="https://undav.edu.ar/index.php?idcateg=129"
           />
         </View>
       </View>

@@ -1,11 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import CustomText from '../components/CustomText';
 import {
-  JsonStringAObjeto,
-  ObtenerJsonString
-} from '@/data/DatosUsuarioGuarani';
-import {
+  ObtenerJsonString, // Quitamos JsonStringAObjeto de acá
   infoBaseUsuarioActual
 } from '@/data/DatosUsuarioGuarani';
 import ListaItem from '@/components/ListaItem';
@@ -13,6 +10,7 @@ import LoadingWrapper from '@/components/LoadingWrapper';
 import { azulClaro, negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
+import React from 'react';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -31,7 +29,6 @@ export type Actividad = {
   fecha: string
 }
 
-
 export default function HistoriaAcademica() {
   const [loading, setLoading] = useState(true);
   const [listaActividades, setListaActividades] = useState<Actividad[]>([]);
@@ -44,6 +41,7 @@ export default function HistoriaAcademica() {
   const [materiasPorCuatrimestre, setMateriasPorCuatrimestre] = useState(0);
 
   const [search, setSearch] = useState('');
+  
   const actividadesMostradas = (conAplazos ? listaActividades : listaActividadesAprobadas)
     .filter((actividad) =>
       coincideBusqueda(actividad.title, search)
@@ -60,16 +58,16 @@ export default function HistoriaAcademica() {
   }
 
   useEffect(() => {
-    const fetchHistoria = async () => {
-      try {
-        const urlAppUndavBase = process.env.API_APPUNDAV_URL;
-        console.log("URL APi APPUNDAV (guargestinf): "+urlAppUndavBase)
-        //const url = "http://172.16.1.43/guarani/3.17/rest/v2/personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
-        const url = urlAppUndavBase +"personas/" + infoBaseUsuarioActual.idPersona + "/datosanalitico";
-        const json = JsonStringAObjeto(await ObtenerJsonString(url));
+  const fetchHistoria = async () => {
+    try {
+      const urlBaseRest = "http://172.16.1.51/guarani/3.17/rest/v1";
+      const urlFinal = urlBaseRest + `/personas/${infoBaseUsuarioActual.idPersona}/datosanalitico`;
+      
+      const resString = await ObtenerJsonString(urlFinal);
+      const json = JSON.parse(resString);
 
-        const listaActividad: Actividad[] = [];
-        const listaActividadAprobadas: Actividad[] = [];
+      const listaActividad: Actividad[] = [];
+      const listaActividadAprobadas: Actividad[] = [];
 
         if (json.error != null) {
           setListaActividades([]);

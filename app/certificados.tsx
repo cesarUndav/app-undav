@@ -12,38 +12,40 @@ import BotonTextoTelefono from '@/components/BotonTextoTelefono';
 import he from 'he';
 
 export default function Certificados() {
-const [linkSelloInstitucional, setLinkSelloInstitucional] = useState<string | null>(null);
+// const [linkSelloInstitucional, setLinkSelloInstitucional] = useState<string | null>(null);
 
-useEffect(() => {
-const obtenerLinkFormularioSello = async () => {
-try {
-  const response = await fetch("https://undav.edu.ar/index.php?idcateg=68");
-  const html = await response.text();
-    const contenedorMatch = html.match(
-      /<div[^>]*id=["']contenidocentral["'][^>]*>([\s\S]*?)<\/div>/i
-    );
-    if (!contenedorMatch || !contenedorMatch[1]) return;
+// useEffect(() => {
+// const obtenerLinkFormularioSello = async () => {
+// try {
+//   const response = await fetch("https://undav.edu.ar/index.php?idcateg=68");
+//   const html = await response.text();
+//     const contenedorMatch = html.match(
+//       /<div[^>]*id=["']contenidocentral["'][^>]*>([\s\S]*?)<\/div>/i
+//     );
+//     if (!contenedorMatch || !contenedorMatch[1]) return;
 
-    const contenido = contenedorMatch[1];
+//     const contenido = contenedorMatch[1];
 
-    // Encontrar todos los <a ...>...</a> dentro de párrafos
-    const enlaces = [...contenido.matchAll(/<a[^>]+href=["']([^"']+)["'][^>]*>\s*<strong[^>]*>(.*?)<\/strong>\s*<\/a>/gi)];
+//     // Encontrar todos los <a ...>...</a> dentro de párrafos
+//     const enlaces = [...contenido.matchAll(/<a[^>]+href=["']([^"']+)["'][^>]*>\s*<strong[^>]*>(.*?)<\/strong>\s*<\/a>/gi)];
 
-    // Buscar el que contiene "Sello Institucional" o "Acceder aquí"
-    const enlaceDeseado = enlaces.find(([, , texto]) =>
-      /sello|acceder/i.test(texto)
-    );
+//     // Buscar el que contiene "Sello Institucional" o "Acceder aquí"
+//     const enlaceDeseado = enlaces.find(([, , texto]) =>
+//       /sello|acceder/i.test(texto)
+//     );
 
-    if (enlaceDeseado && enlaceDeseado[1]) {
-      setLinkSelloInstitucional(enlaceDeseado[1]);
-    }
-  } catch (e) {
-    console.error("Error al obtener link de sello institucional:", e);
-  }
-};
+//     if (enlaceDeseado && enlaceDeseado[1]) {
+//       setLinkSelloInstitucional(enlaceDeseado[1]);
+//     }
+//   } catch (e) {
+//     console.error("Error al obtener link de sello institucional:", e);
+//   }
+// };
 
-obtenerLinkFormularioSello();
-}, []);
+// obtenerLinkFormularioSello();
+// }, []);
+
+const linkSelloInstitucional = "https://docs.google.com/forms/d/e/1FAIpQLSe4hgptWLsprQocC75YEdXzeT9CNiLhd1SH-tawXbMpY4dxGQ/viewform";
 
 return (
 <FondoScrollGradiente>

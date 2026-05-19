@@ -209,3 +209,26 @@ export function setDarkMode(dark: boolean): void {
 }
 
 export function enModoOscuro(): boolean { return modoOscuro; }
+
+export async function ObtenerJsonString(url: string): Promise<string> {
+  try {
+    const token = await AsyncStorage.getItem("token");
+    
+    // Limpiamos cualquier rastro de la URL base por si mandaron la ruta absoluta
+    let endpoint = url.replace(URL_BASE || '', '');
+    
+    // Si por esas casualidades no empieza con '/', se la ponemos nosotros obligatoriamente
+    if (!endpoint.startsWith('/')) {
+      endpoint = '/' + endpoint;
+    }
+    
+    const response = await api.get(endpoint, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+
+    return JSON.stringify(response.data);
+  } catch (err: any) {
+    console.error("Error en ObtenerJsonString:", err.message);
+    throw new Error(`No se pudo obtener la data de la URL: ${url}`);
+  }
+}

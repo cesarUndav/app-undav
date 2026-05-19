@@ -1,5 +1,5 @@
 import React from 'react';
-import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle, StyleProp } from 'react-native';
+import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle, StyleProp, Platform } from 'react-native';
 import CustomText from './CustomText';
 import { azulMedioUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
@@ -45,9 +45,11 @@ export default function BotonTexto({
       return;
     }
     else if (url) {
-      if (openInsideApp) {
+      // MODIFICACIÓN CRÍTICA: Solo abre en WebView si está activado Y NO es Android
+      if (openInsideApp && Platform.OS !== 'android') {
         router.push(`/webview/${encodeURIComponent(url)}?tryLogin=${tryLogin}`);
       } else {
+        // En Android (o si openInsideApp es false), va directo al navegador externo
         Linking.openURL(url).catch(() => console.warn('No se pudo abrir el enlace:', url));
       }
     }

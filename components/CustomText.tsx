@@ -1,102 +1,52 @@
 // components/CustomText.tsx
 import React from 'react';
 import {
-  Platform,
   Text as RNText,
   TextProps,
   TextStyle,
   StyleProp,
+  StyleSheet,
 } from 'react-native';
 
 type NumericWeight = '400' | '500' | '600' | '700' | '800' | '900';
-type NamedWeight =
-  | 'regular'
-  | 'medium'
-  | 'semibold'
-  | 'bold'
-  | 'extrabold'
-  | 'black';
+type NamedWeight = 'regular' | 'medium' | 'semibold' | 'bold' | 'extrabold' | 'black';
 type WeightProp = NumericWeight | NamedWeight;
 
 interface CustomTextProps extends TextProps {
-  /** Acepta 'regular'|'medium'|'semibold'|'bold'|'extrabold'|'black' o '400'..'900' */
   weight?: WeightProp;
   style?: StyleProp<TextStyle>;
 }
 
-/** Normaliza el prop `weight` a un valor numérico ('400'..'900'). */
 function normalizeWeight(w?: WeightProp): NumericWeight {
   switch (w) {
-    case '500':
-    case 'medium':
-      return '500';
-    case '600':
-    case 'semibold':
-      return '600';
-    case '700':
-    case 'bold':
-      return '700';
-    case '800':
-    case 'extrabold':
-      return '800';
-    case '900':
-    case 'black':
-      return '900';
-    case '400':
-    case 'regular':
-    default:
-      return '400';
+    case '500': case 'medium': return '500';
+    case '600': case 'semibold': return '600';
+    case '700': case 'bold': return '700';
+    case '800': case 'extrabold': return '800';
+    case '900': case 'black': return '900';
+    case '400': case 'regular': default: return '400';
   }
 }
 
-/**
- * Mapa para iOS/Android con **Expo Google Fonts Montserrat**.
- * Si usas archivos locales, cambia estos nombres por los de tus fuentes
- * (p.ej. 'Montserrat-Regular', 'Montserrat-SemiBold', etc.).
- */
-const expoMontserratFamilies: Record<NumericWeight, string> = {
-  '400': 'Montserrat_400Regular',
-  '500': 'Montserrat_500Medium',
-  '600': 'Montserrat_600SemiBold',
-  '700': 'Montserrat_700Bold',
-  '800': 'Montserrat_800ExtraBold',
-  '900': 'Montserrat_900Black',
-};
-
-const webFallbackStack =
-  "Montserrat, system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif";
-
-const CustomText: React.FC<CustomTextProps> = ({
+export default function CustomText({
   children,
-  weight = 'regular',
+  weight,
   style,
   ...rest
-}) => {
-  const w = normalizeWeight(weight);
+}: CustomTextProps) {
+  const flattenedStyle = StyleSheet.flatten(style) || {};
+  
+  // Detectamos el peso por prop o por el estilo que viene de afuera
+  const incomingWeight = weight || (flattenedStyle.fontWeight as WeightProp) || 'regular';
+  const w = normalizeWeight(incomingWeight);
 
-  // Web: Montserrat variable/estática con font-weight funciona bien
-  if (Platform.OS === 'web') {
-    const webStyle: TextStyle = {
-      fontFamily: webFallbackStack,
-      fontWeight: w as TextStyle['fontWeight'],
-    };
-    return (
-      <RNText {...rest} style={[webStyle, style]}>
-        {children}
-      </RNText>
-    );
-  }
-
-  // iOS / Android: seleccionar la familia concreta por peso
-  const nativeStyle: TextStyle = {
-    fontFamily: expoMontserratFamilies[w] || expoMontserratFamilies['400'],
+  const systemTextStyle: TextStyle = {
+    fontWeight: w as TextStyle['fontWeight'], // El sistema nativo maneja los pesos impecable
   };
 
   return (
-    <RNText {...rest} style={[nativeStyle, style]}>
+    <RNText {...rest} style={[style, systemTextStyle]}>
       {children}
     </RNText>
   );
-};
-
-export default CustomText;
+}
