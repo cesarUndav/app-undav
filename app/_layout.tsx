@@ -1,23 +1,21 @@
-// app/_layout.tsx
+// 1. POLIFILLS Y LIMPIEZA DE MOTOR DE RED (DEBEN IR PRIMERO)
+import 'fast-text-encoding'; 
 
-// ESTO DEBE IR EN LA LÍNEA 1 DE TU ARCHIVO PRINCIPAL
+// Verificamos y eliminamos polyfills que interfieren con el SSL Nativo de Android
 if (typeof global.fetch !== 'undefined' && (global.fetch as any).polyfill) {
-  // Guardamos las referencias originales por si acaso
   const _global = global as any;
-  
-  // Forzamos la eliminación del polyfill que causa el error 567
   delete _global.fetch;
   delete _global.Headers;
   delete _global.Request;
   delete _global.Response;
-  
-  console.log("⚠️ Polyfill whatwg-fetch detectado y eliminado. Usando motor nativo.");
+  console.log("⚠️ Polyfill whatwg-fetch eliminado. Usando motor nativo de Android.");
 } else {
-  console.log("Polyfill NO detectado.");
+  console.log("✅ Usando motor de red nativo.");
 }
 
-import 'react-native-gesture-handler'; // <-- PRIMERA línea siempre
-import { Slot, Stack, usePathname, useRouter } from 'expo-router';
+// 2. IMPORTS DE LIBRERÍAS
+import 'react-native-gesture-handler';
+import { Slot, usePathname, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
 import { Platform, StatusBar, ActivityIndicator, View } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
@@ -30,13 +28,12 @@ import {
 import { setBackgroundColorAsync } from 'expo-system-ui';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
+// 3. IMPORTS DEL PROYECTO
 import HistoryHeader, { PathToTitle } from '@/components/NavigationHistoryHeader';
 import BottomBar from '@/components/BottomBar';
 import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from '@/data/DatosUsuarioGuarani';
 import { azulMedioUndav } from '@/constants/Colors';
 import { AgendaProvider } from '@/src/context/AgendaContext';
-
-// NUEVO: TutorialProvider
 import { TutorialProvider } from '@/components/tutorial/TutorialProvider';
 
 export default function Layout() {
@@ -70,12 +67,12 @@ export default function Layout() {
           const personaId = parseInt(personaIdStr, 10);
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
+          // Si ya tiene sesión, lo mandamos al home si está en el index o login
           if (pathName === '/' || pathName.startsWith('/login')) {
             router.replace('/home-estudiante');
           }
         } else {
           setVisitante(true);
-          // if (pathName === '/') { router.replace('/loginAutenticado'); }
         }
       } catch (error) {
         console.error('Error al verificar sesión:', error);
@@ -91,40 +88,30 @@ export default function Layout() {
     prepararApp();
   }, []);
 
-  // Pantalla de carga también debe estar dentro del RootView:
+  // Pantalla de carga
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center' }}>
-          <ActivityIndicator size="large" color="#1a2b50" />
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
+          <ActivityIndicator size="large" color={azulMedioUndav} />
         </View>
       </GestureHandlerRootView>
     );
   }
 
-  const usandoStackNavigator = false;
-
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      {/* NUEVO: el provider del tutorial envuelve toda la UI */}
       <TutorialProvider>
         <AgendaProvider>
           <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-            {usandoStackNavigator ? (
-              <>
-                <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-                <Stack screenOptions={{ animation: Platform.OS === 'android' ? 'none' : 'default' }}>
-                  <Slot />
-                </Stack>
-              </>
-            ) : (
-              <>
-                {showHeader && <HistoryHeader title={headerHistoryTitle} />}
-                <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
-                <Slot />
-                {showBottomBar && (!visitante && <BottomBar />)}
-              </>
-            )}
+            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            
+            {showHeader && <HistoryHeader title={headerHistoryTitle} />}
+            
+            {/* El Slot renderiza la página actual */}
+            <Slot />
+            
+            {showBottomBar && !visitante && <BottomBar />}
           </SafeAreaView>
         </AgendaProvider>
       </TutorialProvider>
