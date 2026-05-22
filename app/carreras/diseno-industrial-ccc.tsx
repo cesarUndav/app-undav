@@ -1,9 +1,8 @@
-// app/carreras/conservacion-naturaleza.tsx
+// app/carreras/diseno-industrial.tsx
 
 import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -12,22 +11,23 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
+import { crearCarreraStyles } from '@/theme/carrerasStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
 import { Asset } from 'expo-asset';
 import { WebView } from 'react-native-webview';
 
-export default function ConservacionNaturaleza() {
+export default function DisenoIndustrial() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   const pdfs: { [key: string]: any } = {
-    'conservacion-naturaleza-plan-estudios.pdf': require('../../assets/docs/conservacion-naturaleza-plan-estudios.pdf'),
-    'conservacion-naturaleza-plan-creditos.pdf': require('../../assets/docs/conservacion-naturaleza-plan-creditos.pdf'),
-    'conservacion-naturaleza-postal-digital.pdf': require('../../assets/docs/conservacion-naturaleza-postal-digital.pdf'),
+    'diseno-industrial-plan-estudios.pdf': require('../../assets/docs/diseno-industrial-plan-estudios.pdf'),
+    'diseno-industrial-plan-creditos.pdf': require('../../assets/docs/diseno-industrial-plan-creditos.pdf'),
+    'diseno-industrial-postal-digital.pdf': require('../../assets/docs/diseno-industrial-postal-digital.pdf'),
   };
 
   const toggleSection = (index: number) => {
@@ -68,70 +68,41 @@ export default function ConservacionNaturaleza() {
     {
       titulo: '🎓 Título',
       contenido: (
-        <View>
-          <CustomText style={styles.oracion}>
-            Técnico/a Universitario/a en Conservación de la Naturaleza y Áreas
-            Naturales Protegidas
-          </CustomText>
-        </View>
+        <CustomText style={styles.oracion}>
+          Licenciado/a en Diseño Industrial
+        </CustomText>
       ),
     },
     {
       titulo: '📘 Acerca de la carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          La Tecnicatura en Conservación de la Naturaleza y Áreas Naturales
-          Protegidas busca asegurar el cumplimiento de los objetivos de
-          conservación que se hayan planteado para el área bajo protección, así
-          como la difusión y extensión con visitantes y residentes. Se concibe
-          que un mayor desarrollo de áreas implicará la necesidad de recursos
-          humanos capacitados para ejecutar planes de manejo y conservación.
+          El diseño industrial es un importante sector de innovación que afecta
+          la producción y la economía agregando valor a los productos. La UNDAV
+          contribuye al Plan Nacional de Diseño promovido por el Ministerio de
+          Industria.
         </CustomText>
       ),
     },
     {
       titulo: '🎯 Objetivos de la carrera',
       contenido: (
-        <View>
-          <CustomText style={styles.oracion}>
-            • Preparar profesionales con formación teórica y práctica para
-            diseñar programas y planes de manejo y conservación de recursos
-            naturales en Áreas Naturales Protegidas.
-          </CustomText>
-
-          <CustomText style={styles.oracion}>
-            • Asistir a visitantes y pobladores, realizar tareas de guía de
-            campo y apoyar proyectos de investigación científica.
-          </CustomText>
-
-          <CustomText style={styles.oracion}>
-            • Desarrollar programas de educación y promoción ambiental.
-          </CustomText>
-        </View>
+        <CustomText style={styles.oracion}>
+          Formar profesionales con sólida formación para diseñar y desarrollar
+          productos y materiales, interpretando requerimientos industriales para
+          propuestas innovadoras y sustentables.
+        </CustomText>
       ),
     },
     {
       titulo: '👤 Perfil del graduado',
       contenido: (
-        <View>
-          <CustomText style={styles.oracion}>
-            El Técnico Universitario en Conservación de la Naturaleza y Áreas
-            Naturales Protegidas desarrollará acciones de gestión, control y
-            vigilancia en ANP´s, brindando asesoramiento e información a
-            visitantes y pobladores.
-          </CustomText>
-
-          <CustomText style={styles.oracion}>
-            Realizará monitoreos de biodiversidad, asistirá en proyectos de
-            investigación, y participará en la planificación de la gestión de
-            áreas protegidas según la legislación vigente.
-          </CustomText>
-
-          <CustomText style={styles.oracion}>
-            Manejará situaciones de emergencia como control de incendios y
-            rescate de personas.
-          </CustomText>
-        </View>
+        <CustomText style={styles.oracion}>
+          El Licenciado en Diseño Industrial investigará y transferirá
+          conocimiento en áreas de proyecto, morfología, tecnología y recursos
+          de producción, desempeñándose en roles técnicos, proyectuales y
+          gerenciales.
+        </CustomText>
       ),
     },
     {
@@ -139,9 +110,7 @@ export default function ConservacionNaturaleza() {
       contenido: (
         <View>
           <TouchableOpacity
-            onPress={() =>
-              handleOpenPDF('conservacion-naturaleza-plan-estudios.pdf')
-            }
+            onPress={() => handleOpenPDF('diseno-industrial-plan-estudios.pdf')}
           >
             <CustomText weight="bold" style={styles.link}>
               • Descargar Plan de estudio
@@ -149,18 +118,16 @@ export default function ConservacionNaturaleza() {
           </TouchableOpacity>
 
           <TouchableOpacity
-            onPress={() =>
-              handleOpenPDF('conservacion-naturaleza-plan-creditos.pdf')
-            }
+            onPress={() => handleOpenPDF('diseno-industrial-plan-creditos.pdf')}
           >
             <CustomText weight="bold" style={styles.link}>
-              • Descargar Plan de crédito (Res. CS 107/2018)
+              • Descargar Plan de crédito (Res. CS 144/2015)
             </CustomText>
           </TouchableOpacity>
 
           <TouchableOpacity
             onPress={() =>
-              handleOpenPDF('conservacion-naturaleza-postal-digital.pdf')
+              handleOpenPDF('diseno-industrial-postal-digital.pdf')
             }
           >
             <CustomText weight="bold" style={styles.link}>
@@ -171,42 +138,32 @@ export default function ConservacionNaturaleza() {
       ),
     },
     {
-      titulo: '📍 Departamento, contacto y horarios',
+      titulo: '📍 Departamento y contacto',
       contenido: (
         <View>
           <CustomText style={styles.oracion}>
-            Departamento de Ambiente y Turismo
+            Departamento de Arquitectura, Diseño y Urbanismo
           </CustomText>
 
           <CustomText style={styles.oracion}>
-            Decana del Departamento: Dra. Natalia Cappelletti
+            Decana: DIyS Lucrecia Piattelli
           </CustomText>
 
           <CustomText style={styles.oracion}>
-            Vicedecana: Mg. Leticia Estévez
+            Vicedecano: Arq. Roberto Panosian
           </CustomText>
 
           <CustomText style={styles.oracion}>
-            Director de la Tecnicatura: Ing. Sergio Cataldo
-          </CustomText>
-
-          <CustomText style={styles.oracion}>
-            Oficina: Sede Piñeyro, 1er piso, 2º cuerpo
+            Director de Diseño Industrial: DI Matías Nicolás Trapani
           </CustomText>
 
           <TouchableOpacity
             onPress={() =>
-              Linking.openURL('mailto:ambienteyturismo@undav.edu.ar')
+              Linking.openURL('mailto:arquitecturaydiseno@undav.edu.ar')
             }
           >
             <CustomText weight="bold" style={[styles.oracion, styles.link]}>
-              Contacto: ambienteyturismo@undav.edu.ar
-            </CustomText>
-          </TouchableOpacity>
-
-          <TouchableOpacity onPress={() => Linking.openURL('tel:+54942292471')}>
-            <CustomText weight="bold" style={[styles.oracion, styles.link]}>
-              Teléfono: 4229-2471
+              Contacto: arquitecturaydiseno@undav.edu.ar
             </CustomText>
           </TouchableOpacity>
         </View>
@@ -280,76 +237,7 @@ export default function ConservacionNaturaleza() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  webview: {
-    flex: 1,
-  },
-  webviewLoading: {
-    flex: 1,
-  },
-  fabContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  fab: {
-    position: 'absolute',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fabText: {
-    fontSize: 32,
-    lineHeight: 32,
-    color: '#fff',
-  },
-  container: {
-    flex: 1,
-    padding: 15,
-    gap: 8,
-  },
-  seccion: {
-    elevation: 4,
-  },
-  boton: {
-    backgroundColor: '#9fa521',
-    padding: 16,
-    height: 64,
-    borderBottomRightRadius: 20,
-  },
-  botonExpandido: {
-    borderBottomRightRadius: 0,
-  },
-  titulo: {
-    color: 'white',
-    fontSize: 16,
-  },
-  contenido: {
-    backgroundColor: '#b8bf30',
-    padding: 16,
-    borderBottomRightRadius: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'white',
-  },
-  oracion: {
-    marginBottom: 8,
-    color: '#ffffff',
-  },
-  link: {
-    color: '#ffffff',
-    textDecorationLine: 'underline',
-    marginBottom: 8,
-  },
+const styles = crearCarreraStyles({
+  colorBoton: '#a6398a',
+  colorContenido: '#bf55a8',
 });

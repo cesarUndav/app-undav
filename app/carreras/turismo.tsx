@@ -3,7 +3,6 @@
 import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
@@ -12,6 +11,7 @@ import {
   Linking,
   ActivityIndicator,
 } from 'react-native';
+import { crearCarreraStyles } from '@/theme/carrerasStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
@@ -240,76 +240,8 @@ export default function Turismo() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: {
-    flex: 1,
-  },
-  modalContainer: {
-    flex: 1,
-    backgroundColor: '#fff',
-  },
-  webview: {
-    flex: 1,
-  },
-  webviewLoading: {
-    flex: 1,
-  },
-  fabContainer: {
-    position: 'absolute',
-    top: 0,
-    bottom: 0,
-    left: 0,
-    right: 0,
-  },
-  fab: {
-    position: 'absolute',
-    width: 56,
-    height: 56,
-    borderRadius: 28,
-    backgroundColor: 'rgba(0,0,0,0.3)',
-    alignItems: 'center',
-    justifyContent: 'center',
-  },
-  fabText: {
-    fontSize: 32,
-    lineHeight: 32,
-    color: '#fff',
-  },
-  container: {
-    flex: 1,
-    padding: 15,
-    gap: 8,
-  },
-  seccion: {
-    elevation: 4,
-  },
-  boton: {
-    backgroundColor: '#9fa521',
-    padding: 16,
-    height: 64,
-    borderBottomRightRadius: 20,
-  },
-  botonExpandido: {
-    borderBottomRightRadius: 0,
-  },
-  titulo: {
-    color: 'white',
-    fontSize: 16,
-  },
-  contenido: {
-    backgroundColor: '#b8bf30',
-    padding: 16,
-    borderBottomRightRadius: 20,
-    borderTopWidth: 1,
-    borderTopColor: 'white',
-  },
-  oracion: {
-    marginBottom: 8,
-    color: '#ffffff',
-  },
-  link: {
-    color: '#ffffff',
-    textDecorationLine: 'underline',
-    marginBottom: 8,
-  },
+
+const styles = crearCarreraStyles({
+  colorBoton: '#9fa521',
+  colorContenido: '#b8bf30',
 });
