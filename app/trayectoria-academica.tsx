@@ -1,31 +1,15 @@
-import React from 'react';
-import { StyleSheet } from 'react-native';
+// app/trayectoria-academica.tsx
 
+import React from 'react';
 
 import BotonTexto from '../components/BotonTexto';
-import { negroAzulado } from '@/constants/Colors';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 
 export default function TrayectoriaAcademica() {
   return (
     <FondoScrollGradiente>
-      <BotonTexto label={'Plan de Estudio'} route='/plan-de-estudio'/>
-      {/* <BotonTexto label={'Historia Académica'} route='/historia-academica'/> */}
+      <BotonTexto label="Plan de Estudio" route="/plan-de-estudio" />
+      {/* <BotonTexto label="Historia Académica" route="/historia-academica" /> */}
     </FondoScrollGradiente>
   );
 }
-
-const styles = StyleSheet.create({
-  container: {
-    flex: 1,
-  },
-  scroll: {
-    gap: 10,
-  },
-  title: {
-    fontSize: 16,
-    fontWeight: 'bold',
-    color: negroAzulado,
-    alignSelf: 'center'
-  },
-});

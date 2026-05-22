@@ -1,4 +1,4 @@
-// arquitectura.tsx
+// app/carreras/arquitectura.tsx
 
 import React, { useState } from 'react';
 import {
@@ -9,10 +9,10 @@ import {
   Alert,
   Modal,
   Platform,
-  Linking, 
+  Linking,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
 import { Asset } from 'expo-asset';
@@ -30,17 +30,25 @@ export default function Arquitectura() {
   };
 
   const toggleSection = (index: number) => {
-    setActiveSection(prev => (prev === index ? null : index));
+    setActiveSection((prev) => (prev === index ? null : index));
   };
 
   const handleOpenPDF = async (fileName: string) => {
     try {
       const module = pdfs[fileName];
-      if (!module) throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+
+      if (!module) {
+        throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+      }
+
       const asset = Asset.fromModule(module);
       await asset.downloadAsync();
+
       const uri = asset.localUri || asset.uri;
-      if (!uri) throw new Error('URI local no disponible');
+
+      if (!uri) {
+        throw new Error('URI local no disponible');
+      }
 
       const sourceUri =
         Platform.OS === 'android'
@@ -68,7 +76,11 @@ export default function Arquitectura() {
       titulo: '📘 Acerca de la carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          El desafío contemporáneo en la Arquitectura implica posibilitar un espacio habitable en lugares dignos y con materiales que aporten a la sustentabilidad, dando respuesta a demandas sociales mediante propuestas arquitectónicas y urbanas en su contexto histórico, social, económico y ambiental.
+          El desafío contemporáneo en la Arquitectura implica posibilitar un
+          espacio habitable en lugares dignos y con materiales que aporten a la
+          sustentabilidad, dando respuesta a demandas sociales mediante
+          propuestas arquitectónicas y urbanas en su contexto histórico, social,
+          económico y ambiental.
         </CustomText>
       ),
     },
@@ -76,7 +88,10 @@ export default function Arquitectura() {
       titulo: '🎯 Objetivos de la carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          Formar profesionales con sólida formación teórica y práctica para el diseño, planificación y gestión de obras, integrando aspectos legales, éticos y perspectivas sistémicas para la colaboración interdisciplinaria.
+          Formar profesionales con sólida formación teórica y práctica para el
+          diseño, planificación y gestión de obras, integrando aspectos legales,
+          éticos y perspectivas sistémicas para la colaboración
+          interdisciplinaria.
         </CustomText>
       ),
     },
@@ -84,7 +99,10 @@ export default function Arquitectura() {
       titulo: '👤 Perfil del graduado',
       contenido: (
         <CustomText style={styles.oracion}>
-          Desarrollará tareas de proyectista, director de obra, asesor y crítico en ámbitos públicos y privados, adaptando el ambiente a necesidades humanas, gestionando espacios habitables, planeamiento urbano y patrimonio arquitectónico.
+          Desarrollará tareas de proyectista, director de obra, asesor y crítico
+          en ámbitos públicos y privados, adaptando el ambiente a necesidades
+          humanas, gestionando espacios habitables, planeamiento urbano y
+          patrimonio arquitectónico.
         </CustomText>
       ),
     },
@@ -92,11 +110,20 @@ export default function Arquitectura() {
       titulo: '📄 Planes y recursos',
       contenido: (
         <View>
-          <TouchableOpacity onPress={() => handleOpenPDF('arquitectura-plan-estudios.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio</CustomText>
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('arquitectura-plan-estudios.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('arquitectura-postal-digital.pdf')}>
-            <CustomText style={styles.link}>• Descargar Postal digital</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('arquitectura-postal-digital.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Postal digital
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -105,13 +132,34 @@ export default function Arquitectura() {
       titulo: '📍 Departamento y contacto',
       contenido: (
         <View>
-          <CustomText style={styles.oracion}>Departamento de Arquitectura, Diseño y Urbanismo</CustomText>
-          <CustomText style={styles.oracion}>Decana: DIyS Lucrecia Piattelli</CustomText>
-          <CustomText style={styles.oracion}>Vicedecano: Arq. Roberto Panosian</CustomText>
-          <CustomText style={styles.oracion}>Director de Arquitectura: Arq. Raúl Bernasconi</CustomText>
-          <CustomText style={styles.oracion}>Coordinador Académico: Arq. Roberto Panosian</CustomText>
-          <TouchableOpacity onPress={() => Linking.openURL('mailto:arquitecturaydiseno@undav.edu.ar') }>
-            <CustomText style={[styles.oracion, styles.link]}>Contacto: arquitecturaydiseno@undav.edu.ar</CustomText>
+          <CustomText style={styles.oracion}>
+            Departamento de Arquitectura, Diseño y Urbanismo
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Decana: DIyS Lucrecia Piattelli
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Vicedecano: Arq. Roberto Panosian
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Director de Arquitectura: Arq. Raúl Bernasconi
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Coordinador Académico: Arq. Roberto Panosian
+          </CustomText>
+
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL('mailto:arquitecturaydiseno@undav.edu.ar')
+            }
+          >
+            <CustomText weight="bold" style={[styles.oracion, styles.link]}>
+              Contacto: arquitecturaydiseno@undav.edu.ar
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -130,20 +178,28 @@ export default function Arquitectura() {
             <WebView
               source={{ uri: pdfUri }}
               style={styles.webview}
-              originWhitelist={["*"]}
+              originWhitelist={['*']}
               startInLoadingState
-              renderLoading={() => <ActivityIndicator style={{ flex: 1 }} size="large" />}
+              renderLoading={() => (
+                <ActivityIndicator style={styles.webviewLoading} size="large" />
+              )}
             />
           )}
+
           <View style={styles.fabContainer} pointerEvents="box-none">
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
               style={[
                 styles.fab,
-                { bottom: insets.bottom + 16, right: 16 }
+                {
+                  bottom: insets.bottom + 16,
+                  right: 16,
+                },
               ]}
             >
-              <CustomText style={styles.fabText}>×</CustomText>
+              <CustomText weight="bold" style={styles.fabText}>
+                ×
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -154,12 +210,20 @@ export default function Arquitectura() {
           <View key={index} style={styles.seccion}>
             <TouchableOpacity
               onPress={() => toggleSection(index)}
-              style={[styles.boton, activeSection === index && styles.botonExpandido]}
+              style={[
+                styles.boton,
+                activeSection === index && styles.botonExpandido,
+              ]}
             >
-              <CustomText style={styles.titulo}>{seccion.titulo}</CustomText>
+              <CustomText weight="bold" style={styles.titulo}>
+                {seccion.titulo}
+              </CustomText>
             </TouchableOpacity>
+
             <Collapsible collapsed={activeSection !== index}>
-              <View style={styles.contenido}>{seccion.contenido}</View>
+              <View style={styles.contenido}>
+                {seccion.contenido}
+              </View>
             </Collapsible>
           </View>
         ))}
@@ -169,10 +233,26 @@ export default function Arquitectura() {
 }
 
 const styles = StyleSheet.create({
-  wrapper: { flex: 1 },
-  modalContainer: { flex: 1, backgroundColor: '#fff' },
-  webview: { flex: 1 },
-  fabContainer: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
+  wrapper: {
+    flex: 1,
+  },
+  modalContainer: {
+    flex: 1,
+    backgroundColor: '#fff',
+  },
+  webview: {
+    flex: 1,
+  },
+  webviewLoading: {
+    flex: 1,
+  },
+  fabContainer: {
+    position: 'absolute',
+    top: 0,
+    bottom: 0,
+    left: 0,
+    right: 0,
+  },
   fab: {
     position: 'absolute',
     width: 56,
@@ -182,13 +262,46 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
-  fabText: { fontSize: 32, lineHeight: 32, color: '#fff', fontWeight: 'bold' },
-  container: { flex: 1, padding: 15, gap: 8 },
-  seccion: { elevation: 4 },
-  boton: { backgroundColor: '#a6398a', padding: 16, height: 64, borderBottomRightRadius: 20 },
-  botonExpandido: { borderBottomRightRadius: 0 },
-  titulo: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  contenido: { backgroundColor: '#bf55a8', padding: 16, borderBottomRightRadius: 20, borderTopWidth: 1, borderTopColor: 'white' },
-  oracion: { marginBottom: 8, color: '#ffffff' },
-  link: { color: '#ffffff', textDecorationLine: 'underline', marginBottom: 8, fontWeight: 'bold' },
+  fabText: {
+    fontSize: 32,
+    lineHeight: 32,
+    color: '#fff',
+  },
+  container: {
+    flex: 1,
+    padding: 15,
+    gap: 8,
+  },
+  seccion: {
+    elevation: 4,
+  },
+  boton: {
+    backgroundColor: '#a6398a',
+    padding: 16,
+    height: 64,
+    borderBottomRightRadius: 20,
+  },
+  botonExpandido: {
+    borderBottomRightRadius: 0,
+  },
+  titulo: {
+    color: 'white',
+    fontSize: 16,
+  },
+  contenido: {
+    backgroundColor: '#bf55a8',
+    padding: 16,
+    borderBottomRightRadius: 20,
+    borderTopWidth: 1,
+    borderTopColor: 'white',
+  },
+  oracion: {
+    marginBottom: 8,
+    color: '#ffffff',
+  },
+  link: {
+    color: '#ffffff',
+    textDecorationLine: 'underline',
+    marginBottom: 8,
+  },
 });

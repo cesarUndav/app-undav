@@ -1,10 +1,12 @@
+// components/NavigationHistoryHeader.tsx
+
 import React, { ReactNode } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { getShadowStyle } from '@/constants/ShadowStyle';
 import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
 import { azulLogoUndav } from '@/constants/Colors';
+import CustomText from './CustomText';
 
 type HeaderProps = {
   title: string;
@@ -14,24 +16,31 @@ type HeaderProps = {
 export function PathToTitle(path: string) {
   const segments = path.split('/').filter(Boolean);
   const lastSegment = segments[segments.length - 1] || 'Home';
+
   return lastSegment
-    .replace(/-/g, ' ')           // guiones a espacios
-    .replace(/\b\w/g, l => l.toUpperCase()); // Mayúscula cada palabra
+    .replace(/-/g, ' ')
+    .replace(/\b\w/g, (l) => l.toUpperCase());
 }
 
 const HistoryHeader: React.FC<HeaderProps> = ({ title, children }) => {
-  //const navigation = useNavigation();
   const router = useRouter();
+
   return (
     <View style={styles.container}>
       <View style={styles.side}>
-        <TouchableOpacity onPress={() => router.canGoBack() ? router.back() : {}}>
-          <Ionicons name="arrow-back" size={24} color= {enModoOscuro() ? "#fff":"#1a2b50"} />
+        <TouchableOpacity onPress={() => (router.canGoBack() ? router.back() : {})}>
+          <Ionicons
+            name="arrow-back"
+            size={24}
+            color={enModoOscuro() ? '#fff' : '#1a2b50'}
+          />
         </TouchableOpacity>
       </View>
 
       <View style={styles.titleContainer}>
-        <Text style={styles.title}>{title}</Text>
+        <CustomText weight="bold" style={styles.title}>
+          {title}
+        </CustomText>
       </View>
 
       <View style={styles.side}>
@@ -49,7 +58,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     position: 'relative',
     paddingHorizontal: 8,
-    // ...getShadowStyle(4)
   },
   side: {
     width: 50,
@@ -66,8 +74,7 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 18,
-    fontWeight: 'bold',
-    color: enModoOscuro() ? "#fff" :'#1a2b50',
+    color: enModoOscuro() ? '#fff' : '#1a2b50',
   },
 });
 
