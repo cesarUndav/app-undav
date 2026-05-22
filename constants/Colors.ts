@@ -1,4 +1,6 @@
 // colores undav .
+import { useColorScheme } from 'react-native';
+
 export const azulLogoUndav = '#1c2f4a';
 export const azulMedioUndav = "#173c68";
 export const azulClaro = "#005BA4";
@@ -31,3 +33,9 @@ export const Colors = {
     tabIconSelected: tintColorDark,
   }
 };
+
+// 3. Create a helper hook for quick inline access
+export function useThemeColors() {
+  const scheme = useColorScheme(); // Automatically listens to iOS/Android system toggle
+  return Colors[scheme ?? 'light'];
+}

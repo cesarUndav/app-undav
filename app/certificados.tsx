@@ -45,13 +45,13 @@ export default function Certificados() {
 // obtenerLinkFormularioSello();
 // }, []);
 
-const linkSelloInstitucional = "https://docs.google.com/forms/d/e/1FAIpQLSe4hgptWLsprQocC75YEdXzeT9CNiLhd1SH-tawXbMpY4dxGQ/viewform";
+const linkSelloInstitucional = "https://docs.google.com/forms/d/e/1FAIpQLSc2InEWA3-Xzr0ixrTwDpDIopLAzpYr4D8u2UcEr3PJpeJE3g/viewform";
 
 return (
 <FondoScrollGradiente>
 <DropdownSeccion titulo="Autogestión">
 <>
-<BotonTexto label="Certificado de Exámen" url="https://docs.google.com/document/d/13UR2aI0F-2viHtZ1qHCPw-UZnlQvcLbl/edit?usp=sharing&ouid=105277120237883468075&rtpof=true&sd=true" />
+<BotonTexto label="Certificado de Exámen" url="https://docs.google.com/document/d/1NGOoRhWOAubZEhG0EzOjhquI1bIKpYwE/edit#heading=h.gjdgxs" />
 {linkSelloInstitucional && (
 <BotonTexto label="Solicitud de Sello Institucional" url={linkSelloInstitucional} />
 )}

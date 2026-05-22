@@ -328,7 +328,7 @@ export default function Agenda() {
 const stylesFlotante = StyleSheet.create({
   floatingBox: {
     position: 'absolute',
-    bottom: 15 + bottomBarStyles.container.height,
+    bottom: 64 + bottomBarStyles.container.height,
     right: 15,
     zIndex: 10, // encima de otras Views
     flexDirection: "column",

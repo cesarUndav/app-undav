@@ -3,8 +3,11 @@ import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
 import { azulLogoUndav, azulMedioUndav, celesteSIU, negroAzulado } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
+// 1. ACTUALIZAMOS LA INTERFAZ PARA RECOGER EL OBJETO CON CANTIDAD Y COLOR
 interface CalendarioMensualProps {
-  actividadesPorDia: { [fecha: string]: number };
+  actividadesPorDia: { 
+    [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } 
+  };
   diaSeleccionadoActualmente: Date;
   diaHoy: Date;
   onSelectDay: (fecha: Date) => void;
@@ -41,12 +44,14 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
   onSelectDay,
   onSelectMonthChange,
 }) => {
-  const [mesActual, setMesActual] = useState(diaHoy.getMonth());
-  const [anioActual, setAnioActual] = useState(diaHoy.getFullYear());
+  // 🌟 CAMBIO RADICAL: Si por un delay de Expo la fecha no existe todavía, 
+  // usamos una fecha de respaldo local para que la UI no rompa jamás el renderizado.
+  const fechaSegura = diaSeleccionadoActualmente || diaHoy || new Date();
 
-  useEffect(() => {
-    onSelectMonthChange?.(mesActual, anioActual);
-  }, [mesActual, anioActual]);
+  // 🌟 ELIMINAMOS COMPLETAMENTE LOS ESTADOS LOCALES. 
+  // Ahora leemos el mes y el año de la fecha segura en tiempo de render.
+  const mesActual = fechaSegura.getMonth();
+  const anioActual = fechaSegura.getFullYear();
 
   const diasDelMes = getDiasDelMes(mesActual, anioActual);
   const primerDiaSemana = obtenerPrimerDiaSemana(mesActual, anioActual);
@@ -54,9 +59,11 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
     <View key={`empty-${i}`} style={styles.diaCelda} />
   ));
 
+  // 🌟 CAMBIAR MES AHORA CALCULA EL SALTO Y SE LO MANDA DIRECTO AL PADRE
   const cambiarMes = (delta: number) => {
     let nuevoMes = mesActual + delta;
     let nuevoAnio = anioActual;
+    
     if (nuevoMes < 0) {
       nuevoMes = 11;
       nuevoAnio -= 1;
@@ -64,8 +71,9 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
       nuevoMes = 0;
       nuevoAnio += 1;
     }
-    setMesActual(nuevoMes);
-    setAnioActual(nuevoAnio);
+    
+    // Le avisamos al padre, quien va a cambiar la fechaSeleccionada y refrescar el componente
+    onSelectMonthChange?.(nuevoMes, nuevoAnio);
   };
 
   return (
@@ -95,31 +103,41 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
 
         {diasDelMes.map((fecha, idx) => {
           const fechaStr = DateToISOStringNoTime(fecha);
-          const cantidadActividades = actividadesPorDia[fechaStr] ?? 0;
+          
+          // 2. EXTRAEMOS LOS DATOS DEL NUEVO FORMATO DE OBJETO
+          const datosDia = actividadesPorDia[fechaStr];
+          const cantidadActividades = datosDia ? datosDia.cantidad : 0;
+          const tipoColor = datosDia ? datosDia.color : 'azul';
 
           const esHoy = DateToISOStringNoTime(fecha) === DateToISOStringNoTime(diaHoy);
           const esSeleccionado = DateToISOStringNoTime(fecha) === DateToISOStringNoTime(diaSeleccionadoActualmente);
 
           return (
-          <TouchableOpacity
-            key={idx}
-            style={[
-              styles.diaCelda,
-              esHoy && styles.hoy,
-              esSeleccionado && styles.seleccionado,
-            ]}
-            onPress={() => onSelectDay(fecha)}
-          >
-            <View style={{ padding: 14, backgroundColor: "transparent", alignItems: 'center' }}>
-              <Text style={[styles.textoDiaNumero, (esSeleccionado||esHoy) && {color: colorTextoSeleccionado}]}>{fecha.getDate()}</Text>
-              {cantidadActividades > 0 && (
-                <View style={styles.indicador}>
-                  <Text style={styles.textoIndicador}>{cantidadActividades}</Text>
-                </View>
-              )}
-            </View>
-          </TouchableOpacity>
-
+            <TouchableOpacity
+              key={idx}
+              style={[
+                styles.diaCelda,
+                esHoy && styles.hoy,
+                esSeleccionado && styles.seleccionado,
+              ]}
+              onPress={() => onSelectDay(fecha)}
+            >
+              {/* Quitamos el padding excesivo de 14 que podía empujar el texto fuera de la celda compacta */}
+              <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', aspectRatio: 1, position: 'relative' }}>
+                <Text style={[styles.textoDiaNumero, (esSeleccionado || esHoy) && { color: colorTextoSeleccionado }]}>
+                  {fecha.getDate()}
+                </Text>
+                
+                {cantidadActividades > 0 && (
+                  <View style={[
+                    styles.indicador, 
+                    { backgroundColor: tipoColor === 'azul' ? azulMedioUndav : colorRojoAlerta }
+                  ]}>
+                    <Text style={styles.textoIndicador}>{cantidadActividades}</Text>
+                  </View>
+                )}
+              </View>
+            </TouchableOpacity>
           );
         })}
       </View>
@@ -131,7 +149,8 @@ const blanco = "#fff";
 const colorSeleccionado = celesteSIU;
 const colorTextoSeleccionado = blanco;
 const colorHoy = azulLogoUndav;
-const actividadesColor = azulMedioUndav;
+// Agregamos un color rojo armónico para las alertas académicas/feriados
+const colorRojoAlerta = "#E53935"; 
 
 const styles = StyleSheet.create({
   contenedor: {
@@ -184,7 +203,6 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     position: 'relative',
-    // backgroundColor: "gray"
   },
   textoDiaNumero: {
     fontSize: 16,
@@ -199,18 +217,15 @@ const styles = StyleSheet.create({
     backgroundColor: colorSeleccionado,
     borderRadius: 999,
     borderWidth: 3,
-    marginVertical: -3,
-    height: 0,
-    transform:  [{translateY: 3}],
     borderColor: azulLogoUndav,
-    zIndex: 2
-    //overflow: 'hidden'
+    zIndex: 2,
+    // Eliminamos height: 0, translateY y marginVertical negativo 
+    // que eran los que colapsaban la celda y cortaban el texto.
   },
   indicador: {
     position: 'absolute',
     bottom: 0,
     right: 0,
-    backgroundColor: actividadesColor,
     borderRadius: 999,
     paddingHorizontal: 6,
     paddingVertical: 1,

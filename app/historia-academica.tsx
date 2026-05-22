@@ -11,6 +11,7 @@ import { azulClaro, negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
 import React from 'react';
+import { ObtenerAnaliticoDirecto } from '@/data/ApiRestGuaraniOficial';
 
 export function DateToISOStringNoTime(fecha: Date): string {
   return fecha.toISOString().split('T')[0];
@@ -60,11 +61,8 @@ export default function HistoriaAcademica() {
   useEffect(() => {
   const fetchHistoria = async () => {
     try {
-      const urlBaseRest = "http://172.16.1.51/guarani/3.17/rest/v1";
-      const urlFinal = urlBaseRest + `/personas/${infoBaseUsuarioActual.idPersona}/datosanalitico`;
-      
-      const resString = await ObtenerJsonString(urlFinal);
-      const json = JSON.parse(resString);
+      // 2. Llamamos directamente a la API oficial pasándole el idPersona del usuario logueado
+      const json = await ObtenerAnaliticoDirecto(infoBaseUsuarioActual.idPersona);
 
       const listaActividad: Actividad[] = [];
       const listaActividadAprobadas: Actividad[] = [];
