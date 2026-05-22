@@ -1,6 +1,9 @@
-import { azulMedioUndav } from '@/constants/Colors';
+// components/BarraSemanal.tsx
+
 import React from 'react';
-import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
+import CustomText from '@/components/CustomText';
+import { azulMedioUndav } from '@/constants/Colors';
 
 type BarraSemanalProps = {
   actividadesPorDia: number[];
@@ -8,14 +11,20 @@ type BarraSemanalProps = {
   diaHoy: number;
   onSelectDay?: (dayIndex: number) => void;
 };
-const hoyColor = "#2280ba";
-const selectedColor = "#c62a2b";
+
+const hoyColor = '#2280ba';
+const selectedColor = '#c62a2b';
 const actividadesColor = azulMedioUndav;
-const noActividadesColor = "#b1b2b1";
+const noActividadesColor = '#b1b2b1';
 
 const dias = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
 
-export default function BarraSemanal({ actividadesPorDia, diaActual, diaHoy, onSelectDay }: BarraSemanalProps) {
+export default function BarraSemanal({
+  actividadesPorDia,
+  diaActual,
+  diaHoy,
+  onSelectDay,
+}: BarraSemanalProps) {
   return (
     <View style={styles.container}>
       {dias.map((dia, index) => {
@@ -23,7 +32,6 @@ export default function BarraSemanal({ actividadesPorDia, diaActual, diaHoy, onS
         const isSelected = index === diaActual;
         const isToday = index === diaHoy;
 
-        // Determine background color
         let backgroundColor = noActividadesColor;
 
         if (isSelected) {
@@ -35,7 +43,14 @@ export default function BarraSemanal({ actividadesPorDia, diaActual, diaHoy, onS
         }
 
         let textColor = '#333';
-        if (isToday) textColor = hoyColor;
+
+        if (isToday) {
+          textColor = hoyColor;
+        }
+
+        if (isSelected) {
+          textColor = selectedColor;
+        }
 
         return (
           <TouchableOpacity
@@ -44,9 +59,17 @@ export default function BarraSemanal({ actividadesPorDia, diaActual, diaHoy, onS
             onPress={() => onSelectDay && onSelectDay(index)}
             activeOpacity={0.7}
           >
-            <Text style={[styles.diaText, {color: textColor} ,isSelected && styles.selectedDiaText]}>{dia}</Text>
+            <CustomText
+              weight="bold"
+              style={[styles.diaText, { color: textColor }]}
+            >
+              {dia}
+            </CustomText>
+
             <View style={[styles.segment, { backgroundColor }]}>
-              <Text style={styles.countText}>{count}</Text>
+              <CustomText weight="bold" style={styles.countText}>
+                {count}
+              </CustomText>
             </View>
           </TouchableOpacity>
         );
@@ -69,13 +92,8 @@ const styles = StyleSheet.create({
   },
   diaText: {
     fontSize: 14,
-    fontWeight: 'bold',
     marginBottom: 4,
   },
-    selectedDiaText: {
-    color: selectedColor,
-    fontWeight: 'bold',
-    },
   segment: {
     width: '90%',
     aspectRatio: 1,
@@ -85,7 +103,6 @@ const styles = StyleSheet.create({
   },
   countText: {
     fontSize: 13,
-    fontWeight: 'bold',
     color: 'white',
   },
 });

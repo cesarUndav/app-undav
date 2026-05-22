@@ -1,17 +1,17 @@
-// higiene-seguridad.tsx
+// app/carreras/higiene-seguridad.tsx
 
 import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
   Modal,
   Platform,
-  Linking, 
+  Linking,
   ActivityIndicator,
 } from 'react-native';
+import { crearCarreraStyles } from '@/theme/carrerasStyles';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
@@ -29,19 +29,32 @@ export default function HigieneSeguridad() {
     'higiene-seguridad-postal-digital.pdf': require('../../assets/docs/higiene-seguridad-postal-digital.pdf'),
   };
 
-  const toggleSection = (index: number) => setActiveSection(prev => (prev === index ? null : index));
+  const toggleSection = (index: number) => {
+    setActiveSection((prev) => (prev === index ? null : index));
+  };
 
   const handleOpenPDF = async (fileName: string) => {
     try {
       const module = pdfs[fileName];
-      if (!module) throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+
+      if (!module) {
+        throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+      }
+
       const asset = Asset.fromModule(module);
       await asset.downloadAsync();
+
       const uri = asset.localUri || asset.uri;
-      if (!uri) throw new Error('URI local no disponible');
-      const sourceUri = Platform.OS === 'android'
-        ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(uri)}`
-        : uri;
+
+      if (!uri) {
+        throw new Error('URI local no disponible');
+      }
+
+      const sourceUri =
+        Platform.OS === 'android'
+          ? `https://docs.google.com/gview?embedded=true&url=${encodeURIComponent(uri)}`
+          : uri;
+
       setPdfUri(sourceUri);
       setModalVisible(true);
     } catch (error) {
@@ -55,11 +68,20 @@ export default function HigieneSeguridad() {
       titulo: '📄 Planes y recursos',
       contenido: (
         <View>
-          <TouchableOpacity onPress={() => handleOpenPDF('higiene-seguridad-plan-estudios.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio</CustomText>
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('higiene-seguridad-plan-estudios.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('higiene-seguridad-postal-digital.pdf')}>
-            <CustomText style={styles.link}>• Descargar Postal Digital</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('higiene-seguridad-postal-digital.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Postal Digital
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -76,7 +98,9 @@ export default function HigieneSeguridad() {
       titulo: '🎯 Objetivos de la Carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          Preparar profesionales con formación teórica y práctica para prevenir y gestionar riesgos laborales y ambientales, inspeccionar y eliminar factores de pérdida.
+          Preparar profesionales con formación teórica y práctica para prevenir
+          y gestionar riesgos laborales y ambientales, inspeccionar y eliminar
+          factores de pérdida.
         </CustomText>
       ),
     },
@@ -84,7 +108,9 @@ export default function HigieneSeguridad() {
       titulo: '👤 Perfil del Título',
       contenido: (
         <CustomText style={styles.oracion}>
-          Profesional con conocimientos técnicos, científicos y de gestión para aplicar normativas en Higiene y Seguridad, resolver problemas y adaptarse a cambios tecnológicos.
+          Profesional con conocimientos técnicos, científicos y de gestión para
+          aplicar normativas en Higiene y Seguridad, resolver problemas y
+          adaptarse a cambios tecnológicos.
         </CustomText>
       ),
     },
@@ -100,10 +126,14 @@ export default function HigieneSeguridad() {
             'Técnico Universitario en Gestión de Riesgos, Higiene y Seguridad en el Trabajo',
             'Técnico Universitario en Higiene y Seguridad',
           ].map((item, idx) => (
-            <CustomText key={idx} style={styles.oracion}>• {item}</CustomText>
+            <CustomText key={idx} style={styles.oracion}>
+              • {item}
+            </CustomText>
           ))}
+
           <CustomText style={styles.oracion}>
-            Egresados de pregrado con mínimo 1600 hs y experiencia pueden ser admitidos previa evaluación.
+            Egresados de pregrado con mínimo 1600 hs y experiencia pueden ser
+            admitidos previa evaluación.
           </CustomText>
         </View>
       ),
@@ -112,10 +142,21 @@ export default function HigieneSeguridad() {
       titulo: '📍 Departamento y contacto',
       contenido: (
         <View>
-          <CustomText style={styles.oracion}>Departamento de Tecnología y Administración</CustomText>
-          <CustomText style={styles.oracion}>Decano: Mg. Ing. Silvio Colombo</CustomText>
-          <CustomText style={styles.oracion}>Vicedecana: Dra. María Cristina Kanobel</CustomText>
-          <CustomText style={styles.oracion}>Contacto: ccc-hys@undav.edu.ar</CustomText>
+          <CustomText style={styles.oracion}>
+            Departamento de Tecnología y Administración
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Decano: Mg. Ing. Silvio Colombo
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Vicedecana: Dra. María Cristina Kanobel
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Contacto: ccc-hys@undav.edu.ar
+          </CustomText>
         </View>
       ),
     },
@@ -123,20 +164,38 @@ export default function HigieneSeguridad() {
 
   return (
     <View style={styles.wrapper}>
-      <Modal visible={modalVisible} animationType="slide" onRequestClose={() => setModalVisible(false)}>
+      <Modal
+        visible={modalVisible}
+        animationType="slide"
+        onRequestClose={() => setModalVisible(false)}
+      >
         <View style={styles.modalContainer}>
           {pdfUri && (
             <WebView
               source={{ uri: pdfUri }}
               style={styles.webview}
-              originWhitelist={["*"]}
+              originWhitelist={['*']}
               startInLoadingState
-              renderLoading={() => <ActivityIndicator size="large" style={{ flex: 1 }} />}
+              renderLoading={() => (
+                <ActivityIndicator size="large" style={styles.webviewLoading} />
+              )}
             />
           )}
+
           <View style={styles.fabContainer} pointerEvents="box-none">
-            <TouchableOpacity onPress={() => setModalVisible(false)} style={[styles.fab, { bottom: insets.bottom + 16, right: 16 }]}>
-              <CustomText style={styles.fabText}>×</CustomText>
+            <TouchableOpacity
+              onPress={() => setModalVisible(false)}
+              style={[
+                styles.fab,
+                {
+                  bottom: insets.bottom + 16,
+                  right: 16,
+                },
+              ]}
+            >
+              <CustomText weight="bold" style={styles.fabText}>
+                ×
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -145,11 +204,22 @@ export default function HigieneSeguridad() {
       <ScrollView contentContainerStyle={styles.container}>
         {secciones.map((seccion, index) => (
           <View key={index} style={styles.seccion}>
-            <TouchableOpacity onPress={() => toggleSection(index)} style={[styles.boton, activeSection === index && styles.botonExpandido]}>
-              <CustomText style={styles.titulo}>{seccion.titulo}</CustomText>
+            <TouchableOpacity
+              onPress={() => toggleSection(index)}
+              style={[
+                styles.boton,
+                activeSection === index && styles.botonExpandido,
+              ]}
+            >
+              <CustomText weight="bold" style={styles.titulo}>
+                {seccion.titulo}
+              </CustomText>
             </TouchableOpacity>
+
             <Collapsible collapsed={activeSection !== index}>
-              <View style={styles.contenido}>{seccion.contenido}</View>
+              <View style={styles.contenido}>
+                {seccion.contenido}
+              </View>
             </Collapsible>
           </View>
         ))}
@@ -158,19 +228,7 @@ export default function HigieneSeguridad() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: { flex: 1 },
-  modalContainer: { flex: 1, backgroundColor: '#fff' },
-  webview: { flex: 1 },
-  fabContainer: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
-  fab: { position: 'absolute', width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
-  fabText: { fontSize: 32, lineHeight: 32, color: '#fff', fontWeight: 'bold' },
-  container: { flex: 1, padding: 15, gap: 8 },
-  seccion: { elevation: 4 },
-  boton: { backgroundColor: '#e3a400', padding: 16, height: 64, borderBottomRightRadius: 20 },
-  botonExpandido: { borderBottomRightRadius: 0 },
-  titulo: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  contenido: { backgroundColor: '#fdc128', padding: 16, borderBottomRightRadius: 20, borderTopWidth: 1, borderTopColor: 'white' },
-  oracion: { marginBottom: 8, color: '#ffffff' },
-  link: { color: '#ffffff', textDecorationLine: 'underline', marginBottom: 8, fontWeight: 'bold' },
+const styles = crearCarreraStyles({
+  colorBoton: '#e3a400',
+  colorContenido: '#fdc128',
 });
