@@ -39,7 +39,7 @@ export default function Configuracion() {
         },
         {
           type: "toggle",
-          label: "Modo Oscuro",
+          label: "Modo Oscuro (incompleto)",
           value: dark,
           onValueChange: (val) => {
             setDark(val);

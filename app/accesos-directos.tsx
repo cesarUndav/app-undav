@@ -12,7 +12,7 @@ export default function Configuracion() {
       <BotonTexto label="Preguntas frecuentes" route="preguntas-frecuentes"/>
       <BotonTexto label="Planos" route="/planos"/>
       <BotonTexto label="Sedes" route="/sedes"/>
-      <BotonTexto label="Comunidad" route="/comunidad"/>
+      {/* <BotonTexto label="Comunidad" route="/comunidad"/> */}
       <BotonTextoMail label="Envianos tus sugerencias" mail="app-sugerencias@undav.edu.ar"/>
       <BotonTextoMail label="Reportá errores en la app" mail="app-errores@undav.edu.ar" styleExtra={{borderBottomRightRadius: 20}}/>
     </FondoScrollGradiente>
