@@ -27,21 +27,22 @@ const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
   children,
   colorTexto = 'white',
   colorDeFondo = azulLogoUndav,
-  inicialmenteAbierto = true,
+  inicialmenteAbierto = false,
   styleContenido,
-  gap = 2,
+  gap = 0,
 }) => {
   const [abierto, setAbierto] = useState(inicialmenteAbierto);
 
   return (
-    <View>
+    <View style={styles.container}>
       <TouchableOpacity
         onPress={() => setAbierto(!abierto)}
+        activeOpacity={0.85}
         style={[
           styles.header,
           {
             backgroundColor: colorDeFondo,
-            borderBottomEndRadius: abierto ? 0 : 20,
+            borderBottomRightRadius: abierto ? 0 : 28,
           },
         ]}
       >
@@ -66,20 +67,30 @@ const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
 };
 
 const styles = StyleSheet.create({
+  container: {
+    marginBottom: 8,
+  },
   header: {
     flexDirection: 'row',
     justifyContent: 'space-between',
     alignItems: 'center',
     paddingHorizontal: 20,
     paddingVertical: 16,
-    marginBottom: 0,
-    borderBottomEndRadius: 20,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
   },
   titulo: {
     fontSize: 16,
+    flex: 1,
+    marginRight: 12,
   },
   contenido: {
-    gap: 2,
+    overflow: 'hidden',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 28,
   },
 });
 

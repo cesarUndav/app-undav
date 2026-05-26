@@ -1,4 +1,4 @@
-// app/contacto.tsx
+// app/contacto-para-estudiantes.tsx
 
 import React from 'react';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
@@ -43,6 +43,84 @@ type SeccionContacto = {
 
 const seccionesContacto: SeccionContacto[] = [
   {
+    titulo: 'Trámites estudiantiles',
+    items: [
+      {
+        tipo: 'mail',
+        label: 'Consultas generales a estudiantes UNDAV',
+        mail: 'tramitesestudiantes@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Prórrogas de cursadas vencidas',
+        mail: 'finales@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Cambios de planes de estudio',
+        mail: 'cambiosdeplan@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Documentación de estudiantes',
+        mail: 'legajosestudiantes@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Movilidad estudiantil',
+        mail: 'movilidadacademica@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Tutorías de apoyo al estudiante',
+        mail: 'tutoriasacademica@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Equivalencias',
+        mail: 'equivalencias@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Talleres para estudiantes ingresantes',
+        mail: 'ingresantes@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'mail',
+        label: 'Secretaría Académica',
+        mail: 'academica@undav.edu.ar',
+        asunto: '',
+        cuerpo: '',
+      },
+      {
+        tipo: 'telefono',
+        label: 'Teléfono Secretaría Académica: 5436-7597',
+        tel: '54367597',
+      },
+      {
+        tipo: 'telefono',
+        label: 'Teléfono Atención al Estudiante: 5436-7521',
+        tel: '54367521',
+      },
+    ],
+  },
+  {
     titulo: 'Inscripciones',
     items: [
       {
@@ -55,7 +133,7 @@ const seccionesContacto: SeccionContacto[] = [
       {
         tipo: 'mail',
         label: 'Cambios de carrera',
-        mail: 'cambiosdecarreras@undav.edu.ar',
+        mail: 'cambiosdecarrera@undav.edu.ar',
         asunto: '',
         cuerpo: '',
       },
@@ -243,7 +321,7 @@ const seccionesContacto: SeccionContacto[] = [
   },
 ];
 
-export default function Contacto() {
+export default function ContactoParaEstudiantes() {
   return (
     <FondoScrollGradiente>
       {seccionesContacto.map((seccion) => (
