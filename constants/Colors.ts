@@ -6,7 +6,7 @@ export const grisUndav = "#b1b2b1";
 export const grisBorde = "#ccc";
 export const grisTexto = "#444";
 export const celesteSIU = "#4b9ec9";
-export const negroAzulado = "0b254a";
+export const negroAzulado = "#0b254a";
 
 // modos claro y oscuro. No se usan por ahora.
 
