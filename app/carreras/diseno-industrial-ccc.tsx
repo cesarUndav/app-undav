@@ -1,46 +1,55 @@
-// diseno-industrial-ccc.tsx
+// app/carreras/diseno-industrial.tsx
 
 import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
   Modal,
   Platform,
-  Linking, 
+  Linking,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { crearCarreraStyles } from '@/theme/carrerasStyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
 import { Asset } from 'expo-asset';
 import { WebView } from 'react-native-webview';
 
-export default function DisenoIndustrialCCC() {
+export default function DisenoIndustrial() {
   const [activeSection, setActiveSection] = useState<number | null>(null);
   const [pdfUri, setPdfUri] = useState<string | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
   const insets = useSafeAreaInsets();
 
   const pdfs: { [key: string]: any } = {
-    'diseno-industrial-ccc-plan-estudios.pdf': require('../../assets/docs/diseno-industrial-ccc-plan-estudios.pdf'),
-    'diseno-industrial-ccc-postal-digital.pdf': require('../../assets/docs/diseno-industrial-ccc-postal-digital.pdf'),
+    'diseno-industrial-plan-estudios.pdf': require('../../assets/docs/diseno-industrial-plan-estudios.pdf'),
+    'diseno-industrial-plan-creditos.pdf': require('../../assets/docs/diseno-industrial-plan-creditos.pdf'),
+    'diseno-industrial-postal-digital.pdf': require('../../assets/docs/diseno-industrial-postal-digital.pdf'),
   };
 
   const toggleSection = (index: number) => {
-    setActiveSection(prev => (prev === index ? null : index));
+    setActiveSection((prev) => (prev === index ? null : index));
   };
 
   const handleOpenPDF = async (fileName: string) => {
     try {
       const module = pdfs[fileName];
-      if (!module) throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+
+      if (!module) {
+        throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+      }
+
       const asset = Asset.fromModule(module);
       await asset.downloadAsync();
+
       const uri = asset.localUri || asset.uri;
-      if (!uri) throw new Error('URI local no disponible');
+
+      if (!uri) {
+        throw new Error('URI local no disponible');
+      }
 
       const sourceUri =
         Platform.OS === 'android'
@@ -60,15 +69,7 @@ export default function DisenoIndustrialCCC() {
       titulo: '🎓 Título',
       contenido: (
         <CustomText style={styles.oracion}>
-          Licenciado/a en Diseño Industrial (CCC)
-        </CustomText>
-      ),
-    },
-    {
-      titulo: '🎯 Objetivos de la carrera',
-      contenido: (
-        <CustomText style={styles.oracion}>
-          Preparar profesionales con formación teórica y práctica para el diseño y desarrollo de productos y materiales, capaces de intervenir en producción seriada y responder a estándares industriales internacionales.
+          Licenciado/a en Diseño Industrial
         </CustomText>
       ),
     },
@@ -76,7 +77,20 @@ export default function DisenoIndustrialCCC() {
       titulo: '📘 Acerca de la carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          Ciclo de Complementación Curricular de dos cuatrimestres que otorga el título de Licenciado en Diseño Industrial, enfocado en producción, fabricación y terminación de productos sustentables.
+          El diseño industrial es un importante sector de innovación que afecta
+          la producción y la economía agregando valor a los productos. La UNDAV
+          contribuye al Plan Nacional de Diseño promovido por el Ministerio de
+          Industria.
+        </CustomText>
+      ),
+    },
+    {
+      titulo: '🎯 Objetivos de la carrera',
+      contenido: (
+        <CustomText style={styles.oracion}>
+          Formar profesionales con sólida formación para diseñar y desarrollar
+          productos y materiales, interpretando requerimientos industriales para
+          propuestas innovadoras y sustentables.
         </CustomText>
       ),
     },
@@ -84,7 +98,10 @@ export default function DisenoIndustrialCCC() {
       titulo: '👤 Perfil del graduado',
       contenido: (
         <CustomText style={styles.oracion}>
-          Será capaz de diseñar, investigar y gestionar procesos de diseño industrial en conjunto con ingenieros, con formación crítica, interdisciplinaria y orientada a la producción.
+          El Licenciado en Diseño Industrial investigará y transferirá
+          conocimiento en áreas de proyecto, morfología, tecnología y recursos
+          de producción, desempeñándose en roles técnicos, proyectuales y
+          gerenciales.
         </CustomText>
       ),
     },
@@ -92,11 +109,30 @@ export default function DisenoIndustrialCCC() {
       titulo: '📄 Planes y recursos',
       contenido: (
         <View>
-          <TouchableOpacity onPress={() => handleOpenPDF('diseno-industrial-ccc-plan-estudios.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio</CustomText>
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('diseno-industrial-plan-estudios.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('diseno-industrial-ccc-postal-digital.pdf')}>
-            <CustomText style={styles.link}>• Descargar Postal digital</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('diseno-industrial-plan-creditos.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de crédito (Res. CS 144/2015)
+            </CustomText>
+          </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() =>
+              handleOpenPDF('diseno-industrial-postal-digital.pdf')
+            }
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Postal digital
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -105,12 +141,30 @@ export default function DisenoIndustrialCCC() {
       titulo: '📍 Departamento y contacto',
       contenido: (
         <View>
-          <CustomText style={styles.oracion}>Departamento de Arquitectura, Diseño y Urbanismo</CustomText>
-          <CustomText style={styles.oracion}>Decana: DIyS Lucrecia Piattelli</CustomText>
-          <CustomText style={styles.oracion}>Vicedecano: Arq. Roberto Panosian</CustomText>
-          <CustomText style={styles.oracion}>Directora CCC: DI Matías Nicolás Trapani</CustomText>
-          <TouchableOpacity onPress={() => Linking.openURL('mailto:arquitecturaydiseno@undav.edu.ar') }>
-            <CustomText style={[styles.oracion, styles.link]}>Contacto: arquitecturaydiseno@undav.edu.ar</CustomText>
+          <CustomText style={styles.oracion}>
+            Departamento de Arquitectura, Diseño y Urbanismo
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Decana: DIyS Lucrecia Piattelli
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Vicedecano: Arq. Roberto Panosian
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Director de Diseño Industrial: DI Matías Nicolás Trapani
+          </CustomText>
+
+          <TouchableOpacity
+            onPress={() =>
+              Linking.openURL('mailto:arquitecturaydiseno@undav.edu.ar')
+            }
+          >
+            <CustomText weight="bold" style={[styles.oracion, styles.link]}>
+              Contacto: arquitecturaydiseno@undav.edu.ar
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -129,17 +183,28 @@ export default function DisenoIndustrialCCC() {
             <WebView
               source={{ uri: pdfUri }}
               style={styles.webview}
-              originWhitelist={["*"]}
+              originWhitelist={['*']}
               startInLoadingState
-              renderLoading={() => <ActivityIndicator style={{ flex: 1 }} size="large" />}
+              renderLoading={() => (
+                <ActivityIndicator style={styles.webviewLoading} size="large" />
+              )}
             />
           )}
+
           <View style={styles.fabContainer} pointerEvents="box-none">
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
-              style={[styles.fab, { bottom: insets.bottom + 16, right: 16 }]}
+              style={[
+                styles.fab,
+                {
+                  bottom: insets.bottom + 16,
+                  right: 16,
+                },
+              ]}
             >
-              <CustomText style={styles.fabText}>×</CustomText>
+              <CustomText weight="bold" style={styles.fabText}>
+                ×
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -150,12 +215,20 @@ export default function DisenoIndustrialCCC() {
           <View key={index} style={styles.seccion}>
             <TouchableOpacity
               onPress={() => toggleSection(index)}
-              style={[styles.boton, activeSection === index && styles.botonExpandido]}
+              style={[
+                styles.boton,
+                activeSection === index && styles.botonExpandido,
+              ]}
             >
-              <CustomText style={styles.titulo}>{seccion.titulo}</CustomText>
+              <CustomText weight="bold" style={styles.titulo}>
+                {seccion.titulo}
+              </CustomText>
             </TouchableOpacity>
+
             <Collapsible collapsed={activeSection !== index}>
-              <View style={styles.contenido}>{seccion.contenido}</View>
+              <View style={styles.contenido}>
+                {seccion.contenido}
+              </View>
             </Collapsible>
           </View>
         ))}
@@ -164,19 +237,7 @@ export default function DisenoIndustrialCCC() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: { flex: 1 },
-  modalContainer: { flex: 1, backgroundColor: '#fff' },
-  webview: { flex: 1 },
-  fabContainer: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
-  fab: { position: 'absolute', width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
-  fabText: { fontSize: 32, lineHeight: 32, color: '#fff', fontWeight: 'bold' },
-  container: { flex: 1, padding: 15, gap: 8 },
-  seccion: { elevation: 4 },
-  boton: { backgroundColor: '#a6398a', padding: 16, height: 64, borderBottomRightRadius: 20 },
-  botonExpandido: { borderBottomRightRadius: 0 },
-  titulo: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  contenido: { backgroundColor: '#bf55a8', padding: 16, borderBottomRightRadius: 20, borderTopWidth: 1, borderTopColor: 'white' },
-  oracion: { marginBottom: 8, color: '#ffffff' },
-  link: { color: '#ffffff', textDecorationLine: 'underline', marginBottom: 8, fontWeight: 'bold' },
+const styles = crearCarreraStyles({
+  colorBoton: '#a6398a',
+  colorContenido: '#bf55a8',
 });

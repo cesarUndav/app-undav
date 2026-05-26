@@ -1,3 +1,5 @@
+// components/LoadingWrapper.tsx
+
 import React from 'react';
 import { View, StyleSheet } from 'react-native';
 import CustomText from './CustomText';
@@ -9,14 +11,21 @@ type LoadingWrapperProps = {
   children: React.ReactNode;
 };
 
-export default function LoadingWrapper({ loading, customText, children }: LoadingWrapperProps) {
+export default function LoadingWrapper({
+  loading,
+  customText,
+  children,
+}: LoadingWrapperProps) {
   if (loading) {
     return (
       <View style={styles.centered}>
-        <CustomText style={styles.loadingText}>{customText? customText:"Cargando..."}</CustomText>
+        <CustomText weight="bold" style={styles.loadingText}>
+          {customText ? customText : 'Cargando...'}
+        </CustomText>
       </View>
     );
   }
+
   return <>{children}</>;
 }
 
@@ -28,7 +37,6 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: negroAzulado,
   },
 });

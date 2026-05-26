@@ -1,8 +1,14 @@
+// components/AgendaItem.tsx
+
 import React from 'react';
-import { View, StyleSheet, TextStyle, ViewStyle, StyleProp } from 'react-native';
+import { View, StyleSheet, ViewStyle, StyleProp } from 'react-native';
 import CustomText from './CustomText';
-import { EventoAgenda, eventoAgendaTituloColor } from '../data/agenda';
-import { eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
+import { EventoAgenda } from '../data/agenda';
+import {
+  eventoAgendaTituloColor,
+  eventoAgendaProximidadColor,
+  eventoAgendaToFechaString,
+} from '../data/agenda';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
 import { azulLogoUndav } from '@/constants/Colors';
@@ -15,10 +21,23 @@ type AgendaItemProps = {
 export default function AgendaItem({ evento, styleExtra }: AgendaItemProps) {
   return (
     <View style={[AgendaItemStyles.agendaItem, styleExtra]}>
-      <CustomText style={[AgendaItemStyles.eventTitle, { color: eventoAgendaTituloColor(evento) }]}>
+      <CustomText
+        weight="bold"
+        style={[
+          AgendaItemStyles.eventTitle,
+          { color: eventoAgendaTituloColor(evento) },
+        ]}
+      >
         {evento.titulo}
       </CustomText>
-      <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
+
+      <CustomText
+        weight="bold"
+        style={[
+          AgendaItemStyles.eventDate,
+          { color: eventoAgendaProximidadColor(evento) },
+        ]}
+      >
         {eventoAgendaToFechaString(evento)}
       </CustomText>
     </View>
@@ -27,19 +46,16 @@ export default function AgendaItem({ evento, styleExtra }: AgendaItemProps) {
 
 export const AgendaItemStyles = StyleSheet.create({
   agendaItem: {
-    backgroundColor: enModoOscuro() ? azulLogoUndav:'#fff',
+    backgroundColor: enModoOscuro() ? azulLogoUndav : '#fff',
     paddingVertical: 6,
     paddingHorizontal: 10,
-    //borderBottomRightRadius: 16,
-    ...getShadowStyle(4)
+    ...getShadowStyle(4),
   },
   eventTitle: {
     fontSize: 16,
-    fontWeight: 'bold',
   },
   eventDate: {
     fontSize: 13,
-    fontWeight: 'bold',
-    marginTop: 2
-  }
+    marginTop: 2,
+  },
 });

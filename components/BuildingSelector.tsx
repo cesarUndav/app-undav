@@ -1,6 +1,7 @@
 // components/BuildingSelector.tsx
+
 import React from 'react';
-import { View, TouchableOpacity } from 'react-native';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import CustomText from './CustomText';
 import { edificios, BuildingKey } from '../lib/mapsConfig';
 import { selectorStyles } from '../theme/mapStyles';
@@ -11,8 +12,6 @@ interface Props {
   showMenu: boolean;
   onToggle: () => void;
   onSelect: (b: BuildingKey) => void;
-
-  // Coachmark ref (opcional)
   coachmarkRef?: React.Ref<any>;
 }
 
@@ -35,10 +34,15 @@ export default function BuildingSelector({
         accessibilityLabel="Seleccionar sede, abre lista"
         activeOpacity={0.8}
       >
-        <View style={{ flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' }}>
-          <CustomText style={selectorStyles.buttonText} numberOfLines={1}>
+        <View style={styles.buttonContent}>
+          <CustomText
+            weight="bold"
+            style={selectorStyles.buttonText}
+            numberOfLines={1}
+          >
             {label}
           </CustomText>
+
           <ChevronDown />
         </View>
       </TouchableOpacity>
@@ -53,7 +57,9 @@ export default function BuildingSelector({
               accessibilityRole="button"
               accessibilityLabel={`Cambiar a ${info.label}`}
             >
-              <CustomText style={selectorStyles.itemText}>{info.label}</CustomText>
+              <CustomText weight="bold" style={selectorStyles.itemText}>
+                {info.label}
+              </CustomText>
             </TouchableOpacity>
           ))}
         </View>
@@ -61,3 +67,11 @@ export default function BuildingSelector({
     </View>
   );
 }
+
+const styles = StyleSheet.create({
+  buttonContent: {
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
+  },
+});

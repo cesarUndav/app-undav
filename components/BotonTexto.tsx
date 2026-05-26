@@ -1,3 +1,5 @@
+// components/BotonTexto.tsx
+
 import React from 'react';
 import { StyleSheet, TouchableOpacity, Linking, ViewStyle, TextStyle, StyleProp, Platform } from 'react-native';
 import CustomText from './CustomText';
@@ -39,8 +41,7 @@ export default function BotonTexto({
   const handlePress = () => {
     if (onPressFunction) {
       onPressFunction();
-    }
-    else if (route) {
+    } else if (route) {
       router.push(route as any);
       return;
     }
@@ -64,12 +65,15 @@ export default function BotonTexto({
   const dynamicTextStyle: TextStyle = {
     fontSize,
     color: fontColor,
-    textAlign: centered ? "center" : "left"
+    textAlign: centered ? 'center' : 'left',
   };
 
   return (
-    <TouchableOpacity style={[styles.bloque, dynamicContainerStyle, styleExtra]} onPress={handlePress}>
-      <CustomText style={[styles.texto, dynamicTextStyle]}>
+    <TouchableOpacity
+      style={[styles.bloque, dynamicContainerStyle, styleExtra]}
+      onPress={handlePress}
+    >
+      <CustomText weight="bold" style={[styles.texto, dynamicTextStyle]}>
         {label}
       </CustomText>
     </TouchableOpacity>
@@ -78,14 +82,12 @@ export default function BotonTexto({
 
 const styles = StyleSheet.create({
   bloque: {
-    //borderBottomRightRadius: 20,
     paddingHorizontal: 20,
     justifyContent: 'center',
     ...getShadowStyle(6),
   },
   texto: {
-    fontWeight: 'bold',
     marginBottom: 5,
-    textAlign: "center"
+    textAlign: 'center',
   },
 });

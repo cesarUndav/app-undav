@@ -84,15 +84,23 @@ export default function Sedes() {
             <Image source={sede.imagen} style={styles.image} />
 
             <View style={styles.info}>
-              <CustomText style={styles.title}>{sede.nombre}</CustomText>
+              <CustomText weight="bold" style={styles.title}>
+                {sede.nombre}
+              </CustomText>
 
-              <CustomText style={styles.text}>{sede.direccion}</CustomText>
+              <CustomText style={styles.text}>
+                {sede.direccion}
+              </CustomText>
 
               {sede.telefono && (
-                <CustomText style={styles.text}>Tel: {sede.telefono}</CustomText>
+                <CustomText style={styles.text}>
+                  Tel: {sede.telefono}
+                </CustomText>
               )}
 
-              <CustomText style={styles.link}>Toca para ver el mapa</CustomText>
+              <CustomText style={styles.link}>
+                Toca para ver el mapa
+              </CustomText>
             </View>
           </TouchableOpacity>
         </View>
@@ -119,7 +127,6 @@ const styles = StyleSheet.create({
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold',
     marginBottom: 6,
     color: '#fff',
   },

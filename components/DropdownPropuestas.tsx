@@ -1,8 +1,9 @@
-import React, { useState } from "react";
-import { View, TouchableOpacity, StyleSheet } from "react-native";
-import CustomText from "./CustomText";
-import { negroAzulado } from "@/constants/Colors";
-import { getShadowStyle } from "@/constants/ShadowStyle";
+// components/DropdownPropuestas.tsx
+
+import React, { useState } from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import CustomText from './CustomText';
+import { negroAzulado } from '@/constants/Colors';
 
 interface Propuesta {
   nombre: string;
@@ -20,7 +21,7 @@ const DropdownPropuestas: React.FC<DropdownListaPropuestasProps> = ({
   propuestas,
   indiceSeleccionado,
   onSeleccionar,
-  label = "",
+  label = '',
 }) => {
   const [expandido, setExpandido] = useState(false);
 
@@ -35,10 +36,15 @@ const DropdownPropuestas: React.FC<DropdownListaPropuestasProps> = ({
         style={styles.item}
         onPress={() => setExpandido((v) => !v)}
       >
-        <CustomText style={styles.textItem}>
-          {`${label}${seleccionada.nombre} (${seleccionada.regular === "S" ? "Regular" : "NO Regular"})`}
+        <CustomText weight="bold" style={styles.textItem}>
+          {`${label}${seleccionada.nombre} (${
+            seleccionada.regular === 'S' ? 'Regular' : 'NO Regular'
+          })`}
         </CustomText>
-        <CustomText style={styles.flecha}>{expandido ? "▲" : "▼"}</CustomText>
+
+        <CustomText style={styles.flecha}>
+          {expandido ? '▲' : '▼'}
+        </CustomText>
       </TouchableOpacity>
 
       {expandido &&
@@ -51,8 +57,8 @@ const DropdownPropuestas: React.FC<DropdownListaPropuestasProps> = ({
               setExpandido(false);
             }}
           >
-            <CustomText style={styles.textItem}>
-              {`${p.nombre}: ${p.regular === "S" ? "Regular" : "NO Regular"}`}
+            <CustomText weight="bold" style={styles.textItem}>
+              {`${p.nombre}: ${p.regular === 'S' ? 'Regular' : 'NO Regular'}`}
             </CustomText>
           </TouchableOpacity>
         ))}
@@ -64,22 +70,20 @@ export default DropdownPropuestas;
 
 const styles = StyleSheet.create({
   card: {
-    backgroundColor: "transparent",
+    backgroundColor: 'transparent',
     paddingHorizontal: 15,
     paddingVertical: 0,
     marginBottom: 5,
-    //...getShadowStyle(4),
   },
   item: {
-    flexDirection: "row",
-    justifyContent: "space-between",
-    alignItems: "center",
-    paddingVertical: 0
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingVertical: 0,
   },
   textItem: {
     fontSize: 16,
     color: negroAzulado,
-    fontWeight: "bold",
   },
   flecha: {
     fontSize: 20,

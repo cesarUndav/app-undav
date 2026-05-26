@@ -1,13 +1,23 @@
 // components/AgendaItemEditable.tsx
+
 import React from 'react';
-import { View, StyleSheet, TouchableOpacity, StyleProp, ViewStyle } from 'react-native';
+import {
+  View,
+  StyleSheet,
+  TouchableOpacity,
+  StyleProp,
+  ViewStyle,
+} from 'react-native';
 import CustomText from './CustomText';
-import { EventoAgenda, eventoAgendaProximidadColor, eventoAgendaToFechaString } from '../data/agenda';
+import {
+  EventoAgenda,
+  eventoAgendaProximidadColor,
+  eventoAgendaToFechaString,
+} from '../data/agenda';
 import SettingsIcon from '../assets/icons/settings.svg';
-import { azulClaro, azulLogoUndav, azulMedioUndav } from '@/constants/Colors';
+import { azulClaro } from '@/constants/Colors';
 import { AgendaItemStyles } from './AgendaItem';
 import { useCategoriasPersistentes } from '@/hooks/useCategoriasPersistentes';
-import { Categoria } from './DropdownCategoria';
 import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
 
 type AgendaItemEditableProps = {
@@ -16,26 +26,55 @@ type AgendaItemEditableProps = {
   styleExtra?: StyleProp<ViewStyle>;
 };
 
-export default function AgendaItemEditable({ evento, onPressEdit, styleExtra }: AgendaItemEditableProps) {
+export default function AgendaItemEditable({
+  evento,
+  onPressEdit,
+  styleExtra,
+}: AgendaItemEditableProps) {
   useCategoriasPersistentes();
 
   return (
     <View style={[AgendaItemStyles.agendaItem, styleExtra]}>
-        <TouchableOpacity style={styles.itemParent} onPress={() => onPressEdit(evento.id)} accessible accessibilityLabel="Editar Evento" >
-          <View style={styles.itemChildLeft}>
-            <CustomText style={[AgendaItemStyles.eventTitle, { 
-              //</View>color: evento.categoria ? categorias[evento.categoria]
-              color: enModoOscuro() ? "#fff":'#000' }]}>
-              {evento.titulo}
-            </CustomText>
-            <CustomText style={[AgendaItemStyles.eventDate, { color: eventoAgendaProximidadColor(evento) }]}>
-              {eventoAgendaToFechaString(evento)}
-            </CustomText>
-          </View>
-          <View style={styles.itemChildRight}>
-            <SettingsIcon width={30} height={30} fill={enModoOscuro()? "#fff":azulClaro} />
-          </View>
-        </TouchableOpacity>
+      <TouchableOpacity
+        style={styles.itemParent}
+        onPress={() => onPressEdit(evento.id)}
+        accessible
+        accessibilityLabel="Editar Evento"
+      >
+        <View style={styles.itemChildLeft}>
+          <CustomText
+            weight="bold"
+            style={[
+              AgendaItemStyles.eventTitle,
+              {
+                color: enModoOscuro() ? '#fff' : '#000',
+              },
+            ]}
+          >
+            {evento.titulo}
+          </CustomText>
+
+          <CustomText
+            weight="bold"
+            style={[
+              AgendaItemStyles.eventDate,
+              {
+                color: eventoAgendaProximidadColor(evento),
+              },
+            ]}
+          >
+            {eventoAgendaToFechaString(evento)}
+          </CustomText>
+        </View>
+
+        <View style={styles.itemChildRight}>
+          <SettingsIcon
+            width={30}
+            height={30}
+            fill={enModoOscuro() ? '#fff' : azulClaro}
+          />
+        </View>
+      </TouchableOpacity>
     </View>
   );
 }
@@ -53,5 +92,5 @@ const styles = StyleSheet.create({
     paddingLeft: 10,
     justifyContent: 'center',
     alignItems: 'center',
-  }
+  },
 });

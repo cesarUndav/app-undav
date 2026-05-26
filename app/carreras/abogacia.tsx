@@ -1,18 +1,18 @@
-// abogacia.tsx
+// app/carreras/abogacia.tsx
 
 import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
   Modal,
   Platform,
-  Linking, 
+  Linking,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { crearCarreraStyles } from '@/theme/carrerasStyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
 import { Asset } from 'expo-asset';
@@ -32,17 +32,25 @@ export default function Abogacia() {
   };
 
   const toggleSection = (index: number) => {
-    setActiveSection(prev => (prev === index ? null : index));
+    setActiveSection((prev) => (prev === index ? null : index));
   };
 
   const handleOpenPDF = async (fileName: string) => {
     try {
       const module = pdfs[fileName];
-      if (!module) throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+
+      if (!module) {
+        throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+      }
+
       const asset = Asset.fromModule(module);
       await asset.downloadAsync();
+
       const uri = asset.localUri || asset.uri;
-      if (!uri) throw new Error('URI local no disponible');
+
+      if (!uri) {
+        throw new Error('URI local no disponible');
+      }
 
       const sourceUri =
         Platform.OS === 'android'
@@ -61,14 +69,19 @@ export default function Abogacia() {
     {
       titulo: '🎓 Título',
       contenido: (
-        <CustomText style={styles.oracion}>Abogado/a</CustomText>
+        <CustomText style={styles.oracion}>
+          Abogado/a
+        </CustomText>
       ),
     },
     {
       titulo: '📘 Acerca de la carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          La complejización de la vida social y transformaciones culturales demandan saberes jurídicos e intervenciones estatales, haciendo indispensable formarse en Derecho Público, Gestión Pública y Administración de Justicia.
+          La complejización de la vida social y transformaciones culturales
+          demandan saberes jurídicos e intervenciones estatales, haciendo
+          indispensable formarse en Derecho Público, Gestión Pública y
+          Administración de Justicia.
         </CustomText>
       ),
     },
@@ -76,11 +89,25 @@ export default function Abogacia() {
       titulo: '🎯 Objetivos de la carrera',
       contenido: (
         <View>
-          <CustomText style={styles.oracion}>• Fomentar la vocación por el servicio público.</CustomText>
-          <CustomText style={styles.oracion}>• Construir valores democráticos y ciudadanía.</CustomText>
-          <CustomText style={styles.oracion}>• Capacitar en derecho público y gestión judicial.</CustomText>
-          <CustomText style={styles.oracion}>• Promover compromiso con el interés público.</CustomText>
-          <CustomText style={styles.oracion}>• Articular enseñanza, investigación y extensión.</CustomText>
+          <CustomText style={styles.oracion}>
+            • Fomentar la vocación por el servicio público.
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            • Construir valores democráticos y ciudadanía.
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            • Capacitar en derecho público y gestión judicial.
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            • Promover compromiso con el interés público.
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            • Articular enseñanza, investigación y extensión.
+          </CustomText>
         </View>
       ),
     },
@@ -88,7 +115,9 @@ export default function Abogacia() {
       titulo: '👤 Perfil del graduado',
       contenido: (
         <CustomText style={styles.oracion}>
-          Egresado con mirada transdisciplinaria del Derecho, consciente de su rol público y capaz de intervenir complejamente en la sociedad y en el Estado.
+          Egresado con mirada transdisciplinaria del Derecho, consciente de su
+          rol público y capaz de intervenir complejamente en la sociedad y en el
+          Estado.
         </CustomText>
       ),
     },
@@ -96,17 +125,38 @@ export default function Abogacia() {
       titulo: '📄 Planes y recursos',
       contenido: (
         <View>
-          <TouchableOpacity onPress={() => handleOpenPDF('abogacia-plan-estudios-transicion.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio - Plan de transición</CustomText>
+          <TouchableOpacity
+            onPress={() =>
+              handleOpenPDF('abogacia-plan-estudios-transicion.pdf')
+            }
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio - Plan de transición
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('abogacia-plan-estudios-nuevo.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio - Nuevo plan</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('abogacia-plan-estudios-nuevo.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio - Nuevo plan
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('abogacia-plan-estudios.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('abogacia-plan-estudios.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('abogacia-postal-digital.pdf')}>
-            <CustomText style={styles.link}>• Descargar Postal Digital</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('abogacia-postal-digital.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Postal Digital
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -115,12 +165,28 @@ export default function Abogacia() {
       titulo: '📍 Departamento y contacto',
       contenido: (
         <View>
-          <CustomText style={styles.oracion}>Departamento de Ciencias Sociales</CustomText>
-          <CustomText style={styles.oracion}>Decana: Mg. Anabella Lucardi</CustomText>
-          <CustomText style={styles.oracion}>Vicedecano: Prof. Facundo Harguinteguy</CustomText>
-          <CustomText style={styles.oracion}>Directora de Abogacía: Mg. Milagros Rayes</CustomText>
-          <TouchableOpacity onPress={() => Linking.openURL('mailto:sociales@undav.edu.ar') }>
-            <CustomText style={styles.oracion}>Contacto: sociales@undav.edu.ar</CustomText>
+          <CustomText style={styles.oracion}>
+            Departamento de Ciencias Sociales
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Decana: Mg. Anabella Lucardi
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Vicedecano: Prof. Facundo Harguinteguy
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Directora de Abogacía: Mg. Milagros Rayes
+          </CustomText>
+
+          <TouchableOpacity
+            onPress={() => Linking.openURL('mailto:sociales@undav.edu.ar')}
+          >
+            <CustomText style={styles.oracion}>
+              Contacto: sociales@undav.edu.ar
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -139,17 +205,28 @@ export default function Abogacia() {
             <WebView
               source={{ uri: pdfUri }}
               style={styles.webview}
-              originWhitelist={["*"]}
+              originWhitelist={['*']}
               startInLoadingState
-              renderLoading={() => <ActivityIndicator style={{ flex: 1 }} size="large" />}
+              renderLoading={() => (
+                <ActivityIndicator style={styles.webviewLoading} size="large" />
+              )}
             />
           )}
+
           <View style={styles.fabContainer} pointerEvents="box-none">
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
-              style={[styles.fab, { bottom: insets.bottom + 16, right: 16 }]}
+              style={[
+                styles.fab,
+                {
+                  bottom: insets.bottom + 16,
+                  right: 16,
+                },
+              ]}
             >
-              <CustomText style={styles.fabText}>×</CustomText>
+              <CustomText weight="bold" style={styles.fabText}>
+                ×
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -160,12 +237,20 @@ export default function Abogacia() {
           <View key={index} style={styles.seccion}>
             <TouchableOpacity
               onPress={() => toggleSection(index)}
-              style={[styles.boton, activeSection === index && styles.botonExpandido]}
+              style={[
+                styles.boton,
+                activeSection === index && styles.botonExpandido,
+              ]}
             >
-              <CustomText style={styles.titulo}>{seccion.titulo}</CustomText>
+              <CustomText weight="bold" style={styles.titulo}>
+                {seccion.titulo}
+              </CustomText>
             </TouchableOpacity>
+
             <Collapsible collapsed={activeSection !== index}>
-              <View style={styles.contenido}>{seccion.contenido}</View>
+              <View style={styles.contenido}>
+                {seccion.contenido}
+              </View>
             </Collapsible>
           </View>
         ))}
@@ -174,19 +259,7 @@ export default function Abogacia() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: { flex: 1 },
-  modalContainer: { flex: 1, backgroundColor: '#fff' },
-  webview: { flex: 1 },
-  fabContainer: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
-  fab: { position: 'absolute', width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
-  fabText: { fontSize: 32, lineHeight: 32, color: '#fff', fontWeight: 'bold' },
-  container: { flex: 1, padding: 15, gap: 8 },
-  seccion: { elevation: 4 },
-  boton: { backgroundColor: '#ca2627', padding: 16, height: 64, borderBottomRightRadius: 20 },
-  botonExpandido: { borderBottomRightRadius: 0 },
-  titulo: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  contenido: { backgroundColor: '#ee3b4d', padding: 16, borderBottomRightRadius: 20, borderTopWidth: 1, borderTopColor: 'white' },
-  oracion: { marginBottom: 8, color: '#ffffff' },
-  link: { color: '#ffffff', textDecorationLine: 'underline', marginBottom: 8, fontWeight: 'bold' },
+const styles = crearCarreraStyles({
+  colorBoton: '#ca2627',
+  colorContenido: '#ee3b4d',
 });

@@ -1,13 +1,15 @@
-import React, { useState } from "react";
+// components/DropdownCategoria.tsx
+
+import React, { useState } from 'react';
 import {
   View,
   TouchableOpacity,
   TextInput,
   StyleSheet,
-} from "react-native";
-import CustomText from "./CustomText";
-import { Ionicons } from "@expo/vector-icons";
-import { grisBorde, negroAzulado } from "@/constants/Colors";
+} from 'react-native';
+import CustomText from './CustomText';
+import { Ionicons } from '@expo/vector-icons';
+import { grisBorde, negroAzulado } from '@/constants/Colors';
 
 export type Categoria = {
   nombre: string;
@@ -22,7 +24,14 @@ interface DropdownCategoriasProps {
   onAgregar: (nueva: Categoria) => void;
 }
 
-const coloresDisponibles = ["#d60084", "#de1600", "#fc9d03", "#79c400", "#0292e6", "#27009c"];
+const coloresDisponibles = [
+  '#d60084',
+  '#de1600',
+  '#fc9d03',
+  '#79c400',
+  '#0292e6',
+  '#27009c',
+];
 
 const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
   categorias,
@@ -33,23 +42,30 @@ const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
 }) => {
   const [expandido, setExpandido] = useState(false);
   const [agregando, setAgregando] = useState(false);
-  const [nuevoNombre, setNuevoNombre] = useState("");
+  const [nuevoNombre, setNuevoNombre] = useState('');
   const [nuevoColor, setNuevoColor] = useState(coloresDisponibles[0]);
 
   const toggle = () => setExpandido(!expandido);
 
   const renderCategoria = (cat: Categoria) => (
-    <View key={cat.nombre+cat.color} style={styles.opcionFila}>
-      <TouchableOpacity key={"t"+cat.nombre+cat.color}
+    <View key={cat.nombre + cat.color} style={styles.opcionFila}>
+      <TouchableOpacity
+        key={'t' + cat.nombre + cat.color}
         style={[styles.categoriaOpcion, { backgroundColor: cat.color }]}
         onPress={() => {
           onSeleccionar(cat);
           setExpandido(false);
         }}
       >
-        <CustomText style={styles.opcionTexto}>{cat.nombre}</CustomText>
+        <CustomText weight="bold" style={styles.opcionTexto}>
+          {cat.nombre}
+        </CustomText>
       </TouchableOpacity>
-      <TouchableOpacity style={{paddingLeft: 6, paddingRight: 2}} onPress={() => onEliminar(cat.nombre)}>
+
+      <TouchableOpacity
+        style={styles.deleteButton}
+        onPress={() => onEliminar(cat.nombre)}
+      >
         <Ionicons name="trash-outline" size={26} color="#d00" />
       </TouchableOpacity>
     </View>
@@ -58,15 +74,25 @@ const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
   return (
     <View style={styles.card}>
       <TouchableOpacity style={styles.header} onPress={toggle}>
-        <View style={[styles.colorPunto, { backgroundColor: seleccionada?.color || "#aaa" }]} />
+        <View
+          style={[
+            styles.colorPunto,
+            { backgroundColor: seleccionada?.color || '#aaa' },
+          ]}
+        />
+
         <CustomText style={styles.texto}>
-          {seleccionada?.nombre || "Seleccionar categoría"}
+          {seleccionada?.nombre || 'Seleccionar categoría'}
         </CustomText>
-        <Ionicons name={expandido ? "chevron-up" : "chevron-down"} size={20} />
+
+        <Ionicons
+          name={expandido ? 'chevron-up' : 'chevron-down'}
+          size={20}
+        />
       </TouchableOpacity>
 
       {expandido && (
-        <View style={{ gap: 6 }}>
+        <View style={styles.opcionesContainer}>
           {categorias.map(renderCategoria)}
 
           {agregando ? (
@@ -77,6 +103,7 @@ const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
                 placeholder="Nombre categoría"
                 style={styles.input}
               />
+
               <View style={styles.colorSelector}>
                 {coloresDisponibles.map((c) => (
                   <TouchableOpacity
@@ -90,23 +117,34 @@ const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
                   />
                 ))}
               </View>
+
               <TouchableOpacity
                 style={[styles.btn, { backgroundColor: nuevoColor }]}
                 onPress={() => {
                   if (nuevoNombre.trim()) {
-                    onAgregar({ nombre: nuevoNombre.trim(), color: nuevoColor });
-                    setNuevoNombre("");
+                    onAgregar({
+                      nombre: nuevoNombre.trim(),
+                      color: nuevoColor,
+                    });
+                    setNuevoNombre('');
                     setNuevoColor(coloresDisponibles[0]);
                     setAgregando(false);
                   }
                 }}
               >
-                <CustomText style={[styles.btnText,{color: "#fff"}]}>Agregar categoría</CustomText>
+                <CustomText weight="bold" style={[styles.btnText, styles.btnTextLight]}>
+                  Agregar categoría
+                </CustomText>
               </TouchableOpacity>
             </View>
           ) : (
-            <TouchableOpacity onPress={() => setAgregando(true)} style={styles.btn}>
-              <CustomText style={styles.btnText}>+ Agregar nueva categoría</CustomText>
+            <TouchableOpacity
+              onPress={() => setAgregando(true)}
+              style={styles.btn}
+            >
+              <CustomText weight="bold" style={styles.btnText}>
+                + Agregar nueva categoría
+              </CustomText>
             </TouchableOpacity>
           )}
         </View>
@@ -118,58 +156,59 @@ const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
 export default DropdownCategorias;
 
 const styles = StyleSheet.create({
-  card: {
-    //backgroundColor: "#f00",
-    //paddingHorizontal: 10
-    //...getShadowStyle(3),
-  },
+  card: {},
   header: {
-    flexDirection: "row",
-    alignItems: "center",
+    flexDirection: 'row',
+    alignItems: 'center',
     gap: 10,
-    //backgroundColor: "red",
-    paddingHorizontal: 10
+    paddingHorizontal: 10,
   },
   colorPunto: {
     width: 14,
     height: 14,
-    borderRadius: "100%",
+    borderRadius: 999,
   },
   texto: {
     flex: 1,
     fontSize: 16,
     color: negroAzulado,
     paddingTop: 8,
-    paddingBottom: 8-2
+    paddingBottom: 6,
+  },
+  opcionesContainer: {
+    gap: 6,
   },
   opcionFila: {
-    flexDirection: "row",
-    alignItems: "center",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    alignItems: 'center',
+    justifyContent: 'space-between',
   },
   categoriaOpcion: {
     paddingVertical: 6,
     paddingHorizontal: 8,
-    //borderRadius: 6,
-    flex: 1
+    flex: 1,
   },
   opcionTexto: {
-    color: "#fff",
-    fontWeight: "bold",
+    color: '#fff',
+  },
+  deleteButton: {
+    paddingLeft: 6,
+    paddingRight: 2,
   },
   agregarBox: {
     marginTop: 8,
-    gap: 8
+    gap: 8,
   },
   input: {
     borderBottomWidth: 1,
     borderColor: grisBorde,
     paddingVertical: 4,
     fontSize: 16,
+    fontFamily: 'Montserrat_400Regular',
   },
   colorSelector: {
-    flexDirection: "row",
-    justifyContent: "space-between",
+    flexDirection: 'row',
+    justifyContent: 'space-between',
     gap: 4,
   },
   colorCircle: {
@@ -180,16 +219,18 @@ const styles = StyleSheet.create({
     borderColor: grisBorde,
   },
   selectedColor: {
-    borderColor: "#000",
+    borderColor: '#000',
     borderWidth: 2,
   },
   btn: {
-    backgroundColor: "#eee",
+    backgroundColor: '#eee',
     padding: 8,
     borderRadius: 6,
   },
   btnText: {
-    textAlign: "center",
-    fontWeight: "bold",
+    textAlign: 'center',
+  },
+  btnTextLight: {
+    color: '#fff',
   },
 });

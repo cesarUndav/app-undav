@@ -1,18 +1,18 @@
-// periodismo-ccc.tsx
+// app/carreras/periodismo-ccc.tsx
 
 import React, { useState } from 'react';
 import {
   View,
-  StyleSheet,
   ScrollView,
   TouchableOpacity,
   Alert,
   Modal,
   Platform,
-  Linking, 
+  Linking,
   ActivityIndicator,
 } from 'react-native';
-import { SafeAreaView, useSafeAreaInsets } from 'react-native-safe-area-context';
+import { crearCarreraStyles } from '@/theme/carrerasStyles';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Collapsible from 'react-native-collapsible';
 import CustomText from '@/components/CustomText';
 import { Asset } from 'expo-asset';
@@ -30,17 +30,25 @@ export default function PeriodismoCCC() {
   };
 
   const toggleSection = (index: number) => {
-    setActiveSection(prev => (prev === index ? null : index));
+    setActiveSection((prev) => (prev === index ? null : index));
   };
 
   const handleOpenPDF = async (fileName: string) => {
     try {
       const module = pdfs[fileName];
-      if (!module) throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+
+      if (!module) {
+        throw new Error(`Archivo PDF "${fileName}" no encontrado.`);
+      }
+
       const asset = Asset.fromModule(module);
       await asset.downloadAsync();
+
       const uri = asset.localUri || asset.uri;
-      if (!uri) throw new Error('URI local no disponible');
+
+      if (!uri) {
+        throw new Error('URI local no disponible');
+      }
 
       const sourceUri =
         Platform.OS === 'android'
@@ -76,7 +84,9 @@ export default function PeriodismoCCC() {
       titulo: '📘 Acerca de la carrera',
       contenido: (
         <CustomText style={styles.oracion}>
-          El CCC forma periodistas con pensamiento conceptual, habilidades múltiples para intervenir en contextos sociales diversos y adaptarse a una comunicación en cambio permanente.
+          El CCC forma periodistas con pensamiento conceptual, habilidades
+          múltiples para intervenir en contextos sociales diversos y adaptarse a
+          una comunicación en cambio permanente.
         </CustomText>
       ),
     },
@@ -84,7 +94,8 @@ export default function PeriodismoCCC() {
       titulo: '🎯 Objetivos',
       contenido: (
         <CustomText style={styles.oracion}>
-          Formar periodistas que dominen aspectos expresivos, tecnológicos y de gestión en medios e instituciones, y técnicas de campañas de difusión.
+          Formar periodistas que dominen aspectos expresivos, tecnológicos y de
+          gestión en medios e instituciones, y técnicas de campañas de difusión.
         </CustomText>
       ),
     },
@@ -92,7 +103,9 @@ export default function PeriodismoCCC() {
       titulo: '👤 Perfil del graduado',
       contenido: (
         <CustomText style={styles.oracion}>
-          Capaz de producir y difundir piezas comunicacionales en cualquier medio, analizar críticamente la producción informativa y diseñar programación periodística.
+          Capaz de producir y difundir piezas comunicacionales en cualquier
+          medio, analizar críticamente la producción informativa y diseñar
+          programación periodística.
         </CustomText>
       ),
     },
@@ -100,11 +113,20 @@ export default function PeriodismoCCC() {
       titulo: '📄 Planes y recursos',
       contenido: (
         <View>
-          <TouchableOpacity onPress={() => handleOpenPDF('periodismo-ccc-plan-estudios.pdf')}>
-            <CustomText style={styles.link}>• Descargar Plan de estudio</CustomText>
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('periodismo-ccc-plan-estudios.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Plan de estudio
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => handleOpenPDF('periodismo-ccc-postal-digital.pdf')}>
-            <CustomText style={styles.link}>• Descargar Postal Digital</CustomText>
+
+          <TouchableOpacity
+            onPress={() => handleOpenPDF('periodismo-ccc-postal-digital.pdf')}
+          >
+            <CustomText weight="bold" style={styles.link}>
+              • Descargar Postal Digital
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -113,15 +135,32 @@ export default function PeriodismoCCC() {
       titulo: '📍 Departamento y contacto',
       contenido: (
         <View>
-          <CustomText style={styles.oracion}>Departamento de Cultura, Arte y Comunicación</CustomText>
-          <CustomText style={styles.oracion}>Decano: Lic. Daniel Escribano</CustomText>
-          <CustomText style={styles.oracion}>Vicedecana: Mg. Laura Calvelo</CustomText>
-          <CustomText style={styles.oracion}>Coordinador: Lic. Santiago Fraschina</CustomText>
-          <TouchableOpacity onPress={() => Linking.openURL('mailto:cac@undav.edu.ar') }>
-            <CustomText style={[styles.oracion, styles.link]}>Contacto: cac@undav.edu.ar</CustomText>
+          <CustomText style={styles.oracion}>
+            Departamento de Cultura, Arte y Comunicación
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Decano: Lic. Daniel Escribano
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Vicedecana: Mg. Laura Calvelo
+          </CustomText>
+
+          <CustomText style={styles.oracion}>
+            Coordinador: Lic. Santiago Fraschina
+          </CustomText>
+
+          <TouchableOpacity onPress={() => Linking.openURL('mailto:cac@undav.edu.ar')}>
+            <CustomText weight="bold" style={[styles.oracion, styles.link]}>
+              Contacto: cac@undav.edu.ar
+            </CustomText>
           </TouchableOpacity>
-          <TouchableOpacity onPress={() => Linking.openURL('tel:+5491142292457') }>
-            <CustomText style={[styles.oracion, styles.link]}>Tel.: 4229-2457</CustomText>
+
+          <TouchableOpacity onPress={() => Linking.openURL('tel:+5491142292457')}>
+            <CustomText weight="bold" style={[styles.oracion, styles.link]}>
+              Tel.: 4229-2457
+            </CustomText>
           </TouchableOpacity>
         </View>
       ),
@@ -140,16 +179,28 @@ export default function PeriodismoCCC() {
             <WebView
               source={{ uri: pdfUri }}
               style={styles.webview}
-              originWhitelist={["*"]}
+              originWhitelist={['*']}
               startInLoadingState
-              renderLoading={() => <ActivityIndicator style={{ flex: 1 }} size="large" />}            />
+              renderLoading={() => (
+                <ActivityIndicator style={styles.webviewLoading} size="large" />
+              )}
+            />
           )}
+
           <View style={styles.fabContainer} pointerEvents="box-none">
             <TouchableOpacity
               onPress={() => setModalVisible(false)}
-              style={[styles.fab, { bottom: insets.bottom + 16, right: 16 }]}
+              style={[
+                styles.fab,
+                {
+                  bottom: insets.bottom + 16,
+                  right: 16,
+                },
+              ]}
             >
-              <CustomText style={styles.fabText}>×</CustomText>
+              <CustomText weight="bold" style={styles.fabText}>
+                ×
+              </CustomText>
             </TouchableOpacity>
           </View>
         </View>
@@ -160,12 +211,20 @@ export default function PeriodismoCCC() {
           <View key={index} style={styles.seccion}>
             <TouchableOpacity
               onPress={() => toggleSection(index)}
-              style={[styles.boton, activeSection === index && styles.botonExpandido]}
+              style={[
+                styles.boton,
+                activeSection === index && styles.botonExpandido,
+              ]}
             >
-              <CustomText style={styles.titulo}>{seccion.titulo}</CustomText>
+              <CustomText weight="bold" style={styles.titulo}>
+                {seccion.titulo}
+              </CustomText>
             </TouchableOpacity>
+
             <Collapsible collapsed={activeSection !== index}>
-              <View style={styles.contenido}>{seccion.contenido}</View>
+              <View style={styles.contenido}>
+                {seccion.contenido}
+              </View>
             </Collapsible>
           </View>
         ))}
@@ -174,19 +233,7 @@ export default function PeriodismoCCC() {
   );
 }
 
-const styles = StyleSheet.create({
-  wrapper: { flex: 1 },
-  modalContainer: { flex: 1, backgroundColor: '#fff' },
-  webview: { flex: 1 },
-  fabContainer: { position: 'absolute', top: 0, bottom: 0, left: 0, right: 0 },
-  fab: { position: 'absolute', width: 56, height: 56, borderRadius: 28, backgroundColor: 'rgba(0,0,0,0.3)', alignItems: 'center', justifyContent: 'center' },
-  fabText: { fontSize: 32, lineHeight: 32, color: '#fff', fontWeight: 'bold' },
-  container: { flex: 1, padding: 15, gap: 8 },
-  seccion: { elevation: 4 },
-  boton: { backgroundColor: '#158d9e', padding: 16, height: 64, borderBottomRightRadius: 20 },
-  botonExpandido: { borderBottomRightRadius: 0 },
-  titulo: { color: 'white', fontWeight: 'bold', fontSize: 16 },
-  contenido: { backgroundColor: '#30b7c4', padding: 16, borderBottomRightRadius: 20, borderTopWidth: 1, borderTopColor: 'white' },
-  oracion: { marginBottom: 8, color: '#ffffff' },
-  link: { color: '#ffffff', textDecorationLine: 'underline', marginBottom: 8, fontWeight: 'bold' },
+const styles = crearCarreraStyles({
+  colorBoton: '#158d9e',
+  colorContenido: '#30b7c4',
 });

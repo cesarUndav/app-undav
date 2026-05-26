@@ -43,9 +43,18 @@ function DateToISOStringNoTime(fecha: Date): string {
   return `${anio}-${mes}-${dia}`;
 }
 
+// ✅ CORREGIDO: Sintaxis completa de la función
 function IndexToDiaString(index: number): string {
-  const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
-  return dias[index] ?? 'Día inválido.';
+  const dias = [
+    'domingo',
+    'lunes',
+    'martes',
+    'miércoles',
+    'jueves',
+    'viernes',
+    'sábado',
+  ];
+  return dias[index] || '';
 }
 
 function obtenerFechasDelMesDesdeDate(fechaBase: Date): Date[] {
@@ -81,7 +90,7 @@ const nombreMes = (mes: number) =>
   ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][mes];
 
 
-// 🌟 SUB-COMPONENTE: CALENDARIO MENSUAL SIN ESTADOS INTERNOS ROTOS 🌟
+// 🌟 SUB-COMPONENTE: CALENDARIO MENSUAL 🌟
 const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
   actividadesPorDia,
   diaSeleccionadoActualmente,
@@ -89,7 +98,6 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
   onSelectDay,
   onSelectMonthChange,
 }) => {
-  // Enfoque ultra-seguro: si no viene el objeto, usamos el fallback inmediato
   const fechaSegura = diaSeleccionadoActualmente instanceof Date ? diaSeleccionadoActualmente : (diaHoy || new Date());
   
   const mesActual = fechaSegura.getMonth();
@@ -202,7 +210,7 @@ export default function Calendario() {
     anio: diaHoy.getFullYear() 
   });
 
-  // Efecto 1: Llamada masiva HTTP al cambiar el mes
+  // Efecto 1: Carga masiva de datos (Ejecuta sólo cuando cambia el mes/año real del calendario)
   useEffect(() => {
     const cargarTodoElMes = async () => {
       setLoading(true);
@@ -213,6 +221,7 @@ export default function Calendario() {
 
         const actividadesTemp: { [fecha: string]: Actividad[] } = {};
 
+        // Mapear eventos locales/estáticos
         todosLosEventos.forEach((evento, idx) => {
           if (!evento.fechaInicio || !evento.fechaFin) return;
 
@@ -247,7 +256,10 @@ export default function Calendario() {
         });
 
         const idPersonaEstudiante = infoBaseUsuarioActual.idPersona; 
-        const diasDelMes = obtenerFechasDelMesDesdeDate(fechaSeleccionada);
+        
+        // Usamos el mesAnioActual del estado para crear la fecha base del fetch seguro
+        const fechaBaseFetch = new Date(mesAnioActual.anio, mesAnioActual.mes, 1);
+        const diasDelMes = obtenerFechasDelMesDesdeDate(fechaBaseFetch);
         
         const promesasAgenda = diasDelMes.map(async (dateItem) => {
           const fStr = DateToISOStringNoTime(dateItem);
@@ -299,13 +311,15 @@ export default function Calendario() {
     };
 
     cargarTodoElMes();
-  }, [mesAnioActual]); 
+  }, [mesAnioActual.mes, mesAnioActual.anio]); // ✅ Dependencias específicas para evitar loops del estado completo
 
-  // Efecto 2: Filtrado y textos locales
+
+  // Efecto 2: Gestión de selección de días y textos locales
   useEffect(() => {
     const fSeleccionadaSegura = fechaSeleccionada instanceof Date ? fechaSeleccionada : new Date();
     const fechaStr = DateToISOStringNoTime(fSeleccionadaSegura);
     
+    // Si cambia de mes tocando un día de otro mes, actualiza el mes actual de fondo
     if (fSeleccionadaSegura.getMonth() !== mesAnioActual.mes || fSeleccionadaSegura.getFullYear() !== mesAnioActual.anio) {
       setMesAnioActual({
         mes: fSeleccionadaSegura.getMonth(),
@@ -317,23 +331,28 @@ export default function Calendario() {
     const nombreDia = IndexToDiaString(fSeleccionadaSegura.getDay());
     const mensajeDia = `${nombreDia} ${fSeleccionadaSegura.getDate()}`;
 
-    let tituloPaginaDia: string = "";
-    if (actividadesDelDia.length === 0)
-      tituloPaginaDia = `No hay actividades ${fechaStr === hoyStr ? `hoy, ${mensajeDia}` : `el ${mensajeDia}`}`;
-    else {
-      if (fechaStr === hoyStr) tituloPaginaDia = "hoy, ";
-      else {
+    let tituloPaginaDia = '';
+
+    if (actividadesDelDia.length === 0) {
+      tituloPaginaDia = `No hay actividades ${
+        fechaStr === hoyStr ? `hoy, ${mensajeDia}` : `el ${mensajeDia}`
+      }`;
+    } else {
+      if (fechaStr === hoyStr) {
+        tituloPaginaDia = 'hoy, ';
+      } else {
         const fechaAyer = DateToISOStringNoTime(fechaSumarDias(-1));
         const fechaManiana = DateToISOStringNoTime(fechaSumarDias(1));
         if (fechaStr === fechaManiana) tituloPaginaDia = "mañana, ";
         else if (fechaStr === fechaAyer) tituloPaginaDia = "ayer, ";
       }
+
       tituloPaginaDia += mensajeDia;
     }
 
     setTituloPagina(tituloPaginaDia);
     setListaActividadesDiaSeleccionado(actividadesDelDia);
-  }, [fechaSeleccionada, actividadesPorFecha]);
+  }, [fechaSeleccionada, actividadesPorFecha, mesAnioActual.mes, mesAnioActual.anio]);
 
   return (
     <FondoGradiente>
@@ -349,11 +368,13 @@ export default function Calendario() {
         />
 
         <View style={styles.titleContainer}>
-          <CustomText style={styles.title}>{tituloPagina}</CustomText>
+          <CustomText weight="bold" style={styles.title}>
+            {tituloPagina}
+          </CustomText>
         </View>
       </LoadingWrapper>
 
-      <View style={{ flex: 1, justifyContent: 'flex-end' }}>
+      <View style={styles.contentContainer}>
         <ScrollView contentContainerStyle={styles.listaContainer}>
           {listaActividadesDiaSeleccionado.map((actividad, index) => {
             const esUltimo = index === listaActividadesDiaSeleccionado.length - 1;
@@ -466,11 +487,10 @@ const styles = StyleSheet.create({
     fontWeight: 'bold',
   },
   listaContainer: {
-    gap: 4
+    gap: 4,
   },
   title: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: negroAzulado,
     marginHorizontal: 10,
     textAlign: 'center',
@@ -482,4 +502,8 @@ const styles = StyleSheet.create({
     justifyContent: 'space-between',
     paddingVertical: 8,
   },
+  contentContainer: {
+    flex: 1,
+    marginTop: 10,
+  }
 });

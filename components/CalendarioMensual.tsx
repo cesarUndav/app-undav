@@ -1,6 +1,14 @@
-import React, { useState, useEffect } from 'react';
-import { View, Text, TouchableOpacity, StyleSheet } from 'react-native';
-import { azulLogoUndav, azulMedioUndav, celesteSIU, negroAzulado } from '@/constants/Colors';
+// components/CalendarioMensual.tsx
+
+import React, { useEffect, useState } from 'react';
+import { View, TouchableOpacity, StyleSheet } from 'react-native';
+import CustomText from '@/components/CustomText';
+import {
+  azulLogoUndav,
+  azulMedioUndav,
+  celesteSIU,
+  negroAzulado,
+} from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 // 1. ACTUALIZAMOS LA INTERFAZ PARA RECOGER EL OBJETO CON CANTIDAD Y COLOR
@@ -21,10 +29,12 @@ function DateToISOStringNoTime(fecha: Date): string {
 function getDiasDelMes(mes: number, anio: number): Date[] {
   const dias: Date[] = [];
   const fecha = new Date(anio, mes, 1);
+
   while (fecha.getMonth() === mes) {
     dias.push(new Date(fecha));
     fecha.setDate(fecha.getDate() + 1);
   }
+
   return dias;
 }
 
@@ -34,8 +44,28 @@ function obtenerPrimerDiaSemana(mes: number, anio: number): number {
 
 const diasSemana = ['D', 'L', 'M', 'Mi', 'J', 'V', 'S'];
 
-const nombreMes = (mes: number) =>
-  ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'][mes];
+const meses = [
+  'Enero',
+  'Febrero',
+  'Marzo',
+  'Abril',
+  'Mayo',
+  'Junio',
+  'Julio',
+  'Agosto',
+  'Septiembre',
+  'Octubre',
+  'Noviembre',
+  'Diciembre',
+];
+
+const nombreMes = (mes: number) => meses[mes];
+
+const blanco = '#fff';
+const colorSeleccionado = celesteSIU;
+const colorTextoSeleccionado = blanco;
+const colorHoy = azulLogoUndav;
+const actividadesColor = azulMedioUndav;
 
 const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
   actividadesPorDia,
@@ -55,6 +85,7 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
 
   const diasDelMes = getDiasDelMes(mesActual, anioActual);
   const primerDiaSemana = obtenerPrimerDiaSemana(mesActual, anioActual);
+
   const celdasVacias = Array.from({ length: primerDiaSemana }, (_, i) => (
     <View key={`empty-${i}`} style={styles.diaCelda} />
   ));
@@ -80,21 +111,31 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
     <View style={styles.contenedor}>
       <View style={styles.encabezadoMes}>
         <TouchableOpacity onPress={() => cambiarMes(-1)}>
-          <Text style={styles.flecha}>{'←'}</Text>
+          <CustomText style={styles.flecha}>
+            ←
+          </CustomText>
         </TouchableOpacity>
 
-        <Text style={styles.textoMes}>{`${nombreMes(mesActual)} ${anioActual}`}</Text>
+        <CustomText weight="bold" style={styles.textoMes}>
+          {`${nombreMes(mesActual)} ${anioActual}`}
+        </CustomText>
 
         <TouchableOpacity onPress={() => cambiarMes(1)}>
-          <Text style={styles.flecha}>{'→'}</Text>
+          <CustomText style={styles.flecha}>
+            →
+          </CustomText>
         </TouchableOpacity>
       </View>
 
       <View style={styles.filaDiasSemana}>
         {diasSemana.map((dia, index) => (
-          <Text key={index} style={styles.textoDiaSemana}>
+          <CustomText
+            key={index}
+            weight="bold"
+            style={styles.textoDiaSemana}
+          >
             {dia}
-          </Text>
+          </CustomText>
         ))}
       </View>
 
@@ -109,8 +150,12 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
           const cantidadActividades = datosDia ? datosDia.cantidad : 0;
           const tipoColor = datosDia ? datosDia.color : 'azul';
 
-          const esHoy = DateToISOStringNoTime(fecha) === DateToISOStringNoTime(diaHoy);
-          const esSeleccionado = DateToISOStringNoTime(fecha) === DateToISOStringNoTime(diaSeleccionadoActualmente);
+          const esHoy =
+            DateToISOStringNoTime(fecha) === DateToISOStringNoTime(diaHoy);
+
+          const esSeleccionado =
+            DateToISOStringNoTime(fecha) ===
+            DateToISOStringNoTime(diaSeleccionadoActualmente);
 
           return (
             <TouchableOpacity
@@ -124,16 +169,16 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
             >
               {/* Quitamos el padding excesivo de 14 que podía empujar el texto fuera de la celda compacta */}
               <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', width: '100%', aspectRatio: 1, position: 'relative' }}>
-                <Text style={[styles.textoDiaNumero, (esSeleccionado || esHoy) && { color: colorTextoSeleccionado }]}>
+                <CustomText style={[styles.textoDiaNumero, (esSeleccionado || esHoy) && { color: colorTextoSeleccionado }]}>
                   {fecha.getDate()}
-                </Text>
+                </CustomText>
                 
                 {cantidadActividades > 0 && (
                   <View style={[
                     styles.indicador, 
                     { backgroundColor: tipoColor === 'azul' ? azulMedioUndav : colorRojoAlerta }
                   ]}>
-                    <Text style={styles.textoIndicador}>{cantidadActividades}</Text>
+                    <CustomText style={styles.textoIndicador}>{cantidadActividades}</CustomText>
                   </View>
                 )}
               </View>
@@ -145,10 +190,6 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
   );
 };
 
-const blanco = "#fff";
-const colorSeleccionado = celesteSIU;
-const colorTextoSeleccionado = blanco;
-const colorHoy = azulLogoUndav;
 // Agregamos un color rojo armónico para las alertas académicas/feriados
 const colorRojoAlerta = "#E53935"; 
 
@@ -169,10 +210,9 @@ const styles = StyleSheet.create({
   },
   textoMes: {
     fontSize: 16,
-    fontWeight: 'bold',
     color: blanco,
-    textAlign: "center",
-    textAlignVertical: "center"
+    textAlign: 'center',
+    textAlignVertical: 'center',
   },
   flecha: {
     fontSize: 20,
@@ -189,16 +229,15 @@ const styles = StyleSheet.create({
     flex: 1,
     textAlign: 'center',
     color: blanco,
-    fontWeight: 'bold',
   },
   gridDias: {
     flexDirection: 'row',
     flexWrap: 'wrap',
-    paddingTop: 4
+    paddingTop: 4,
   },
   diaCelda: {
     marginVertical: 0,
-    width: `${(100 / 7)-0.01}%`,
+    width: `${100 / 7 - 0.01}%`,
     aspectRatio: 1,
     alignItems: 'center',
     justifyContent: 'center',
@@ -206,8 +245,10 @@ const styles = StyleSheet.create({
   },
   textoDiaNumero: {
     fontSize: 16,
-    fontWeight:"bold",
     color: negroAzulado,
+  },
+  textoDiaSeleccionado: {
+    color: colorTextoSeleccionado,
   },
   hoy: {
     backgroundColor: colorHoy,
@@ -233,7 +274,6 @@ const styles = StyleSheet.create({
   textoIndicador: {
     color: blanco,
     fontSize: 11,
-    fontWeight: 'bold',
   },
 });
 
