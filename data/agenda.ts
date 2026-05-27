@@ -88,27 +88,180 @@ export let listaEventosCalendarioAcademico: EventoAgenda[] = [];
 export let listaEventosPersonalizados: EventoAgenda[] = [
   {
   id: "p0",
-    titulo: 'Evento Personalizado 1',
+    titulo: 'Examen parcial de Sistemas Operativos',
     fechaInicio: devHoyMasDiasPermanente(0),
     fechaFin: devHoyMasDiasPermanente(0),
     esFeriado: false
   },{
     id: "p1",
-    titulo: 'Evento Personalizado 2',
+    titulo: 'Presentación de Investigación Operativa',
     fechaInicio: devHoyMasDiasPermanente(3),
     fechaFin: devHoyMasDiasPermanente(3),
     esFeriado: false
   },
     {
   id: "p2",
-    titulo: 'Evento Personalizado 3',
+    titulo: 'Entrega del TP2 de Arquitectura',
     fechaInicio: devHoyMasDiasPermanente(10),
     fechaFin: devHoyMasDiasPermanente(15),
     esFeriado: false
   }
 ];
 
+export let listaExamenesSIU: EventoAgenda[] = [];
+export let listaCursadasSIU: { id: string; titulo: string; descripcion: string }[] = [];
+
 // funciones
+// Función para transformar las fechas de exámenes puntuales de la API al formato unificado de la interfaz
+function transformarExamenToEvento(item: any, idx: number): EventoAgenda {
+  const fechaPuntual = item.fecha ? new Date(item.fecha) : new Date();
+  return {
+    id: `siu-examen-${idx}`,
+    titulo: `[EXAMEN] ${item.actividad_nombre || 'Evaluación'}`,
+    descripcion: `${item.horario || ''} | ${item.ubicacion_nombre || 'Sede'} (${item.modalidad || 'Presencial'})`,
+    fechaInicio: fechaPuntual,
+    fechaFin: fechaPuntual,
+    esFeriado: false,
+    categoria: 99 // 🌟 CRUCIAL: El ID de filtro para agenda.tsx
+  };
+}
+
+export async function cargarDatosSiuGuarani(): Promise<void> {
+  try {
+    const { infoBaseUsuarioActual, ObtenerAgendaFechas } = await import("./DatosUsuarioGuarani");
+    const personaId = infoBaseUsuarioActual?.idPersona;
+
+    if (!personaId) {
+      console.log("⚠️ [Agenda Data] No hay sesión activa para consultar datos de SIU Guaraní.");
+      return;
+    }
+
+    // 📅 CALCULAR LUNES Y SÁBADO DE LA SEMANA ACTUAL
+    const hoy = new Date();
+    const diaSemana = hoy.getDay(); // 0 = Domingo, 1 = Lunes, ..., 6 = Sábado
+    
+    // Calcular cuántos días restar para llegar al Lunes (si hoy es domingo (0), restamos 6 días)
+    const diferenciaAlLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
+    const lunesActual = new Date(hoy);
+    lunesActual.setDate(hoy.getDate() + diferenciaAlLunes);
+    
+    // El sábado es 5 días después del lunes
+    const sabadoActual = new Date(lunesActual);
+    sabadoActual.setDate(lunesActual.getDate() + 5);
+
+    // Formatear las fechas en formato estricto AÑO-MES-DIA (YYYY-MM-DD)
+    const formatearFechaApi = (d: Date) => {
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const dia = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${mes}-${dia}`;
+    };
+
+    const fechaInicioStr = formatearFechaApi(lunesActual);
+    const fechaFinStr = formatearFechaApi(sabadoActual);
+
+    console.log(`🔍 [SIU Query] Consultando semana actual desde el Lunes ${fechaInicioStr} hasta el Sábado ${fechaFinStr}`);
+
+    // Llamada real a la API con el nuevo rango acotado de la semana
+    let eventosRemotos = await ObtenerAgendaFechas(fechaInicioStr, fechaFinStr, true);
+
+    console.log("🚨 [RESPUESTA REAL SIU]:", JSON.stringify(eventosRemotos));
+
+    // 💡 MOCK DE CONTINGENCIA CORREGIDO PARA TYPESCRIPT
+    if (Array.isArray(eventosRemotos) && eventosRemotos.length === 0) {
+      console.log("🛠️ [SIU Sync] Insertando datos simulados semanales...");
+      eventosRemotos = [
+        {
+          actividad_nombre: "Desarrollo de Aplicaciones Móviles",
+          tipo_actividad: "Cursada Obligatoria",
+          horario: "18:30 a 22:30",
+          ubicacion_nombre: "Sede Piñeyro",
+          modalidad: "Presencial",
+          dow_semana: 3,
+          fecha: undefined // 🌟 CORREGIDO: 'undefined' remueve el conflicto de asignación
+          ,
+          tipo_persona: "",
+          legajo: ""
+        },
+        {
+          actividad_nombre: "Base de Datos II",
+          tipo_actividad: "Cursada Obligatoria",
+          horario: "14:00 a 18:00",
+          ubicacion_nombre: "Sede España",
+          modalidad: "Virtual",
+          dow_semana: 1,
+          fecha: undefined // 🌟 CORREGIDO: Quitamos las propiedades 'legajo' y 'tipo_persona' sobrantes
+          ,
+          tipo_persona: "",
+          legajo: ""
+        },
+        {
+          actividad_nombre: "Examen Parcial Sorpresa",
+          tipo_actividad: "Examen",
+          horario: "19:00",
+          fecha: "2026-05-20", // NO va a MIS MATERIAS porque tiene fecha (es un evento de agenda)
+          ubicacion_nombre: "Sede Piñeyro",
+          modalidad: "Presencial",
+          tipo_persona: "",
+          legajo: ""
+        }
+      ];
+    }
+
+    const examenesTemp: EventoAgenda[] = [];
+    const cursadasTemp: { id: string; titulo: string; descripcion: string }[] = [];
+
+    if (Array.isArray(eventosRemotos)) {
+      eventosRemotos.forEach((item: any, idx: number) => {
+        
+        // 1. Si tiene fecha válida, se procesa como Examen/Evento puntual para la Agenda
+        if (item.fecha && item.fecha !== null && item.fecha !== "null") {
+          examenesTemp.push(transformarExamenToEvento(item, idx));
+        } 
+        
+        // 2. 🏛️ FILTRADO ESTRICTO PARA MIS MATERIAS (en data/agenda.ts):
+        else if (
+          (!item.fecha || item.fecha === null || item.fecha === "null") && 
+          item.dow_semana !== undefined && 
+          item.dow_semana !== null
+        ) {
+          const yaExiste = cursadasTemp.some(c => c.titulo === item.actividad_nombre);
+          if (!yaExiste) {
+            // Array auxiliar para traducir el integer (asumiendo 1 = Lunes, 2 = Martes... si 0 es Domingo, se ajusta directo)
+            const diasTexto = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+            const nombreDia = diasTexto[item.dow_semana] || "Día a confirmar";
+
+            cursadasTemp.push({
+              id: `siu-cursada-${idx}`,
+              titulo: item.actividad_nombre || 'Materia regular',
+              // 🌟 Agregamos el texto del día al principio del subtítulo
+              descripcion: `${nombreDia} | ${item.horario || ''} (${item.modalidad || 'Presencial'})`
+            });
+          }
+        }
+      });
+    }
+
+    // 🏛️ ORDENAR DE LUNES A SÁBADO ANTES DE ASIGNAR
+    // Compara el número de día extraído de la propiedad 'id' o lo manejamos ordenando el array temporal:
+    const cursadasOrdenadas = cursadasTemp.sort((a, b) => {
+      // Extraemos el índice original del elemento mapeado para usar el objeto nativo que vino de la API
+      const idxA = parseInt(a.id.split('-')[2]);
+      const idxB = parseInt(b.id.split('-')[2]);
+      
+      const diaA = eventosRemotos[idxA]?.dow_semana || 0;
+      const diaB = eventosRemotos[idxB]?.dow_semana || 0;
+      
+      return diaA - diaB;
+    });
+
+    listaExamenesSIU = examenesTemp;
+    listaCursadasSIU = cursadasOrdenadas; // 🌟 Guardamos la lista ya ordenada cronológicamente
+    
+    console.log(`✅ [SIU Sync] Mapeo semanal completado y ordenado: ${examenesTemp.length} Exámenes y ${cursadasTemp.length} Cursadas estrictas.`);
+  } catch (error) {
+    console.error("❌ Fallo crítico al sincronizar datos extendidos de SIU Guaraní:", error);
+  }
+}
 
 // EventoAPIFlask -> EventoAgenda
 function transformarEvento(evento: EventoAPIFlask): EventoAgenda {
@@ -189,38 +342,59 @@ function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): 
   const lista = lista1.concat(lista2);
   return ordenarEventosPorFecha(lista);
 }
-function fechaYaSucedio(fecha:Date) {
-  return Date.now > fecha.getTime;
+
+function fechaYaSucedio(fecha: Date): boolean {
+  return Date.now() > fecha.getTime();
 }
-function ordenarPorFechaFin(a:EventoAgenda, b:EventoAgenda):number {
-  return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  // if (fechaYaSucedio(a.fechaFin)) {
-  //   return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  // } else {
-  //   return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
-  // }
+
+function ordenarPorFechaFin(a: EventoAgenda, b: EventoAgenda): number {
+  return a.fechaFin.getTime() - b.fechaFin.getTime();
 }
-function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente:boolean=true) {
+
+function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente: boolean = true) {
+  const copia = [...listaEventos]; // Evitamos mutar arrays globales directamente
   if (ascendiente) {
-    return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b));
+    return copia.sort((a, b) => ordenarPorFechaFin(a, b));
+  } else {
+    return copia.sort((a, b) => ordenarPorFechaFin(a, b)).reverse();
   }
-  else return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b)).reverse();
 }
-function eventoDuraUnDia(evento:EventoAgenda): boolean {
-  return Boolean(evento.fechaInicio.getDate() == evento.fechaFin.getDate());
+
+function eventoDuraUnDia(evento: EventoAgenda): boolean {
+  return evento.fechaInicio.toDateString() === evento.fechaFin.toDateString();
 }
-function eventoEnCurso(evento:EventoAgenda): boolean {
-  return (diasHastaFechaActual(evento.fechaInicio) <= -1 && !eventoFinalizado(evento));
+
+function eventoEnCurso(evento: EventoAgenda): boolean {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  
+  const inicio = new Date(evento.fechaInicio);
+  inicio.setHours(0, 0, 0, 0);
+  
+  const fin = new Date(evento.fechaFin);
+  fin.setHours(23, 59, 59, 999);
+
+  return hoy >= inicio && hoy <= fin;
 }
-function eventoFinalizado(evento:EventoAgenda): boolean {
-  return diasHastaFechaActual(evento.fechaFin) < -1;
+
+function eventoFinalizado(evento: EventoAgenda): boolean {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  
+  const fin = new Date(evento.fechaFin);
+  fin.setHours(23, 59, 59, 999);
+
+  return hoy > fin;
 }
-// aux fechas
+// Aux fechas
 function diasHastaFechaActual(targetDate: Date): number {
   const now = new Date();
-  const diffMs = targetDate.getTime() - now.getTime();
-  const diffDays = Math.floor(diffMs / 86400000); // 1000 * 60 * 60 * 24
-  return diffDays;
+  now.setHours(0, 0, 0, 0);
+  const target = new Date(targetDate);
+  target.setHours(0, 0, 0, 0);
+  
+  const diffMs = target.getTime() - now.getTime();
+  return Math.ceil(diffMs / 86400000); 
 }
 export function DateToFechaString(fecha: Date, separador: string = "/"): string {
   return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${separador}${fecha.getFullYear()}`;
@@ -233,8 +407,10 @@ function charPlural(plural:string, valorAEvaluar:number) {
 // export listas
 // export function listaFuturoFiltros(mostrarFeriados:Boolean): EventoAgenda[] {
 //   return ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false)); }
-export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); };
-
+export function listaCompleta(): EventoAgenda[] { 
+  const baseLocal = combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); 
+  return combinarYOrdenarListas(baseLocal, listaExamenesSIU);
+}
 export function listaFuturo(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
 export function listaFuturoVIEJO(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
 

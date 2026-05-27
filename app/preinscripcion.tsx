@@ -207,7 +207,7 @@ export default function Inscripciones() {
             cuerpo=""
           />
 
-          <BotonTextoTelefono label="Teléfono: 5436-7545" tel="54367545" />
+          <BotonTextoTelefono label="5436-7545" tel="54367545" />
         </>
       </DropdownSeccion>
     </FondoScrollGradiente>

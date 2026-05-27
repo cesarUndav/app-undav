@@ -24,7 +24,7 @@ export default function BotonTextoMail({
   asunto = '',
   cuerpo = '',
   verticalPadding = 12,
-  fontSize = 16,
+  fontSize,
   fontColor = 'white',
   color = 'rgb(63, 0, 105)',
   styleExtra,
@@ -36,7 +36,7 @@ export default function BotonTextoMail({
 
   return (
     <BotonTexto
-      label={label}
+      label={"eMail: "+label}
       styleExtra={styleExtra}
       url={mailUrl}
       openInsideApp={false}

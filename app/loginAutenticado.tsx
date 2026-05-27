@@ -320,7 +320,7 @@ useEffect(() => {
     console.log("\n🏁 FIN DEL DIAGNÓSTICO 🏁\n");
   };
 
-  realizarPruebaDeRed();
+  //realizarPruebaDeRed();
 
 }, []);
 

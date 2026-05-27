@@ -34,7 +34,7 @@ export default function Agenda() {
   }
 
   return (
-    <FondoGradiente>
+    <FondoGradiente >
       <View style={styles.container}>
         <ScrollView contentContainerStyle={styles.scrollContainer}>
           {isLoading ? (
@@ -66,19 +66,15 @@ export default function Agenda() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    justifyContent: 'flex-end',
+    justifyContent: 'flex-end'
   },
   scrollContainer: {
-    paddingHorizontal: 15,
-    paddingVertical: 5,
     gap: 5,
   },
   loading: {
     marginTop: 50,
   },
   buttonContainer: {
-    paddingHorizontal: 15,
-    paddingBottom: 15,
     marginTop: 10,
   },
   title: {

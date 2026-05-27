@@ -17,6 +17,7 @@ import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
 import BotonTextoSIU from '@/components/BotonTextoSIU';
 import DropdownPropuestas from '@/components/DropdownPropuestas';
+import BotonTexto from '@/components/BotonTexto';
 
 function codPeriodoToNumber(cod: number): number {
   switch (cod) {
@@ -141,6 +142,7 @@ export default function MateriasPlan() {
             label="Ver en el SIU Guaraní"
             url="https://academica.undav.edu.ar/g3w/plan_estudio"
           />
+          <BotonTexto label="Historia Académica" route="/historia-academica" />
         </View>
       </LoadingWrapper>
     </FondoGradiente>
@@ -156,7 +158,7 @@ const styles = StyleSheet.create({
     gap: 10,
   },
   estadisticas: {
-    fontSize: 16,
+    fontSize: 14,
     lineHeight: 22,
     color: negroAzulado,
     marginVertical: 0,

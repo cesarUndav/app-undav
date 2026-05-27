@@ -4,8 +4,8 @@ import BotonTexto from '../components/BotonTexto';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import { azulMedioUndav } from '@/constants/Colors';
 
-const verticalPadding = 16;
-const fontSize = 16;
+const verticalPadding = 14;
+const fontSize = 15;
 
 export default function Contacto() {
 

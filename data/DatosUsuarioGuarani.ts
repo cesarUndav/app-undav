@@ -2,7 +2,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 import axios, { AxiosError } from "axios";
 
-// --- Interfaces (Se mantienen igual) ---
+// --- Interfaces ---
 export interface User {
   idPersona: string;
   documento: string;
@@ -46,6 +46,36 @@ export interface Materia {
   permite_promocion: string,
 }
 
+// ✅ NUEVAS INTERFACES PARA LOS ENDPOINTS SOLICITADOS
+export interface Analitico {
+  promedio_con_aprazos: number;
+  promedio_sin_aprazos: number;
+  porcentaje_avance: number;
+  materias_aprobadas: number;
+  historial: MateriaHistorial[];
+}
+
+export interface MateriaHistorial {
+  materia: string;
+  nombre: string;
+  fecha: string;
+  nota: string;
+  resultado: string;
+  acta: string;
+}
+
+export interface EventoAgenda {
+  tipo_actividad: string;
+  tipo_persona: string;
+  legajo: string;
+  actividad_nombre: string; 
+  horario: string;
+  ubicacion_nombre: string; 
+  modalidad: string;
+  fecha?: string;           // Examen (YYYY-MM-DD o ISO string)
+  dow_semana?: number;      // 0 (Domingo) a 6 (Sábado) para cursadas periódicas
+}
+
 // --- Estado Global ---
 export let infoBaseUsuarioActual: User = {
   idPersona: "", documento: "", nombreCompleto: "", email: "",
@@ -63,12 +93,11 @@ const api = axios.create({
   headers: {
     'Accept': 'application/json',
     'Content-Type': 'application/json',
-    // ELIMINAMOS EL HOST Y EL USER-AGENT MANUAL
   },
   timeout: 15000,
 });
 
-// Interceptor para debugging (opcional, similar a tus logs de antes)
+// Interceptor para debugging
 api.interceptors.request.use(config => {
   console.log(`➡️ [${config.method?.toUpperCase()}] URL: ${config.baseURL}${config.url}`);
   return config;
@@ -171,6 +200,49 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
   }
 }
 
+// ✅ NUEVO ENDPOINT 1: Historial Analítico de la Persona
+export async function ObtenerAnalitico(): Promise<Analitico> {
+  const token = await AsyncStorage.getItem("token");
+  const personaId = infoBaseUsuarioActual.idPersona;
+
+  if (!personaId) throw new Error("No hay un usuario autenticado para consultar analítico");
+
+  try {
+    const response = await api.get(`/persona/${personaId}/analitico`, {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    return response.data as Analitico;
+  } catch (err: any) {
+    throw new Error("Error al obtener la historia académica / analítico");
+  }
+}
+
+// ✅ NUEVO ENDPOINT 2 CORREGIDO
+export async function ObtenerAgendaFechas(
+  fechaInicio: string = "2026-04-01",
+  fechaFin: string = "2026-05-31",
+  filtrarFeriados: boolean = true
+): Promise<EventoAgenda[]> {
+  const token = await AsyncStorage.getItem("token");
+  const personaId = infoBaseUsuarioActual.idPersona;
+
+  if (!personaId) throw new Error("No hay un usuario autenticado para consultar la agenda");
+
+  try {
+    const response = await api.get(
+      `/persona/${personaId}/${fechaInicio}/${fechaFin}/${filtrarFeriados}/agenda`,
+      {
+        headers: { "Authorization": `Bearer ${token}` }
+      }
+    );
+    
+    // ⚠️ CORRECCIÓN: Tu API devuelve { data: [...] }, por lo que accedemos a response.data.data
+    return response.data.data as EventoAgenda[];
+  } catch (err: any) {
+    throw new Error("Error al obtener la agenda desde la API propia");
+  }
+}
+
 // --- Sesión y Logout ---
 async function guardarSesion(token: string, personaId: number): Promise<void> {
   try {
@@ -213,11 +285,8 @@ export function enModoOscuro(): boolean { return modoOscuro; }
 export async function ObtenerJsonString(url: string): Promise<string> {
   try {
     const token = await AsyncStorage.getItem("token");
-    
-    // Limpiamos cualquier rastro de la URL base por si mandaron la ruta absoluta
     let endpoint = url.replace(URL_BASE || '', '');
     
-    // Si por esas casualidades no empieza con '/', se la ponemos nosotros obligatoriamente
     if (!endpoint.startsWith('/')) {
       endpoint = '/' + endpoint;
     }

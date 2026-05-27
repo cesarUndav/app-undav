@@ -52,10 +52,10 @@ export const AgendaItemStyles = StyleSheet.create({
     ...getShadowStyle(4),
   },
   eventTitle: {
-    fontSize: 16,
+    fontSize: 14,
   },
   eventDate: {
-    fontSize: 13,
+    fontSize: 12,
     marginTop: 2,
   },
 });

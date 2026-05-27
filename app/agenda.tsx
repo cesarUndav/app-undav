@@ -22,6 +22,7 @@ import {
   listaPasado as obtenerListaPasado,
   obtenerEventoConId,
   quitarEventoPersonalizado,
+  listaCursadasSIU,
 } from '../data/agenda';
 
 import { useAgenda } from '../src/context/AgendaContext';
@@ -36,6 +37,7 @@ import DropdownSeccion from '@/components/DropdownSeccion';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
 import OcultadorTeclado from '@/components/OcultadorTeclado';
 import DateTimePicker from '@react-native-community/datetimepicker';
+import ListaItem from '@/components/ListaItem';
 
 const filterBtnColor = azulLogoUndav;
 
@@ -182,9 +184,44 @@ export default function Agenda() {
           </CustomText>
         ) : mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
           <>
+          
+            {/* <DropdownSeccion
+              titulo="MIS MATERIAS"
+              styleContenido={styles.dropdownContenido}
+              inicialmenteAbierto
+            >
+              {mostrarLista(obtenerListaEnCurso())}
+            </DropdownSeccion> */}
+
+            <DropdownSeccion
+              titulo="MIS MATERIAS"
+              styleContenido={styles.dropdownContenido}
+              inicialmenteAbierto
+            >
+              {listaCursadasSIU.length === 0 ? (
+                <CustomText weight="bold" style={styles.title}>
+                  Error al cargar cursadas del SIU Guaraní
+                </CustomText>
+              ) : (
+                listaCursadasSIU.map((materia, index) => {
+                  const esUltimo = index === listaCursadasSIU.length - 1;
+                  return (
+                    <ListaItem
+                      key={materia.id}
+                      title={materia.titulo}
+                      subtitle={materia.descripcion} // 📅 Mostrará: "Miércoles | 18:30 a 22:30 (Presencial)"
+                      styleExtra={esUltimo ? { borderBottomRightRadius: 20 } : undefined}
+                    />
+                  );
+                })
+              )}
+            </DropdownSeccion>
+
+
             <DropdownSeccion
               titulo="EN CURSO"
               styleContenido={styles.dropdownContenido}
+              inicialmenteAbierto
             >
               {mostrarLista(obtenerListaEnCurso())}
             </DropdownSeccion>
@@ -192,6 +229,7 @@ export default function Agenda() {
             <DropdownSeccion
               titulo="PRÓXIMO"
               styleContenido={styles.dropdownContenido}
+              inicialmenteAbierto
             >
               {mostrarLista(
                 obtenerListaFuturo().filter(

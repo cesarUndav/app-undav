@@ -1,107 +1,73 @@
-// components/BottomBar.tsx
-
 import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
 import { azulClaro, grisBorde } from '@/constants/Colors';
 import CustomText from './CustomText';
-import { getNotificationCount } from '@/data/notificaciones';
+import { useNotificacionesGlobales, setNotificationCount } from '@/data/notificaciones';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
-const routes = [
-  '/home-estudiante',
-  '/calendario',
-  '/notificaciones',
-  '/accesos-directos',
-  '/perfil',
-] as const;
-
+const routes = ['/home-estudiante', '/calendario', '/notificaciones', '/accesos-directos', '/perfil'] as const;
 type Route = (typeof routes)[number];
-type IoniconName = React.ComponentProps<typeof Ionicons>['name'];
 
-type ButtonWithSVG = {
+interface BotonBarra {
   route: Route;
-  Icon: React.FC<any>;
-  IconName?: never;
-};
-
-type ButtonWithIonicon = {
-  route: Route;
-  IconName: IoniconName;
-  Icon?: never;
-};
-
-type Button = ButtonWithSVG | ButtonWithIonicon;
+  iconPath?: any;
+  ioniconName?: React.ComponentProps<typeof Ionicons>['name'];
+}
 
 export const tamanioIcono = 50;
 export const opacidadSeleccionado = 1;
 export const colorSeleccionado = azulClaro;
-
 const colorIcono = '#999';
 
 export default function BottomBar() {
   const router = useRouter();
   const pathname = usePathname();
+  
+  // 🔔 CONSUMO DEL HOOK REACTIVO GLOBAL
+  const { count } = useNotificacionesGlobales();
 
-  const buttons: Button[] = [
-    {
-      route: '/home-estudiante',
-      Icon: require('../assets/icons/ico-svg/inicio.svg').default,
-    },
-    {
-      route: '/calendario',
-      Icon: require('../assets/icons/ico-svg/calendario.svg').default,
-    },
-    {
-      route: '/notificaciones',
-      Icon: require('../assets/icons/notifications.svg').default,
-    },
-    {
-      route: '/accesos-directos',
-      Icon: require('../assets/icons/ico-svg/enlaces.svg').default,
-    },
-    {
-      route: '/perfil',
-      Icon: require('../assets/icons/person.svg').default,
-    },
+  const buttons: BotonBarra[] = [
+    { route: '/home-estudiante', iconPath: require('../assets/icons/ico-svg/inicio.svg') },
+    { route: '/calendario', iconPath: require('../assets/icons/ico-svg/calendario.svg') },
+    { route: '/notificaciones', iconPath: require('../assets/icons/notifications.svg') },
+    { route: '/accesos-directos', iconPath: require('../assets/icons/ico-svg/enlaces.svg') },
+    { route: '/perfil', iconPath: require('../assets/icons/person.svg') },
   ];
+
+  const renderizarIcono = (btn: BotonBarra, color: string) => {
+    if (btn.iconPath) {
+      const ComponenteSVG = btn.iconPath.default || btn.iconPath;
+      if (typeof ComponenteSVG === 'function' || typeof ComponenteSVG === 'object') {
+        return <ComponenteSVG width={tamanioIcono} height={tamanioIcono} fill={color} />;
+      }
+    }
+    return <Ionicons name={btn.ioniconName || 'alert-circle-outline'} size={tamanioIcono - 20} color={color} />;
+  };
 
   return (
     <View style={bottomBarStyles.container}>
-      {buttons.map(({ route, Icon, IconName }) => {
-        const disabled = pathname === route;
-        const iconColor = disabled ? colorSeleccionado : colorIcono;
-        const esIconoNotificaciones = route === '/notificaciones';
+      {buttons.map((btn) => {
+        const estaEnEstaRuta = pathname === btn.route;
+        const iconColor = estaEnEstaRuta ? colorSeleccionado : colorIcono;
+        const esIconoNotificaciones = btn.route === '/notificaciones';
+        const deVerdadDeshabilitado = estaEnEstaRuta && (!esIconoNotificaciones || count === 0);
 
         return (
           <TouchableOpacity
-            key={route}
-            style={[
-              bottomBarStyles.btn,
-              disabled && { opacity: opacidadSeleccionado },
-            ]}
-            onPress={() => !disabled && router.push(route)}
-            disabled={disabled}
+            key={btn.route}
+            style={[bottomBarStyles.btn, estaEnEstaRuta && { opacity: opacidadSeleccionado }]}
+            onPress={() => !deVerdadDeshabilitado && router.push(btn.route)}
+            disabled={deVerdadDeshabilitado}
           >
-            {Icon ? (
-              <Icon
-                width={tamanioIcono}
-                height={tamanioIcono}
-                fill={iconColor}
-              />
-            ) : (
-              <Ionicons
-                name={IconName!}
-                size={tamanioIcono - 20}
-                color={iconColor}
-              />
-            )}
+            {renderizarIcono(btn, iconColor)}
 
-            {esIconoNotificaciones && getNotificationCount() > 0 && (
+            {/* 🔴 Burbuja reactiva instantánea */}
+            {esIconoNotificaciones && count > 0 && (
               <View style={bottomBarStyles.notificationBubble}>
                 <CustomText weight="bold" style={bottomBarStyles.notificationText}>
-                  {getNotificationCount()}
+                  {count}
                 </CustomText>
               </View>
             )}
@@ -122,27 +88,18 @@ export const bottomBarStyles = StyleSheet.create({
     borderTopColor: grisBorde,
     ...getShadowStyle(2),
   },
-  btn: {
-    alignItems: 'center',
-    justifyContent: 'center',
-    width: 70,
-  },
+  btn: { alignItems: 'center', justifyContent: 'center', width: 70, position: 'relative' },
   notificationBubble: {
     backgroundColor: '#d00',
     position: 'absolute',
-    top: 6,
-    right: 12,
-    height: 22,
-    width: 22,
-    borderRadius: 999,
+    top: 2,
+    right: 10,
+    height: 20,
+    width: 20,
+    borderRadius: 10,
     justifyContent: 'center',
     alignItems: 'center',
     zIndex: 10,
   },
-  notificationText: {
-    color: '#fff',
-    fontSize: 13,
-    textAlign: 'center',
-    textAlignVertical: 'center',
-  },
+  notificationText: { color: '#fff', fontSize: 11, textAlign: 'center', textAlignVertical: 'center' },
 });

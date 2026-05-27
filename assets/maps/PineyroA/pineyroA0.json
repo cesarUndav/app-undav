@@ -360,48 +360,6 @@
       ]
     },
     {
-      "id": "aula6",
-      "name": "Dpto. Salud y Actividad Física",
-      "points": [],
-      "radius": 40
-    },
-    {
-      "id": "aula7",
-      "name": "Prótesis Dental",
-      "points": [],
-      "radius": 40
-    },
-    {
-      "id": "aula8",
-      "name": "Fotocopiadora",
-      "points": [],
-      "radius": 40
-    },
-    {
-      "id": "aula9",
-      "name": "A02",
-      "points": [],
-      "radius": 40
-    },
-    {
-      "id": "aula10",
-      "name": "A04",
-      "points": [],
-      "radius": 40
-    },
-    {
-      "id": "aula11",
-      "name": "A05",
-      "points": [],
-      "radius": 40
-    },
-    {
-      "id": "aula12",
-      "name": "Laboratorio M.I.G.",
-      "points": [],
-      "radius": 40
-    },
-    {
       "id": "link-pineyrob",
       "name": "Piñeyro B",
       "points": [[120, 693], [584, 693], [584, 1331], [120, 1331]],

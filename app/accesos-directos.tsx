@@ -6,12 +6,12 @@ import BotonTextoMail from "@/components/BotonTextoMail";
 export default function Configuracion() {
   return (
     <FondoScrollGradiente gap={4}>
-      <BotonTexto label="Bienestar" route="/bienestar"/>
-      <BotonTexto label="Oferta Académica" route="/oferta-academica"/>
-      <BotonTexto label="Contacto" route="/contacto"/>
-      <BotonTexto label="Preguntas frecuentes" route="preguntas-frecuentes"/>
       <BotonTexto label="Planos" route="/planos"/>
       <BotonTexto label="Sedes" route="/sedes"/>
+      <BotonTexto label="Bienestar" route="/bienestar"/>
+      <BotonTexto label="Preguntas frecuentes" route="preguntas-frecuentes"/>
+      <BotonTexto label="Oferta Académica" route="/oferta-academica"/>
+      {/* <BotonTexto label="Trámites" route="/tramites"/> */}
       {/* <BotonTexto label="Comunidad" route="/comunidad"/> */}
       <BotonTextoMail label="Envianos tus sugerencias" mail="app-sugerencias@undav.edu.ar"/>
       <BotonTextoMail label="Reportá errores en la app" mail="app-errores@undav.edu.ar" styleExtra={{borderBottomRightRadius: 20}}/>

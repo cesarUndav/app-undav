@@ -75,7 +75,7 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7545',
+        label: '5436-7545',
         tel: '54367545',
       },
     ],
@@ -138,17 +138,17 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 4229-2480',
+        label: '4229-2480',
         tel: '01142292480',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7530',
+        label: '5436-7530',
         tel: '01154367530',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7531',
+        label: '5436-7531',
         tel: '01154367531',
       },
       {

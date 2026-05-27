@@ -29,7 +29,7 @@ export default function ListaItem({
   backgroundColor = '#fff',
   titleColor = '#000',
   subtitleColor = '#000',
-  fontSize = 16,
+  fontSize = 14,
   paddingVertical = 8,
   paddingHorizontal = 15,
   styleExtra,

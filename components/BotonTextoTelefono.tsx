@@ -18,12 +18,12 @@ export default function BotonTextoTelefono({
   centered = false,
   tel,
   verticalPadding = 12,
-  fontSize = 16,
+  fontSize,
   fontColor = 'white',
   color = "#556",
   styleExtra
 }: BotonTextoProps) {
   return (
-    <BotonTexto label={label} styleExtra={styleExtra} url={"tel:"+tel} openInsideApp={false} color={color} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
+    <BotonTexto label={"Teléfono: "+label} styleExtra={styleExtra} url={"tel:"+tel} openInsideApp={false} color={color} verticalPadding={verticalPadding} fontSize={fontSize} fontColor={fontColor} centered={centered}/>
   );
 }
