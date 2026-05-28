@@ -164,32 +164,6 @@ const seccionesContacto: SeccionContacto[] = [
     ],
   },
   {
-    titulo: 'Títulos, certificaciones y tesis',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Títulos',
-        mail: 'titulos@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Certificaciones',
-        mail: 'certificaciones@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Tesis',
-        mail: 'tesis@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-    ],
-  },
-  {
     titulo: 'Departamentos académicos',
     items: [
       {

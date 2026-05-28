@@ -12,6 +12,7 @@ import PreguntasIcon from '../assets/icons/ico-svg/preguntas-frecuentes.svg';
 import InscripcionesIcon from '../assets/icons/ico-svg/inscripciones.svg';
 import CalendarioIcon from '../assets/icons/ico-svg/calendario.svg';
 import SedesIcon from '../assets/icons/ico-svg/sedes.svg';
+import OficiosIcon from '../assets/icons/ico-svg/oficios.svg';
 
 import NotificacionesIcon from '../assets/icons/notifications.svg';
 import ContactoIcon from '../assets/icons/mail.svg';
@@ -48,12 +49,26 @@ export default function HomeEstudiante() {
 
       <View style={[styles.buttonsRowParent, styles.mainButtonsContainer]}>
         <View style={styles.buttonsRow}>
+                    <BotonIconoTexto
+            label="REDES"
+            funcionOnPress={() => router.push('/redes')}
+            Icon={RedesIcon}
+          />
+                    <BotonIconoTexto
+            label="SEDES"
+            funcionOnPress={() => router.push('/sedes')}
+            Icon={SedesIcon}
+          />
           <BotonIconoTexto
             label="PLANOS"
             funcionOnPress={() => router.push('/planos')}
             Icon={SedesIcon}
           />
 
+          
+        </View>
+
+        <View style={styles.buttonsRow}>
           <BotonIconoTexto
             label={'TUTORIAL DE\nPREINSCRIPCIÓN'}
             funcionOnPress={() => router.push('/preinscripcion')}
@@ -67,46 +82,36 @@ export default function HomeEstudiante() {
             }
             Icon={CalendarioIcon}
           />
+          <BotonIconoTexto
+            label="NOTICIAS"
+            funcionOnPress={() => router.push('/notificaciones')}
+            Icon={NotificacionesIcon}
+          />
+
+
+
         </View>
 
         <View style={styles.buttonsRow}>
-          <BotonIconoTexto
-            label="REDES"
-            funcionOnPress={() => router.push('/redes')}
-            Icon={RedesIcon}
+                    <BotonIconoTexto
+            label={'ESCUELA DE\nOFICIOS'}
+            funcionOnPress={() => router.push('/escuela-de-oficios')}
+            Icon={OficiosIcon}
           />
-
-          <BotonIconoTexto
-            label="REDES"
-            funcionOnPress={() => router.push('/redes')}
-            Icon={RedesIcon}
+                    <BotonIconoTexto
+            label={'PREGUNTAS\nFRECUENTES'}
+            funcionOnPress={() => router.push('/preguntas-frecuentes')}
+            Icon={PreguntasIcon}
           />
-
-          <BotonIconoTexto
-            label="SEDES"
-            funcionOnPress={() => router.push('/sedes')}
-            Icon={SedesIcon}
-          />
-        </View>
-
-        <View style={styles.buttonsRow}>
           <BotonIconoTexto
             label="CONTACTO"
             funcionOnPress={() => router.push('/contacto')}
             Icon={ContactoIcon}
           />
 
-          <BotonIconoTexto
-            label={'PREGUNTAS\nFRECUENTES'}
-            funcionOnPress={() => router.push('/preguntas-frecuentes')}
-            Icon={PreguntasIcon}
-          />
 
-          <BotonIconoTexto
-            label="NOTICIAS"
-            funcionOnPress={() => router.push('/notificaciones')}
-            Icon={NotificacionesIcon}
-          />
+
+
         </View>
       </View>
     </FondoGradiente>

@@ -113,23 +113,13 @@ export default function Configuracion() {
       data: [
         {
           type: 'link',
-          label: 'Historia Académica',
-          onPress: () => router.push('/historia-academica'),
-        },
-        {
-          type: 'link',
-          label: 'Plan de Estudio',
+          label: 'Trayectoria Académica',
           onPress: () => router.push('/plan-de-estudio'),
         },
         {
           type: 'link',
           label: 'Ajustes',
           onPress: () => router.push('/ajustes'),
-        },
-        {
-          type: 'link',
-          label: 'Accesos Directos',
-          onPress: () => router.push('/accesos-directos'),
         },
         {
           type: 'separator',

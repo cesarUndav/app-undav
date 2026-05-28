@@ -130,13 +130,15 @@ export default function MateriasPlan() {
         <CustomText weight="bold" style={styles.estadisticas}>
           {PlanInfoString(plan, cantidadOpcionales)}
         </CustomText>
+        <View style={{paddingBottom: 10}}>
+          <BarraBusqueda value={search} onChangeText={setSearch} />
+        </View>
 
         <ScrollView contentContainerStyle={styles.listaContainer}>
           {mostrarListaMaterias()}
         </ScrollView>
 
         <View style={styles.footerContainer}>
-          <BarraBusqueda value={search} onChangeText={setSearch} />
 
           <BotonTextoSIU
             label="Ver en el SIU Guaraní"

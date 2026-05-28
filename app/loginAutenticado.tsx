@@ -6,6 +6,8 @@ import {
   Image,
   StyleSheet,
   Alert,
+  KeyboardAvoidingView,
+  Platform,
 } from "react-native";
 
 import { useRouter } from "expo-router";
@@ -328,13 +330,17 @@ useEffect(() => {
   <OcultadorTeclado>
     <View style={{flex:1}}>
       <NavigationHeader title="Iniciar Sesión" onBackPress={() => router.replace("/")} />
+      <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
+        style={{ flex: 1 }}
+        // Ajusta este offset si el header de navegación muerde un pedazo de pantalla en iOS
+        keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}>
         <FondoGradiente style={styles.container}>
 
           <View style={{flex: 1, justifyContent:"flex-end"}}>
             <Image
               source={require("../assets/icons/undav.png")}
               style={styles.logo}
-            />
+              />
           </View>
           
           <Image
@@ -343,7 +349,7 @@ useEffect(() => {
             source={require('@/assets/images/Logo_guarani.png')}
             style={{ resizeMode: "contain", height: 80, width:400, marginRight:-4, marginTop:-10,marginBottom: 20 }}
             resizeMode="contain"
-          />
+            />
 
           <View style={{gap: 10, flex: 1.1, justifyContent:"flex-start"}}>
             <TextInput
@@ -357,7 +363,7 @@ useEffect(() => {
               autoCapitalize="none"
               autoComplete="off"
               editable={!esperandoRespuesta}
-            />
+              />
 
             <View>
               <TextInput
@@ -392,6 +398,7 @@ useEffect(() => {
           </View>
 
         </FondoGradiente>
+      </KeyboardAvoidingView>
     </View>
   </OcultadorTeclado>
   );
