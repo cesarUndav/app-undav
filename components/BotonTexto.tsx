@@ -31,7 +31,7 @@ export default function BotonTexto({
   tryLogin = false,
   color = azulMedioUndav,
   verticalPadding = 12,
-  fontSize = 16,
+  fontSize = 14,
   fontColor = 'white',
   onPressFunction,
   styleExtra,

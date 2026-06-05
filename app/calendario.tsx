@@ -1,3 +1,5 @@
+//calendario.tsx
+
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
 
@@ -10,8 +12,9 @@ import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado, azulLogoUndav, azulMedioUndav, celesteSIU } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
-import { ObtenerAgenda } from '@/data/ApiRestGuaraniOficial'; 
-import { infoBaseUsuarioActual } from '@/data/DatosUsuarioGuarani';
+
+// Importamos la función masiva desde tu API propia
+import { ObtenerAgendaFechas } from '@/data/apiAppUndav'; 
 
 export type Actividad = {
   id: string;
@@ -43,32 +46,9 @@ function DateToISOStringNoTime(fecha: Date): string {
   return `${anio}-${mes}-${dia}`;
 }
 
-// ✅ CORREGIDO: Sintaxis completa de la función
 function IndexToDiaString(index: number): string {
-  const dias = [
-    'domingo',
-    'lunes',
-    'martes',
-    'miércoles',
-    'jueves',
-    'viernes',
-    'sábado',
-  ];
+  const dias = ['domingo', 'lunes', 'martes', 'miércoles', 'jueves', 'viernes', 'sábado'];
   return dias[index] || '';
-}
-
-function obtenerFechasDelMesDesdeDate(fechaBase: Date): Date[] {
-  const base = fechaBase instanceof Date ? fechaBase : new Date();
-  const anio = base.getFullYear();
-  const mes = base.getMonth();
-  const fechas: Date[] = [];
-  
-  const fecha = new Date(anio, mes, 1);
-  while (fecha.getMonth() === mes) {
-    fechas.push(new Date(fecha));
-    fecha.setDate(fecha.getDate() + 1);
-  }
-  return fechas;
 }
 
 function getDiasDelMes(mes: number, anio: number): Date[] {
@@ -210,7 +190,10 @@ export default function Calendario() {
     anio: diaHoy.getFullYear() 
   });
 
-  // Efecto 1: Carga masiva de datos (Ejecuta sólo cuando cambia el mes/año real del calendario)
+  // 🛠️ NUEVO ESTADO: Controla si se ocultan o muestran las cursadas
+  const [ocultarCursadas, setOcultarCursadas] = useState(false);
+
+  // Efecto 1: Carga masiva desde tu API Principal
   useEffect(() => {
     const cargarTodoElMes = async () => {
       setLoading(true);
@@ -221,7 +204,7 @@ export default function Calendario() {
 
         const actividadesTemp: { [fecha: string]: Actividad[] } = {};
 
-        // Mapear eventos locales/estáticos
+        // 1. Procesar eventos estáticos locales (Feriados)
         todosLosEventos.forEach((evento, idx) => {
           if (!evento.fechaInicio || !evento.fechaFin) return;
 
@@ -255,71 +238,113 @@ export default function Calendario() {
           }
         });
 
-        const idPersonaEstudiante = infoBaseUsuarioActual.idPersona; 
-        
-        // Usamos el mesAnioActual del estado para crear la fecha base del fetch seguro
-        const fechaBaseFetch = new Date(mesAnioActual.anio, mesAnioActual.mes, 1);
-        const diasDelMes = obtenerFechasDelMesDesdeDate(fechaBaseFetch);
-        
-        const promesasAgenda = diasDelMes.map(async (dateItem) => {
-          const fStr = DateToISOStringNoTime(dateItem);
-          try {
-            const res = await ObtenerAgenda(idPersonaEstudiante, { fecha: fStr });
-            return { fecha: fStr, datos: res };
-          } catch (e) {
-            return { fecha: fStr, datos: [] };
-          }
-        });
+        // 2. Calcular límites dinámicos del mes actual
+        const primerDia = new Date(mesAnioActual.anio, mesAnioActual.mes, 1, 12, 0, 0);
+        const ultimoDia = new Date(mesAnioActual.anio, mesAnioActual.mes + 1, 0, 12, 0, 0);
 
-        const resultadosMes = await Promise.all(promesasAgenda);
+        const fechaInicioQuery = DateToISOStringNoTime(primerDia);
+        const fechaFinQuery = DateToISOStringNoTime(ultimoDia);
 
-        resultadosMes.forEach(({ fecha, datos }) => {
-          if (Array.isArray(datos) && datos.length > 0) {
-            if (!actividadesTemp[fecha]) actividadesTemp[fecha] = [];
-            
-            datos.forEach((item, idx) => {
-              actividadesTemp[fecha].push({
-                id: `agenda-${idx}-${fecha}`,
-                title: `${item.tipo_actividad}: ${item.actividad}`,
-                body: `${item.horario} | ${item.ubicacion} (${item.modalidad})`,
-                esFeriado: false 
+        // Identifica llamadas HTTP masivas a la API Principal
+        const eventosRemotos = await ObtenerAgendaFechas(fechaInicioQuery, fechaFinQuery, true);
+
+        console.log("🔍 [API Principal] Respuesta cruda recibida:", JSON.stringify(eventosRemotos));
+
+        // 3. Mapear de forma ultra-segura la respuesta
+        if (Array.isArray(eventosRemotos) && eventosRemotos.length > 0) {
+          const diasDelMesActual = getDiasDelMes(mesAnioActual.mes, mesAnioActual.anio);
+
+          eventosRemotos.forEach((item, idx) => {
+            const tipoAct = item.tipo_actividad || 'Actividad';
+            const nomAct = item.actividad_nombre || 'Sin nombre';
+            const horarioAct = item.horario || 'Horario a confirmar';
+            const sedeAct = item.ubicacion_nombre || 'Sede no especificada';
+            const modAct = item.modalidad || 'Presencial';
+
+            const nuevaActividad: Actividad = {
+              id: `api-principal-${idx}`,
+              title: `${tipoAct}: ${nomAct}`, 
+              body: `${horarioAct} | ${sedeAct} (${modAct})`,
+              esFeriado: false 
+            };
+
+            if (item.fecha) {
+              const fExamenStr = item.fecha.split('T')[0]; 
+              if (!actividadesTemp[fExamenStr]) actividadesTemp[fExamenStr] = [];
+              actividadesTemp[fExamenStr].push({
+                ...nuevaActividad,
+                id: `api-principal-examen-${idx}-${fExamenStr}`
               });
-            });
-          }
-        });
+            } 
+            else if (item.dow_semana !== undefined && item.dow_semana !== null) {
+              const targetDow = parseInt(String(item.dow_semana), 10);
+
+              diasDelMesActual.forEach((fechaObj) => {
+                if (fechaObj.getDay() === targetDow) {
+                  const fStr = DateToISOStringNoTime(fechaObj);
+                  if (!actividadesTemp[fStr]) actividadesTemp[fStr] = [];
+                  
+                  const existeYa = actividadesTemp[fStr].some(act => act.title === nuevaActividad.title);
+                  if (!existeYa) {
+                    actividadesTemp[fStr].push({
+                      ...nuevaActividad,
+                      id: `api-principal-cursada-${idx}-${fStr}`
+                    });
+                  }
+                }
+              });
+            }
+          });
+        } else {
+          console.log("⚠️ [API Principal] La respuesta está vacía o no es un Array válido.");
+        }
 
         setActividadesPorFecha(actividadesTemp);
 
-        const nuevasCantidades: { [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } } = {};
-        for (const f in actividadesTemp) {
-          const listaDelDia = actividadesTemp[f];
-          if (listaDelDia.length > 0) {
-            const soloTieneCursadas = listaDelDia.every(act => act.title.startsWith('Cursada:'));
-            nuevasCantidades[f] = {
-              cantidad: listaDelDia.length,
-              color: soloTieneCursadas ? 'azul' : 'rojo'
-            };
-          }
-        }
-        setCantidadActividadesPorFecha(nuevasCantidades);
-
       } catch (err) {
-        console.error("Error en volumen mensual:", err);
+        console.error("❌ Error catastrófico en la carga del calendario:", err);
       } finally {
         setLoading(false);
       }
     };
 
     cargarTodoElMes();
-  }, [mesAnioActual.mes, mesAnioActual.anio]); // ✅ Dependencias específicas para evitar loops del estado completo
+  }, [mesAnioActual.mes, mesAnioActual.anio]);
 
 
-  // Efecto 2: Gestión de selección de días y textos locales
+  // 🔄 RECALCULAR CONTADORES: Escucha los cambios de 'actividadesPorFecha' Y 'ocultarCursadas'
+  useEffect(() => {
+    const nuevasCantidades: { [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } } = {};
+    
+    for (const f in actividadesPorFecha) {
+      let listaDelDia = actividadesPorFecha[f] || [];
+      
+      // Si el botón está activado, filtramos los círculos del calendario completo
+      if (ocultarCursadas) {
+        listaDelDia = listaDelDia.filter(act => 
+          !act.id.includes('cursada') && !act.title.toLowerCase().includes('cursada')
+        );
+      }
+
+      if (listaDelDia.length > 0) {
+        const soloTieneCursadas = listaDelDia.every(act => 
+          act.id.includes('cursada') || act.title.toLowerCase().includes('cursada')
+        );
+        nuevasCantidades[f] = {
+          cantidad: listaDelDia.length,
+          color: soloTieneCursadas ? 'azul' : 'rojo'
+        };
+      }
+    }
+    setCantidadActividadesPorFecha(nuevasCantidades);
+  }, [actividadesPorFecha, ocultarCursadas]);
+
+
+  // Efecto 2: Gestión de selección de días, textos y filtrado dinámico en lista inferior
   useEffect(() => {
     const fSeleccionadaSegura = fechaSeleccionada instanceof Date ? fechaSeleccionada : new Date();
     const fechaStr = DateToISOStringNoTime(fSeleccionadaSegura);
     
-    // Si cambia de mes tocando un día de otro mes, actualiza el mes actual de fondo
     if (fSeleccionadaSegura.getMonth() !== mesAnioActual.mes || fSeleccionadaSegura.getFullYear() !== mesAnioActual.anio) {
       setMesAnioActual({
         mes: fSeleccionadaSegura.getMonth(),
@@ -327,7 +352,15 @@ export default function Calendario() {
       });
     }
 
-    const actividadesDelDia = actividadesPorFecha[fechaStr] ?? [];
+    let actividadesDelDia = actividadesPorFecha[fechaStr] ?? [];
+
+    // 🛠️ FILTRADO DINÁMICO: Si 'ocultarCursadas' es true, limpiamos la lista actual
+    if (ocultarCursadas) {
+      actividadesDelDia = actividadesDelDia.filter(act => 
+        !act.id.includes('cursada') && !act.title.toLowerCase().includes('cursada')
+      );
+    }
+
     const nombreDia = IndexToDiaString(fSeleccionadaSegura.getDay());
     const mensajeDia = `${nombreDia} ${fSeleccionadaSegura.getDate()}`;
 
@@ -352,7 +385,11 @@ export default function Calendario() {
 
     setTituloPagina(tituloPaginaDia);
     setListaActividadesDiaSeleccionado(actividadesDelDia);
-  }, [fechaSeleccionada, actividadesPorFecha, mesAnioActual.mes, mesAnioActual.anio]);
+  }, [fechaSeleccionada, actividadesPorFecha, mesAnioActual.mes, mesAnioActual.anio, ocultarCursadas]);
+
+  const manejarToggleCursadas = () => {
+    setOcultarCursadas(prev => !prev);
+  };
 
   return (
     <FondoGradiente>
@@ -392,11 +429,14 @@ export default function Calendario() {
             );
           })}
         </ScrollView>
+        
+        {/* 🛠️ BOTÓN ACTUALIZADO: Cambia dinámicamente el label y conmuta el estado de filtrado */}
         <View style={{marginTop: 10}}>
-          <BotonTexto 
-            label={"Resoluciones Calendario Académico"} 
+          
+          <BotonTexto
+            label={ocultarCursadas ? "Mostrar Cursadas" : "Ocultar Cursadas"} 
             styleExtra={{borderBottomRightRadius: 20}}
-            url="https://undav.edu.ar/index.php?idcateg=129"
+            onPressFunction={manejarToggleCursadas}
           />
         </View>
       </View>

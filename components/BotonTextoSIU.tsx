@@ -22,7 +22,7 @@ export default function BotonTextoSIU({
   tryLogin = true,
   openInsideApp=true,
   verticalPadding = 12,
-  fontSize = 16,
+  fontSize,
   fontColor = 'white',
   styleExtra
 }: BotonTextoProps) {

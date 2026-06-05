@@ -18,7 +18,7 @@ import SettingsIcon from '../assets/icons/settings.svg';
 import { azulClaro } from '@/constants/Colors';
 import { AgendaItemStyles } from './AgendaItem';
 import { useCategoriasPersistentes } from '@/hooks/useCategoriasPersistentes';
-import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
+import { enModoOscuro } from '@/data/apiAppUndav';
 
 type AgendaItemEditableProps = {
   evento: EventoAgenda;

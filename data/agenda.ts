@@ -1,21 +1,23 @@
-// la declaracion de fecha debería ser:
-// fechaInicio: new Date('2025-3-1'); // RESPETAR FORMATO: AÑO-MES-DIA
-// por cuestiones de DEV se está haciendo con:
+// agenda.ts
 
-import { enModoOscuro } from "./DatosUsuarioGuarani";
+import { 
+  enModoOscuro, 
+  EventoCalendarioAcademico, 
+  ObtenerEventosCalendarioAcademico,
+  parsearFechaPHP // 🌟 IMPORTADO: Usamos la función global centralizada
+} from "./apiAppUndav";
 import { listaEventosAgenda } from "./notificaciones";
-import { api } from "./apiFlaskClient";
+// 🗑️ REMOVIDO: Se eliminó la importación del viejo cliente de Flask
 
 // Exportamos un tipo que representa el objeto Evento tal como viene de la API.
 export type EventoAPIFlask = {
-  id: number; // La API devuelve un ID numérico (db.Integer)
+  id: number; 
   titulo: string;
-  fecha_inicio: string; // La API devuelve la fecha como string (ISO 8601)
-  fecha_fin: string; // La API devuelve la fecha como string (ISO 8601)
-  feriado: boolean; // Bool feriado de API
+  fecha_inicio: string; 
+  fecha_fin: string; 
+  feriado: boolean; 
 };
 
-// fechaInicio: devHoyMasDias(n);
 export type EventoAgenda = {
   id: string;
   titulo: string;
@@ -27,120 +29,247 @@ export type EventoAgenda = {
   categoria?: number;
 };
 
+// 🌟 Actualizamos el tipo de Cursada para incluir el número de día de forma segura
+export type CursadaSIU = { 
+  id: string; 
+  titulo: string; 
+  descripcion: string; 
+  dow_semana?: number; 
+};
+
 // vars dev
 let devDiaActual = hoyMasDias(0);
 let devUltimoId = 3;
+
 // func dev
-function diasAMilisegundos(dias:number) {return 86400000 * dias; }
+function diasAMilisegundos(dias:number) { return 86400000 * dias; }
 function hoyMasDias(dias:number) { return new Date(Date.now() + diasAMilisegundos(dias)); }
 function devHoyMasDiasPermanente(dias:number) { return new Date(devDiaActual.getTime() + diasAMilisegundos(dias)); }
 
-
-// listas // FORMATO: new Date(AÑO, MES -1, DIA). EJEMPLO: 1/1/2025 => new Date(2025, 0, 1)
-// export const listaEventosCalendarioAcademico: EventoAgenda[] = [
-//   //academicas
-//   { id: "1", titulo: "Etapa diagnóstica – 1º cuatrimestre", fechaInicio: new Date(2025, 1, 3), fechaFin: new Date(2025, 2, 7) },
-//   { id: "2", titulo: "Inscripción finales presenciales", fechaInicio: new Date(2025, 1, 12), fechaFin: new Date(2025, 1, 22) },
-//   { id: "3", titulo: "Inscripción finales a distancia", fechaInicio: new Date(2025, 1, 10), fechaFin: new Date(2025, 1, 13) },
-//   { id: "4", titulo: "Exámenes finales febrero", fechaInicio: new Date(2025, 1, 17), fechaFin: new Date(2025, 1, 22) },
-//   { id: "5", titulo: "Actividades académicas de verano", fechaInicio: new Date(2025, 1, 3), fechaFin: new Date(2025, 1, 28) },
-//   { id: "6", titulo: "Inscripción a asignaturas – 1º cuatrimestre", fechaInicio: new Date(2025, 2, 10), fechaFin: new Date(2025, 2, 18) },
-//   { id: "7", titulo: "Inicio del 1º cuatrimestre", fechaInicio: new Date(2025, 2, 20), fechaFin: new Date(2025, 2, 20) },
-//   { id: "7b", titulo: "Fin del 1º cuatrimestre", fechaInicio: new Date(2025, 6, 5), fechaFin: new Date(2025, 6, 5) },
-//   { id: "8", titulo: "Inscripción finales mayo", fechaInicio: new Date(2025, 3, 21), fechaFin: new Date(2025, 3, 25) },
-//   { id: "9", titulo: "Exámenes finales mayo", fechaInicio: new Date(2025, 4, 12), fechaFin: new Date(2025, 4, 17) },
-//   { id: "10", titulo: "Etapa diagnóstica – 2º cuatrimestre", fechaInicio: new Date(2025, 5, 9), fechaFin: new Date(2025, 6, 11) },
-//   { id: "11", titulo: "Inscripción finales presenciales julio", fechaInicio: new Date(2025, 6, 10), fechaFin: new Date(2025, 6, 12) },
-//   { id: "12", titulo: "Inscripción finales a distancia julio", fechaInicio: new Date(2025, 6, 7), fechaFin: new Date(2025, 6, 10) },
-//   { id: "13", titulo: "Exámenes finales julio", fechaInicio: new Date(2025, 6, 14), fechaFin: new Date(2025, 6, 19) },
-//   { id: "14", titulo: "Receso invernal", fechaInicio: new Date(2025, 6, 21), fechaFin: new Date(2025, 6, 26) },
-//   { id: "15", titulo: "Inscripción a asignaturas – 2º cuatrimestre", fechaInicio: new Date(2025, 7, 4), fechaFin: new Date(2025, 7, 8) },
-//   { id: "16", titulo: "Inicio del 2º cuatrimestre", fechaInicio: new Date(2025, 7, 11), fechaFin: new Date(2025, 7, 11) },
-//   { id: "16b", titulo: "Fin del 2º cuatrimestre", fechaInicio: new Date(2025, 10, 29), fechaFin: new Date(2025, 10, 29) },
-//   { id: "17", titulo: "Inscripción finales octubre", fechaInicio: new Date(2025, 8, 15), fechaFin: new Date(2025, 8, 19) },
-//   { id: "18", titulo: "Exámenes finales octubre", fechaInicio: new Date(2025, 8, 29), fechaFin: new Date(2025, 9, 4) },
-//   { id: "19", titulo: "Inscripción finales presenciales diciembre", fechaInicio: new Date(2025, 11, 4), fechaFin: new Date(2025, 11, 7) },
-//   { id: "20", titulo: "Inscripción finales a distancia diciembre", fechaInicio: new Date(2025, 11, 1), fechaFin: new Date(2025, 11, 4) },
-//   { id: "21", titulo: "Exámenes finales diciembre", fechaInicio: new Date(2025, 11, 9), fechaFin: new Date(2025, 11, 15) },
-
-//   // Feriados nacionales
-//   { id: "F1", titulo: "Año Nuevo", fechaInicio: new Date(2025, 0, 1), fechaFin: new Date(2025, 0, 1), esFeriado: true },
-//   { id: "F2", titulo: "Carnaval", fechaInicio: new Date(2025, 2, 3), fechaFin: new Date(2025, 2, 4), esFeriado: true },
-//   { id: "F3", titulo: "Día de la Memoria", fechaInicio: new Date(2025, 2, 24), fechaFin: new Date(2025, 2, 24), esFeriado: true },
-//   { id: "F4", titulo: "Veteranos de Malvinas", fechaInicio: new Date(2025, 3, 2), fechaFin: new Date(2025, 3, 2), esFeriado: true },
-//   { id: "F5", titulo: "Fundación Avellaneda", fechaInicio: new Date(2025, 3, 7), fechaFin: new Date(2025, 3, 7), esFeriado: true },
-//   { id: "F6", titulo: "Jueves Santo", fechaInicio: new Date(2025, 3, 17), fechaFin: new Date(2025, 3, 17), esFeriado: true },
-//   { id: "F7", titulo: "Viernes Santo", fechaInicio: new Date(2025, 3, 18), fechaFin: new Date(2025, 3, 18), esFeriado: true },
-//   { id: "F8", titulo: "Día del Trabajador", fechaInicio: new Date(2025, 4, 1), fechaFin: new Date(2025, 4, 1), esFeriado: true },
-//   { id: "F9", titulo: "Pase a la Inmortalidad de Güemes", fechaInicio: new Date(2025, 5, 17), fechaFin: new Date(2025, 5, 17), esFeriado: true },
-//   { id: "F10", titulo: "Paso a la Inmortalidad de Belgrano", fechaInicio: new Date(2025, 5, 20), fechaFin: new Date(2025, 5, 20), esFeriado: true },
-//   { id: "F11", titulo: "Día de la Independencia", fechaInicio: new Date(2025, 6, 9), fechaFin: new Date(2025, 6, 9), esFeriado: true },
-//   { id: "F12", titulo: "Fiestas Patronales Avellaneda", fechaInicio: new Date(2025, 7, 15), fechaFin: new Date(2025, 7, 15), esFeriado: true },
-//   { id: "F13", titulo: "Paso a la Inmortalidad de San Martín", fechaInicio: new Date(2025, 7, 17), fechaFin: new Date(2025, 7, 17), esFeriado: true },
-//   { id: "F14", titulo: "Día del Respeto a la Diversidad Cultural", fechaInicio: new Date(2025, 9, 12), fechaFin: new Date(2025, 9, 12), esFeriado: true },
-//   { id: "F15", titulo: "Día no laboral con fines turísticos", fechaInicio: new Date(2025, 10, 21), fechaFin: new Date(2025, 10, 21), esFeriado: true },
-//   { id: "F16", titulo: "Día de la Soberanía Nacional", fechaInicio: new Date(2025, 10, 24), fechaFin: new Date(2025, 10, 24), esFeriado: true },
-//   { id: "F17", titulo: "Inmaculada Concepción", fechaInicio: new Date(2025, 11, 8), fechaFin: new Date(2025, 11, 8), esFeriado: true },
-//   { id: "F18", titulo: "Navidad", fechaInicio: new Date(2025, 11, 25), fechaFin: new Date(2025, 11, 25), esFeriado: true },
-// ];
 export let listaEventosCalendarioAcademico: EventoAgenda[] = [];
 
 export let listaEventosPersonalizados: EventoAgenda[] = [
   {
-  id: "p0",
-    titulo: 'Evento Personalizado 1',
+    id: "p0",
+    titulo: 'Examen parcial de Sistemas Operativos',
     fechaInicio: devHoyMasDiasPermanente(0),
     fechaFin: devHoyMasDiasPermanente(0),
     esFeriado: false
-  },{
+  },
+  {
     id: "p1",
-    titulo: 'Evento Personalizado 2',
+    titulo: 'Presentación de Investigación Operativa',
     fechaInicio: devHoyMasDiasPermanente(3),
     fechaFin: devHoyMasDiasPermanente(3),
     esFeriado: false
   },
-    {
-  id: "p2",
-    titulo: 'Evento Personalizado 3',
+  {
+    id: "p2",
+    titulo: 'Entrega del TP2 de Arquitectura',
     fechaInicio: devHoyMasDiasPermanente(10),
     fechaFin: devHoyMasDiasPermanente(15),
     esFeriado: false
   }
 ];
 
-// funciones
+// 🌟 Estas listas se quedan fijas como constantes para NO romper sus referencias al importar
+export const listaExamenesSIU: EventoAgenda[] = [];
+export const listaCursadasSIU: CursadaSIU[] = [];
 
-// EventoAPIFlask -> EventoAgenda
-function transformarEvento(evento: EventoAPIFlask): EventoAgenda {
+// Función para transformar las fechas de exámenes puntuales de la API al formato unificado de la interfaz
+function transformarExamenToEvento(item: any, idx: number): EventoAgenda {
+  const fechaPuntual = item.fecha ? new Date(item.fecha) : new Date();
   return {
-      id: String(evento.id), // Convertir a string para usar como key en React
-      titulo: evento.titulo,
-      // Usar new Date() en la cadena ISO para obtener el objeto Date
-      fechaInicio: new Date(evento.fecha_inicio),
-      fechaFin: new Date(evento.fecha_fin),
-      esFeriado: evento.feriado, // Asumimos que los eventos de esta tabla no son feriados
+    id: `siu-examen-${idx}`,
+    titulo: `[EXAMEN] ${item.actividad_nombre || 'Evaluación'}`,
+    descripcion: `${item.horario || ''} | ${item.ubicacion_nombre || 'Sede'} (${item.modalidad || 'Presencial'})`,
+    fechaInicio: fechaPuntual,
+    fechaFin: fechaPuntual,
+    esFeriado: false,
+    categoria: 99 
   };
 }
-// Carga Eventos desde API y Actualiza la variable Global "listaEventosCalendarioAcademico"
-export async function cargarEventosAcademicos(): Promise<EventoAgenda[]> {
-    try {
-        // 1. Llamar a la API para obtener los eventos
-        const eventosAPI: EventoAPIFlask[] = await api.getEventos();
-        // 2. Transformar los datos de la API al formato de la UI
-        const eventosTransformados = eventosAPI.map(transformarEvento);
-        //console.log(eventosTransformados);
-        // 3. Actualizar la variable global (IMPORTANTE: Esto debe hacerse para que listaCompleta funcione)
-        listaEventosCalendarioAcademico = eventosTransformados;
-        return eventosTransformados;
-    } catch (error) {
-        console.error("Error al cargar eventos académicos desde la API:", error);
-        // Podrías devolver una lista vacía o una lista de fallback si falla la API
-        return [];
+
+export async function cargarDatosSiuGuarani(): Promise<void> {
+  try {
+    const { infoBaseUsuarioActual, ObtenerAgendaFechas } = await import("./apiAppUndav");
+    const personaId = infoBaseUsuarioActual?.idPersona;
+
+    if (!personaId) {
+      console.log("⚠️ [Agenda Data] No hay sesión activa para consultar datos de SIU Guaraní.");
+      return;
     }
+
+    // 📅 CALCULAR LUNES Y SÁBADO DE LA SEMANA ACTUAL
+    const hoy = new Date();
+    const diaSemana = hoy.getDay(); 
+    
+    const diferenciaAlLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
+    const lunesActual = new Date(hoy);
+    lunesActual.setDate(hoy.getDate() + diferenciaAlLunes);
+    
+    const sabadoActual = new Date(lunesActual);
+    sabadoActual.setDate(lunesActual.getDate() + 5);
+
+    const formatearFechaApi = (d: Date) => {
+      const mes = String(d.getMonth() + 1).padStart(2, '0');
+      const dia = String(d.getDate()).padStart(2, '0');
+      return `${d.getFullYear()}-${mes}-${dia}`;
+    };
+
+    const fechaInicioStr = formatearFechaApi(lunesActual);
+    const fechaFinStr = formatearFechaApi(sabadoActual);
+
+    console.log(`🔍 [SIU Query] Consultando semana actual desde el Lunes ${fechaInicioStr} hasta el Sábado ${fechaFinStr}`);
+
+    let eventosRemotos = await ObtenerAgendaFechas(fechaInicioStr, fechaFinStr, true);
+
+    // MOCK DE CONTINGENCIA
+    if (Array.isArray(eventosRemotos) && eventosRemotos.length === 0) {
+      console.log("🛠️ [SIU Sync] Insertando datos simulados semanales...");
+      eventosRemotos = [
+        {
+          actividad_nombre: "Desarrollo de Aplicaciones Móviles",
+          tipo_actividad: "Cursada Obligatoria",
+          horario: "18:30 a 22:30",
+          ubicacion_nombre: "Sede Piñeyro",
+          modalidad: "Presencial",
+          dow_semana: 3,
+          fecha: undefined,
+          tipo_persona: "",
+          legajo: ""
+        },
+        {
+          actividad_nombre: "Base de Datos II",
+          tipo_actividad: "Cursada Obligatoria",
+          horario: "14:00 a 18:00",
+          ubicacion_nombre: "Sede España",
+          modalidad: "Virtual",
+          dow_semana: 1,
+          fecha: undefined,
+          tipo_persona: "",
+          legajo: ""
+        },
+        {
+          actividad_nombre: "Examen Parcial Sorpresa",
+          tipo_actividad: "Examen",
+          horario: "19:00",
+          fecha: "2026-05-20", 
+          ubicacion_nombre: "Sede Piñeyro",
+          modalidad: "Presencial",
+          tipo_persona: "",
+          legajo: ""
+        }
+      ];
+    }
+
+    const examenesTemp: EventoAgenda[] = [];
+    const cursadasTemp: CursadaSIU[] = [];
+
+    if (Array.isArray(eventosRemotos)) {
+      eventosRemotos.forEach((item: any, idx: number) => {
+        if (item.fecha && item.fecha !== null && item.fecha !== "null") {
+          examenesTemp.push(transformarExamenToEvento(item, idx));
+        } 
+        else if (
+          (!item.fecha || item.fecha === null || item.fecha === "null") && 
+          item.dow_semana !== undefined && 
+          item.dow_semana !== null
+        ) {
+          const yaExiste = cursadasTemp.some(c => c.titulo === item.actividad_nombre);
+          if (!yaExiste) {
+            const diasTexto = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
+            const nombreDia = diasTexto[item.dow_semana] || "Día a confirmar";
+
+            cursadasTemp.push({
+              id: `siu-cursada-${idx}`,
+              titulo: item.actividad_nombre || 'Materia regular',
+              descripcion: `${nombreDia} | ${item.horario || ''} (${item.modalidad || 'Presencial'})`,
+              dow_semana: item.dow_semana // 🌟 Guardado nativo para ordenar sin strings peligrosos
+            });
+          }
+        }
+      });
+    }
+
+    // 🏛️ ORDENAMIENTO SEGURO DIRECTO POR EL ENTERO DOW
+    const cursadasOrdenadas = cursadasTemp.sort((a, b) => {
+      return (a.dow_semana || 0) - (b.dow_semana || 0);
+    });
+
+    // 🌟 LA SOLUCIÓN MAESTRA: Vaciamos y empujamos datos preservando la referencia del array original
+    listaExamenesSIU.length = 0;
+    listaExamenesSIU.push(...examenesTemp);
+
+    listaCursadasSIU.length = 0;
+    listaCursadasSIU.push(...cursadasOrdenadas);
+    
+    console.log(`✅ [SIU Sync] Mapeo completado: ${examenesTemp.length} Exámenes y ${cursadasTemp.length} Cursadas estables.`);
+  } catch (error) {
+    console.error("❌ Fallo crítico al sincronizar datos extendidos de SIU Guaraní:", error);
+  }
+}
+
+// 🗑️ REMOVIDO: Se borró por completo la función duplicada parsearFechaPHP de este archivo.
+
+// EventoCalendarioAcademico (PHP) -> EventoAgenda (App)
+function transformarEvento(evento: EventoCalendarioAcademico): EventoAgenda {
+  try {
+    // 🌟 CORRECCIÓN: Ahora consume directamente la función global e importada de apiAppUndav
+    const fechaInicioParsed = parsearFechaPHP(evento.fecha_inicio);
+    const fechaFinParsed = parsearFechaPHP(evento.fecha_fin);
+
+    // Validamos si la conversión funcionó
+    if (isNaN(fechaInicioParsed.getTime()) || isNaN(fechaFinParsed.getTime())) {
+      console.warn(`⚠️ [Transformar] No se pudo parsear la fecha del evento ${evento.id}. Usando fecha actual.`);
+    }
+
+    return {
+        id: String(evento.id), 
+        titulo: evento.titulo,
+        fechaInicio: fechaInicioParsed,
+        fechaFin: fechaFinParsed,
+        esFeriado: !!evento.feriado, 
+    };
+  } catch (err: any) {
+    console.error(`❌ [Transformar] Error transformando evento ${evento?.id}:`, err.message);
+    throw err;
+  }
+}
+
+export async function cargarEventosAcademicos(): Promise<EventoAgenda[]> {
+  console.log("🚀 [Agenda] Iniciando cargarEventosAcademicos()...");
+  try {
+    // 1. Llamamos a la API PHP
+    const eventosAPI: EventoCalendarioAcademico[] = await ObtenerEventosCalendarioAcademico();
+    
+    console.log(`📥 [API Response] Se recibieron ${eventosAPI?.length || 0} eventos crudos desde PHP.`);
+    
+    if (!eventosAPI || !Array.isArray(eventosAPI)) {
+      console.error("❌ [API Response] La respuesta de la API no es un Array válido:", eventosAPI);
+      return [];
+    }
+
+    // 2. Mapeamos y transformamos
+    const eventosTransformados = eventosAPI.map(transformarEvento);
+    console.log(`✅ [Mapeo] Transformación exitosa de ${eventosTransformados.length} eventos.`);
+    
+    // 3. Guardamos en el estado global
+    listaEventosCalendarioAcademico = eventosTransformados;
+    
+    return eventosTransformados;
+  } catch (error: any) {
+    console.error("❌ [Fallo Crítico] Error al cargar eventos académicos desde la API PHP:");
+    console.error(`   └─ Mensaje: ${error.message}`);
+    if (error.response) {
+      console.error(`   └─ Server Status: ${error.response.status}`);
+      console.error(`   └─ Server Data:`, error.response.data);
+    }
+    return [];
+  }
 }
 
 export function agregarEventoPersonalizado(titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
-  
   let fi = new Date(fechainicio);
   let ff = new Date(fechaFin);
   if (ff < fi) {
@@ -148,8 +277,7 @@ export function agregarEventoPersonalizado(titulo:string, descripcion:string, fe
     ff = fi;
     fi = aux;
   }
-  const nuevoEvento:EventoAgenda =
-  {
+  const nuevoEvento:EventoAgenda = {
     id: "p"+devUltimoId,
     titulo: titulo,
     descripcion: descripcion,
@@ -160,6 +288,7 @@ export function agregarEventoPersonalizado(titulo:string, descripcion:string, fe
   devUltimoId += 1;
   listaEventosPersonalizados.push(nuevoEvento);
 }
+
 export function editarEventoPersonalizado(id:string, titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {
   let fi = new Date(fechainicio);
   let ff = new Date(fechaFin);
@@ -168,117 +297,148 @@ export function editarEventoPersonalizado(id:string, titulo:string, descripcion:
     ff = fi;
     fi = aux;
   }
-  const eventoEditado:EventoAgenda = obtenerEventoConId(id);
+  const eventoEditado = obtenerEventoConId(id);
   eventoEditado.titulo = titulo;
   eventoEditado.descripcion = descripcion;
   eventoEditado.fechaInicio = fi;
   eventoEditado.fechaFin = ff;
 }
+
 export function quitarEventoPersonalizado(id:string):void {
   const indice = listaEventosPersonalizados.findIndex((evento) => evento.id == id);
-  listaEventosPersonalizados.splice(indice, 1);
+  if (indice !== -1) listaEventosPersonalizados.splice(indice, 1);
 }
+
 export function obtenerEventoConId(id:string): EventoAgenda {
   const evento = listaEventosPersonalizados.find((evento) => evento.id === id);
   if (!evento) throw new Error("Evento no encontrado");
   return evento;
 }
 
-// aux listas
 function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): EventoAgenda[] {
   const lista = lista1.concat(lista2);
   return ordenarEventosPorFecha(lista);
 }
-function fechaYaSucedio(fecha:Date) {
-  return Date.now > fecha.getTime;
+
+function ordenarPorFechaFin(a: EventoAgenda, b: EventoAgenda): number {
+  return a.fechaFin.getTime() - b.fechaFin.getTime();
 }
-function ordenarPorFechaFin(a:EventoAgenda, b:EventoAgenda):number {
-  return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  // if (fechaYaSucedio(a.fechaFin)) {
-  //   return (a.fechaFin.getTime() - b.fechaFin.getTime());
-  // } else {
-  //   return (a.fechaInicio.getTime() - b.fechaInicio.getTime());
-  // }
-}
-function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente:boolean=true) {
+
+function ordenarEventosPorFecha(listaEventos: EventoAgenda[], ascendiente: boolean = true) {
+  const copia = [...listaEventos]; 
   if (ascendiente) {
-    return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b));
+    return copia.sort((a, b) => ordenarPorFechaFin(a, b));
+  } else {
+    return copia.sort((a, b) => ordenarPorFechaFin(a, b)).reverse();
   }
-  else return listaEventos.sort((a,b) =>ordenarPorFechaFin(a,b)).reverse();
 }
-function eventoDuraUnDia(evento:EventoAgenda): boolean {
-  return Boolean(evento.fechaInicio.getDate() == evento.fechaFin.getDate());
+
+function eventoDuraUnDia(evento: EventoAgenda): boolean {
+  return evento.fechaInicio.toDateString() === evento.fechaFin.toDateString();
 }
-function eventoEnCurso(evento:EventoAgenda): boolean {
-  return (diasHastaFechaActual(evento.fechaInicio) <= -1 && !eventoFinalizado(evento));
+
+function eventoEnCurso(evento: EventoAgenda): boolean {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  
+  const inicio = new Date(evento.fechaInicio);
+  inicio.setHours(0, 0, 0, 0);
+  
+  const fin = new Date(evento.fechaFin);
+  fin.setHours(23, 59, 59, 999);
+
+  return hoy >= inicio && hoy <= fin;
 }
-function eventoFinalizado(evento:EventoAgenda): boolean {
-  return diasHastaFechaActual(evento.fechaFin) < -1;
+
+function eventoFinalizado(evento: EventoAgenda): boolean {
+  const hoy = new Date();
+  hoy.setHours(0, 0, 0, 0);
+  
+  const fin = new Date(evento.fechaFin);
+  fin.setHours(23, 59, 59, 999);
+
+  return hoy > fin;
 }
-// aux fechas
+
 function diasHastaFechaActual(targetDate: Date): number {
   const now = new Date();
-  const diffMs = targetDate.getTime() - now.getTime();
-  const diffDays = Math.floor(diffMs / 86400000); // 1000 * 60 * 60 * 24
-  return diffDays;
+  now.setHours(0, 0, 0, 0);
+  const target = new Date(targetDate);
+  target.setHours(0, 0, 0, 0);
+  
+  const diffMs = target.getTime() - now.getTime();
+  return Math.ceil(diffMs / 86400000); 
 }
+
 export function DateToFechaString(fecha: Date, separador: string = "/"): string {
   return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${separador}${fecha.getFullYear()}`;
 }
+
 function charPlural(plural:string, valorAEvaluar:number) {
   if (valorAEvaluar > 1 || valorAEvaluar < -1) return plural;
-  else return "";
+  return "";
 }
 
-// export listas
-// export function listaFuturoFiltros(mostrarFeriados:Boolean): EventoAgenda[] {
-//   return ordenarEventosPorFechaFin(listaEventosAgenda.filter((evento) => eventoFinalizado(evento)==false)); }
-export function listaCompleta(): EventoAgenda[] { return combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); };
+export function listaCompleta(): EventoAgenda[] { 
+  const baseLocal = combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); 
+  return combinarYOrdenarListas(baseLocal, listaExamenesSIU);
+}
 
-export function listaFuturo(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
-export function listaFuturoVIEJO(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
+export function listaFuturo(): EventoAgenda[] { return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
+export function listaFuturoVIEJO(): EventoAgenda[] { return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
+export function listaPasado(): EventoAgenda[] { return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoFinalizado(evento)), false); }
+export function listaEnCurso(): EventoAgenda[] { return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoEnCurso(evento))); } 
 
-export function listaPasado(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoFinalizado(evento)), false);}
-export function listaEnCurso(): EventoAgenda[] {return ordenarEventosPorFecha(listaCompleta().filter((evento) => eventoEnCurso(evento)));} 
-
-// export funcs
-export function eventoAgendaToFechaString(evento:EventoAgenda): string {
+export function eventoAgendaToFechaString(evento: EventoAgenda): string {
   let intervaloFechaStr = "";
   const duraUnDia = eventoDuraUnDia(evento);
 
-  if (duraUnDia) { intervaloFechaStr = `${DateToFechaString(evento.fechaInicio)}`; }
-  else { intervaloFechaStr = `${DateToFechaString(evento.fechaInicio)} - ${DateToFechaString(evento.fechaFin)}`; }
+  // 1. Armamos el string del rango de fechas
+  if (duraUnDia) { 
+    intervaloFechaStr = `${DateToFechaString(evento.fechaInicio)}`; 
+  } else { 
+    intervaloFechaStr = `${DateToFechaString(evento.fechaInicio)} - ${DateToFechaString(evento.fechaFin)}`; 
+  }
 
   let diasStr = "";
-  const diasHastaInicio = diasHastaFechaActual(evento.fechaInicio) + 1;
-  if (diasHastaInicio > 0) {
-    if (duraUnDia) diasStr = `falta${charPlural("n",diasHastaInicio)} ${diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;
-    else diasStr = `inicia en ${diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;
-  }
-  else {
-    if (duraUnDia)
-    {
-      if (diasHastaInicio == 0) { diasStr = "hoy"; }
-      else { diasStr = `hace ${-diasHastaInicio} día${charPlural("s",diasHastaInicio)}`;}
+  // 🌟 Removemos el "+ 1" para trabajar con los días reales netos (0 = Hoy)
+  const diasHastaInicio = diasHastaFechaActual(evento.fechaInicio);
+  const diasHastaFin = diasHastaFechaActual(evento.fechaFin);
+
+  // 2. Evaluamos la proximidad según el tipo de evento
+  if (duraUnDia) {
+    if (diasHastaInicio > 1) {
+      diasStr = `falta${charPlural("n", diasHastaInicio)} ${diasHastaInicio} día${charPlural("s", diasHastaInicio)}`;
+    } else if (diasHastaInicio === 0) {
+      diasStr = "hoy"; // 🎯 Ahora sí entra acá cuando es 0
+    } else if (diasHastaInicio === 1) {
+      diasStr = "mañana";
+    } else {
+      const diasPasados = -diasHastaInicio;
+      diasStr = `hace ${diasPasados} día${charPlural("s", diasPasados)}`;
     }
-    else
-    {
-      const diasHastaFin = diasHastaFechaActual(evento.fechaFin) + 1;
-      if (diasHastaFin > 0) { diasStr = `termina en ${diasHastaFin} día${charPlural("s",diasHastaFin)}`;}
-      else if (diasHastaFin == 0) { diasStr = `último día`;}
-      else { diasStr = `hace ${-diasHastaFin} día${charPlural("s",diasHastaFin)}`;}
+  } else {
+    // Eventos de varios días (como el receso o inscripciones)
+    if (diasHastaInicio > 0) {
+      diasStr = `inicia en ${diasHastaInicio} día${charPlural("s", diasHastaInicio)}`;
+    } else if (diasHastaFin > 0) {
+      diasStr = `termina en ${diasHastaFin} día${charPlural("s", diasHastaFin)}`;
+    } else if (diasHastaFin === 0) {
+      diasStr = "último día";
+    } else {
+      const diasPasados = -diasHastaFin;
+      diasStr = `hace ${diasPasados} día${charPlural("s", diasPasados)}`;
     }
   }
+
   return `${intervaloFechaStr} (${diasStr})`;
 }
-export function eventoAgendaTituloColor(evento:EventoAgenda): string {
-  return evento.esFeriado? "#6CACE4": "#000";
-  //return evento.esFeriado? "#6CACE4": (enModoOscuro() ? "#fff":"#000");
-}
-export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
-  // const colorFeriado = "#6CACE4";
-  // if (evento.esFeriado) return colorFeriado;
 
+export function eventoAgendaTituloColor(evento:EventoAgenda): string {
+  return evento.esFeriado ? "#6CACE4" : "#000";
+}
+
+export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   const diasPrioridadUno = 2;
   const diasPrioridadDos = 7;
   const diasPrioridadTres = 15;

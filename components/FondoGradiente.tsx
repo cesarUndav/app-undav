@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import { StyleSheet, StyleProp, ViewStyle, ColorValue } from 'react-native';
 import { LinearGradient } from 'expo-linear-gradient';
-import { colorFondoTop, colorFondoBottom } from '@/data/DatosUsuarioGuarani';
+import { colorFondoTop, colorFondoBottom } from '@/data/apiAppUndav';
 
 interface FondoGradienteProps {
   children: ReactNode;

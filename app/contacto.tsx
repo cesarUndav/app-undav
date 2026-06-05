@@ -75,7 +75,7 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7545',
+        label: '5436-7545',
         tel: '54367545',
       },
     ],
@@ -138,17 +138,17 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 4229-2480',
+        label: '4229-2480',
         tel: '01142292480',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7530',
+        label: '5436-7530',
         tel: '01154367530',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7531',
+        label: '5436-7531',
         tel: '01154367531',
       },
       {
@@ -160,32 +160,6 @@ const seccionesContacto: SeccionContacto[] = [
         tipo: 'mapa',
         label: 'Ver Sede Piñeyro en el mapa',
         url: 'https://maps.google.com/?q=Mario Bravo 1460, Piñeyro, Avellaneda',
-      },
-    ],
-  },
-  {
-    titulo: 'Títulos, certificaciones y tesis',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Títulos',
-        mail: 'titulos@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Certificaciones',
-        mail: 'certificaciones@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Tesis',
-        mail: 'tesis@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
       },
     ],
   },

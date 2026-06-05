@@ -1,4 +1,4 @@
-// app/contacto-para-estudiantes.tsx
+// app/tramites.tsx previamente conocido como: app/contacto-para-estudiantes.tsx
 
 import React from 'react';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
@@ -8,6 +8,7 @@ import BotonTextoTelefono from '@/components/BotonTextoTelefono';
 import BotonTexto from '@/components/BotonTexto';
 import ListaItem from '@/components/ListaItem';
 import { negroAzulado } from '@/constants/Colors';
+import BotonTextoSIU from '@/components/BotonTextoSIU';
 
 type ItemMail = {
   tipo: 'mail';
@@ -110,12 +111,12 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono Secretaría Académica: 5436-7597',
+        label: 'Secretaría Académica: 5436-7597',
         tel: '54367597',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono Atención al Estudiante: 5436-7521',
+        label: 'Atención al Estudiante: 5436-7521',
         tel: '54367521',
       },
     ],
@@ -153,7 +154,7 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7545',
+        label: '5436-7545',
         tel: '54367545',
       },
     ],
@@ -202,41 +203,28 @@ const seccionesContacto: SeccionContacto[] = [
         cuerpo: '',
       },
       {
-        tipo: 'texto',
-        label: 'Sede España | España 350 esq. Colón, Avellaneda.',
-      },
-      {
-        tipo: 'texto',
-        label:
-          'Sede Piñeyro | Mario Bravo 1460 esq. Isleta, Piñeyro, Avellaneda.',
-      },
-      {
-        tipo: 'texto',
-        label: 'Horario de atención: lunes a viernes de 9 a 20 hs.',
-      },
-      {
         tipo: 'telefono',
-        label: 'Teléfono: 4229-2480',
+        label: '4229-2480',
         tel: '01142292480',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7530',
+        label: '5436-7530',
         tel: '01154367530',
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono: 5436-7531',
+        label: '5436-7531',
         tel: '01154367531',
       },
       {
         tipo: 'mapa',
-        label: 'Ver Sede España en el mapa',
+        label: 'Sede España: lunes a viernes de 9 a 20 hs',
         url: 'https://maps.google.com/?q=España 350, Avellaneda',
       },
       {
         tipo: 'mapa',
-        label: 'Ver Sede Piñeyro en el mapa',
+        label: 'Sede Piñeyro: lunes a viernes de 9 a 20 hs',
         url: 'https://maps.google.com/?q=Mario Bravo 1460, Piñeyro, Avellaneda',
       },
     ],
@@ -279,7 +267,7 @@ const seccionesContacto: SeccionContacto[] = [
       },
       {
         tipo: 'telefono',
-        label: 'Teléfono Ambiente y Turismo: 4229-2471',
+        label: 'Ambiente y Turismo: 4229-2471',
         tel: '01142292471',
       },
       {
@@ -320,10 +308,12 @@ const seccionesContacto: SeccionContacto[] = [
     ],
   },
 ];
+const linkSelloInstitucional = "https://docs.google.com/forms/d/e/1FAIpQLSc2InEWA3-Xzr0ixrTwDpDIopLAzpYr4D8u2UcEr3PJpeJE3g/viewform";
 
-export default function ContactoParaEstudiantes() {
+export default function Tramites() {
   return (
     <FondoScrollGradiente>
+    
       {seccionesContacto.map((seccion) => (
         <DropdownSeccion key={seccion.titulo} titulo={seccion.titulo}>
           <>

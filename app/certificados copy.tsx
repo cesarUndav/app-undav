@@ -25,9 +25,9 @@ export default function Certificados() {
       
       <DropdownSeccion titulo="Atención al Estudiante" >
       <>
-        <BotonTextoMail label="eMail: Consultas Generales" mail="tramitesestudiantes@undav.edu.ar"/>
-        <BotonTextoMail label="eMail: Prórrogas de Cursadas Vencidas" mail="finales@undav.edu.ar"/>
-        <BotonTextoTelefono styleExtra={{borderBottomRightRadius: 20}} label="Teléfono: 5436-7521" tel="54367521"/>
+        <BotonTextoMail label="Consultas Generales" mail="tramitesestudiantes@undav.edu.ar"/>
+        <BotonTextoMail label="Prórrogas de Cursadas Vencidas" mail="finales@undav.edu.ar"/>
+        <BotonTextoTelefono styleExtra={{borderBottomRightRadius: 20}} label="5436-7521" tel="54367521"/>
       </>
       </DropdownSeccion>
 

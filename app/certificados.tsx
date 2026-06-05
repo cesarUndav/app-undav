@@ -52,17 +52,17 @@ return (
     <DropdownSeccion titulo="Atención al Estudiante">
       <>
         <BotonTextoMail
-          label="eMail: Consultas Generales"
+          label="Consultas Generales"
           mail="tramitesestudiantes@undav.edu.ar"
         />
 
         <BotonTextoMail
-          label="eMail: Prórrogas de Cursadas Vencidas"
+          label="Prórrogas de Cursadas Vencidas"
           mail="finales@undav.edu.ar"
         />
 
         <BotonTextoTelefono
-          label="Teléfono: 5436-7521"
+          label="5436-7521"
           tel="54367521"
           styleExtra={{ borderBottomRightRadius: 20 }}
         />

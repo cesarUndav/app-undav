@@ -51,11 +51,7 @@ export default function Inscripciones() {
   return (
     <FondoScrollGradiente>
       <View style={styles.header}>
-        <CustomText weight="bold" style={styles.titulo}>
-          Inscripciones
-        </CustomText>
-
-        <CustomText style={styles.descripcion}>
+        <CustomText style={styles.descripcion} weight='bold'>
           Información para ingresar a carreras de grado, pregrado y propuestas a
           distancia de la Universidad Nacional de Avellaneda.
         </CustomText>
@@ -207,7 +203,7 @@ export default function Inscripciones() {
             cuerpo=""
           />
 
-          <BotonTextoTelefono label="Teléfono: 5436-7545" tel="54367545" />
+          <BotonTextoTelefono label="5436-7545" tel="54367545" />
         </>
       </DropdownSeccion>
     </FondoScrollGradiente>

@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
-import { EventoAgenda, cargarEventosAcademicos, listaFuturo } from '@/data/agenda';
+import { EventoAgenda, cargarEventosAcademicos, listaFuturo, cargarDatosSiuGuarani } from '@/data/agenda';
 
 // 1. Definir el tipo para el valor del contexto
 interface AgendaContextType {
@@ -27,13 +27,17 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children }) => {
         setIsLoading(true);
         setError(null);
         try {
-            // Llama a la función que actualiza la variable global en agenda.ts
+            // 🏛️ 1. Llama a la función que actualiza los eventos estáticos e institucionales
             await cargarEventosAcademicos();
-            // Obtiene la lista combinada y ordenada
+            
+            // 🎓 2. Llama a la nueva función que impacta las cursadas y exámenes del SIU Guarani
+            await cargarDatosSiuGuarani();
+            
+            // 📊 3. Obtiene la lista combinada (locales + institucionales + exámenes SIU) y ordenada
             setEventosFuturos(listaFuturo()); 
         } catch (err: any) {
             // Asegúrate de manejar el error de la API
-            console.error("Error al obtener eventos:", err.message);
+            console.error("Error al obtener eventos integrados:", err?.message || err);
             setError("No se pudieron cargar los eventos. Por favor, inténtelo más tarde.");
             setEventosFuturos([]);
         } finally {

@@ -4,7 +4,7 @@ import CustomText from '../components/CustomText';
 import {
   ObtenerJsonString, // Quitamos JsonStringAObjeto de acá
   infoBaseUsuarioActual
-} from '@/data/DatosUsuarioGuarani';
+} from '@/data/apiAppUndav';
 import ListaItem from '@/components/ListaItem';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { azulClaro, negroAzulado } from '@/constants/Colors';
@@ -135,6 +135,7 @@ export default function HistoriaAcademica() {
     <FondoGradiente style={styles.fondo}>
       <LoadingWrapper loading={loading}>
         <View>
+          
           <CustomText weight="bold" style={styles.estadisticas}>
             {hayHistoria
               ? 'Materias aprobadas: ' +
@@ -156,15 +157,18 @@ export default function HistoriaAcademica() {
               {conAplazos ? 'Ocultar Aplazos' : 'Mostrar Aplazos'}
             </CustomText>
           </TouchableOpacity>
+
+          <View style={{padding: 10, paddingBottom: 0}}>
+            <BarraBusqueda value={search} onChangeText={setSearch} />
+          </View>
+
         </View>
 
         <ScrollView contentContainerStyle={styles.listaContainer}>
           {mostrarListaActividad()}
         </ScrollView>
 
-        <View style={styles.busquedaContainer}>
-          <BarraBusqueda value={search} onChangeText={setSearch} />
-        </View>
+
       </LoadingWrapper>
     </FondoGradiente>
   );

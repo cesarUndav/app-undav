@@ -42,13 +42,13 @@ export default function HomeEstudiante() {
 
         <View style={styles.buttonsRow}>
           <BotonIconoTexto
-            label={"CERTIFICADOS\nY REPORTES"}
-            funcionOnPress={() => router.push('/certificados')}
+            label={"TRÁMITES"}
+            funcionOnPress={() => router.push('/tramites')}
             Icon={ReportesIcon}
           />
           <BotonIconoTexto
-            label={"INSCRIPCIONES"}
-            funcionOnPress={() => router.push('/inscripciones')}
+            label={"AUTOGESTIÓN"}
+            funcionOnPress={() => router.push('/autogestion')}
             Icon={InscripcionesIcon}
           />
           <BotonIconoTexto

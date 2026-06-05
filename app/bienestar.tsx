@@ -43,17 +43,17 @@ export default function Bienestar() {
       <DropdownSeccion titulo="Atención Telefónica">
         <>
           <BotonTextoTelefono
-            label="Teléfono: (011) 4229-2480"
+            label="(011) 4229-2480"
             tel="tel:1142292480"
           />
 
           <BotonTextoTelefono
-            label="Teléfono: (011) 5436-7530"
+            label="(011) 5436-7530"
             tel="tel:1154367530"
           />
 
           <BotonTextoTelefono
-            label="Teléfono: (011) 5436-7531"
+            label="(011) 5436-7531"
             tel="tel:1154367531"
           />
         </>

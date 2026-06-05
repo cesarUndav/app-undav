@@ -11,7 +11,7 @@ import {
 } from 'react-native';
 import CustomText from '../components/CustomText';
 import FondoGradiente from '@/components/FondoGradiente';
-import { modoOscuro, setDarkMode } from '@/data/DatosUsuarioGuarani';
+import { modoOscuro, setDarkMode } from '@/data/apiAppUndav';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { useRouter } from 'expo-router';
 

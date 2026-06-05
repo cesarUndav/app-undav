@@ -1,4 +1,4 @@
-import { infoBaseUsuarioActual } from "@/data/DatosUsuarioGuarani";
+import { infoBaseUsuarioActual } from "@/data/apiAppUndav";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { WebView } from "react-native-webview";
