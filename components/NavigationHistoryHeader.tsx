@@ -4,7 +4,7 @@ import React, { ReactNode } from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
+import { enModoOscuro } from '@/data/apiAppUndav';
 import { azulLogoUndav } from '@/constants/Colors';
 import CustomText from './CustomText';
 

@@ -8,7 +8,7 @@ import {
   infoBaseUsuarioActual,
   modoOscuro,
   UsuarioEsAutenticado,
-} from '@/data/DatosUsuarioGuarani';
+} from '@/data/apiAppUndav';
 import { azulClaro, azulLogoUndav, grisBorde } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 

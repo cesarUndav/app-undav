@@ -282,97 +282,99 @@ export default function Agenda() {
         )}
       </FondoScrollGradiente>
 
-<View 
-  style={[
-    stylesFlotante.floatingBox, 
-    { 
-      /* 🌟 CÁLCULO NATIVO INMUNE A CONDICIONES DE CARRERA:
-         insets.bottom (Notch/Botones del sistema) + 60 (Alto fijo de barra) + 16 (Margen estético) */
-      bottom: insets.bottom + 60 + 16 
-    }
-  ]}
->
+      <View 
+        style={[
+          stylesFlotante.floatingBox, 
+          { 
+            /* 🌟 CÁLCULO NATIVO INMUNE A CONDICIONES DE CARRERA:
+              insets.bottom (Notch/Botones del sistema) + 60 (Alto fijo de barra) + 16 (Margen estético) */
+            bottom: insets.bottom + 60 + 16 
+          }
+        ]}
+      >
+        {/* El menú de filtros ahora aparece primero en el row, posicionándose a la izquierda */}
         {mostrarFiltros && (
           <View style={stylesFlotante.filterOptionsParent}>
-      <CustomText weight="bold" style={stylesFlotante.filterHeader}>
-        FILTRAR VISTA
-      </CustomText>
-      
-      {/* Botón: Feriados */}
-      <TouchableOpacity
-        onPress={() => setMostrarFeriados(!mostrarFeriados)}
-        style={[
-          stylesFlotante.filterOption,
-          mostrarFeriados ? stylesFlotante.optionActive : stylesFlotante.optionInactive
-        ]}
-      >
-        <Ionicons 
-          name="calendar" 
-          size={18} 
-          color={mostrarFeriados ? '#fff' : '#8e8e93'} 
-        />
-        <CustomText weight="bold" style={[stylesFlotante.filterOptionText, { color: mostrarFeriados ? '#fff' : '#2c3e50' }]}>
-          Feriados
-        </CustomText>
-        
-      </TouchableOpacity>
+            <CustomText weight="bold" style={stylesFlotante.filterHeader}>
+              FILTRAR VISTA
+            </CustomText>
+            
+            {/* Botón: Feriados */}
+            <TouchableOpacity
+              onPress={() => setMostrarFeriados(!mostrarFeriados)}
+              style={[
+                stylesFlotante.filterOption,
+                mostrarFeriados ? stylesFlotante.optionActive : stylesFlotante.optionInactive
+              ]}
+            >
+              <Ionicons 
+                name="calendar" 
+                size={18} 
+                color={mostrarFeriados ? '#fff' : '#8e8e93'} 
+              />
+              <CustomText weight="bold" style={[stylesFlotante.filterOptionText, { color: mostrarFeriados ? '#fff' : '#2c3e50' }]}>
+                Feriados
+              </CustomText>
+            </TouchableOpacity>
 
-      {/* Botón: Personalizados */}
-      <TouchableOpacity
-        onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)}
-        style={[
-          stylesFlotante.filterOption,
-          mostrarPersonalizados ? stylesFlotante.optionActive : stylesFlotante.optionInactive
-        ]}
-      >
-        <Ionicons 
-          name="person" 
-          size={18} 
-          color={mostrarPersonalizados ? '#fff' : '#8e8e93'} 
-        />
-        <CustomText weight="bold" style={[stylesFlotante.filterOptionText, { color: mostrarPersonalizados ? '#fff' : '#2c3e50' }]}>
-          Personalizados
-        </CustomText>
-        
-      </TouchableOpacity>
+            {/* Botón: Personalizados */}
+            <TouchableOpacity
+              onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)}
+              style={[
+                stylesFlotante.filterOption,
+                mostrarPersonalizados ? stylesFlotante.optionActive : stylesFlotante.optionInactive
+              ]}
+            >
+              <Ionicons 
+                name="person" 
+                size={18} 
+                color={mostrarPersonalizados ? '#fff' : '#8e8e93'} 
+              />
+              <CustomText weight="bold" style={[stylesFlotante.filterOptionText, { color: mostrarPersonalizados ? '#fff' : '#2c3e50' }]}>
+                Personalizados
+              </CustomText>
+            </TouchableOpacity>
 
-      {/* Botón: Académicos */}
-      <TouchableOpacity
-        onPress={() => setMostrarAcademicos(!mostrarAcademicos)}
-        style={[
-          stylesFlotante.filterOption,
-          mostrarAcademicos ? stylesFlotante.optionActive : stylesFlotante.optionInactive
-        ]}
-      >
-        <Ionicons 
-          name="school" 
-          size={18} 
-          color={mostrarAcademicos ? '#fff' : '#8e8e93'} 
-        />
-        <CustomText weight="bold" style={[stylesFlotante.filterOptionText, { color: mostrarAcademicos ? '#fff' : '#2c3e50' }]}>
-          Académicos
-        </CustomText>
-        
-      </TouchableOpacity>
-    </View>
-  )}
+            {/* Botón: Académicos */}
+            <TouchableOpacity
+              onPress={() => setMostrarAcademicos(!mostrarAcademicos)}
+              style={[
+                stylesFlotante.filterOption,
+                mostrarAcademicos ? stylesFlotante.optionActive : stylesFlotante.optionInactive
+              ]}
+            >
+              <Ionicons 
+                name="school" 
+                size={18} 
+                color={mostrarAcademicos ? '#fff' : '#8e8e93'} 
+              />
+              <CustomText weight="bold" style={[stylesFlotante.filterOptionText, { color: mostrarAcademicos ? '#fff' : '#2c3e50' }]}>
+                Académicos
+              </CustomText>
+            </TouchableOpacity>
+          </View>
+        )}
 
-  {/* Botón de Agregar Evento */}
-  <TouchableOpacity
-    onPress={abrirModalAgregarEvento}
-    style={[styles.openBtn, styles.addButton]}
-  >
-    <Ionicons name="add" size={28} color="#fff" />
-  </TouchableOpacity>
+        {/* 🌟 NUEVA COLUMNA CONTENEDORA: Mantiene los botones apilados a la derecha */}
+        <View style={stylesFlotante.botonesColumna}>
+          {/* Botón de Agregar Evento */}
+          <TouchableOpacity
+            onPress={abrirModalAgregarEvento}
+            style={[styles.openBtn, styles.addButton]}
+          >
+            <Ionicons name="add" size={28} color="#fff" />
+          </TouchableOpacity>
 
-  {/* Botón de Abrir/Cerrar Filtros */}
-  <TouchableOpacity
-    onPress={() => setMostrarFiltros(!mostrarFiltros)}
-    style={[styles.openBtn, mostrarFiltros ? stylesFlotante.openBtnActive : null]}
-  >
-    <Ionicons name={mostrarFiltros ? "close" : "filter"} size={26} color="#fff" />
-  </TouchableOpacity>
-</View>
+          {/* Botón de Abrir/Cerrar Filtros */}
+          <TouchableOpacity
+            onPress={() => setMostrarFiltros(!mostrarFiltros)}
+            style={[styles.openBtn, mostrarFiltros ? stylesFlotante.openBtnActive : null]}
+          >
+            <Ionicons name={mostrarFiltros ? "close" : "filter"} size={26} color="#fff" />
+          </TouchableOpacity>
+        </View>
+
+      </View>
 
       <Modal visible={modalVisible} animationType="fade" transparent>
         <OcultadorTeclado>
@@ -515,22 +517,27 @@ export default function Agenda() {
 }
 
 const stylesFlotante = StyleSheet.create({
-floatingBox: {
+  floatingBox: {
     position: 'absolute',
-    right: 16,   // 🌟 MARGINADO DERECHO: Mantiene la distancia limpia con el borde derecho
+    right: 16,   // Mantiene la distancia limpia con el borde derecho de la pantalla
     zIndex: 10,
-    flexDirection: 'column',
-    alignItems: 'flex-end',
+    flexDirection: 'row',        // 🌟 CAMBIO: Alineación horizontal (Filtros izq, Botones der)
+    alignItems: 'flex-end',      // Alinea la base de los filtros con la base de los botones
+    justifyContent: 'flex-end',
+  },
+  botonesColumna: {
+    flexDirection: 'column',     // 🌟 NUEVO: Mantiene los dos botones redondos uno sobre otro
+    alignItems: 'center',
     justifyContent: 'flex-end',
   },
   filterOptionsParent: {
     backgroundColor: '#ffffff',
     borderRadius: 20,
-    padding: 12,
-    //bottom: 12,
-    width: 210, // Ancho fijo controlado para que se vea como un popover pulido
+    padding: 8,
+    marginRight: 12,             // 🌟 NUEVO: Separación estética entre el menú y los botones
+    width: 200, 
     gap: 6,
-    ...getShadowStyle(6), // Sombra más pronunciada para dar efecto de flotado elevado
+    ...getShadowStyle(6), 
   },
   filterHeader: {
     fontSize: 11,

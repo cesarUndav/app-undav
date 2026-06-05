@@ -1,5 +1,7 @@
+// notificaciones.ts
+
 import { useState, useEffect } from "react";
-import { api, NoticiaAPI } from "./apiFlaskClient";
+import { ObtenerNoticiasAPI, NoticiaAPI, parsearFechaPHP } from "./apiAppUndav"; // 🌟 Importación unificada global
 
 export type Notificacion = {
   id: string;
@@ -8,16 +10,6 @@ export type Notificacion = {
   tipo?: string;
   contenido?: string;
 };
-
-function transformarNoticia(noticia: NoticiaAPI): Notificacion {
-  return {
-    id: String(noticia.id),
-    titulo: noticia.nombre,
-    fecha: new Date(noticia.fecha_modificado),
-    tipo: "noticia",
-    contenido: noticia.contenido,
-  };
-}
 
 // 🔔 ESTADO GLOBAL PURO DE MEMORIA
 export let listaNoticiasAPI: Notificacion[] = [];
@@ -47,18 +39,35 @@ export function useNotificacionesGlobales() {
   return { noticias, count };
 }
 
+function transformarNoticia(noticia: NoticiaAPI): Notificacion {
+  return {
+    id: String(noticia.id),
+    titulo: noticia.nombre,
+    contenido: noticia.contenido,
+    fecha: parsearFechaPHP(noticia.fecha_creado), // 🌟 Utiliza la función centralizada de apiAppUndav
+  };
+}
+
 export async function cargarNoticias(): Promise<Notificacion[]> {
   try {
-    const noticiasAPI = await api.getNoticias();
+    // 1. Consumimos el nuevo endpoint directo y optimizado
+    const noticiasAPI: NoticiaAPI[] = await ObtenerNoticiasAPI();
+
+    // 2. Mapeamos de forma directa
     const noticiasTransformadas = noticiasAPI.map(transformarNoticia);
     
+    // 3. Ordenamos cronológicamente (Más nueva a más vieja)
     listaNoticiasAPI = noticiasTransformadas.sort((a, b) => b.fecha.getTime() - a.fecha.getTime());
     
-    console.log(`✅ ${noticiasTransformadas.length} noticias cargadas desde la API`);
+    // 🌟 Sincronizamos el contador global con el total de noticias nuevas de PHP
+    cacheCount = noticiasTransformadas.length;
+
+    console.log(`✅ ${noticiasTransformadas.length} noticias cargadas directamente desde /noticias`);
+    
     emitirCambios(); 
     return noticiasTransformadas;
   } catch (error) {
-    console.error("❌ Error al cargar noticias desde la API:", error);
+    console.error("❌ Error al cargar noticias desde el nuevo endpoint:", error);
     return [];
   }
 }

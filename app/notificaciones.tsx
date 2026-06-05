@@ -22,7 +22,7 @@ export default function Notificaciones() {
         ))}
       </ScrollView>
       <View style={styles.buttonContainer}>
-        <BotonTexto label="Noticias UNDAV" url="https://undav.edu.ar/index.php?idcateg=323" styleExtra={{ borderBottomRightRadius: 20 }} />
+        <BotonTexto openInsideApp label="Noticias UNDAV" url="https://undav.edu.ar/index.php?idcateg=323" styleExtra={{ borderBottomRightRadius: 20 }} />
       </View>
     </FondoGradiente>
   );

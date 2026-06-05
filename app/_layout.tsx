@@ -11,7 +11,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import HistoryHeader, { PathToTitle } from '@/components/NavigationHistoryHeader';
 import BottomBar from '@/components/BottomBar';
-import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from '@/data/DatosUsuarioGuarani';
+import { visitante, setVisitante, ObtenerDatosBaseUsuarioConToken } from '@/data/apiAppUndav';
 import { azulMedioUndav } from '@/constants/Colors';
 import { AgendaProvider } from '@/src/context/AgendaContext';
 import { TutorialProvider } from '@/components/tutorial/TutorialProvider';

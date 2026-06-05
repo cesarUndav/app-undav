@@ -13,7 +13,7 @@ import {
 import { router } from 'expo-router';
 import CustomText from '../components/CustomText';
 import FondoGradiente from '@/components/FondoGradiente';
-import { Logout, infoBaseUsuarioActual } from '@/data/DatosUsuarioGuarani';
+import { Logout, infoBaseUsuarioActual } from '@/data/apiAppUndav';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
 type TextItem = {
