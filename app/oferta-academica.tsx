@@ -39,10 +39,6 @@ const departamentos = [
         nombre: 'Tecnicatura en Intervención Socio Comunitaria',
         ruta: 'intervencion-comunitaria',
       },
-      {
-        nombre: 'Centro de Estudios del Habitar Popular',
-        ruta: 'habitar-popular',
-      },
     ],
   },
   {
