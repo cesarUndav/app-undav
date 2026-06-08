@@ -1,8 +1,13 @@
 // agenda.ts
 
-import { enModoOscuro } from "./DatosUsuarioGuarani";
+import { 
+  enModoOscuro, 
+  EventoCalendarioAcademico, 
+  ObtenerEventosCalendarioAcademico,
+  parsearFechaPHP // 🌟 IMPORTADO: Usamos la función global centralizada
+} from "./apiAppUndav";
 import { listaEventosAgenda } from "./notificaciones";
-import { api } from "./apiFlaskClient";
+// 🗑️ REMOVIDO: Se eliminó la importación del viejo cliente de Flask
 
 // Exportamos un tipo que representa el objeto Evento tal como viene de la API.
 export type EventoAPIFlask = {
@@ -87,7 +92,7 @@ function transformarExamenToEvento(item: any, idx: number): EventoAgenda {
 
 export async function cargarDatosSiuGuarani(): Promise<void> {
   try {
-    const { infoBaseUsuarioActual, ObtenerAgendaFechas } = await import("./DatosUsuarioGuarani");
+    const { infoBaseUsuarioActual, ObtenerAgendaFechas } = await import("./apiAppUndav");
     const personaId = infoBaseUsuarioActual?.idPersona;
 
     if (!personaId) {
@@ -205,27 +210,63 @@ export async function cargarDatosSiuGuarani(): Promise<void> {
   }
 }
 
-// EventoAPIFlask -> EventoAgenda
-function transformarEvento(evento: EventoAPIFlask): EventoAgenda {
-  return {
-      id: String(evento.id), 
-      titulo: evento.titulo,
-      fechaInicio: new Date(evento.fecha_inicio),
-      fechaFin: new Date(evento.fecha_fin),
-      esFeriado: evento.feriado, 
-  };
+// 🗑️ REMOVIDO: Se borró por completo la función duplicada parsearFechaPHP de este archivo.
+
+// EventoCalendarioAcademico (PHP) -> EventoAgenda (App)
+function transformarEvento(evento: EventoCalendarioAcademico): EventoAgenda {
+  try {
+    // 🌟 CORRECCIÓN: Ahora consume directamente la función global e importada de apiAppUndav
+    const fechaInicioParsed = parsearFechaPHP(evento.fecha_inicio);
+    const fechaFinParsed = parsearFechaPHP(evento.fecha_fin);
+
+    // Validamos si la conversión funcionó
+    if (isNaN(fechaInicioParsed.getTime()) || isNaN(fechaFinParsed.getTime())) {
+      console.warn(`⚠️ [Transformar] No se pudo parsear la fecha del evento ${evento.id}. Usando fecha actual.`);
+    }
+
+    return {
+        id: String(evento.id), 
+        titulo: evento.titulo,
+        fechaInicio: fechaInicioParsed,
+        fechaFin: fechaFinParsed,
+        esFeriado: !!evento.feriado, 
+    };
+  } catch (err: any) {
+    console.error(`❌ [Transformar] Error transformando evento ${evento?.id}:`, err.message);
+    throw err;
+  }
 }
 
 export async function cargarEventosAcademicos(): Promise<EventoAgenda[]> {
-    try {
-        const eventosAPI: EventoAPIFlask[] = await api.getEventos();
-        const eventosTransformados = eventosAPI.map(transformarEvento);
-        listaEventosCalendarioAcademico = eventosTransformados;
-        return eventosTransformados;
-    } catch (error) {
-        console.error("Error al cargar eventos académicos desde la API:", error);
-        return [];
+  console.log("🚀 [Agenda] Iniciando cargarEventosAcademicos()...");
+  try {
+    // 1. Llamamos a la API PHP
+    const eventosAPI: EventoCalendarioAcademico[] = await ObtenerEventosCalendarioAcademico();
+    
+    console.log(`📥 [API Response] Se recibieron ${eventosAPI?.length || 0} eventos crudos desde PHP.`);
+    
+    if (!eventosAPI || !Array.isArray(eventosAPI)) {
+      console.error("❌ [API Response] La respuesta de la API no es un Array válido:", eventosAPI);
+      return [];
     }
+
+    // 2. Mapeamos y transformamos
+    const eventosTransformados = eventosAPI.map(transformarEvento);
+    console.log(`✅ [Mapeo] Transformación exitosa de ${eventosTransformados.length} eventos.`);
+    
+    // 3. Guardamos en el estado global
+    listaEventosCalendarioAcademico = eventosTransformados;
+    
+    return eventosTransformados;
+  } catch (error: any) {
+    console.error("❌ [Fallo Crítico] Error al cargar eventos académicos desde la API PHP:");
+    console.error(`   └─ Mensaje: ${error.message}`);
+    if (error.response) {
+      console.error(`   └─ Server Status: ${error.response.status}`);
+      console.error(`   └─ Server Data:`, error.response.data);
+    }
+    return [];
+  }
 }
 
 export function agregarEventoPersonalizado(titulo:string, descripcion:string, fechainicio:string, fechaFin:string):void {

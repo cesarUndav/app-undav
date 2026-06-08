@@ -9,7 +9,7 @@ import {
   Plan,
   Materia,
   infoBaseUsuarioActual,
-} from '@/data/DatosUsuarioGuarani';
+} from '@/data/apiAppUndav';
 import ListaItem from '@/components/ListaItem';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';

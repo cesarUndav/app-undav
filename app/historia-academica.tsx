@@ -4,7 +4,7 @@ import CustomText from '../components/CustomText';
 import {
   ObtenerJsonString, // Quitamos JsonStringAObjeto de acá
   infoBaseUsuarioActual
-} from '@/data/DatosUsuarioGuarani';
+} from '@/data/apiAppUndav';
 import ListaItem from '@/components/ListaItem';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { azulClaro, negroAzulado } from '@/constants/Colors';

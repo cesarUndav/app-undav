@@ -7,7 +7,7 @@ import CustomText from './CustomText';
 import { azulClaro } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import { undavHeaderStyles } from './UndavUsuarioHeader';
-import { modoOscuro } from '@/data/DatosUsuarioGuarani';
+import { modoOscuro } from '@/data/apiAppUndav';
 
 export default function UndavEstudianteHeader() {
   const router = useRouter();

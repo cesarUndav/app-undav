@@ -19,7 +19,7 @@ import { Ionicons } from '@expo/vector-icons';
 
 import {
   validarPersona,
-} from "@/data/DatosUsuarioGuarani";
+} from "@/data/apiAppUndav";
 import { azulLogoUndav } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setNotificationCount } from "@/data/notificaciones";

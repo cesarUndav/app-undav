@@ -1,8 +1,13 @@
+// apiAppUndav.ts
+
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 import axios, { AxiosError } from "axios";
 
-// --- Interfaces ---
+// ==========================================
+// --- INTERFACES ---
+// ==========================================
+
 export interface User {
   idPersona: string;
   documento: string;
@@ -10,9 +15,9 @@ export interface User {
   email: string;
   legajo: string;
   propuestas: Propuesta[];
-  indicePropuestaSeleccionada: number,
-  usuario: string,
-  password: string
+  indicePropuestaSeleccionada: number;
+  usuario: string;
+  password: string;
 }
 
 export interface Propuesta {
@@ -25,28 +30,27 @@ export interface Propuesta {
 }
 
 export interface Plan {
-  plan: number,
-  version_actual: number,
-  nombre: string,
-  duracion_teorica: string,
-  duracion_en_anios: number,
-  duracion_en_meses: number,
-  cnt_materias: number,
-  materias: Materia[]
+  plan: number;
+  version_actual: number;
+  nombre: string;
+  duracion_teorica: string;
+  duracion_en_anios: number;
+  duracion_en_meses: number;
+  cnt_materias: number;
+  materias: Materia[];
 }
 
 export interface Materia {
-  nombre: string,
-  nombre_abreviado: string,
-  anio_de_cursada: number,
-  periodo_de_cursada: number,
-  horas_semanales: string,
-  horas_totales: string,
-  permite_rendir_libre: string,
-  permite_promocion: string,
+  nombre: string;
+  nombre_abreviado: string;
+  anio_de_cursada: number;
+  periodo_de_cursada: number;
+  horas_semanales: string;
+  horas_totales: string;
+  permite_rendir_libre: string;
+  permite_promocion: string;
 }
 
-// ✅ NUEVAS INTERFACES PARA LOS ENDPOINTS SOLICITADOS
 export interface Analitico {
   promedio_con_aprazos: number;
   promedio_sin_aprazos: number;
@@ -76,7 +80,41 @@ export interface EventoAgenda {
   dow_semana?: number;      // 0 (Domingo) a 6 (Sábado) para cursadas periódicas
 }
 
-// --- Estado Global ---
+export interface EventoCalendarioAcademico {
+  id: number;
+  titulo: string;
+  fecha_inicio: string;     // Devuelve la fecha como string (ej: "2026-06-05 03:00:00+00")
+  fecha_fin: string;
+  feriado: boolean | number;
+  activo: boolean | number;
+}
+
+export interface RegistroAPI {
+  id: number;
+  nombre: string;
+  contenido: string;
+  fecha_modificado: string;
+  archivo_path: string | null;
+  activo: boolean;
+  borrado_logico: boolean;
+  tipo_id: number;
+  fecha_creado: string;
+  modificado_por: string | null;
+  tipo_nombre: "noticia" | "correo" | "link" | "telefono" | "texto";
+}
+
+export interface NoticiaAPI {
+  id: number;
+  nombre: string;       // El título de la noticia
+  contenido: string;    // El cuerpo/descripción de la noticia
+  fecha_creado: string; // Timestamp de la base de datos
+  activo: boolean;
+}
+
+// ==========================================
+// --- ESTADO GLOBAL ---
+// ==========================================
+
 export let infoBaseUsuarioActual: User = {
   idPersona: "", documento: "", nombreCompleto: "", email: "",
   legajo: "", propuestas: [], indicePropuestaSeleccionada: -1,
@@ -87,7 +125,10 @@ export let visitante: boolean = true;
 
 const URL_BASE = process.env.EXPO_PUBLIC_API_APPUNDAV_URL;
 
-// --- CONFIGURACIÓN DE AXIOS LIMPIA ---
+// ==========================================
+// --- CONFIGURACIÓN DE AXIOS ---
+// ==========================================
+
 const api = axios.create({
   baseURL: URL_BASE,
   headers: {
@@ -97,12 +138,13 @@ const api = axios.create({
   timeout: 15000,
 });
 
-// Interceptor para debugging
+// Interceptor para debugging de peticiones salientes
 api.interceptors.request.use(config => {
   console.log(`➡️ [${config.method?.toUpperCase()}] URL: ${config.baseURL}${config.url}`);
   return config;
 });
 
+// Interceptor para debugging de respuestas entrantes
 api.interceptors.response.use(
   response => {
     console.log(`⬅️ STATUS: ${response.status}`);
@@ -114,15 +156,38 @@ api.interceptors.response.use(
   }
 );
 
-// --- Helpers ---
+// ==========================================
+// --- HELPERS Y UTILIDADES ---
+// ==========================================
+
 function capitalizeWords(str: string): string {
   return str.toLowerCase().split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
+}
+
+/**
+ * Normaliza los strings de fecha devueltos por PHP/PostgreSQL a un formato ISO-8601
+ * compatible con el motor estricto de JavaScript Hermes (React Native).
+ */
+export function parsearFechaPHP(fechaStr: string): Date {
+  if (!fechaStr) return new Date();
+  
+  let formatoISO = fechaStr.trim();
+  formatoISO = formatoISO.replace(" ", "T");
+  formatoISO = formatoISO.replace(/\+\d+(:\d+)?$/, "Z").replace(/-\d+(:\d+)?$/, "Z");
+  
+  if (!formatoISO.endsWith("Z")) {
+    formatoISO += "Z";
+  }
+
+  return new Date(formatoISO);
 }
 
 export function setVisitante(v: boolean): void { visitante = v; }
 export function UsuarioEsAutenticado(): boolean { return infoBaseUsuarioActual.idPersona !== ""; }
 
-// --- Lógica de API ---
+// ==========================================
+// --- LÓGICA DE API (ENDPOINTS) ---
+// ==========================================
 
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
@@ -148,7 +213,6 @@ export async function validarPersonaYTraerData(
     });
 
     const data = response.data;
-
     if (!data.token || !data.persona) throw new Error("Respuesta de API incompleta");
 
     return { token: data.token, idPersona: data.persona };
@@ -200,7 +264,6 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
   }
 }
 
-// ✅ NUEVO ENDPOINT 1: Historial Analítico de la Persona
 export async function ObtenerAnalitico(): Promise<Analitico> {
   const token = await AsyncStorage.getItem("token");
   const personaId = infoBaseUsuarioActual.idPersona;
@@ -217,7 +280,6 @@ export async function ObtenerAnalitico(): Promise<Analitico> {
   }
 }
 
-// ✅ NUEVO ENDPOINT 2 CORREGIDO
 export async function ObtenerAgendaFechas(
   fechaInicio: string = "2026-04-01",
   fechaFin: string = "2026-05-31",
@@ -235,15 +297,55 @@ export async function ObtenerAgendaFechas(
         headers: { "Authorization": `Bearer ${token}` }
       }
     );
-    
-    // ⚠️ CORRECCIÓN: Tu API devuelve { data: [...] }, por lo que accedemos a response.data.data
     return response.data.data as EventoAgenda[];
   } catch (err: any) {
     throw new Error("Error al obtener la agenda desde la API propia");
   }
 }
 
-// --- Sesión y Logout ---
+export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalendarioAcademico[]> {
+  const token = await AsyncStorage.getItem("token");
+
+  try {
+    const response = await api.get("/eventos", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    return response.data as EventoCalendarioAcademico[];
+  } catch (err: any) {
+    throw new Error("Error al obtener la lista de eventos desde el servidor");
+  }
+}
+
+export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
+  const token = await AsyncStorage.getItem("token");
+
+  try {
+    const response = await api.get("/noticias", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    return response.data as NoticiaAPI[];
+  } catch (err: any) {
+    throw new Error("Error al obtener las noticias desde el nuevo endpoint de PHP");
+  }
+}
+
+export async function ObtenerRegistrosAPI(): Promise<RegistroAPI[]> {
+  const token = await AsyncStorage.getItem("token");
+
+  try {
+    const response = await api.get("/registros", {
+      headers: { "Authorization": `Bearer ${token}` }
+    });
+    return response.data as RegistroAPI[];
+  } catch (err: any) {
+    throw new Error("Error al obtener los registros desde la API PHP");
+  }
+}
+
+// ==========================================
+// --- SESIÓN Y LOGOUT ---
+// ==========================================
+
 async function guardarSesion(token: string, personaId: number): Promise<void> {
   try {
     await AsyncStorage.setItem("token", token);
@@ -264,7 +366,10 @@ export async function Logout() {
   await AsyncStorage.removeItem("idPersona");
 }
 
-// --- UI / Dark Mode ---
+// ==========================================
+// --- UI / DARK MODE ---
+// ==========================================
+
 export let modoOscuro: boolean = false;
 export let colorFondoTop: string = "#fff";
 export let colorFondoBottom: string = "#ddd";

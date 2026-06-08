@@ -70,7 +70,6 @@ export default DropdownPropuestas;
 
 const styles = StyleSheet.create({
   card: {
-    //backgroundColor: 'transparent',
     backgroundColor: 'transparent',
     paddingHorizontal: 15,
     paddingVertical: 0,

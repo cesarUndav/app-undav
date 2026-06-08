@@ -10,7 +10,7 @@ import {
   eventoAgendaToFechaString,
 } from '../data/agenda';
 import { getShadowStyle } from '@/constants/ShadowStyle';
-import { enModoOscuro } from '@/data/DatosUsuarioGuarani';
+import { enModoOscuro } from '@/data/apiAppUndav';
 import { azulLogoUndav } from '@/constants/Colors';
 
 type AgendaItemProps = {
