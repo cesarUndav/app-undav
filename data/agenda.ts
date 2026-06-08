@@ -6,8 +6,6 @@ import {
   ObtenerEventosCalendarioAcademico,
   parsearFechaPHP // 🌟 IMPORTADO: Usamos la función global centralizada
 } from "./apiAppUndav";
-import { listaEventosAgenda } from "./notificaciones";
-// 🗑️ REMOVIDO: Se eliminó la importación del viejo cliente de Flask
 
 // Exportamos un tipo que representa el objeto Evento tal como viene de la API.
 export type EventoAPIFlask = {

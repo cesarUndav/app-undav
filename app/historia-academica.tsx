@@ -2,6 +2,7 @@ import { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, TouchableOpacity } from 'react-native';
 import CustomText from '../components/CustomText';
 import {
+  ObtenerAnalitico,
   ObtenerJsonString, // Quitamos JsonStringAObjeto de acá
   infoBaseUsuarioActual
 } from '@/data/apiAppUndav';
@@ -11,7 +12,6 @@ import { azulClaro, negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
 import FondoGradiente from '@/components/FondoGradiente';
 import React from 'react';
-import { ObtenerAnaliticoDirecto } from '@/data/ApiRestGuaraniOficial';
 
 function convertToISODateFormat(dateStr: string): string {
   const [day, month, year] = dateStr.split('/');
@@ -55,82 +55,100 @@ export default function HistoriaAcademica() {
     ));
   }
 
-  useEffect(() => {
+useEffect(() => {
   const fetchHistoria = async () => {
+    setLoading(true);
     try {
-      // 2. Llamamos directamente a la API oficial pasándole el idPersona del usuario logueado
-      const json = await ObtenerAnaliticoDirecto(infoBaseUsuarioActual.idPersona);
+      // 1. Llamamos a la API
+      const json = await ObtenerAnalitico();
 
       const listaActividad: Actividad[] = [];
       const listaActividadAprobadas: Actividad[] = [];
+      
+      let sumaNotasAprobadas = 0;
+      let sumaNotasTotal = 0;
+      const fechas = new Set<string>();
 
-        if (json.error != null) {
-          setListaActividades([]);
-          setListaActividadesAprobadas([]);
+      // 🛠️ CORRECCIÓN 1: Accedemos de manera segura a json.data porque es la nueva raíz del array
+      const registros = json && Array.isArray(json.data) ? json.data : [];
+
+      registros.forEach((elem: any, index: number) => {
+        const nota = Number(elem.nota);
+        
+        // 🛠️ CORRECCIÓN 2: Parseo seguro de fecha "DD/MM/YYYY" a formato ordenable "YYYY-MM-DD"
+        let fechaISO = '';
+        if (elem.fecha && elem.fecha.includes('/')) {
+          const [dia, mes, anio] = elem.fecha.split('/');
+          fechaISO = `${anio}-${mes}-${dia}`; // Queda "2025-02-24"
         } else {
-          let sumaNotasAprobadas = 0;
-          let sumaNotasTotal = 0;
-          const fechas = new Set<string>();
-
-          json.forEach((elem: any, index: number) => {
-            const nota = Number(elem.nota);
-            const fechaISO = convertToISODateFormat(elem.fecha);
-
-            const nuevaActividad: Actividad = {
-              id: index,
-              title: `${elem.actividad_nombre}`,
-              body: `Nota: ${nota}\n${elem.resultado}: ${elem.fecha}`,
-              fecha: fechaISO,
-              nota: nota,
-            };
-
-            listaActividad.push(nuevaActividad);
-            sumaNotasTotal += nota;
-            fechas.add(fechaISO.slice(0, 7));
-
-            if (nota >= 4) {
-              listaActividadAprobadas.push(nuevaActividad);
-              sumaNotasAprobadas += nota;
-            }
-          });
-
-          const cantMateriasAprobadas = listaActividadAprobadas.length;
-          const cantMateriasTotal = listaActividad.length;
-
-          setCantMaterias(cantMateriasAprobadas);
-          setPromedio(
-            cantMateriasAprobadas === 0
-              ? 0
-              : sumaNotasAprobadas / cantMateriasAprobadas
-          );
-          setPromedioConAplazos(
-            cantMateriasTotal === 0 ? 0 : sumaNotasTotal / cantMateriasTotal
-          );
-
-          const cuatrimestres = fechas.size / 2 || 1;
-          setMateriasPorCuatrimestre(cantMateriasAprobadas / cuatrimestres);
-
-          listaActividad.sort(
-            (b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
-          );
-          listaActividadAprobadas.sort(
-            (b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
-          );
-
-          setListaActividades(listaActividad);
-          setListaActividadesAprobadas(listaActividadAprobadas);
-          setHayHistoria(true);
+          // Por si las dudas la función vieja aún sirve para algún caso alternativo
+          fechaISO = convertToISODateFormat(elem.fecha);
         }
-      } catch (error) {
-        console.error('Error al obtener historia académica:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchHistoria();
-  }, [conAplazos]);
+        const nuevaActividad: Actividad = {
+          id: index,
+          title: `${elem.actividad_nombre}`,
+          body: `Nota: ${nota}\n${elem.resultado}: ${elem.fecha}`,
+          fecha: fechaISO,
+          nota: nota,
+        };
 
+        listaActividad.push(nuevaActividad);
+        sumaNotasTotal += nota;
+        
+        if (fechaISO && fechaISO.length >= 7) {
+          fechas.add(fechaISO.slice(0, 7)); // Guarda "YYYY-MM"
+        }
+
+        // Validación de aprobación (notas del 4 al 10)
+        if (nota >= 4) {
+          listaActividadAprobadas.push(nuevaActividad);
+          sumaNotasAprobadas += nota;
+        }
+      });
+
+      const cantMateriasAprobadas = listaActividadAprobadas.length;
+      const cantMateriasTotal = listaActividad.length;
+
+      // Cálculos estadísticos
+      setCantMaterias(cantMateriasAprobadas);
+      setPromedio(
+        cantMateriasAprobadas === 0
+          ? 0
+          : sumaNotasAprobadas / cantMateriasAprobadas
+      );
+      setPromedioConAplazos(
+        cantMateriasTotal === 0 ? 0 : sumaNotasTotal / cantMateriasTotal
+      );
+
+      const cuatrimestres = fechas.size / 2 || 1;
+      setMateriasPorCuatrimestre(cantMateriasAprobadas / cuatrimestres);
+
+      // Ordenar de más reciente a más antigua
+      listaActividad.sort(
+        (b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+      );
+      listaActividadAprobadas.sort(
+        (b, a) => new Date(a.fecha).getTime() - new Date(b.fecha).getTime()
+      );
+
+      // Guardar en estados
+      setListaActividades(listaActividad);
+      setListaActividadesAprobadas(listaActividadAprobadas);
+      setHayHistoria(listaActividad.length > 0);
+
+    } catch (error) {
+      console.error('Error al obtener historia académica:', error);
+      setListaActividades([]);
+      setListaActividadesAprobadas([]);
+      setHayHistoria(false);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  fetchHistoria();
+}, [conAplazos]);
   return (
     <FondoGradiente style={styles.fondo}>
       <LoadingWrapper loading={loading}>

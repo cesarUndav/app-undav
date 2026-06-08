@@ -19,7 +19,7 @@ export default function Autogestion() {
       <>
         <BotonTexto
           label="Certificado de Examen"
-          url="https://docs.google.com/document/d/1NGOoRhWOAubZEhG0EzOjhquI1bIKpYwE/edit#heading=h.gjdgxs"
+          route="/certificado-examen"
         />
 
         {linkSelloInstitucional && (

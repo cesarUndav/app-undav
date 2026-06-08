@@ -1,3 +1,5 @@
+// _layout.tsx
+
 import 'fast-text-encoding'; 
 import 'react-native-gesture-handler';
 import { Slot, usePathname, useRouter } from 'expo-router';
@@ -51,11 +53,16 @@ export default function Layout() {
           const personaId = parseInt(personaIdStr, 10);
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
+          
           if (pathName === '/' || pathName.startsWith('/login')) {
             router.replace('/home-estudiante');
           }
         } else {
           setVisitante(true);
+          // 🛠️ CONTROL GLOBAL A: Si no hay token, lo mandamos al login de una, evitando que cargue el resto
+          if (pathName === '/') {
+            router.replace('/loginAutenticado');
+          }
         }
       } catch (error) {
         setVisitante(true);
@@ -68,6 +75,22 @@ export default function Layout() {
     prepararApp();
   }, []);
 
+  // 🛠️ CONTROL GLOBAL B: Listener en tiempo real de rutas para proteger componentes internos
+  useEffect(() => {
+    if (!sesionVerificada) return;
+
+    // Rutas públicas que se pueden navegar sin sesión
+    const rutasPublicas = ['/', '/loginAutenticado', '/loginMail', '/home-visitante'];
+    const esRutaProtegida = !rutasPublicas.includes(pathName);
+
+    // Si el usuario es visitante o no tiene sesión e intenta pisar una ruta privada (como calendario o analítico)
+    if (esRutaProtegida && visitante) {
+      console.log(`🛑 [Seguridad Global] Bloqueado intento de navegación a ${pathName} sin credenciales.`);
+      router.replace('/loginAutenticado');
+    }
+  }, [pathName, sesionVerificada]);
+
+
   // 2. 🔔 POLING ACTIVO DE NOTIFICACIONES (Con Alertas Reactivas Garantizadas)
   useEffect(() => {
     if (!sesionVerificada || visitante) return;
@@ -78,23 +101,18 @@ export default function Layout() {
         const noticiasServidor = await cargarNoticias();
         const cantidadServidor = noticiasServidor.length;
 
-        // Si es el primer arranque, inicializamos la referencia base
         if (refCantidadPrevia.current === -1) {
           refCantidadPrevia.current = cantidadServidor;
           return;
         }
 
-        // 🔔 DETECCIÓN DE ALTAS: Hay más noticias que antes en Flask
         if (cantidadServidor > refCantidadPrevia.current) {
           const diferencia = cantidadServidor - refCantidadPrevia.current;
-          
-          // Modificamos el contador global (Esto forzará el redibujado de la campana)
           setNotificationCount(diferencia);
 
           const noticiasCombinadas = todasLasNotificaciones();
           const ultimaNoticia = noticiasCombinadas[0];
 
-          // Lanzamos el modal de alerta nativa
           Alert.alert(
             "🔔 Nueva Notificación",
             `${ultimaNoticia ? ultimaNoticia.titulo : "Tenés novedades pendientes."}\n\n${ultimaNoticia?.contenido ? ultimaNoticia.contenido : ""}`,
@@ -104,7 +122,6 @@ export default function Layout() {
             ]
           );
         } 
-        // DETECCIÓN DE BAJAS: Se eliminaron noticias en el servidor
         else if (cantidadServidor < refCantidadPrevia.current) {
           console.log('🗑️ [Polling] Se detectaron eliminaciones en el backend de Flask.');
         }
@@ -128,6 +145,8 @@ export default function Layout() {
     }
   }, [pathName]);
 
+  // 🛠️ CONTROL GLOBAL C: Mientras no se valide la sesión, no renderizamos el Slot.
+  // Evita que las sub-pantallas ocultas ejecuten sus useEffects antes de tiempo.
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>

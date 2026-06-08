@@ -148,7 +148,7 @@ export default function Configuracion() {
               case 'text':
                 return (
                   <View style={styles.item}>
-                    <CustomText style={styles.textItem}>
+                    <CustomText style={styles.textItem} weight='bold'>
                       {item.label}
                     </CustomText>
                   </View>
@@ -162,7 +162,7 @@ export default function Configuracion() {
                       Platform.OS !== 'ios' && styles.androidToggleFix,
                     ]}
                   >
-                    <CustomText style={styles.textItem}>
+                    <CustomText style={styles.textItem} weight='bold'>
                       {item.label}
                     </CustomText>
 
@@ -176,7 +176,7 @@ export default function Configuracion() {
               case 'link':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.linkItem}>
+                    <CustomText style={styles.linkItem} weight='bold'>
                       {item.label}
                     </CustomText>
                   </TouchableOpacity>
@@ -185,7 +185,7 @@ export default function Configuracion() {
               case 'action':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.actionItem}>
+                    <CustomText style={styles.actionItem} weight='bold'>
                       {item.label}
                     </CustomText>
                   </TouchableOpacity>
@@ -201,7 +201,7 @@ export default function Configuracion() {
                       style={styles.item}
                       onPress={() => setMostrarPropuestas(!mostrarPropuestas)}
                     >
-                      <CustomText style={styles.textItem}>
+                      <CustomText style={styles.textItem} weight='bold'>
                         {item.label}
                       </CustomText>
 
@@ -213,7 +213,7 @@ export default function Configuracion() {
                     {mostrarPropuestas &&
                       item.content.map((line, idx) => (
                         <View key={idx} style={styles.dropdownLine}>
-                          <CustomText style={styles.textItem}>
+                          <CustomText style={styles.textItem} weight='bold'>
                             {line}
                           </CustomText>
                         </View>
@@ -251,15 +251,15 @@ const styles = StyleSheet.create({
     marginVertical: -10,
   },
   textItem: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#0b254a',
   },
   linkItem: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#0b5085',
   },
   actionItem: {
-    fontSize: 16,
+    fontSize: 14,
     color: '#d9534f',
   },
   separator: {
