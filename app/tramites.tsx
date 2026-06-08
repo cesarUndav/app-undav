@@ -1,21 +1,24 @@
-// app/tramites.tsx previamente conocido como: app/contacto-para-estudiantes.tsx
+// app/tramites.tsx
 
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { View, Text } from 'react-native';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import DropdownSeccion from '@/components/DropdownSeccion';
 import BotonTextoMail from '@/components/BotonTextoMail';
 import BotonTextoTelefono from '@/components/BotonTextoTelefono';
 import BotonTexto from '@/components/BotonTexto';
 import ListaItem from '@/components/ListaItem';
+import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado } from '@/constants/Colors';
-import BotonTextoSIU from '@/components/BotonTextoSIU';
+import { ObtenerTramites } from '@/data/apiAppUndav';
 
+// 🛠️ TIPADOS EXACTOS AJUSTADOS AL JSON REAL DE TU API
 type ItemMail = {
   tipo: 'mail';
   label: string;
   mail: string;
-  asunto: string;
-  cuerpo: string;
+  asunto?: string;
+  cuerpo?: string;
 };
 
 type ItemTelefono = {
@@ -42,325 +45,102 @@ type SeccionContacto = {
   items: ItemContacto[];
 };
 
-const seccionesContacto: SeccionContacto[] = [
-  {
-    titulo: 'Trámites estudiantiles',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Consultas generales a estudiantes UNDAV',
-        mail: 'tramitesestudiantes@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Prórrogas de cursadas vencidas',
-        mail: 'finales@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Cambios de planes de estudio',
-        mail: 'cambiosdeplan@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Documentación de estudiantes',
-        mail: 'legajosestudiantes@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Movilidad estudiantil',
-        mail: 'movilidadacademica@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Tutorías de apoyo al estudiante',
-        mail: 'tutoriasacademica@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Equivalencias',
-        mail: 'equivalencias@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Talleres para estudiantes ingresantes',
-        mail: 'ingresantes@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Secretaría Académica',
-        mail: 'academica@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'telefono',
-        label: 'Secretaría Académica: 5436-7597',
-        tel: '54367597',
-      },
-      {
-        tipo: 'telefono',
-        label: 'Atención al Estudiante: 5436-7521',
-        tel: '54367521',
-      },
-    ],
-  },
-  {
-    titulo: 'Inscripciones',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Consultas generales',
-        mail: 'inscripciones@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Cambios de carrera',
-        mail: 'cambiosdecarrera@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Readmisiones',
-        mail: 'readmisiones@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Mayores de 25 Sin Título Secundario',
-        mail: 'mayoresde25@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'telefono',
-        label: '5436-7545',
-        tel: '54367545',
-      },
-    ],
-  },
-  {
-    titulo: 'Educación a Distancia',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Trámites académico-administrativos',
-        mail: 'tramitesestudiantes@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Consultas Formulario A',
-        mail: 'administracionead@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Consultas Formulario B / Becas',
-        mail: 'becas@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Soporte técnico campus',
-        mail: 'campusestudiantes@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-    ],
-  },
-  {
-    titulo: 'Bienestar Universitario',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Bienestar Universitario',
-        mail: 'bienestaruniversitario@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'telefono',
-        label: '4229-2480',
-        tel: '01142292480',
-      },
-      {
-        tipo: 'telefono',
-        label: '5436-7530',
-        tel: '01154367530',
-      },
-      {
-        tipo: 'telefono',
-        label: '5436-7531',
-        tel: '01154367531',
-      },
-      {
-        tipo: 'mapa',
-        label: 'Sede España: lunes a viernes de 9 a 20 hs',
-        url: 'https://maps.google.com/?q=España 350, Avellaneda',
-      },
-      {
-        tipo: 'mapa',
-        label: 'Sede Piñeyro: lunes a viernes de 9 a 20 hs',
-        url: 'https://maps.google.com/?q=Mario Bravo 1460, Piñeyro, Avellaneda',
-      },
-    ],
-  },
-  {
-    titulo: 'Títulos, certificaciones y tesis',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Títulos',
-        mail: 'titulos@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Certificaciones',
-        mail: 'certificaciones@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Tesis',
-        mail: 'tesis@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-    ],
-  },
-  {
-    titulo: 'Departamentos académicos',
-    items: [
-      {
-        tipo: 'mail',
-        label: 'Departamento de Ambiente y Turismo',
-        mail: 'ambienteyturismo@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'telefono',
-        label: 'Ambiente y Turismo: 4229-2471',
-        tel: '01142292471',
-      },
-      {
-        tipo: 'mail',
-        label: 'Departamento de Arquitectura, Diseño y Urbanismo',
-        mail: 'arquitecturaydiseno@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Departamento de Ciencias Sociales',
-        mail: 'sociales@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Departamento de Cultura, Arte y Comunicación',
-        mail: 'cac@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Departamento de Salud y Actividad Física',
-        mail: 'deptosalud@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-      {
-        tipo: 'mail',
-        label: 'Departamento de Tecnología y Administración',
-        mail: 'dtya@undav.edu.ar',
-        asunto: '',
-        cuerpo: '',
-      },
-    ],
-  },
-];
-const linkSelloInstitucional = "https://docs.google.com/forms/d/e/1FAIpQLSc2InEWA3-Xzr0ixrTwDpDIopLAzpYr4D8u2UcEr3PJpeJE3g/viewform";
-
 export default function Tramites() {
+  const [secciones, setSecciones] = useState<SeccionContacto[]>([]);
+  const [loading, setLoading] = useState(true);
+  const [errorCarga, setErrorCarga] = useState(false);
+
+  // 🛠️ CONTROLADOR DE CARGA ASÍNCRONO DE LA API
+  useEffect(() => {
+    const cargarContactos = async () => {
+      try {
+        setLoading(true);
+        setErrorCarga(false);
+        const res = await ObtenerTramites();
+        
+        if (Array.isArray(res)) {
+          setSecciones(res);
+        } else {
+          setErrorCarga(true);
+        }
+      } catch (error) {
+        console.error("❌ Error al traer los ítems de contacto desde la API:", error);
+        setErrorCarga(true);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    cargarContactos();
+  }, []);
+
   return (
     <FondoScrollGradiente>
-    
-      {seccionesContacto.map((seccion) => (
-        <DropdownSeccion key={seccion.titulo} titulo={seccion.titulo}>
-          <>
-            {seccion.items.map((item) => {
-              if (item.tipo === 'mail') {
+      <LoadingWrapper loading={loading}>
+        
+        {/* Si la API falló, avisamos de manera transparente */}
+        {errorCarga && (
+          <View style={{ padding: 20, alignItems: 'center' }}>
+            <Text style={{ color: negroAzulado, textAlign: 'center', fontSize: 16 }}>
+              No se pudo conectar con el servidor. Por favor, intentá nuevamente más tarde.
+            </Text>
+          </View>
+        )}
+
+        {/* Renderizado totalmente dinámico del JSON de la API */}
+        {secciones.map((seccion) => (
+          <DropdownSeccion key={seccion.titulo} titulo={seccion.titulo}>
+            <>
+              {seccion.items.map((item, index) => {
+                
+                // 1. Correos electrónicos
+                if (item.tipo === 'mail' && item.mail) {
+                  return (
+                    <BotonTextoMail
+                      key={`mail-${index}-${item.mail}`}
+                      label={item.label}
+                      mail={item.mail}
+                      asunto={item.asunto || ''}
+                      cuerpo={item.cuerpo || ''}
+                    />
+                  );
+                }
+
+                // 2. Teléfonos
+                if (item.tipo === 'telefono' && item.tel) {
+                  return (
+                    <BotonTextoTelefono
+                      key={`tel-${index}-${item.tel}`}
+                      label={item.label}
+                      tel={item.tel}
+                    />
+                  );
+                }
+
+                // 3. Mapas / Ubicaciones físicas
+                if (item.tipo === 'mapa' && item.url) {
+                  return (
+                    <BotonTexto
+                      key={`mapa-${index}-${item.url}`}
+                      label={item.label}
+                      url={item.url}
+                    />
+                  );
+                }
+
+                // 4. Casos de texto simple o tipos desconocidos que mande la API
                 return (
-                  <BotonTextoMail
-                    key={`${item.label}-${item.mail}`}
-                    label={item.label}
-                    mail={item.mail}
-                    asunto={item.asunto}
-                    cuerpo={item.cuerpo}
+                  <ListaItem
+                    key={`texto-${index}-${item.label}`}
+                    title={item.label}
+                    titleColor={negroAzulado}
                   />
                 );
-              }
-
-              if (item.tipo === 'telefono') {
-                return (
-                  <BotonTextoTelefono
-                    key={`${item.label}-${item.tel}`}
-                    label={item.label}
-                    tel={item.tel}
-                  />
-                );
-              }
-
-              if (item.tipo === 'mapa') {
-                return (
-                  <BotonTexto
-                    key={`${item.label}-${item.url}`}
-                    label={item.label}
-                    url={item.url}
-                  />
-                );
-              }
-
-              return (
-                <ListaItem
-                  key={item.label}
-                  title={item.label}
-                  titleColor={negroAzulado}
-                />
-              );
-            })}
-          </>
-        </DropdownSeccion>
-      ))}
+              })}
+            </>
+          </DropdownSeccion>
+        ))}
+      </LoadingWrapper>
     </FondoScrollGradiente>
   );
 }
