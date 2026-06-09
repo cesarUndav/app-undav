@@ -29,7 +29,7 @@ const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
   colorDeFondo = azulLogoUndav,
   inicialmenteAbierto = false,
   styleContenido,
-  gap = 0,
+  gap = 2,
 }) => {
   const [abierto, setAbierto] = useState(inicialmenteAbierto);
 
@@ -68,7 +68,7 @@ const DropdownSeccion: React.FC<DropdownSeccionProps> = ({
 
 const styles = StyleSheet.create({
   container: {
-    marginBottom: 8,
+    marginBottom: 0,
   },
   header: {
     flexDirection: 'row',
@@ -79,6 +79,7 @@ const styles = StyleSheet.create({
     borderTopLeftRadius: 0,
     borderTopRightRadius: 0,
     borderBottomLeftRadius: 0,
+    marginBottom: 2
   },
   titulo: {
     fontSize: 16,

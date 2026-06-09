@@ -9,7 +9,7 @@ import {
   modoOscuro,
   UsuarioEsAutenticado,
 } from '@/data/apiAppUndav';
-import { azulClaro, azulLogoUndav, grisBorde } from '@/constants/Colors';
+import { azulClaro, azulLogoUndav, azulMedioUndav, grisBorde } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // 🎯 Importamos AsyncStorage
 
@@ -70,7 +70,7 @@ export default function UndavEstudianteHeader() {
             <Ionicons 
               name="eye" 
               size={32} 
-              color={modoOscuro ? '#fff' : azulLogoUndav} 
+              color={modoOscuro ? '#fff' : azulClaro} 
             />
           </View>
         ) : (
