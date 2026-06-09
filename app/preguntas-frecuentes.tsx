@@ -2,7 +2,7 @@
 
 import React, { useState } from 'react';
 // 🌟 IMPORTANTE: Agregamos KeyboardAvoidingView y Platform
-import { View, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform } from 'react-native';
+import { View, StyleSheet, TouchableOpacity, KeyboardAvoidingView, Platform, ScrollView } from 'react-native';
 import Collapsible from 'react-native-collapsible';
 import { router } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
@@ -11,6 +11,7 @@ import CustomText from '@/components/CustomText';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import { azulLogoUndav, negroAzulado } from '@/constants/Colors';
 import BarraBusqueda, { coincideBusqueda } from '@/components/BarraBusqueda';
+import FondoGradiente from '@/components/FondoGradiente';
 
 type SegmentoRespuesta =
   | {
@@ -321,19 +322,16 @@ export default function PreguntasFrecuentes() {
   });
 
   return (
-    // 🌟 ENVOLVEMOS TODO EN EL KEYBOARD AVOIDING VIEW
-    <KeyboardAvoidingView
-      behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
-      style={styles.container}
-      // En iOS suele requerir un offset dependiendo de si tenés un Header de React Navigation o Expo Router
-      keyboardVerticalOffset={Platform.OS === 'ios' ? 90 : 0} 
-    >
-      <FondoScrollGradiente>
+    <FondoGradiente>
+      {/* La barra queda abajo del scroll, pero empujada dinámicamente por el KeyboardAvoidingView */}
+      <View style={styles.busquedaContainer}>
+        <BarraBusqueda value={search} onChangeText={setSearch} />
+      </View>
+      <ScrollView contentContainerStyle={{gap: 10}}>
         <CustomText style={styles.descripcion} weight='bold'>
           Información útil para visitantes, aspirantes y personas interesadas en
           estudiar en la Universidad Nacional de Avellaneda.
         </CustomText>
-
         {faqsFiltradas.length === 0 ? (
           <View style={styles.noResultsContainer}>
             <Ionicons name="search-outline" size={48} color={grisBorde} />
@@ -404,13 +402,8 @@ export default function PreguntasFrecuentes() {
             );
           })
         )}
-      </FondoScrollGradiente>
-
-      {/* La barra queda abajo del scroll, pero empujada dinámicamente por el KeyboardAvoidingView */}
-      <View style={styles.busquedaContainer}>
-        <BarraBusqueda value={search} onChangeText={setSearch} />
-      </View>
-    </KeyboardAvoidingView>
+      </ScrollView>
+    </FondoGradiente>
   );
 }
 
@@ -420,21 +413,17 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: '#fff', // O el color de fondo de tu app
   },
-  header: {
-    marginBottom: 16,
-  },
   descripcion: {
-    fontSize: 15,
-    lineHeight: 22,
+    fontSize: 14,
+    //lineHeight: 20,
     color: grisTexto,
   },
   faqContainer: {
-    marginBottom: 8,
   },
   preguntaHeader: {
     backgroundColor: azulLogoUndav,
-    paddingHorizontal: 18,
-    paddingVertical: 16,
+    paddingHorizontal: 15,
+    paddingVertical: 10,
     flexDirection: 'row',
     alignItems: 'center',
     justifyContent: 'space-between',
@@ -448,8 +437,9 @@ const styles = StyleSheet.create({
   },
   respuestaContainer: {
     backgroundColor: '#fff',
-    paddingHorizontal: 16,
-    paddingVertical: 14,
+    paddingHorizontal: 15,
+    paddingTop: 8,
+    paddingBottom: 4,
     borderWidth: 1,
     borderTopWidth: 0,
     borderColor: grisBorde,
@@ -473,15 +463,18 @@ const styles = StyleSheet.create({
     textDecorationLine: 'underline',
   },
   busquedaContainer: {
-    paddingHorizontal: 15,
-    paddingBottom: Platform.OS === 'ios' ? 20 : 12, // Aire adaptado al sistema operativo
-    paddingTop: 8,
+    paddingHorizontal: 0,
+    paddingBottom: 0, // Aire adaptado al sistema operativo
+    paddingTop: 0,
     backgroundColor: '#fff', // Evita que se transparente el scroll por detrás al subir
+    gap: 10,
+    marginBottom: 10
   },
   noResultsContainer: {
     alignItems: 'center',
     justifyContent: 'center',
     paddingVertical: 40,
+    gap: 10
   },
   noResultsText: {
     textAlign: 'center',
