@@ -133,5 +133,5 @@ export function notificacionSubtitulo(notif: Notificacion): string {
   else if (dias === 0) diasStr = "hoy";
   else diasStr = `hace ${-dias} día${-dias > 1 ? 's':''}`;
 
-  return `${notif.contenido}\n${DateToFechaString(notif.fecha)} (${diasStr})`;
+  return `${notif.contenido}\n\n${DateToFechaString(notif.fecha)} (${diasStr})`;
 }

@@ -69,7 +69,7 @@ export default function UndavEstudianteHeader() {
           <View style={undavHeaderStyles.textReplacementContainer}>
             <Ionicons 
               name="eye" 
-              size={32} 
+              size={28} 
               color={modoOscuro ? '#fff' : azulClaro} 
             />
           </View>

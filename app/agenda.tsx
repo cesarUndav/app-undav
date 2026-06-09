@@ -1,6 +1,6 @@
 // app/agenda.tsx
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react'; // 🎯 Importamos useEffect
 import {
   View,
   StyleSheet,
@@ -12,6 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import { useLocalSearchParams } from 'expo-router'; // 🎯 IMPORTAMOS EL CAPTURADOR DE PARÁMETROS
 
 import CustomText from '../components/CustomText';
 import {
@@ -44,7 +45,8 @@ const filterBtnColor = azulMedioUndav;
 
 export default function Agenda() {
   const { isLoading, error, refetchEventos } = useAgenda();
-  const insets = useSafeAreaInsets(); // 🌟 Esto mide el espacio físico real del dispositivo abajo
+  const insets = useSafeAreaInsets(); 
+  const { editId } = useLocalSearchParams<{ editId?: string }>(); // 🎯 CAPTURAMOS EL ID REMOTO SI EXISTE
 
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
@@ -56,7 +58,7 @@ export default function Agenda() {
   const [descripcion, setDescripcion] = useState('');
   const [fechaInicio, setFechaInicio] = useState<Date>(new Date());
   const [fechaFin, setFechaFin] = useState<Date>(new Date());
-  const [rangoHabilitado, setRangoHabilitado] = useState(false); // 🌟 Controla si muestra fecha de fin
+  const [rangoHabilitado, setRangoHabilitado] = useState(false); 
   const [showInicioPicker, setShowInicioPicker] = useState(false);
   const [showFinPicker, setShowFinPicker] = useState(false);
   const [modoEdicion, setModoEdicion] = useState(false);
@@ -74,7 +76,7 @@ export default function Agenda() {
     setDescripcion('');
     setFechaInicio(new Date());
     setFechaFin(new Date());
-    setRangoHabilitado(false); // 🌟 Resetea la interfaz
+    setRangoHabilitado(false); 
   };
 
   const abrirModalAgregarEvento = () => {
@@ -85,45 +87,49 @@ export default function Agenda() {
   };
 
   const abrirModalEditarEvento = (id: string) => {
+    const eventoEditado: EventoAgenda = obtenerEventoConId(id);
+
+    // 🛡️ Guardrail: Si el contexto no terminó de cargar los datos físicos, evitamos el crash
+    if (!eventoEditado) return;
+
     setModoEdicion(true);
     setTituloModal('Editar Evento');
     setIdEventoAbierto(id);
-
-    const eventoEditado: EventoAgenda = obtenerEventoConId(id);
 
     setTitulo(eventoEditado.titulo);
     setDescripcion(eventoEditado.descripcion ? eventoEditado.descripcion : '');
     setFechaInicio(eventoEditado.fechaInicio);
     setFechaFin(eventoEditado.fechaFin);
     
-    // 🌟 Si las fechas guardadas son diferentes, habilitamos el campo de fin automáticamente
     const esRango = eventoEditado.fechaInicio.toDateString() !== eventoEditado.fechaFin.toDateString();
     setRangoHabilitado(esRango);
     
     setModalVisible(true);
   };
 
+  // 🎯 ESCUCHA DE PARÁMETROS EXTERNOS: Se dispara de inmediato al resolver la sincronización
+  useEffect(() => {
+    if (!isLoading && editId) {
+      abrirModalEditarEvento(editId);
+    }
+  }, [editId, isLoading]);
+
   const confirmarAgregarEvento = () => {
-    // 🌟 Normalizar la fecha actual a las 00:00 para permitir crear eventos para el día de hoy sin conflicto de horas
     const hoy = new Date();
     hoy.setHours(0, 0, 0, 0);
 
     const inicioValidar = new Date(fechaInicio);
     inicioValidar.setHours(0, 0, 0, 0);
 
-    // Validación 1: Evitar fechas en el pasado
     if (inicioValidar < hoy) {
       Alert.alert('Fecha inválida', 'No podés registrar un evento en una fecha que ya pasó.');
       return;
     }
 
-    // Determinar la fecha de finalización real
     let fechaFinReal = new Date(fechaFin);
     if (!rangoHabilitado) {
-      // Si el switch está apagado, la fecha de fin es idéntica a la inicial
       fechaFinReal = new Date(fechaInicio);
     } else {
-      // Validación 2: Si el rango está activo, comprobar que el fin no sea previo al inicio
       const finValidar = new Date(fechaFin);
       finValidar.setHours(0, 0, 0, 0);
       if (finValidar < inicioValidar) {
@@ -144,7 +150,6 @@ export default function Agenda() {
     }
 
     refetchEventos();
-
     setModalVisible(false);
     limpiarVariablesModal();
   };
@@ -181,9 +186,7 @@ export default function Agenda() {
 
     return listaFiltrada.map((evento, index) => {
       const esUltimo = index === listaFiltrada.length - 1;
-      const extraStyle = esUltimo
-        ? { borderBottomRightRadius: 20 }
-        : undefined;
+      const extraStyle = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
 
       if (evento.id.startsWith('p')) {
         return (
@@ -221,7 +224,6 @@ export default function Agenda() {
           </CustomText>
         ) : mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
           <>
-
             <DropdownSeccion
               titulo="MIS MATERIAS"
               styleContenido={styles.dropdownContenido}
@@ -238,14 +240,13 @@ export default function Agenda() {
                     <ListaItem
                       key={materia.id}
                       title={materia.titulo}
-                      subtitle={materia.descripcion} // 📅 Mostrará: "Miércoles | 18:30 a 22:30 (Presencial)"
+                      subtitle={materia.descripcion}
                       styleExtra={esUltimo ? { borderBottomRightRadius: 20 } : undefined}
                     />
                   );
                 })
               )}
             </DropdownSeccion>
-
 
             <DropdownSeccion
               titulo="EN CURSO"
@@ -285,21 +286,15 @@ export default function Agenda() {
       <View 
         style={[
           stylesFlotante.floatingBox, 
-          { 
-            /* 🌟 CÁLCULO NATIVO INMUNE A CONDICIONES DE CARRERA:
-              insets.bottom (Notch/Botones del sistema) + 60 (Alto fijo de barra) + 16 (Margen estético) */
-            bottom: insets.bottom + 60 + 16 
-          }
+          { bottom: insets.bottom + 60 + 16 }
         ]}
       >
-        {/* El menú de filtros ahora aparece primero en el row, posicionándose a la izquierda */}
         {mostrarFiltros && (
           <View style={stylesFlotante.filterOptionsParent}>
             <CustomText weight="bold" style={stylesFlotante.filterHeader}>
               FILTRAR VISTA
             </CustomText>
             
-            {/* Botón: Feriados */}
             <TouchableOpacity
               onPress={() => setMostrarFeriados(!mostrarFeriados)}
               style={[
@@ -317,7 +312,6 @@ export default function Agenda() {
               </CustomText>
             </TouchableOpacity>
 
-            {/* Botón: Personalizados */}
             <TouchableOpacity
               onPress={() => setMostrarPersonalizados(!mostrarPersonalizados)}
               style={[
@@ -335,7 +329,6 @@ export default function Agenda() {
               </CustomText>
             </TouchableOpacity>
 
-            {/* Botón: Académicos */}
             <TouchableOpacity
               onPress={() => setMostrarAcademicos(!mostrarAcademicos)}
               style={[
@@ -355,9 +348,7 @@ export default function Agenda() {
           </View>
         )}
 
-        {/* 🌟 NUEVA COLUMNA CONTENEDORA: Mantiene los botones apilados a la derecha */}
         <View style={stylesFlotante.botonesColumna}>
-          {/* Botón de Agregar Evento */}
           <TouchableOpacity
             onPress={abrirModalAgregarEvento}
             style={[styles.openBtn, styles.addButton]}
@@ -365,7 +356,6 @@ export default function Agenda() {
             <Ionicons name="add" size={28} color="#fff" />
           </TouchableOpacity>
 
-          {/* Botón de Abrir/Cerrar Filtros */}
           <TouchableOpacity
             onPress={() => setMostrarFiltros(!mostrarFiltros)}
             style={[styles.openBtn, mostrarFiltros ? stylesFlotante.openBtnActive : null]}
@@ -373,7 +363,6 @@ export default function Agenda() {
             <Ionicons name={mostrarFiltros ? "close" : "filter"} size={26} color="#fff" />
           </TouchableOpacity>
         </View>
-
       </View>
 
       <Modal visible={modalVisible} animationType="fade" transparent>
@@ -400,7 +389,6 @@ export default function Agenda() {
                 onChangeText={setDescripcion}
               />
 
-              {/* 🌟 Selector de rango tipo switch para cambiar el comportamiento del formulario */}
               <TouchableOpacity
                 onPress={() => setRangoHabilitado(!rangoHabilitado)}
                 style={stylesP.switchContainer}
@@ -435,7 +423,6 @@ export default function Agenda() {
                     onChange={(_, date) => {
                       if (date) {
                         setFechaInicio(date);
-                        // Sincronización proactiva: si el rango no está activo, mantenemos fechaFin coordinada
                         if (!rangoHabilitado) setFechaFin(date);
                       }
                       setShowInicioPicker(Platform.OS === 'ios');
@@ -443,7 +430,6 @@ export default function Agenda() {
                   />
                 )}
 
-                {/* 🌟 Renderizado condicional: solo aparece si decide habilitar el rango */}
                 {rangoHabilitado && (
                   <>
                     <TouchableOpacity
@@ -519,14 +505,14 @@ export default function Agenda() {
 const stylesFlotante = StyleSheet.create({
   floatingBox: {
     position: 'absolute',
-    right: 16,   // Mantiene la distancia limpia con el borde derecho de la pantalla
+    right: 16,   
     zIndex: 10,
-    flexDirection: 'row',        // 🌟 CAMBIO: Alineación horizontal (Filtros izq, Botones der)
-    alignItems: 'flex-end',      // Alinea la base de los filtros con la base de los botones
+    flexDirection: 'row',        
+    alignItems: 'flex-end',      
     justifyContent: 'flex-end',
   },
   botonesColumna: {
-    flexDirection: 'column',     // 🌟 NUEVO: Mantiene los dos botones redondos uno sobre otro
+    flexDirection: 'column',     
     alignItems: 'center',
     justifyContent: 'flex-end',
   },
@@ -534,7 +520,7 @@ const stylesFlotante = StyleSheet.create({
     backgroundColor: '#ffffff',
     borderRadius: 20,
     padding: 8,
-    marginRight: 12,             // 🌟 NUEVO: Separación estética entre el menú y los botones
+    marginRight: 12,             
     width: 200, 
     gap: 6,
     ...getShadowStyle(6), 
@@ -554,23 +540,21 @@ const stylesFlotante = StyleSheet.create({
     alignItems: 'center',
     paddingVertical: 10,
     paddingHorizontal: 12,
-    borderRadius: 12, // Esquinas redondeadas suaves y modernas
+    borderRadius: 12, 
     width: '100%',
   },
   optionActive: {
     backgroundColor: filterBtnColor,
   },
   optionInactive: {
-    backgroundColor: '#f2f2f7', // Gris iOS claro muy estético
+    backgroundColor: '#f2f2f7', 
   },
   filterOptionText: {
     fontSize: 14,
     marginLeft: 10,
     flex: 1,
   },
-  openBtnActive: {
-    // Overrides
-  },
+  openBtnActive: {},
 });
 
 const styles = StyleSheet.create({

@@ -52,7 +52,11 @@ export default function AgendaPreview() {
                     <AgendaItemEditable
                       key={evento.id}
                       evento={evento}
-                      onPressEdit={() => router.push('/agenda')}
+                      // 🎯 MODIFICADO: Enviamos el ID como parámetro en la URL
+                      onPressEdit={() => router.push({
+                        pathname: '/agenda',
+                        params: { editId: evento.id }
+                      })}
                     />
                   ) : (
                     <AgendaItem key={evento.id} evento={evento} />
@@ -150,7 +154,7 @@ const styles = StyleSheet.create({
   agendaContainer: {
     flex: 1,
     backgroundColor: '#fff',
-    paddingHorizontal: 15,
+    paddingHorizontal: 12,
     marginVertical: 0,
     borderBottomRightRadius: 24,
     ...getShadowStyle(3),
