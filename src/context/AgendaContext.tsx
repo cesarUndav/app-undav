@@ -2,9 +2,8 @@
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { EventoAgenda, cargarEventosAcademicos, listaFuturo, cargarDatosSiuGuarani } from '@/data/agenda';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // 🛠️ IMPORTANTE: Necesitamos chequear el disco
+import AsyncStorage from '@react-native-async-storage/async-storage'; // 🎯 Importamos para el doble blindaje en caliente
 
-// 1. Definir el tipo para el valor del contexto
 interface AgendaContextType {
     eventosFuturos: EventoAgenda[];
     isLoading: boolean;
@@ -12,52 +11,60 @@ interface AgendaContextType {
     refetchEventos: () => Promise<void>; 
 }
 
-// 2. Crear el Contexto
 const AgendaContext = createContext<AgendaContextType | undefined>(undefined);
 
 interface AgendaProviderProps {
     children: ReactNode;
+    usuarioAutenticado: boolean; 
 }
 
-export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children }) => {
+export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuarioAutenticado }) => {
     const [eventosFuturos, setEventosFuturos] = useState<EventoAgenda[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
     const refetchEventos = useCallback(async () => {
-        // 🛠️ FILTRO DE SEGURIDAD GLOBAL DE LA AGENDA
-        // Si no hay token guardado, bloqueamos las llamadas HTTP para evitar los 4 errores en el login
-        const token = await AsyncStorage.getItem('token');
-        if (!token) {
-            console.log("⚠️ [AgendaContext] Inicialización pospuesta: No hay token activo (Usuario en Login o Visitante).");
+        // 🛡️ FILTRO DE SEGURIDAD ABSOLUTO (Paso 1): Control por estado del Layout
+        if (!usuarioAutenticado) {
             setEventosFuturos([]);
-            return; // 🛑 Frenamos la ejecución acá
+            return;
+        }
+
+        // 🛡️ FILTRO DE SEGURIDAD ABSOLUTO (Paso 2): Doble verificación física en disco.
+        // Si el estado dio un falso positivo pero el disco está vacío (caso Post-Cache Clear), abortamos.
+        const tokenExistente = await AsyncStorage.getItem('token');
+        if (!tokenExistente) {
+            console.log("⚠️ [AgendaContext] Intento de petición abortado: No se detectó token físico en el dispositivo.");
+            setEventosFuturos([]);
+            return;
         }
 
         setIsLoading(true);
         setError(null);
         try {
-            // 🏛️ 1. Actualiza eventos estáticos locales
+            console.log("📅 [AgendaContext] Credenciales validadas con éxito. Iniciando sincronización de API...");
+            
+            // 🏛️ 1. Carga eventos desde la API PHP (Ahora viaja 100% seguro con Token existente)
             await cargarEventosAcademicos();
             
-            // 🎓 2. Peticiones HTTP al SIU Guarani (Ya viajan seguras porque sabemos que hay token)
+            // 🎓 2. Consulta remota al SIU Guaraní
             await cargarDatosSiuGuarani();
             
-            // 📊 3. Setea la lista integrada
+            // 📊 3. Consolidación de datos
             setEventosFuturos(listaFuturo()); 
         } catch (err: any) {
-            console.error("Error al obtener eventos integrados:", err?.message || err);
-            setError("No se pudieron cargar los eventos. Por favor, inténtelo más tarde.");
+            console.error("❌ Error al obtener eventos integrados en Context:", err?.message || err);
+            setError("No se pudieron cargar los eventos académicos.");
             setEventosFuturos([]);
         } finally {
             setIsLoading(false);
         }
-    }, []); 
+    }, [usuarioAutenticado]); // El hook vigila los cambios de estado del login
 
-    // Carga inicial de datos cuando el Provider se monta
+    // Este efecto reacciona al instante cuando el usuario inicia sesión
     useEffect(() => {
         refetchEventos();
-    }, [refetchEventos]); 
+    }, [usuarioAutenticado, refetchEventos]); 
     
     const value = useMemo(() => ({
         eventosFuturos,
