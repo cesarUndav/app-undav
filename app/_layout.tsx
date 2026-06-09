@@ -1,5 +1,3 @@
-// _layout.tsx
-
 import 'fast-text-encoding'; 
 import 'react-native-gesture-handler';
 import { Slot, usePathname, useRouter } from 'expo-router';
@@ -26,12 +24,12 @@ const TIEMPO_POLLING_NOTIFICACIONES = 30000;
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
   const [sesionVerificada, setSesionVerificada] = useState(false);
+  const [usuarioAutenticado, setUsuarioAutenticado] = useState(false); 
   const [fontsLoaded] = useFonts({ Montserrat_400Regular, Montserrat_700Bold });
 
   const pathName = usePathname();
   const router = useRouter();
   
-  // 🔔 Referencia persistente exclusiva del backend de Flask
   const refCantidadPrevia = useRef<number>(-1);
 
   const headerHistoryTitle = PathToTitle(pathName);
@@ -41,7 +39,7 @@ export default function Layout() {
   const desactivarBottomBarEnRutas = ['/', '/loginAutenticado', '/loginMail'];
   const showBottomBar = !desactivarBottomBarEnRutas.includes(pathName);
 
-  // 1. Inicialización de Sesión
+  // 1. Inicialización de Sesión al abrir la app
   useEffect(() => {
     const prepararApp = async () => {
       if (Platform.OS === 'android') await setBackgroundColorAsync(azulMedioUndav);
@@ -53,19 +51,19 @@ export default function Layout() {
           const personaId = parseInt(personaIdStr, 10);
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
+          setUsuarioAutenticado(true); 
           
           if (pathName === '/' || pathName.startsWith('/login')) {
             router.replace('/home-estudiante');
           }
         } else {
           setVisitante(true);
-          // 🛠️ CONTROL GLOBAL A: Si no hay token, lo mandamos al login de una, evitando que cargue el resto
-          if (pathName === '/') {
-            router.replace('/loginAutenticado');
-          }
+          setUsuarioAutenticado(false);
+          if (pathName === '/') router.replace('/loginAutenticado');
         }
       } catch (error) {
         setVisitante(true);
+        setUsuarioAutenticado(false);
         if (pathName === '/') router.replace('/loginAutenticado');
       } finally {
         setSesionVerificada(true);
@@ -75,15 +73,23 @@ export default function Layout() {
     prepararApp();
   }, []);
 
-  // 🛠️ CONTROL GLOBAL B: Listener en tiempo real de rutas para proteger componentes internos
+  // 🛠️ CONTROL GLOBAL B: Proteger rutas privadas en tiempo real + Escuchar login exitoso dinámico
   useEffect(() => {
     if (!sesionVerificada) return;
 
-    // Rutas públicas que se pueden navegar sin sesión
     const rutasPublicas = ['/', '/loginAutenticado', '/loginMail', '/home-visitante'];
     const esRutaProtegida = !rutasPublicas.includes(pathName);
 
-    // Si el usuario es visitante o no tiene sesión e intenta pisar una ruta privada (como calendario o analítico)
+    // Si entra al Home Estudiante significa que se acaba de loguear de forma manual en caliente
+    if (pathName === '/home-estudiante' && !visitante) {
+      setUsuarioAutenticado(true);
+    }
+
+    // Si sale al Login, limpiamos estados para congelar peticiones
+    if (rutasPublicas.includes(pathName) && pathName !== '/home-visitante') {
+      setUsuarioAutenticado(false);
+    }
+
     if (esRutaProtegida && visitante) {
       console.log(`🛑 [Seguridad Global] Bloqueado intento de navegación a ${pathName} sin credenciales.`);
       router.replace('/loginAutenticado');
@@ -91,9 +97,12 @@ export default function Layout() {
   }, [pathName, sesionVerificada]);
 
 
-  // 2. 🔔 POLING ACTIVO DE NOTIFICACIONES (Con Alertas Reactivas Garantizadas)
+  // 2. 🔔 POLLING ACTIVO DE NOTIFICACIONES (100% Blindado contra pre-login)
   useEffect(() => {
-    if (!sesionVerificada || visitante) return;
+    if (!sesionVerificada || visitante || !usuarioAutenticado) {
+      refCantidadPrevia.current = -1; 
+      return;
+    }
 
     const ejecutarSincronizacion = async () => {
       try {
@@ -122,9 +131,6 @@ export default function Layout() {
             ]
           );
         } 
-        else if (cantidadServidor < refCantidadPrevia.current) {
-          console.log('🗑️ [Polling] Se detectaron eliminaciones en el backend de Flask.');
-        }
 
         refCantidadPrevia.current = cantidadServidor;
       } catch (e) {
@@ -132,11 +138,14 @@ export default function Layout() {
       }
     };
 
-    ejecutarSincronizacion();
-
+    const timeoutInicial = setTimeout(ejecutarSincronizacion, 1000);
     const idIntervalo = setInterval(ejecutarSincronizacion, TIEMPO_POLLING_NOTIFICACIONES);
-    return () => clearInterval(idIntervalo);
-  }, [sesionVerificada, visitante]);
+    
+    return () => {
+      clearTimeout(timeoutInicial);
+      clearInterval(idIntervalo);
+    };
+  }, [sesionVerificada, visitante, usuarioAutenticado]);
 
   // 3. Limpieza de globos al ingresar a la pantalla
   useEffect(() => {
@@ -145,8 +154,7 @@ export default function Layout() {
     }
   }, [pathName]);
 
-  // 🛠️ CONTROL GLOBAL C: Mientras no se valide la sesión, no renderizamos el Slot.
-  // Evita que las sub-pantallas ocultas ejecuten sus useEffects antes de tiempo.
+  // Loader inicial de protección
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -157,14 +165,19 @@ export default function Layout() {
     );
   }
 
+  // 🎯 ESTRUCTURA TOTALMENTE ASEGURADA:
+  // El Provider envuelve permanentemente al <Slot />, solucionando el error 'useAgenda debe usarse dentro de un AgendaProvider'
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TutorialProvider>
-        <AgendaProvider>
+        <AgendaProvider usuarioAutenticado={usuarioAutenticado}>
           <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
             <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            
             {showHeader && <HistoryHeader title={headerHistoryTitle} />}
+            
             <Slot />
+            
             {showBottomBar && !visitante && <BottomBar />}
           </SafeAreaView>
         </AgendaProvider>

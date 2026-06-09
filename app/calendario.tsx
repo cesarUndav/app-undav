@@ -446,7 +446,7 @@ export default function Calendario() {
 
 const blanco = "#fff";
 const colorTextoSeleccionado = blanco;
-const colorRojoAlerta = "#E53935"; 
+const colorRojoAlerta = "#c31700"; 
 
 const styles = StyleSheet.create({
   contenedorCalendario: {

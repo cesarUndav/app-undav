@@ -338,15 +338,37 @@ export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalenda
 }
 
 export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
-  const token = await AsyncStorage.getItem("token");
-
   try {
+    // 1. Buscamos el token dentro del bloque seguro try-catch
+    const token = await AsyncStorage.getItem("token");
+
+    // 💡 VALIDACIÓN CRÍTICA: Si no hay token o es un string vacío, evitamos mandar la petición
+    if (!token) {
+      console.warn("⚠️ [ObtenerNoticiasAPI] No se envió la petición: El token está vacío o no se ha iniciado sesión.");
+      return []; // Devolvemos un array vacío de forma segura para no romper la UI
+    }
+
+    // 2. Realizamos la petición usando tu instancia 'api'
     const response = await api.get("/noticias", {
-      headers: { "Authorization": `Bearer ${token}` }
+      headers: { 
+        "Authorization": `Bearer ${token}`,
+        "Cache-Control": "no-cache" // Forzamos a que no use caché vieja si hay problemas de sesión
+      }
     });
+
     return response.data as NoticiaAPI[];
+
   } catch (err: any) {
-    throw new Error("Error al obtener las noticias desde el nuevo endpoint de PHP");
+    // 3. LOGS ENRIQUECIDOS: Ahora sabrás exactamente qué causó el 401 o cualquier otro error
+    console.error("❌ [ObtenerNoticiasAPI] Falló el endpoint de noticias:", {
+      status: err?.response?.status, // Aquí verás si sigue siendo un 401
+      data: err?.response?.data,     // Mensaje que escupe el backend de PHP (ej: "Token expired")
+      message: err?.message          // Error de red, timeout, etc.
+    });
+
+    // Mantenemos la estructura de tu error para no romper componentes superiores, pero inyectando el código de estado real
+    const statusCode = err?.response?.status ? ` (Status: ${err.response.status})` : "";
+    throw new Error(`Error al obtener las noticias desde el nuevo endpoint de PHP${statusCode}`);
   }
 }
 
