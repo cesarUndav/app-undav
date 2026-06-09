@@ -33,8 +33,7 @@
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE"
-      ],
-      "usesCleartextTraffic": true
+      ]
     },
     "web": {
       "bundler": "metro",
@@ -57,11 +56,12 @@
         "expo-build-properties",
         {
           "android": {
-            "usesCleartextTraffic": true
+            "usesCleartextTraffic": false
           }
         }
       ],
-      "expo-audio"
+      "expo-audio",
+      "expo-asset"
     ],
     "experiments": {
       "typedRoutes": true
