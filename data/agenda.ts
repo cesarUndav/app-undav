@@ -6,8 +6,6 @@ import {
   ObtenerEventosCalendarioAcademico,
   parsearFechaPHP // 🌟 IMPORTADO: Usamos la función global centralizada
 } from "./apiAppUndav";
-import { listaEventosAgenda } from "./notificaciones";
-// 🗑️ REMOVIDO: Se eliminó la importación del viejo cliente de Flask
 
 // Exportamos un tipo que representa el objeto Evento tal como viene de la API.
 export type EventoAPIFlask = {
@@ -370,8 +368,8 @@ function diasHastaFechaActual(targetDate: Date): number {
   return Math.ceil(diffMs / 86400000); 
 }
 
-export function DateToFechaString(fecha: Date, separador: string = "/"): string {
-  return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${separador}${fecha.getFullYear()}`;
+export function DateToFechaString(fecha: Date, separador: string = "/", mostrarAnio: boolean = false): string {
+  return `${fecha.getDate()}${separador}${fecha.getMonth()+1}${mostrarAnio ? (separador + fecha.getFullYear()):""}`;
 }
 
 function charPlural(plural:string, valorAEvaluar:number) {
@@ -443,7 +441,7 @@ export function eventoAgendaProximidadColor(evento:EventoAgenda): string {
   const diasPrioridadDos = 7;
   const diasPrioridadTres = 15;
   const colorPasado = "#4a4a4a";
-  const colorPrioridadUno = '#cc0000';
+  const colorPrioridadUno = '#e10000';
   const colorPrioridadDos = "#e83000";
   const colorPrioridadTres = "#e88200";
   const colorPrioridadCuatro = "#3e8800";

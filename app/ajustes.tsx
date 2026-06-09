@@ -117,7 +117,7 @@ export default function Configuracion() {
                         : { marginVertical: -10 },
                     ]}
                   >
-                    <CustomText style={styles.textItem}>
+                    <CustomText style={styles.textItem} weight='bold'>
                       {item.label}
                     </CustomText>
 
@@ -131,7 +131,7 @@ export default function Configuracion() {
               case 'link':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.linkItem}>
+                    <CustomText style={styles.linkItem} weight='bold'>
                       {item.label}
                     </CustomText>
                   </TouchableOpacity>
@@ -140,7 +140,7 @@ export default function Configuracion() {
               case 'action':
                 return (
                   <TouchableOpacity style={styles.item} onPress={item.onPress}>
-                    <CustomText style={styles.actionItem}>
+                    <CustomText style={styles.actionItem} weight='bold'>
                       {item.label}
                     </CustomText>
                   </TouchableOpacity>
@@ -176,15 +176,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   textItem: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#0b254a',
   },
   linkItem: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#0b5085',
   },
   actionItem: {
-    fontSize: 16,
+    fontSize: 15,
     color: '#d9534f',
   },
   separator: {

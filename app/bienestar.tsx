@@ -34,7 +34,7 @@ export default function Bienestar() {
           />
 
           <BotonTextoMail
-            label="eMail"
+            label="Bienestar"
             mail="bienestaruniversitario@undav.edu.ar"
           />
         </>

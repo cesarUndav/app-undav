@@ -24,12 +24,12 @@ const TIEMPO_POLLING_NOTIFICACIONES = 30000;
 export default function Layout() {
   const [isReady, setIsReady] = useState(false);
   const [sesionVerificada, setSesionVerificada] = useState(false);
+  const [usuarioAutenticado, setUsuarioAutenticado] = useState(false); 
   const [fontsLoaded] = useFonts({ Montserrat_400Regular, Montserrat_700Bold });
 
   const pathName = usePathname();
   const router = useRouter();
   
-  // 🔔 Referencia persistente exclusiva del backend de Flask
   const refCantidadPrevia = useRef<number>(-1);
 
   const headerHistoryTitle = PathToTitle(pathName);
@@ -39,7 +39,7 @@ export default function Layout() {
   const desactivarBottomBarEnRutas = ['/', '/loginAutenticado', '/loginMail'];
   const showBottomBar = !desactivarBottomBarEnRutas.includes(pathName);
 
-  // 1. Inicialización de Sesión
+  // 1. Inicialización de Sesión al abrir la app
   useEffect(() => {
     const prepararApp = async () => {
       if (Platform.OS === 'android') await setBackgroundColorAsync(azulMedioUndav);
@@ -51,14 +51,19 @@ export default function Layout() {
           const personaId = parseInt(personaIdStr, 10);
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
+          setUsuarioAutenticado(true); 
+          
           if (pathName === '/' || pathName.startsWith('/login')) {
             router.replace('/home-estudiante');
           }
         } else {
           setVisitante(true);
+          setUsuarioAutenticado(false);
+          if (pathName === '/') router.replace('/loginAutenticado');
         }
       } catch (error) {
         setVisitante(true);
+        setUsuarioAutenticado(false);
         if (pathName === '/') router.replace('/loginAutenticado');
       } finally {
         setSesionVerificada(true);
@@ -68,46 +73,127 @@ export default function Layout() {
     prepararApp();
   }, []);
 
-  // 2. 🔔 POLING ACTIVO DE NOTIFICACIONES (Con Alertas Reactivas Garantizadas)
+  // 🛠️ CONTROL GLOBAL B: Proteger rutas privadas en tiempo real + Escuchar login exitoso dinámico
   useEffect(() => {
-    if (!sesionVerificada || visitante) return;
+    if (!sesionVerificada) return;
+
+    const rutasPublicas = ['/', '/loginAutenticado', '/loginMail', '/home-visitante'];
+    const esRutaProtegida = !rutasPublicas.includes(pathName);
+
+    // Si entra al Home Estudiante significa que se acaba de loguear de forma manual en caliente
+    if (pathName === '/home-estudiante' && !visitante) {
+      setUsuarioAutenticado(true);
+    }
+
+    // Si sale al Login, limpiamos estados para congelar peticiones
+    if (rutasPublicas.includes(pathName) && pathName !== '/home-visitante') {
+      setUsuarioAutenticado(false);
+    }
+
+    if (esRutaProtegida && visitante) {
+      console.log(`🛑 [Seguridad Global] Bloqueado intento de navegación a ${pathName} sin credenciales.`);
+      router.replace('/loginAutenticado');
+    }
+  }, [pathName, sesionVerificada]);
+
+
+// 🎯 Variable de control externa al ciclo de renderizado para evitar parpadeos
+  const refControlLectura = useRef<{ leido: boolean; cantidadAlLeer: number }>({ leido: false, cantidadAlLeer: 0 });
+
+  // 2. 🔔 POLLING ACTIVO DE NOTIFICACIONES (Blindado contra borrados en el Servidor)
+  useEffect(() => {
+    if (!sesionVerificada || visitante || !usuarioAutenticado) {
+      refCantidadPrevia.current = -1; 
+      refControlLectura.current = { leido: false, cantidadAlLeer: 0 };
+      return;
+    }
 
     const ejecutarSincronizacion = async () => {
       try {
         console.log('🔄 [Polling] Consultando novedades en el servidor Flask...');
+        
+        // 1. Descargamos la realidad actual del servidor
         const noticiasServidor = await cargarNoticias();
         const cantidadServidor = noticiasServidor.length;
 
-        // Si es el primer arranque, inicializamos la referencia base
+        // 2. Si está en la pantalla de notificaciones, asimilamos la lectura y matamos globos
+        if (pathName === '/notificaciones') {
+          refCantidadPrevia.current = cantidadServidor;
+          refControlLectura.current = { leido: true, cantidadAlLeer: cantidadServidor };
+          setNotificationCount(0);
+          return;
+        }
+
+        // 🎯 DETECCIÓN DE BORRADOS: Si el servidor tiene MENOS o IGUAL número de notas que antes,
+        // pero el usuario no ha entrado a leer, significa que limpiaste el backend. Sincronizamos la base física.
+        if (refCantidadPrevia.current !== -1 && cantidadServidor <= refCantidadPrevia.current) {
+          console.log(`🧹 [Polling] Se detectó una limpieza o consistencia en el servidor (${cantidadServidor}). Actualizando referencias.`);
+          refCantidadPrevia.current = cantidadServidor;
+          
+          // Si por el borrado ahora coincide con lo que el usuario ya leyó, apagamos el globo
+          if (refControlLectura.current.leido && cantidadServidor <= refControlLectura.current.cantidadAlLeer) {
+            setNotificationCount(0);
+            refControlLectura.current.cantidadAlLeer = cantidadServidor;
+          }
+          return; 
+        }
+
+        // 3. CARGA INICIAL COMPLETA (Arranque limpio de la App)
         if (refCantidadPrevia.current === -1) {
+          refCantidadPrevia.current = cantidadServidor;
+          
+          if (cantidadServidor > 0 && !refControlLectura.current.leido) {
+            setNotificationCount(cantidadServidor);
+            
+            // Forzamos un pequeño delay para que el hilo nativo de la UI esté libre para dibujar la alerta
+            setTimeout(() => {
+              const listaTotal = todasLasNotificaciones();
+              const ultimaNoticia = listaTotal[0];
+
+              Alert.alert(
+                "🔔 Notificaciones Pendientes",
+                `${ultimaNoticia && ultimaNoticia.titulo ? ultimaNoticia.titulo : "Tienes novedades en tu cartelera."}\n\nHay ${cantidadServidor} avisos académicos esperando tu lectura.`,
+                [
+                  { text: "Ignorar", style: "cancel" },
+                  { text: "Ver", onPress: () => router.push('/notificaciones') }
+                ]
+              );
+            }, 500);
+          }
+          return;
+        }
+
+        // 4. CONTROL ANTIFANTASMA (Navegación estándar post-lectura)
+        if (refControlLectura.current.leido) {
+          if (cantidadServidor > refControlLectura.current.cantidadAlLeer) {
+            const nuevasReales = cantidadServidor - refControlLectura.current.cantidadAlLeer;
+            setNotificationCount(nuevasReales);
+          } else {
+            setNotificationCount(0);
+          }
           refCantidadPrevia.current = cantidadServidor;
           return;
         }
 
-        // 🔔 DETECCIÓN DE ALTAS: Hay más noticias que antes en Flask
+        // 5. NUEVAS PUBLICACIONES (En tiempo real mientras usa la App)
         if (cantidadServidor > refCantidadPrevia.current) {
           const diferencia = cantidadServidor - refCantidadPrevia.current;
-          
-          // Modificamos el contador global (Esto forzará el redibujado de la campana)
           setNotificationCount(diferencia);
 
-          const noticiasCombinadas = todasLasNotificaciones();
-          const ultimaNoticia = noticiasCombinadas[0];
+          setTimeout(() => {
+            const listaTotal = todasLasNotificaciones();
+            const ultimaNoticia = listaTotal[0];
 
-          // Lanzamos el modal de alerta nativa
-          Alert.alert(
-            "🔔 Nueva Notificación",
-            `${ultimaNoticia ? ultimaNoticia.titulo : "Tenés novedades pendientes."}\n\n${ultimaNoticia?.contenido ? ultimaNoticia.contenido : ""}`,
-            [
-              { text: "Ignorar", style: "cancel" },
-              { text: "Ver", onPress: () => router.push('/notificaciones') }
-            ]
-          );
+            Alert.alert(
+              "🔔 Nueva Notificación",
+              `${ultimaNoticia && ultimaNoticia.titulo ? ultimaNoticia.titulo : "Se ha publicado un nuevo aviso."}\n\nTienes novedades académicas pendientes de revisión.`,
+              [
+                { text: "Ignorar", style: "cancel" },
+                { text: "Ver", onPress: () => router.push('/notificaciones') }
+              ]
+            );
+          }, 300);
         } 
-        // DETECCIÓN DE BAJAS: Se eliminaron noticias en el servidor
-        else if (cantidadServidor < refCantidadPrevia.current) {
-          console.log('🗑️ [Polling] Se detectaron eliminaciones en el backend de Flask.');
-        }
 
         refCantidadPrevia.current = cantidadServidor;
       } catch (e) {
@@ -115,19 +201,20 @@ export default function Layout() {
       }
     };
 
-    ejecutarSincronizacion();
-
-    const idIntervalo = setInterval(ejecutarSincronizacion, TIEMPO_POLLING_NOTIFICACIONES);
-    return () => clearInterval(idIntervalo);
-  }, [sesionVerificada, visitante]);
-
-  // 3. Limpieza de globos al ingresar a la pantalla
-  useEffect(() => {
     if (pathName === '/notificaciones') {
-      setNotificationCount(0);
+      ejecutarSincronizacion();
     }
-  }, [pathName]);
 
+    const timeoutInicial = setTimeout(ejecutarSincronizacion, 1000);
+    const idIntervalo = setInterval(ejecutarSincronizacion, TIEMPO_POLLING_NOTIFICACIONES);
+    
+    return () => {
+      clearTimeout(timeoutInicial);
+      clearInterval(idIntervalo);
+    };
+  }, [sesionVerificada, visitante, usuarioAutenticado, pathName]);
+
+  // Loader inicial de protección
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -138,14 +225,19 @@ export default function Layout() {
     );
   }
 
+  // 🎯 ESTRUCTURA TOTALMENTE ASEGURADA:
+  // El Provider envuelve permanentemente al <Slot />, solucionando el error 'useAgenda debe usarse dentro de un AgendaProvider'
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TutorialProvider>
-        <AgendaProvider>
+        <AgendaProvider usuarioAutenticado={usuarioAutenticado}>
           <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
             <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            
             {showHeader && <HistoryHeader title={headerHistoryTitle} />}
+            
             <Slot />
+            
             {showBottomBar && !visitante && <BottomBar />}
           </SafeAreaView>
         </AgendaProvider>

@@ -27,7 +27,7 @@ export default function BotonTexto({
   centered = false,
   route,
   url,
-  openInsideApp = false,
+  openInsideApp = true,
   tryLogin = false,
   color = azulMedioUndav,
   verticalPadding = 12,

@@ -14,7 +14,7 @@ import { getShadowStyle } from '@/constants/ShadowStyle';
 import { eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
 
 // Importamos la función masiva desde tu API propia
-import { ObtenerAgendaFechas } from '@/data/apiAppUndav'; 
+import { ObtenerAgendaFechas } from '@/data/apiAppUndav';
 
 export type Actividad = {
   id: string;
@@ -173,10 +173,12 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
 
 // 🌟 COMPONENTE PRINCIPAL DE LA PANTALLA 🌟
 export default function Calendario() {
+  
+  const [loading, setLoading] = useState(true);
+
   const diaHoy = new Date();
   const hoyStr = DateToISOStringNoTime(diaHoy);
 
-  const [loading, setLoading] = useState(true);
   const [actividadesPorFecha, setActividadesPorFecha] = useState<{ [fecha: string]: Actividad[] }>({});
   const [cantidadActividadesPorFecha, setCantidadActividadesPorFecha] = useState<{ 
     [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } 
@@ -196,7 +198,9 @@ export default function Calendario() {
   // Efecto 1: Carga masiva desde tu API Principal
   useEffect(() => {
     const cargarTodoElMes = async () => {
+      
       setLoading(true);
+      
       try {
         const { cargarEventosAcademicos } = await import('@/data/agenda');
         await cargarEventosAcademicos();
@@ -344,13 +348,6 @@ export default function Calendario() {
   useEffect(() => {
     const fSeleccionadaSegura = fechaSeleccionada instanceof Date ? fechaSeleccionada : new Date();
     const fechaStr = DateToISOStringNoTime(fSeleccionadaSegura);
-    
-    if (fSeleccionadaSegura.getMonth() !== mesAnioActual.mes || fSeleccionadaSegura.getFullYear() !== mesAnioActual.anio) {
-      setMesAnioActual({
-        mes: fSeleccionadaSegura.getMonth(),
-        anio: fSeleccionadaSegura.getFullYear()
-      });
-    }
 
     let actividadesDelDia = actividadesPorFecha[fechaStr] ?? [];
 
@@ -400,6 +397,9 @@ export default function Calendario() {
           diaHoy={diaHoy}
           onSelectDay={setFechaSeleccionada}
           onSelectMonthChange={(nuevoMes, nuevoAnio) => {
+            // 🎯 Seteamos el estado que dispara la API inmediatamente
+            setMesAnioActual({ mes: nuevoMes, anio: nuevoAnio });
+            // 🎯 Movemos el cursor de selección al día 1 de ese mes de forma unificada
             setFechaSeleccionada(new Date(nuevoAnio, nuevoMes, 1));
           }} 
         />
@@ -446,7 +446,7 @@ export default function Calendario() {
 
 const blanco = "#fff";
 const colorTextoSeleccionado = blanco;
-const colorRojoAlerta = "#E53935"; 
+const colorRojoAlerta = "#c31700"; 
 
 const styles = StyleSheet.create({
   contenedorCalendario: {

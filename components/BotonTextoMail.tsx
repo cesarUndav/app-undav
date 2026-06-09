@@ -26,7 +26,7 @@ export default function BotonTextoMail({
   verticalPadding = 12,
   fontSize,
   fontColor = 'white',
-  color = 'rgb(63, 0, 105)',
+  color = '#6a6c9c',
   styleExtra,
 }: BotonTextoMailProps) {
   const asuntoCodificado = encodeURIComponent(asunto);
