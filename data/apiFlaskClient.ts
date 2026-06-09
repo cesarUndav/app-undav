@@ -10,7 +10,7 @@ if (!API_URL) {
 }
 
 const BASE: string = API_URL?.replace(/\/$/, "") || "";
-console.log("🔍 API_URL loaded:", BASE);
+console.log("OBSOLETO, FLASK: API_URL loaded:", BASE);
 
 // ------------------------------
 // TYPES
