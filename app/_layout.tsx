@@ -1,3 +1,5 @@
+// app/_layout.tsx
+
 import 'fast-text-encoding'; 
 import 'react-native-gesture-handler';
 import { Slot, usePathname, useRouter } from 'expo-router';

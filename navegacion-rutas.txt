@@ -1,0 +1,44 @@
+﻿app\+not-found.tsx:14: <Link href="/" style={styles.link}>
+app\ajustes.tsx:86: router.push('/credenciales-campus-virtual');
+app\calend.-academico-resoluciones.tsx:36: /<a[^>]*href=["']([^"']+)["'][^>]*>\s*<strong[^>]*>([\s\S]*?)<\/strong>\s*<\/a>/gi;
+app\home-estudiante.tsx:46: funcionOnPress={() => router.push('/tramites')}
+app\home-estudiante.tsx:51: funcionOnPress={() => router.push('/autogestion')}
+app\home-estudiante.tsx:56: funcionOnPress={() => router.push('/plan-de-estudio')}
+app\home-estudiante.tsx:57: // funcionOnPress={() => router.push('/trayectoria-academica')}
+app\home-estudiante.tsx:65: funcionOnPress={() => router.push('/redes')}
+app\home-estudiante.tsx:76: router.push('/web-SIU-Guarani');
+app\home-estudiante.tsx:85: funcionOnPress={() => router.push('/web-Campus-Virtual')}
+app\home-visitante.tsx:38: onPress={() => router.push('/oferta-academica')}
+app\home-visitante.tsx:54: funcionOnPress={() => router.push('/redes')}
+app\home-visitante.tsx:59: funcionOnPress={() => router.push('/sedes')}
+app\home-visitante.tsx:64: funcionOnPress={() => router.push('/planos')}
+app\home-visitante.tsx:74: funcionOnPress={() => router.push('/preinscripcion')}
+app\home-visitante.tsx:81: router.push('/calendario-academico-visitante')
+app\home-visitante.tsx:87: funcionOnPress={() => router.push('/notificaciones')}
+app\home-visitante.tsx:98: funcionOnPress={() => router.push('/escuela-de-oficios')}
+app\home-visitante.tsx:103: funcionOnPress={() => router.push('/preguntas-frecuentes')}
+app\home-visitante.tsx:108: funcionOnPress={() => router.push('/contacto')}
+app\index.tsx:22: onBackPress={() => router.replace('/')}
+app\index.tsx:36: onPress={() => router.push('../loginAutenticado')}
+app\index.tsx:45: onPress={() => router.push('../home-visitante')}
+app\loginAutenticado.tsx:62: router.replace("/home-estudiante");
+app\loginAutenticado.tsx:152: <NavigationHeader title="Iniciar Sesión" onBackPress={() => router.replace("/")} />
+app\loginAutenticado.tsx:214: onPress={() => router.push(`/webview/${encodeURIComponent("https://academica.undav.edu.ar/g3w/acceso/recuperar")}?tryLogin=${false}`)}
+app\noticias-web-undav.tsx:47: const hrefMatch = tr3.match(/<a[^>]*href=["']([^"']+)["']/i);
+app\oferta-academica.tsx:177: onPress={() => router.push(`/carreras/${carrera.ruta}`)}
+app\perfil.tsx:75: router.replace('/');
+app\perfil.tsx:117: onPress: () => router.push('/plan-de-estudio'),
+app\perfil.tsx:122: onPress: () => router.push('/ajustes'),
+app\preguntas-frecuentes.tsx:313: router.push(ruta as never);
+app\preinscripcion.tsx:48: router.push('/calendario-academico-visitante');
+app\pruebaFlask.tsx:47: //      <AgendaItemEditable key={evento.id} evento={evento} onPressEdit={()=>router.push("/agenda")}/>
+app\redes.tsx:100: router.push(canal.ruta as never);
+app\sedes.tsx:72: router.push({
+app\_app.tsx:11: <link
+app\_app.tsx:12: href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,400;0,700;1,900&display=swap"
+app\_layout.tsx:57: router.replace('/home-estudiante');
+app\_layout.tsx:62: if (pathName === '/') router.replace('/loginAutenticado');
+app\_layout.tsx:67: if (pathName === '/') router.replace('/loginAutenticado');
+app\_layout.tsx:95: router.replace('/loginAutenticado');
+app\_layout.tsx:158: { text: "Ver", onPress: () => router.push('/notificaciones') }
+app\_layout.tsx:192: { text: "Ver", onPress: () => router.push('/notificaciones') }
