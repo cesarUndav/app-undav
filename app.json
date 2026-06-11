@@ -5,7 +5,7 @@
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/images/favicon.png",
-    "scheme": "myapp",
+    "scheme": "undavapp",
     "userInterfaceStyle": "automatic",
     "owner": "cesarvacirca",
     "splash": {
@@ -17,22 +17,23 @@
     "ios": {
       "supportsTablet": true,
       "infoPlist": {
-        "NSAppTransportSecurity": {
-          "NSAllowsArbitraryLoads": true
-        },
         "ITSAppUsesNonExemptEncryption": false
       },
-      "bundleIdentifier": "com.anonymous.appundav"
+      "bundleIdentifier": "ar.edu.undav.appundav"
     },
     "android": {
       "adaptiveIcon": {
         "foregroundImage": "./assets/images/adaptive-icon.png",
-        "backgroundColor": "#FFFFFF"
+        "backgroundColor": "#1e3258"
       },
-      "package": "com.anonymous.appundav",
+      "package": "ar.edu.undav.appundav",
       "permissions": [
         "INTERNET",
         "ACCESS_NETWORK_STATE"
+      ],
+      "blockedPermissions": [
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ]
     },
     "web": {
@@ -61,14 +62,15 @@
         }
       ],
       "expo-audio",
-      "expo-asset"
+      "expo-asset",
+      "expo-web-browser"
     ],
     "experiments": {
       "typedRoutes": true
     },
     "extra": {
       "router": {},
-      "env": "development",
+      "env": "production",
       "eas": {
         "projectId": "6eb0eac1-5bed-4156-a09d-a919920381c3"
       }
