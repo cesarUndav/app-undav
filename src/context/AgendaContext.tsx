@@ -1,8 +1,8 @@
 // src/context/AgendaContext.tsx
 
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
-import { EventoAgenda, cargarEventosAcademicos, listaFuturo, cargarDatosSiuGuarani } from '@/data/agenda';
-import AsyncStorage from '@react-native-async-storage/async-storage'; // 🎯 Importamos para el doble blindaje en caliente
+import { EventoAgenda, cargarEventosAcademicos, listaFuturo } from '@/data/agenda';
+import AsyncStorage from '@react-native-async-storage/async-storage';
 
 interface AgendaContextType {
     eventosFuturos: EventoAgenda[];
@@ -24,14 +24,11 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
     const [error, setError] = useState<string | null>(null);
 
     const refetchEventos = useCallback(async () => {
-        // 🛡️ FILTRO DE SEGURIDAD ABSOLUTO (Paso 1): Control por estado del Layout
         if (!usuarioAutenticado) {
             setEventosFuturos([]);
             return;
         }
 
-        // 🛡️ FILTRO DE SEGURIDAD ABSOLUTO (Paso 2): Doble verificación física en disco.
-        // Si el estado dio un falso positivo pero el disco está vacío (caso Post-Cache Clear), abortamos.
         const tokenExistente = await AsyncStorage.getItem('token');
         if (!tokenExistente) {
             console.log("⚠️ [AgendaContext] Intento de petición abortado: No se detectó token físico en el dispositivo.");
@@ -41,27 +38,31 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
 
         setIsLoading(true);
         setError(null);
+        
         try {
             console.log("📅 [AgendaContext] Credenciales validadas con éxito. Iniciando sincronización de API...");
             
-            // 🏛️ 1. Carga eventos desde la API PHP (Ahora viaja 100% seguro con Token existente)
+            // 🏛️ Paso 1: Carga eventos desde la API PHP (Es instantáneo)
             await cargarEventosAcademicos();
             
-            // 🎓 2. Consulta remota al SIU Guaraní
-            await cargarDatosSiuGuarani();
+            // ⚡ Actualización inmediata: Renderizamos los eventos PHP rápido para que la pantalla no se quede en blanco
+            setEventosFuturos(listaFuturo());
             
-            // 📊 3. Consolidación de datos
-            setEventosFuturos(listaFuturo()); 
+            // Si ya renderizamos lo básico, podemos quitar el loader principal para que el usuario navegue
+            setIsLoading(false); 
+
         } catch (err: any) {
-            console.error("❌ Error al obtener eventos integrados en Context:", err?.message || err);
+            console.error("❌ Error crítico al obtener eventos integrados en Context:", err?.message || err);
             setError("No se pudieron cargar los eventos académicos.");
-            setEventosFuturos([]);
+            // Solo vaciamos si falló la carga base inicial (PHP)
+            if (eventosFuturos.length === 0) {
+                setEventosFuturos([]);
+            }
         } finally {
             setIsLoading(false);
         }
-    }, [usuarioAutenticado]); // El hook vigila los cambios de estado del login
+    }, [usuarioAutenticado]);
 
-    // Este efecto reacciona al instante cuando el usuario inicia sesión
     useEffect(() => {
         refetchEventos();
     }, [usuarioAutenticado, refetchEventos]); 

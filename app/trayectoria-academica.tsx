@@ -2,14 +2,20 @@
 
 import React from 'react';
 
-import BotonTexto from '../components/BotonTexto';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
+import BotonTextoSIU from '@/components/BotonTextoSIU';
 
 export default function TrayectoriaAcademica() {
   return (
     <FondoScrollGradiente>
-      <BotonTexto label="Plan de Estudio" route="/plan-de-estudio" />
-      {/* <BotonTexto label="Historia Académica" route="/historia-academica" /> */}
+      <BotonTextoSIU
+        label="Historia Académica"
+        url="https://academica.undav.edu.ar/g3w/historia_academica"
+      />
+      <BotonTextoSIU
+        label="Plan de Estudio"
+        url="https://academica.undav.edu.ar/g3w/plan_estudio"
+      />
     </FondoScrollGradiente>
   );
 }

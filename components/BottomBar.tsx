@@ -7,7 +7,7 @@ import CustomText from './CustomText';
 import { useNotificacionesGlobales, setNotificationCount } from '@/data/notificaciones';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
-const routes = ['/home-estudiante', '/calendario', '/notificaciones', '/accesos-directos', '/perfil'] as const;
+const routes = ['/home-estudiante', '/planos', '/notificaciones', '/accesos-directos', '/perfil'] as const;
 type Route = (typeof routes)[number];
 
 interface BotonBarra {
@@ -30,7 +30,7 @@ export default function BottomBar() {
 
   const buttons: BotonBarra[] = [
     { route: '/home-estudiante', iconPath: require('../assets/icons/ico-svg/inicio.svg') },
-    { route: '/calendario', iconPath: require('../assets/icons/ico-svg/calendario.svg') },
+    { route: '/planos', iconPath: require('../assets/icons/ico-svg/sedes.svg') },
     { route: '/notificaciones', iconPath: require('../assets/icons/notifications.svg') },
     { route: '/accesos-directos', iconPath: require('../assets/icons/ico-svg/enlaces.svg') },
     { route: '/perfil', iconPath: require('../assets/icons/person.svg') },
