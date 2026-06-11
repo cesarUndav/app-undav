@@ -27,14 +27,6 @@ export type EventoAgenda = {
   categoria?: number;
 };
 
-// 🌟 Actualizamos el tipo de Cursada para incluir el número de día de forma segura
-export type CursadaSIU = { 
-  id: string; 
-  titulo: string; 
-  descripcion: string; 
-  dow_semana?: number; 
-};
-
 // vars dev
 let devDiaActual = hoyMasDias(0);
 let devUltimoId = 3;
@@ -70,154 +62,12 @@ export let listaEventosPersonalizados: EventoAgenda[] = [
   }
 ];
 
-// 🌟 Estas listas se quedan fijas como constantes para NO romper sus referencias al importar
-export const listaExamenesSIU: EventoAgenda[] = [];
-export const listaCursadasSIU: CursadaSIU[] = [];
-
-// Función para transformar las fechas de exámenes puntuales de la API al formato unificado de la interfaz
-function transformarExamenToEvento(item: any, idx: number): EventoAgenda {
-  const fechaPuntual = item.fecha ? new Date(item.fecha) : new Date();
-  return {
-    id: `siu-examen-${idx}`,
-    titulo: `[EXAMEN] ${item.actividad_nombre || 'Evaluación'}`,
-    descripcion: `${item.horario || ''} | ${item.ubicacion_nombre || 'Sede'} (${item.modalidad || 'Presencial'})`,
-    fechaInicio: fechaPuntual,
-    fechaFin: fechaPuntual,
-    esFeriado: false,
-    categoria: 99 
-  };
-}
-
-export async function cargarDatosSiuGuarani(): Promise<void> {
-  try {
-    const { infoBaseUsuarioActual, ObtenerAgendaFechas } = await import("./apiAppUndav");
-    const personaId = infoBaseUsuarioActual?.idPersona;
-
-    if (!personaId) {
-      console.log("⚠️ [Agenda Data] No hay sesión activa para consultar datos de SIU Guaraní.");
-      return;
-    }
-
-    // 📅 CALCULAR LUNES Y SÁBADO DE LA SEMANA ACTUAL
-    const hoy = new Date();
-    const diaSemana = hoy.getDay(); 
-    
-    const diferenciaAlLunes = diaSemana === 0 ? -6 : 1 - diaSemana;
-    const lunesActual = new Date(hoy);
-    lunesActual.setDate(hoy.getDate() + diferenciaAlLunes);
-    
-    const sabadoActual = new Date(lunesActual);
-    sabadoActual.setDate(lunesActual.getDate() + 5);
-
-    const formatearFechaApi = (d: Date) => {
-      const mes = String(d.getMonth() + 1).padStart(2, '0');
-      const dia = String(d.getDate()).padStart(2, '0');
-      return `${d.getFullYear()}-${mes}-${dia}`;
-    };
-
-    const fechaInicioStr = formatearFechaApi(lunesActual);
-    const fechaFinStr = formatearFechaApi(sabadoActual);
-
-    console.log(`🔍 [SIU Query] Consultando semana actual desde el Lunes ${fechaInicioStr} hasta el Sábado ${fechaFinStr}`);
-
-    let eventosRemotos = await ObtenerAgendaFechas(fechaInicioStr, fechaFinStr, true);
-
-    // MOCK DE CONTINGENCIA
-    if (Array.isArray(eventosRemotos) && eventosRemotos.length === 0) {
-      console.log("🛠️ [SIU Sync] Insertando datos simulados semanales...");
-      eventosRemotos = [
-        {
-          actividad_nombre: "Desarrollo de Aplicaciones Móviles",
-          tipo_actividad: "Cursada Obligatoria",
-          horario: "18:30 a 22:30",
-          ubicacion_nombre: "Sede Piñeyro",
-          modalidad: "Presencial",
-          dow_semana: 3,
-          fecha: undefined,
-          tipo_persona: "",
-          legajo: ""
-        },
-        {
-          actividad_nombre: "Base de Datos II",
-          tipo_actividad: "Cursada Obligatoria",
-          horario: "14:00 a 18:00",
-          ubicacion_nombre: "Sede España",
-          modalidad: "Virtual",
-          dow_semana: 1,
-          fecha: undefined,
-          tipo_persona: "",
-          legajo: ""
-        },
-        {
-          actividad_nombre: "Examen Parcial Sorpresa",
-          tipo_actividad: "Examen",
-          horario: "19:00",
-          fecha: "2026-05-20", 
-          ubicacion_nombre: "Sede Piñeyro",
-          modalidad: "Presencial",
-          tipo_persona: "",
-          legajo: ""
-        }
-      ];
-    }
-
-    const examenesTemp: EventoAgenda[] = [];
-    const cursadasTemp: CursadaSIU[] = [];
-
-    if (Array.isArray(eventosRemotos)) {
-      eventosRemotos.forEach((item: any, idx: number) => {
-        if (item.fecha && item.fecha !== null && item.fecha !== "null") {
-          examenesTemp.push(transformarExamenToEvento(item, idx));
-        } 
-        else if (
-          (!item.fecha || item.fecha === null || item.fecha === "null") && 
-          item.dow_semana !== undefined && 
-          item.dow_semana !== null
-        ) {
-          const yaExiste = cursadasTemp.some(c => c.titulo === item.actividad_nombre);
-          if (!yaExiste) {
-            const diasTexto = ["Domingo", "Lunes", "Martes", "Miércoles", "Jueves", "Viernes", "Sábado", "Domingo"];
-            const nombreDia = diasTexto[item.dow_semana] || "Día a confirmar";
-
-            cursadasTemp.push({
-              id: `siu-cursada-${idx}`,
-              titulo: item.actividad_nombre || 'Materia regular',
-              descripcion: `${nombreDia} | ${item.horario || ''} (${item.modalidad || 'Presencial'})`,
-              dow_semana: item.dow_semana // 🌟 Guardado nativo para ordenar sin strings peligrosos
-            });
-          }
-        }
-      });
-    }
-
-    // 🏛️ ORDENAMIENTO SEGURO DIRECTO POR EL ENTERO DOW
-    const cursadasOrdenadas = cursadasTemp.sort((a, b) => {
-      return (a.dow_semana || 0) - (b.dow_semana || 0);
-    });
-
-    // 🌟 LA SOLUCIÓN MAESTRA: Vaciamos y empujamos datos preservando la referencia del array original
-    listaExamenesSIU.length = 0;
-    listaExamenesSIU.push(...examenesTemp);
-
-    listaCursadasSIU.length = 0;
-    listaCursadasSIU.push(...cursadasOrdenadas);
-    
-    console.log(`✅ [SIU Sync] Mapeo completado: ${examenesTemp.length} Exámenes y ${cursadasTemp.length} Cursadas estables.`);
-  } catch (error) {
-    console.error("❌ Fallo crítico al sincronizar datos extendidos de SIU Guaraní:", error);
-  }
-}
-
-// 🗑️ REMOVIDO: Se borró por completo la función duplicada parsearFechaPHP de este archivo.
-
 // EventoCalendarioAcademico (PHP) -> EventoAgenda (App)
 function transformarEvento(evento: EventoCalendarioAcademico): EventoAgenda {
   try {
-    // 🌟 CORRECCIÓN: Ahora consume directamente la función global e importada de apiAppUndav
     const fechaInicioParsed = parsearFechaPHP(evento.fecha_inicio);
     const fechaFinParsed = parsearFechaPHP(evento.fecha_fin);
 
-    // Validamos si la conversión funcionó
     if (isNaN(fechaInicioParsed.getTime()) || isNaN(fechaFinParsed.getTime())) {
       console.warn(`⚠️ [Transformar] No se pudo parsear la fecha del evento ${evento.id}. Usando fecha actual.`);
     }
@@ -238,7 +88,6 @@ function transformarEvento(evento: EventoCalendarioAcademico): EventoAgenda {
 export async function cargarEventosAcademicos(): Promise<EventoAgenda[]> {
   console.log("🚀 [Agenda] Iniciando cargarEventosAcademicos()...");
   try {
-    // 1. Llamamos a la API PHP
     const eventosAPI: EventoCalendarioAcademico[] = await ObtenerEventosCalendarioAcademico();
     
     console.log(`📥 [API Response] Se recibieron ${eventosAPI?.length || 0} eventos crudos desde PHP.`);
@@ -248,11 +97,9 @@ export async function cargarEventosAcademicos(): Promise<EventoAgenda[]> {
       return [];
     }
 
-    // 2. Mapeamos y transformamos
     const eventosTransformados = eventosAPI.map(transformarEvento);
     console.log(`✅ [Mapeo] Transformación exitosa de ${eventosTransformados.length} eventos.`);
     
-    // 3. Guardamos en el estado global
     listaEventosCalendarioAcademico = eventosTransformados;
     
     return eventosTransformados;
@@ -313,7 +160,7 @@ export function obtenerEventoConId(id:string): EventoAgenda {
   return evento;
 }
 
-function combinarYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): EventoAgenda[] {
+function combinerYOrdenarListas(lista1:EventoAgenda[], lista2: EventoAgenda[]): EventoAgenda[] {
   const lista = lista1.concat(lista2);
   return ordenarEventosPorFecha(lista);
 }
@@ -378,8 +225,8 @@ function charPlural(plural:string, valorAEvaluar:number) {
 }
 
 export function listaCompleta(): EventoAgenda[] { 
-  const baseLocal = combinarYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); 
-  return combinarYOrdenarListas(baseLocal, listaExamenesSIU);
+  // Ahora solo combina Calendario Académico con Eventos Personalizados de forma segura
+  return combinerYOrdenarListas(listaEventosCalendarioAcademico, listaEventosPersonalizados); 
 }
 
 export function listaFuturo(): EventoAgenda[] { return ordenarEventosPorFecha(listaCompleta().filter((evento) => !eventoFinalizado(evento))); }
@@ -391,7 +238,6 @@ export function eventoAgendaToFechaString(evento: EventoAgenda): string {
   let intervaloFechaStr = "";
   const duraUnDia = eventoDuraUnDia(evento);
 
-  // 1. Armamos el string del rango de fechas
   if (duraUnDia) { 
     intervaloFechaStr = `${DateToFechaString(evento.fechaInicio)}`; 
   } else { 
@@ -399,16 +245,14 @@ export function eventoAgendaToFechaString(evento: EventoAgenda): string {
   }
 
   let diasStr = "";
-  // 🌟 Removemos el "+ 1" para trabajar con los días reales netos (0 = Hoy)
   const diasHastaInicio = diasHastaFechaActual(evento.fechaInicio);
   const diasHastaFin = diasHastaFechaActual(evento.fechaFin);
 
-  // 2. Evaluamos la proximidad según el tipo de evento
   if (duraUnDia) {
     if (diasHastaInicio > 1) {
       diasStr = `falta${charPlural("n", diasHastaInicio)} ${diasHastaInicio} día${charPlural("s", diasHastaInicio)}`;
     } else if (diasHastaInicio === 0) {
-      diasStr = "hoy"; // 🎯 Ahora sí entra acá cuando es 0
+      diasStr = "hoy"; 
     } else if (diasHastaInicio === 1) {
       diasStr = "mañana";
     } else {
@@ -416,7 +260,6 @@ export function eventoAgendaToFechaString(evento: EventoAgenda): string {
       diasStr = `hace ${diasPasados} día${charPlural("s", diasPasados)}`;
     }
   } else {
-    // Eventos de varios días (como el receso o inscripciones)
     if (diasHastaInicio > 0) {
       diasStr = `inicia en ${diasHastaInicio} día${charPlural("s", diasHastaInicio)}`;
     } else if (diasHastaFin > 0) {

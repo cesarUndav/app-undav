@@ -15,8 +15,6 @@ import { infoBaseUsuarioActual } from '@/data/apiAppUndav';
 import * as FileSystem from 'expo-file-system/legacy'; 
 import { Asset } from 'expo-asset';
 import FondoGradiente from '@/components/FondoGradiente';
-import { listaCursadasSIU } from '@/data/agenda';
-
 // 🎯 Referencia al asset local
 const logoUndavAsset = Asset.fromModule(require('../assets/images/logoundav.png')); 
 
@@ -36,9 +34,6 @@ export default function GeneradorCertificado() {
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date | undefined>(undefined); 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [indicePropuesta, setIndicePropuesta] = useState<number>(infoBaseUsuarioActual.indicePropuestaSeleccionada);
-  
-  // 🎯 Inicializamos apuntando al índice '0' (o podés usar "" si preferís que no haya selección inicial)
-  const [materiaCursada, setMateriaCursada] = useState<string>("0");
 
   const onChangeFecha = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');
@@ -155,19 +150,11 @@ export default function GeneradorCertificado() {
 
   // --- MANEJADOR DE GENERACIÓN ---
   const compilarPDF = async (esPlantillaVacia: boolean) => {
-    
-    // Determinar qué string de materia vamos a usar
-    let nombreMateriaFinal = "";
-    if (materiaCursada === "OTRA") {
-      nombreMateriaFinal = materiaInput.trim();
-    } else {
-      const idx = Number(materiaCursada);
-      nombreMateriaFinal = listaCursadasSIU[idx] ? listaCursadasSIU[idx].titulo : "";
-    }
+    let nombreMateriaFinal = materiaInput.trim();
 
     if (!esPlantillaVacia) {
       if (!nombreMateriaFinal) {
-        Alert.alert("Campo Obligatorio", "Por favor, ingresá o seleccioná el nombre de la asignatura.");
+        Alert.alert("Campo Obligatorio", "Por favor, ingresá el nombre de la asignatura.");
         return;
       }
       if (!fechaSeleccionada) {
@@ -259,43 +246,17 @@ export default function GeneradorCertificado() {
             </Picker>
           </View>
 
-          {/* Selector de Asignatura / Materia */}
+          {/* Campo Incondicional y Obligatorio de Asignatura / Materia */}
           <CustomText weight="bold" style={styles.labelInput}>
-            Materia: <CustomText style={{color: 'red'}}>*</CustomText>
+            Nombre de la Asignatura: <CustomText style={{color: 'red'}}>*</CustomText>
           </CustomText>
-          <View style={styles.contenedorPickerSelect}>
-            <Picker
-                selectedValue={materiaCursada}
-                onValueChange={(itemValue) => setMateriaCursada(String(itemValue))}
-                style={styles.pickerEstilo}
-                dropdownIconColor={azulLogoUndav}
-            >
-                {listaCursadasSIU?.map((p, index) => (
-                <Picker.Item 
-                    key={p.id || index} 
-                    label={p.titulo} 
-                    value={String(index)} 
-                />
-                ))}
-                {/* 🎯 Opción condicional agregada */}
-                <Picker.Item label="Otra asignatura" value="OTRA" />
-            </Picker>
-          </View>
-          {/* 🎯 CAMPO TEXTINPUT INTELIGENTE: Aparece únicamente si se escoge "OTRA" */}
-          {materiaCursada === "OTRA" && (
-            <>
-              <CustomText weight="bold" style={styles.labelInput}>
-                Nombre de la Asignatura: <CustomText style={{color: 'red'}}>*</CustomText>
-              </CustomText>
-              <TextInput
-                style={styles.textInput}
-                placeholder="Ej: Trabajo Social Comunitario I"
-                placeholderTextColor="#999"
-                value={materiaInput}
-                onChangeText={setMateriaInput}
-              />
-            </>
-          )}
+          <TextInput
+            style={styles.textInput}
+            placeholder="Ej: Trabajo Social Comunitario I"
+            placeholderTextColor="#999"
+            value={materiaInput}
+            onChangeText={setMateriaInput}
+          />
 
           {/* Tipo Examen */}
           <CustomText weight="bold" style={styles.labelInput}>
@@ -363,32 +324,29 @@ const styles = StyleSheet.create({
   cardFormulario: { backgroundColor: '#FFFFFF', borderBottomRightRadius: 15, paddingHorizontal: 15, paddingVertical: 5, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
   labelInput: { fontSize: 14, color: negroAzulado, marginBottom: 5, marginTop: 5 },
   contenedorPickerSelect: { 
-  borderWidth: 1, 
-  borderColor: '#CCC', 
-  borderRadius: 8, 
-  marginBottom: 10, 
-  backgroundColor: '#FAFAFA', 
-  overflow: 'hidden',
-  // 🎯 Forzamos la altura del contenedor visual a algo más compacto
-  height: 42, 
-  justifyContent: 'center', 
-},
-pickerEstilo: { 
-  width: '100%', 
-  color: '#333',
-  backgroundColor: 'transparent',
-  // 🎯 El truco: En Android el Picker nativo tiene paddings fijos. 
-  // Con altura de 50 y un margen negativo, se "centra" perfecto en los 42px del contenedor sin cortarse.
-  ...Platform.select({
-    android: {
-      height: 55,
-      marginTop: -3, 
-    },
-    ios: {
-      height: 42,
-    },
-  }),
-},
+    borderWidth: 1, 
+    borderColor: '#CCC', 
+    borderRadius: 8, 
+    marginBottom: 10, 
+    backgroundColor: '#FAFAFA', 
+    overflow: 'hidden',
+    height: 42, 
+    justifyContent: 'center', 
+  },
+  pickerEstilo: { 
+    width: '100%', 
+    color: '#333',
+    backgroundColor: 'transparent',
+    ...Platform.select({
+      android: {
+        height: 55,
+        marginTop: -3, 
+      },
+      ios: {
+        height: 42,
+      },
+    }),
+  },
   textInput: { borderWidth: 1, borderColor: '#CCC', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15, color: '#333', marginBottom: 20, backgroundColor: '#FAFAFA' },
   contenedorFechaPicker: { alignItems: 'flex-start', marginBottom: 10, width: '100%' },
   botonPicker: { backgroundColor: azulLogoUndav, paddingHorizontal: 20, borderRadius: 8 },

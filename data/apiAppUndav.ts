@@ -61,17 +61,7 @@ export interface ObjetoMateria {
   resultado: string;
   fecha: string;
   propuesta_nombre: string;
-  // ... podés agregar acá los demás campos que necesites usar
 }
-
-// export interface MateriaHistorial {
-//   materia: string;
-//   nombre: string;
-//   fecha: string;
-//   nota: string;
-//   resultado: string;
-//   acta: string;
-// }
 
 export interface EventoAgenda {
   tipo_actividad: string;
@@ -103,9 +93,6 @@ export interface RegistroAPI {
   fecha_creado: string;
   fecha_modificado: string;
   tipo_nombre: "noticia" | "correo" | "link" | "telefono" | "texto";
-  // archivo_path: string | null;
-  // borrado_logico: boolean;
-  // modificado_por: string | null;
 }
 
 export interface NoticiaAPI {
@@ -156,7 +143,7 @@ api.interceptors.response.use(
     return response;
   },
   (error: AxiosError) => {
-    console.log(`❌ ERROR: ${error.message} - Status: ${error.response?.status}`);
+    console.log(`❌ ERROR INTERCEPTOR: ${error.message} - Status: ${error.response?.status}`);
     return Promise.reject(error);
   }
 );
@@ -169,10 +156,6 @@ function capitalizeWords(str: string): string {
   return str.toLowerCase().split(" ").map(word => word.charAt(0).toUpperCase() + word.slice(1)).join(" ");
 }
 
-/**
- * Normaliza los strings de fecha devueltos por PHP/PostgreSQL a un formato ISO-8601
- * compatible con el motor estricto de JavaScript Hermes (React Native).
- */
 export function parsearFechaPHP(fechaStr: string): Date {
   if (!fechaStr) return new Date();
   
@@ -269,7 +252,7 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
   }
 }
 
-export async function ObtenerAnalitico(): Promise<any> { // ⬅️ Cambiado a any
+export async function ObtenerAnalitico(): Promise<any> {
   const token = await AsyncStorage.getItem("token");
   const personaId = infoBaseUsuarioActual.idPersona;
 
@@ -279,13 +262,13 @@ export async function ObtenerAnalitico(): Promise<any> { // ⬅️ Cambiado a an
     const response = await api.get(`/persona/${personaId}/analitico`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
-    return response.data; // ⬅️ Sacamos el "as Analitico"
+    return response.data;
   } catch (err: any) {
     throw new Error("Error al obtener la historia académica / analítico");
   }
 }
 
-export async function ObtenerTramites(): Promise<any> { // ⬅️ Cambiado a any
+export async function ObtenerTramites(): Promise<any> {
   const token = await AsyncStorage.getItem("token");
   const personaId = infoBaseUsuarioActual.idPersona;
 
@@ -295,32 +278,9 @@ export async function ObtenerTramites(): Promise<any> { // ⬅️ Cambiado a any
     const response = await api.get(`/item-contacto`, {
       headers: { "Authorization": `Bearer ${token}` }
     });
-    return response.data; // ⬅️ Sacamos el "as Analitico"
+    return response.data;
   } catch (err: any) {
     throw new Error("Error al obtener la historia académica / analítico");
-  }
-}
-
-export async function ObtenerAgendaFechas(
-  fechaInicio: string = "2026-04-01",
-  fechaFin: string = "2026-05-31",
-  filtrarFeriados: boolean = true
-): Promise<EventoAgenda[]> {
-  const token = await AsyncStorage.getItem("token");
-  const personaId = infoBaseUsuarioActual.idPersona;
-
-  if (!personaId) throw new Error("No hay un usuario autenticado para consultar la agenda");
-
-  try {
-    const response = await api.get(
-      `/persona/${personaId}/${fechaInicio}/${fechaFin}/${filtrarFeriados}/agenda`,
-      {
-        headers: { "Authorization": `Bearer ${token}` }
-      }
-    );
-    return response.data.data as EventoAgenda[];
-  } catch (err: any) {
-    throw new Error("Error al obtener la agenda desde la API propia");
   }
 }
 
@@ -339,34 +299,29 @@ export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalenda
 
 export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
   try {
-    // 1. Buscamos el token dentro del bloque seguro try-catch
     const token = await AsyncStorage.getItem("token");
 
-    // 💡 VALIDACIÓN CRÍTICA: Si no hay token o es un string vacío, evitamos mandar la petición
     if (!token) {
       console.warn("⚠️ [ObtenerNoticiasAPI] No se envió la petición: El token está vacío o no se ha iniciado sesión.");
-      return []; // Devolvemos un array vacío de forma segura para no romper la UI
+      return [];
     }
 
-    // 2. Realizamos la petición usando tu instancia 'api'
     const response = await api.get("/noticias", {
       headers: { 
         "Authorization": `Bearer ${token}`,
-        "Cache-Control": "no-cache" // Forzamos a que no use caché vieja si hay problemas de sesión
+        "Cache-Control": "no-cache"
       }
     });
 
     return response.data as NoticiaAPI[];
 
   } catch (err: any) {
-    // 3. LOGS ENRIQUECIDOS: Ahora sabrás exactamente qué causó el 401 o cualquier otro error
     console.error("❌ [ObtenerNoticiasAPI] Falló el endpoint de noticias:", {
-      status: err?.response?.status, // Aquí verás si sigue siendo un 401
-      data: err?.response?.data,     // Mensaje que escupe el backend de PHP (ej: "Token expired")
-      message: err?.message          // Error de red, timeout, etc.
+      status: err?.response?.status,
+      data: err?.response?.data,
+      message: err?.message
     });
 
-    // Mantenemos la estructura de tu error para no romper componentes superiores, pero inyectando el código de estado real
     const statusCode = err?.response?.status ? ` (Status: ${err.response.status})` : "";
     throw new Error(`Error al obtener las noticias desde el nuevo endpoint de PHP${statusCode}`);
   }
@@ -405,8 +360,6 @@ export async function Logout() {
     legajo: "", propuestas: [], indicePropuestaSeleccionada: -1,
     usuario: "", password: "",
   };
-  // await AsyncStorage.removeItem("token");
-  // await AsyncStorage.removeItem("idPersona");
   await AsyncStorage.clear();
 }
 

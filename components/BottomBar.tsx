@@ -2,12 +2,12 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
-import { azulClaro, grisBorde } from '@/constants/Colors';
+import { azulClaro, azulMedioUndav, grisBorde } from '@/constants/Colors';
 import CustomText from './CustomText';
 import { useNotificacionesGlobales, setNotificationCount } from '@/data/notificaciones';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 
-const routes = ['/home-estudiante', '/calendario', '/notificaciones', '/accesos-directos', '/perfil'] as const;
+const routes = ['/home-estudiante', '/planos', '/notificaciones', '/accesos-directos', '/perfil'] as const;
 type Route = (typeof routes)[number];
 
 interface BotonBarra {
@@ -18,8 +18,8 @@ interface BotonBarra {
 
 export const tamanioIcono = 50;
 export const opacidadSeleccionado = 1;
-export const colorSeleccionado = azulClaro;
-const colorIcono = '#999';
+export const colorSeleccionado = "#fff";
+const colorIcono = '#b9b9b9';
 
 export default function BottomBar() {
   const router = useRouter();
@@ -30,7 +30,7 @@ export default function BottomBar() {
 
   const buttons: BotonBarra[] = [
     { route: '/home-estudiante', iconPath: require('../assets/icons/ico-svg/inicio.svg') },
-    { route: '/calendario', iconPath: require('../assets/icons/ico-svg/calendario.svg') },
+    { route: '/planos', iconPath: require('../assets/icons/ico-svg/sedes.svg') },
     { route: '/notificaciones', iconPath: require('../assets/icons/notifications.svg') },
     { route: '/accesos-directos', iconPath: require('../assets/icons/ico-svg/enlaces.svg') },
     { route: '/perfil', iconPath: require('../assets/icons/person.svg') },
@@ -81,7 +81,7 @@ export default function BottomBar() {
 export const bottomBarStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: '#fff',
+    backgroundColor: azulMedioUndav,
     justifyContent: 'space-around',
     height: 56,
     borderTopWidth: 1,

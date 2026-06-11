@@ -6,7 +6,7 @@ import BotonTextoMail from "@/components/BotonTextoMail";
 export default function Configuracion() {
   return (
     <FondoScrollGradiente gap={4}>
-      <BotonTexto label="Planos" route="/planos"/>
+      {/* <BotonTexto label="Planos" route="/planos"/> */}
       <BotonTexto label="Sedes" route="/sedes"/>
       <BotonTexto label="Bienestar" route="/bienestar"/>
       <BotonTexto label="Preguntas frecuentes" route="preguntas-frecuentes"/>

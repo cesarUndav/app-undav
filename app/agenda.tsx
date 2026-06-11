@@ -12,7 +12,7 @@ import {
   ActivityIndicator,
 } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { useLocalSearchParams } from 'expo-router'; // 🎯 IMPORTAMOS EL CAPTURADOR DE PARÁMETROS
+import { router, useLocalSearchParams } from 'expo-router'; // 🎯 IMPORTAMOS EL CAPTURADOR DE PARÁMETROS
 
 import CustomText from '../components/CustomText';
 import {
@@ -23,8 +23,7 @@ import {
   listaFuturo as obtenerListaFuturo,
   listaPasado as obtenerListaPasado,
   obtenerEventoConId,
-  quitarEventoPersonalizado,
-  listaCursadasSIU,
+  quitarEventoPersonalizado
 } from '../data/agenda';
 
 import { useAgenda } from '../src/context/AgendaContext';
@@ -225,30 +224,6 @@ export default function Agenda() {
         ) : mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
           <>
             <DropdownSeccion
-              titulo="MIS MATERIAS"
-              styleContenido={styles.dropdownContenido}
-              inicialmenteAbierto
-            >
-              {listaCursadasSIU.length === 0 ? (
-                <CustomText weight="bold" style={styles.title}>
-                  Error al cargar cursadas del SIU Guaraní
-                </CustomText>
-              ) : (
-                listaCursadasSIU.map((materia, index) => {
-                  const esUltimo = index === listaCursadasSIU.length - 1;
-                  return (
-                    <ListaItem
-                      key={materia.id}
-                      title={materia.titulo}
-                      subtitle={materia.descripcion}
-                      styleExtra={esUltimo ? { borderBottomRightRadius: 20 } : undefined}
-                    />
-                  );
-                })
-              )}
-            </DropdownSeccion>
-
-            <DropdownSeccion
               titulo="EN CURSO"
               styleContenido={styles.dropdownContenido}
               inicialmenteAbierto
@@ -349,6 +324,7 @@ export default function Agenda() {
         )}
 
         <View style={stylesFlotante.botonesColumna}>
+
           <TouchableOpacity
             onPress={abrirModalAgregarEvento}
             style={[styles.openBtn, styles.addButton]}
@@ -362,6 +338,14 @@ export default function Agenda() {
           >
             <Ionicons name={mostrarFiltros ? "close" : "filter"} size={26} color="#fff" />
           </TouchableOpacity>
+
+          <TouchableOpacity
+            onPress={() => router.push('/calendario')}
+            style={[styles.openBtn, {backgroundColor: azulLogoUndav}]}
+          >
+            <Ionicons name="calendar" size={28} color="#fff" />
+          </TouchableOpacity>
+
         </View>
       </View>
 
@@ -515,6 +499,7 @@ const stylesFlotante = StyleSheet.create({
     flexDirection: 'column',     
     alignItems: 'center',
     justifyContent: 'flex-end',
+    gap: 10
   },
   filterOptionsParent: {
     backgroundColor: '#ffffff',
@@ -582,7 +567,6 @@ const styles = StyleSheet.create({
   },
   addButton: {
     backgroundColor: 'green',
-    marginBottom: 10,
   },
 });
 

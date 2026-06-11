@@ -1,20 +1,20 @@
-//calendario.tsx
+// calendario.tsx
 
 import React, { useEffect, useState } from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
+import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
 import CustomText from '../components/CustomText';
 import ListaItem from '@/components/ListaItem';
-import BotonTexto from '@/components/BotonTexto';
 import FondoGradiente from '@/components/FondoGradiente';
 
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado, azulLogoUndav, azulMedioUndav, celesteSIU } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
-import { eventoAgendaToFechaString, listaCompleta } from '@/data/agenda';
+import { eventoAgendaToFechaString, listaCompleta, cargarEventosAcademicos } from '@/data/agenda';
+import { router } from 'expo-router';
 
-// Importamos la función masiva desde tu API propia
-import { ObtenerAgendaFechas } from '@/data/apiAppUndav';
+import { Ionicons } from '@expo/vector-icons';
 
 export type Actividad = {
   id: string;
@@ -173,7 +173,7 @@ const CalendarioMensual: React.FC<CalendarioMensualProps> = ({
 
 // 🌟 COMPONENTE PRINCIPAL DE LA PANTALLA 🌟
 export default function Calendario() {
-  
+  const insets = useSafeAreaInsets();
   const [loading, setLoading] = useState(true);
 
   const diaHoy = new Date();
@@ -192,23 +192,23 @@ export default function Calendario() {
     anio: diaHoy.getFullYear() 
   });
 
-  // 🛠️ NUEVO ESTADO: Controla si se ocultan o muestran las cursadas
   const [ocultarCursadas, setOcultarCursadas] = useState(false);
 
-  // Efecto 1: Carga masiva desde tu API Principal
+  // Efecto 1: Carga masiva conectada al Apache de Docker
   useEffect(() => {
     const cargarTodoElMes = async () => {
-      
       setLoading(true);
+      console.log(`🏃‍♂️ [Calendario] Iniciando carga de datos para el mes ${mesAnioActual.mes + 1}/${mesAnioActual.anio}`);
       
       try {
-        const { cargarEventosAcademicos } = await import('@/data/agenda');
+        // 1. Carga inicial paralela de los eventos académicos fijos (PHP base)
         await cargarEventosAcademicos();
-        const todosLosEventos = listaCompleta();
 
+        // 2. Calculamos dinámicamente el primer y último día del mes actual para la Query del endpoint
+        const todosLosEventos = listaCompleta();
         const actividadesTemp: { [fecha: string]: Actividad[] } = {};
 
-        // 1. Procesar eventos estáticos locales (Feriados)
+        // 4. Mapeamos los eventos con fecha puntual (Feriados y Exámenes puntuales)
         todosLosEventos.forEach((evento, idx) => {
           if (!evento.fechaInicio || !evento.fechaFin) return;
 
@@ -242,71 +242,11 @@ export default function Calendario() {
           }
         });
 
-        // 2. Calcular límites dinámicos del mes actual
-        const primerDia = new Date(mesAnioActual.anio, mesAnioActual.mes, 1, 12, 0, 0);
-        const ultimoDia = new Date(mesAnioActual.anio, mesAnioActual.mes + 1, 0, 12, 0, 0);
-
-        const fechaInicioQuery = DateToISOStringNoTime(primerDia);
-        const fechaFinQuery = DateToISOStringNoTime(ultimoDia);
-
-        // Identifica llamadas HTTP masivas a la API Principal
-        const eventosRemotos = await ObtenerAgendaFechas(fechaInicioQuery, fechaFinQuery, true);
-
-        console.log("🔍 [API Principal] Respuesta cruda recibida:", JSON.stringify(eventosRemotos));
-
-        // 3. Mapear de forma ultra-segura la respuesta
-        if (Array.isArray(eventosRemotos) && eventosRemotos.length > 0) {
-          const diasDelMesActual = getDiasDelMes(mesAnioActual.mes, mesAnioActual.anio);
-
-          eventosRemotos.forEach((item, idx) => {
-            const tipoAct = item.tipo_actividad || 'Actividad';
-            const nomAct = item.actividad_nombre || 'Sin nombre';
-            const horarioAct = item.horario || 'Horario a confirmar';
-            const sedeAct = item.ubicacion_nombre || 'Sede no especificada';
-            const modAct = item.modalidad || 'Presencial';
-
-            const nuevaActividad: Actividad = {
-              id: `api-principal-${idx}`,
-              title: `${tipoAct}: ${nomAct}`, 
-              body: `${horarioAct} | ${sedeAct} (${modAct})`,
-              esFeriado: false 
-            };
-
-            if (item.fecha) {
-              const fExamenStr = item.fecha.split('T')[0]; 
-              if (!actividadesTemp[fExamenStr]) actividadesTemp[fExamenStr] = [];
-              actividadesTemp[fExamenStr].push({
-                ...nuevaActividad,
-                id: `api-principal-examen-${idx}-${fExamenStr}`
-              });
-            } 
-            else if (item.dow_semana !== undefined && item.dow_semana !== null) {
-              const targetDow = parseInt(String(item.dow_semana), 10);
-
-              diasDelMesActual.forEach((fechaObj) => {
-                if (fechaObj.getDay() === targetDow) {
-                  const fStr = DateToISOStringNoTime(fechaObj);
-                  if (!actividadesTemp[fStr]) actividadesTemp[fStr] = [];
-                  
-                  const existeYa = actividadesTemp[fStr].some(act => act.title === nuevaActividad.title);
-                  if (!existeYa) {
-                    actividadesTemp[fStr].push({
-                      ...nuevaActividad,
-                      id: `api-principal-cursada-${idx}-${fStr}`
-                    });
-                  }
-                }
-              });
-            }
-          });
-        } else {
-          console.log("⚠️ [API Principal] La respuesta está vacía o no es un Array válido.");
-        }
-
+        // 6. Impactamos el estado unificado de renderizado
         setActividadesPorFecha(actividadesTemp);
 
       } catch (err) {
-        console.error("❌ Error catastrófico en la carga del calendario:", err);
+        console.error("❌ Error catastrófico en la estructura del calendario:", err);
       } finally {
         setLoading(false);
       }
@@ -315,7 +255,6 @@ export default function Calendario() {
     cargarTodoElMes();
   }, [mesAnioActual.mes, mesAnioActual.anio]);
 
-
   // 🔄 RECALCULAR CONTADORES: Escucha los cambios de 'actividadesPorFecha' Y 'ocultarCursadas'
   useEffect(() => {
     const nuevasCantidades: { [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } } = {};
@@ -323,7 +262,6 @@ export default function Calendario() {
     for (const f in actividadesPorFecha) {
       let listaDelDia = actividadesPorFecha[f] || [];
       
-      // Si el botón está activado, filtramos los círculos del calendario completo
       if (ocultarCursadas) {
         listaDelDia = listaDelDia.filter(act => 
           !act.id.includes('cursada') && !act.title.toLowerCase().includes('cursada')
@@ -351,7 +289,6 @@ export default function Calendario() {
 
     let actividadesDelDia = actividadesPorFecha[fechaStr] ?? [];
 
-    // 🛠️ FILTRADO DINÁMICO: Si 'ocultarCursadas' es true, limpiamos la lista actual
     if (ocultarCursadas) {
       actividadesDelDia = actividadesDelDia.filter(act => 
         !act.id.includes('cursada') && !act.title.toLowerCase().includes('cursada')
@@ -389,6 +326,7 @@ export default function Calendario() {
   };
 
   return (
+    <>
     <FondoGradiente>
       <LoadingWrapper loading={loading}>
         <CalendarioMensual
@@ -397,9 +335,7 @@ export default function Calendario() {
           diaHoy={diaHoy}
           onSelectDay={setFechaSeleccionada}
           onSelectMonthChange={(nuevoMes, nuevoAnio) => {
-            // 🎯 Seteamos el estado que dispara la API inmediatamente
             setMesAnioActual({ mes: nuevoMes, anio: nuevoAnio });
-            // 🎯 Movemos el cursor de selección al día 1 de ese mes de forma unificada
             setFechaSeleccionada(new Date(nuevoAnio, nuevoMes, 1));
           }} 
         />
@@ -430,19 +366,57 @@ export default function Calendario() {
           })}
         </ScrollView>
         
-        {/* 🛠️ BOTÓN ACTUALIZADO: Cambia dinámicamente el label y conmuta el estado de filtrado */}
-        <View style={{marginTop: 10}}>
-          
-          <BotonTexto
-            label={ocultarCursadas ? "Mostrar Cursadas" : "Ocultar Cursadas"} 
-            styleExtra={{borderBottomRightRadius: 20}}
-            onPressFunction={manejarToggleCursadas}
-          />
-        </View>
+
+
       </View>
     </FondoGradiente>
+    <View style={[ stylesFlotante.floatingBox, { bottom: insets.bottom + 60 + 16 }]}>
+          <View style={stylesFlotante.botonesColumna}>
+            <TouchableOpacity
+            onPress={() => router.push('/agenda')}
+              style={[stylesFlotante.openBtn, {backgroundColor: azulLogoUndav}]}
+            >
+              <Ionicons name="list" size={28} color="#fff" />
+            </TouchableOpacity>
+          </View>
+      </View>
+    </>
   );
 }
+
+const stylesFlotante = StyleSheet.create({
+  floatingBox: {
+    position: 'absolute',
+    right: 16,   
+    zIndex: 10,
+    flexDirection: 'row',        
+    alignItems: 'flex-end',      
+    justifyContent: 'flex-end',
+  },
+  botonesColumna: {
+    flexDirection: 'column',     
+    alignItems: 'center',
+    justifyContent: 'flex-end',
+  },
+  filterOptionsParent: {
+    backgroundColor: '#ffffff',
+    borderRadius: 20,
+    padding: 8,
+    marginRight: 12,             
+    width: 200, 
+    gap: 6,
+    ...getShadowStyle(6), 
+  },
+  openBtn: {
+    backgroundColor: azulLogoUndav,
+    borderRadius: 30,
+    width: 56,
+    height: 56,
+    justifyContent: 'center',
+    alignItems: 'center',
+    ...getShadowStyle(4),
+  },
+});
 
 const blanco = "#fff";
 const colorTextoSeleccionado = blanco;
