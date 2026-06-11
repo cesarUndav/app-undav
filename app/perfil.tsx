@@ -114,7 +114,7 @@ export default function Configuracion() {
         {
           type: 'link',
           label: 'Trayectoria Académica',
-          onPress: () => router.push('/plan-de-estudio'),
+          onPress: () => router.push('/trayectoria-academica'),
         },
         {
           type: 'link',
