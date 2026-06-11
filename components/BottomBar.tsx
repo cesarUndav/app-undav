@@ -2,7 +2,7 @@ import React from 'react';
 import { View, TouchableOpacity, StyleSheet } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter, usePathname } from 'expo-router';
-import { azulClaro, azulMedioUndav, grisBorde } from '@/constants/Colors';
+import { azulClaro, grisBorde } from '@/constants/Colors';
 import CustomText from './CustomText';
 import { useNotificacionesGlobales, setNotificationCount } from '@/data/notificaciones';
 import { getShadowStyle } from '@/constants/ShadowStyle';
@@ -18,8 +18,8 @@ interface BotonBarra {
 
 export const tamanioIcono = 50;
 export const opacidadSeleccionado = 1;
-export const colorSeleccionado = "#fff";
-const colorIcono = '#b9b9b9';
+export const colorSeleccionado = azulClaro;
+const colorIcono = '#999';
 
 export default function BottomBar() {
   const router = useRouter();
@@ -81,7 +81,7 @@ export default function BottomBar() {
 export const bottomBarStyles = StyleSheet.create({
   container: {
     flexDirection: 'row',
-    backgroundColor: azulMedioUndav,
+    backgroundColor: '#fff',
     justifyContent: 'space-around',
     height: 56,
     borderTopWidth: 1,
