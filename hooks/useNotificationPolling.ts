@@ -11,7 +11,7 @@ import {
   setNotificationCount,
 } from '@/data/notificaciones';
 
-const TIEMPO_POLLING_NOTIFICACIONES = 30000;
+const TIEMPO_POLLING_NOTIFICACIONES = 120000;
 
 type UseNotificationPollingParams = {
   sesionVerificada: boolean;
