@@ -79,7 +79,7 @@ export default function Layout() {
           setUsuarioAutenticado(false);
 
           if (pathName === '/') {
-            router.replace('/loginAutenticado');
+            router.replace('/login');
           }
         }
       } catch (error) {
@@ -90,7 +90,7 @@ export default function Layout() {
         setUsuarioAutenticado(false);
 
         if (pathName === '/') {
-          router.replace('/loginAutenticado');
+          router.replace('/login');
         }
       } finally {
         setSesionVerificada(true);
@@ -134,7 +134,7 @@ export default function Layout() {
      */
     if (esRutaPrivada(pathName) && visitanteActual) {
       console.log(`🛑 [Seguridad Global] Bloqueado intento de navegación a ${pathName} sin credenciales.`);
-      router.replace('/loginAutenticado');
+      router.replace('/login');
     }
   }, [pathName, sesionVerificada, esVisitante, router]);
 

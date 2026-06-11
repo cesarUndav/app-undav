@@ -15,6 +15,9 @@ import CustomText from '../components/CustomText';
 import FondoGradiente from '@/components/FondoGradiente';
 import { Logout, infoBaseUsuarioActual } from '@/data/apiAppUndav';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import { exportarDatosAgenda } from '@/utils/exportador';
+import BotonTexto from '@/components/BotonTexto';
+import { listaCompleta } from '@/data/agenda';
 
 type TextItem = {
   type: 'text';
@@ -137,6 +140,8 @@ export default function Configuracion() {
     },
   ];
 
+  const eventos = listaCompleta();
+
   return (
     <FondoGradiente>
       <View style={styles.card}>
@@ -228,6 +233,7 @@ export default function Configuracion() {
           contentContainerStyle={styles.list}
         />
       </View>
+      {/* <BotonTexto label="Exportar datos de agenda" onPressFunction={() => exportarDatosAgenda(eventos, 'json')} /> */}
     </FondoGradiente>
   );
 }

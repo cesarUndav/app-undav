@@ -1,6 +1,6 @@
 flowchart TD
     %% Entrada y control de sesión
-    Index["index.tsx"] --> Login["loginAutenticado.tsx"]
+    Index["index.tsx"] --> Login["login.tsx"]
     Index --> HomeVisitante["home-visitante.tsx"]
 
     Layout["_layout.tsx"] --> HomeEstudiante["home-estudiante.tsx"]

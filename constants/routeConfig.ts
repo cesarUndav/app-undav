@@ -22,7 +22,7 @@ export const rutasPrivadas = [
  */
 export const rutasSinHeader = [
   '/',
-  '/loginAutenticado',
+  '/login',
   '/loginMail',
   '/home-estudiante',
   '/home-visitante',
@@ -33,7 +33,7 @@ export const rutasSinHeader = [
  */
 export const rutasSinBottomBar = [
   '/',
-  '/loginAutenticado',
+  '/login',
   '/loginMail',
 ];
 
@@ -43,7 +43,7 @@ export const rutasSinBottomBar = [
  */
 export const rutasLogin = [
   '/',
-  '/loginAutenticado',
+  '/login',
   '/loginMail',
 ];
 

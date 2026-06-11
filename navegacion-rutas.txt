@@ -19,11 +19,11 @@ app\home-visitante.tsx:98: funcionOnPress={() => router.push('/escuela-de-oficio
 app\home-visitante.tsx:103: funcionOnPress={() => router.push('/preguntas-frecuentes')}
 app\home-visitante.tsx:108: funcionOnPress={() => router.push('/contacto')}
 app\index.tsx:22: onBackPress={() => router.replace('/')}
-app\index.tsx:36: onPress={() => router.push('../loginAutenticado')}
+app\index.tsx:36: onPress={() => router.push('../login')}
 app\index.tsx:45: onPress={() => router.push('../home-visitante')}
-app\loginAutenticado.tsx:62: router.replace("/home-estudiante");
-app\loginAutenticado.tsx:152: <NavigationHeader title="Iniciar Sesión" onBackPress={() => router.replace("/")} />
-app\loginAutenticado.tsx:214: onPress={() => router.push(`/webview/${encodeURIComponent("https://academica.undav.edu.ar/g3w/acceso/recuperar")}?tryLogin=${false}`)}
+app\login.tsx:62: router.replace("/home-estudiante");
+app\login.tsx:152: <NavigationHeader title="Iniciar Sesión" onBackPress={() => router.replace("/")} />
+app\login.tsx:214: onPress={() => router.push(`/webview/${encodeURIComponent("https://academica.undav.edu.ar/g3w/acceso/recuperar")}?tryLogin=${false}`)}
 app\noticias-web-undav.tsx:47: const hrefMatch = tr3.match(/<a[^>]*href=["']([^"']+)["']/i);
 app\oferta-academica.tsx:177: onPress={() => router.push(`/carreras/${carrera.ruta}`)}
 app\perfil.tsx:75: router.replace('/');
@@ -37,8 +37,8 @@ app\sedes.tsx:72: router.push({
 app\_app.tsx:11: <link
 app\_app.tsx:12: href="https://fonts.googleapis.com/css2?family=Montserrat:ital,wght@0,100;0,400;0,700;1,900&display=swap"
 app\_layout.tsx:57: router.replace('/home-estudiante');
-app\_layout.tsx:62: if (pathName === '/') router.replace('/loginAutenticado');
-app\_layout.tsx:67: if (pathName === '/') router.replace('/loginAutenticado');
-app\_layout.tsx:95: router.replace('/loginAutenticado');
+app\_layout.tsx:62: if (pathName === '/') router.replace('/login');
+app\_layout.tsx:67: if (pathName === '/') router.replace('/login');
+app\_layout.tsx:95: router.replace('/login');
 app\_layout.tsx:158: { text: "Ver", onPress: () => router.push('/notificaciones') }
 app\_layout.tsx:192: { text: "Ver", onPress: () => router.push('/notificaciones') }
