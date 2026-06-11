@@ -19,6 +19,8 @@ type BotonTextoProps = {
   fontSize?: number;
   fontColor?: string;
   styleExtra?: StyleProp<ViewStyle>;
+  noBackground?: boolean;
+  bold?: boolean;
   onPressFunction?: () => void | Promise<void>;
 };
 
@@ -33,6 +35,8 @@ export default function BotonTexto({
   verticalPadding = 12,
   fontSize = 14,
   fontColor = 'white',
+  noBackground = false,
+  bold = true,
   onPressFunction,
   styleExtra,
 }: BotonTextoProps) {
@@ -46,25 +50,28 @@ export default function BotonTexto({
       return;
     }
     else if (url) {
-      // MODIFICACIÓN CRÍTICA: Solo abre en WebView si está activado Y NO es Android
       if (openInsideApp && Platform.OS !== 'android') {
         router.push(`/webview/${encodeURIComponent(url)}?tryLogin=${tryLogin}`);
       } else {
-        // En Android (o si openInsideApp es false), va directo al navegador externo
         Linking.openURL(url).catch(() => console.warn('No se pudo abrir el enlace:', url));
       }
     }
   };
 
+  // Corrección de estilos dinámicos basados en noBackground
   const dynamicContainerStyle: ViewStyle = {
-    backgroundColor: color,
+    backgroundColor: noBackground ? 'transparent' : color,
     paddingTop: verticalPadding + 3,
     paddingBottom: verticalPadding - 1,
+    // Si NO tiene fondo, usualmente no lleva sombra. Si tiene fondo, se le aplica la sombra.
+    ...(!noBackground ? getShadowStyle(6) : {}), 
   };
 
   const dynamicTextStyle: TextStyle = {
     fontSize,
-    color: fontColor,
+    // Si no hay fondo y el fontColor por defecto es blanco, no se vería. 
+    // Ajustamos para que use el color principal si es noBackground y sigue en 'white'.
+    color: noBackground && fontColor === 'white' ? color : fontColor,
     textAlign: centered ? 'center' : 'left',
   };
 
@@ -73,18 +80,18 @@ export default function BotonTexto({
       style={[styles.bloque, dynamicContainerStyle, styleExtra]}
       onPress={handlePress}
     >
-      <CustomText weight="bold" style={[styles.texto, dynamicTextStyle]}>
+      <CustomText weight={bold ? "bold" : "regular"} style={[styles.texto, dynamicTextStyle]}>
         {label}
       </CustomText>
     </TouchableOpacity>
   );
 }
 
+// Estilos estáticos limpios
 const styles = StyleSheet.create({
   bloque: {
     paddingHorizontal: 20,
     justifyContent: 'center',
-    ...getShadowStyle(6),
   },
   texto: {
     marginBottom: 5,

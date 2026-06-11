@@ -20,9 +20,10 @@ import { Ionicons } from '@expo/vector-icons';
 import {
   validarPersona,
 } from "@/data/apiAppUndav";
-import { azulLogoUndav } from "@/constants/Colors";
+import { azulLogoUndav, negroAzulado } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setNotificationCount } from "@/data/notificaciones";
+import BotonTexto from "@/components/BotonTexto";
 
 export default function LoginScreen() {
 
@@ -153,9 +154,8 @@ useEffect(() => {
       <KeyboardAvoidingView behavior={Platform.OS === "ios" ? "padding" : "height"}
         style={{ flex: 1 }}
         // Ajusta este offset si el header de navegación muerde un pedazo de pantalla en iOS
-        keyboardVerticalOffset={Platform.OS === "ios" ? 40 : 0}>
+        keyboardVerticalOffset={Platform.OS === "ios" ? 48 : 16}>
         <FondoGradiente style={styles.container}>
-
           <View style={{flex: 1, justifyContent:"flex-end"}}>
             <Image
               source={require("../assets/icons/undav.png")}
@@ -210,11 +210,16 @@ useEffect(() => {
               </CustomText>
             </TouchableOpacity>
 
-            <TouchableOpacity style={{paddingTop: 8}}
-              onPress={() => router.push(`/webview/${encodeURIComponent("https://academica.undav.edu.ar/g3w/acceso/recuperar")}?tryLogin=${false}`)}
-              disabled={esperandoRespuesta}>
-              <CustomText style={styles.forgotPassword}> Olvidé mi contraseña </CustomText>
-            </TouchableOpacity>
+
+            <BotonTexto
+            label="Olvidé mi contraseña"
+            url="https://academica.undav.edu.ar/g3w/acceso/recuperar"
+            centered
+            fontColor={negroAzulado}
+            noBackground
+            fontSize={17}
+            bold={false}
+            />
           </View>
 
         </FondoGradiente>

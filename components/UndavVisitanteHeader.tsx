@@ -28,7 +28,7 @@ export default function UndavEstudianteHeader() {
       </View>
 
       <TouchableOpacity
-        onPress={() => router.push('/loginAutenticado')}
+        onPress={() => router.push('/login')}
         style={undavHeaderStyles.profileIcon}
       >
         <Ionicons
