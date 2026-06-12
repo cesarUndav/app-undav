@@ -3,6 +3,7 @@
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { grisUndav } from "@/constants/Colors";
 import axios, { AxiosError } from "axios";
+import * as SecureStore from 'expo-secure-store';
 
 // ==========================================
 // --- INTERFACES ---
@@ -16,8 +17,6 @@ export interface User {
   legajo: string;
   propuestas: Propuesta[];
   indicePropuestaSeleccionada: number;
-  usuario: string;
-  password: string;
 }
 
 export interface Propuesta {
@@ -110,7 +109,6 @@ export interface NoticiaAPI {
 export let infoBaseUsuarioActual: User = {
   idPersona: "", documento: "", nombreCompleto: "", email: "",
   legajo: "", propuestas: [], indicePropuestaSeleccionada: -1,
-  usuario: "", password: ""
 };
 
 export let visitante: boolean = true;
@@ -179,10 +177,9 @@ export function UsuarioEsAutenticado(): boolean { return infoBaseUsuarioActual.i
 
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
-  await guardarSesion(token, idPersona);
-
-  infoBaseUsuarioActual.usuario = usuario.toString();
-  infoBaseUsuarioActual.password = clave.toString();
+  
+  // 🎯 Enviamos todo junto aquí, centralizando el almacenamiento
+  await guardarSesion(token, idPersona, usuario, clave);
 
   setVisitante(false);
   await ObtenerDatosBaseUsuarioConToken(token, idPersona);
@@ -239,7 +236,8 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string, personaId: 
 }
 
 export async function ObtenerMateriasConPlan(): Promise<Plan> {
-  const token = await AsyncStorage.getItem("token");
+  // 🔄 CAMBIADO A SECURE STORE
+  const token = await SecureStore.getItemAsync("token");
   const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].plan_version;
 
   try {
@@ -253,7 +251,8 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
 }
 
 export async function ObtenerAnalitico(): Promise<any> {
-  const token = await AsyncStorage.getItem("token");
+  // 🔄 CAMBIADO A SECURE STORE
+  const token = await SecureStore.getItemAsync("token");
   const personaId = infoBaseUsuarioActual.idPersona;
 
   if (!personaId) throw new Error("No hay un usuario autenticado para consultar analítico");
@@ -269,7 +268,8 @@ export async function ObtenerAnalitico(): Promise<any> {
 }
 
 export async function ObtenerTramites(): Promise<any> {
-  const token = await AsyncStorage.getItem("token");
+  // 🔄 CAMBIADO A SECURE STORE
+  const token = await SecureStore.getItemAsync("token");
   const personaId = infoBaseUsuarioActual.idPersona;
 
   if (!personaId) throw new Error("No hay un usuario autenticado para consultar analítico");
@@ -285,7 +285,8 @@ export async function ObtenerTramites(): Promise<any> {
 }
 
 export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalendarioAcademico[]> {
-  const token = await AsyncStorage.getItem("token");
+  // 🔄 CAMBIADO A SECURE STORE
+  const token = await SecureStore.getItemAsync("token");
 
   try {
     const response = await api.get("/eventos", {
@@ -299,7 +300,8 @@ export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalenda
 
 export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
   try {
-    const token = await AsyncStorage.getItem("token");
+    // 🔄 CAMBIADO A SECURE STORE
+    const token = await SecureStore.getItemAsync("token");
 
     if (!token) {
       console.warn("⚠️ [ObtenerNoticiasAPI] No se envió la petición: El token está vacío o no se ha iniciado sesión.");
@@ -328,7 +330,8 @@ export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
 }
 
 export async function ObtenerRegistrosAPI(): Promise<RegistroAPI[]> {
-  const token = await AsyncStorage.getItem("token");
+  // 🔄 CAMBIADO A SECURE STORE
+  const token = await SecureStore.getItemAsync("token");
 
   try {
     const response = await api.get("/registros", {
@@ -339,17 +342,25 @@ export async function ObtenerRegistrosAPI(): Promise<RegistroAPI[]> {
     throw new Error("Error al obtener los registros desde la API PHP");
   }
 }
-
 // ==========================================
 // --- SESIÓN Y LOGOUT ---
 // ==========================================
 
-async function guardarSesion(token: string, personaId: number): Promise<void> {
+export async function guardarSesion(
+  token: string, 
+  personaId: number | string, 
+  usuario?: string, 
+  clave?: string
+): Promise<void> {
   try {
-    await AsyncStorage.setItem("token", token);
-    await AsyncStorage.setItem("idPersona", personaId.toString());
+    // 🎯 Guardamos de manera encriptada y segura
+    await SecureStore.setItemAsync("token", token);
+    await SecureStore.setItemAsync("idPersona", personaId.toString());
+    
+    if (usuario) await SecureStore.setItemAsync("username", usuario.toString());
+    if (clave) await SecureStore.setItemAsync("password", clave.toString());
   } catch (err) {
-    console.error("Error guardando sesión en storage:", err);
+    console.error("Error guardando sesión en SecureStore:", err);
   }
 }
 
@@ -357,10 +368,21 @@ export async function Logout() {
   visitante = true;
   infoBaseUsuarioActual = {
     idPersona: "", documento: "", nombreCompleto: "", email: "",
-    legajo: "", propuestas: [], indicePropuestaSeleccionada: -1,
-    usuario: "", password: "",
+    legajo: "", propuestas: [], indicePropuestaSeleccionada: -1
   };
-  await AsyncStorage.clear();
+
+  try {
+    // Borramos selectivamente las claves de SecureStore
+    await SecureStore.deleteItemAsync("token");
+    await SecureStore.deleteItemAsync("idPersona");
+    await SecureStore.deleteItemAsync("username");
+    await SecureStore.deleteItemAsync("password");
+    
+    // Si usabas AsyncStorage para otras cosas (ej. modo oscuro), usas clear o remueves lo demás.
+    // await AsyncStorage.clear(); 
+  } catch (err) {
+    console.error("Error al limpiar SecureStore en Logout:", err);
+  }
 }
 
 // ==========================================
@@ -386,7 +408,8 @@ export function enModoOscuro(): boolean { return modoOscuro; }
 
 export async function ObtenerJsonString(url: string): Promise<string> {
   try {
-    const token = await AsyncStorage.getItem("token");
+    // 🔄 CAMBIADO A SECURE STORE
+    const token = await SecureStore.getItemAsync("token");
     let endpoint = url.replace(URL_BASE || '', '');
     
     if (!endpoint.startsWith('/')) {

@@ -40,31 +40,26 @@ export default function LoginScreen() {
       contrasenaIngresada.trim().length === 0
     );
   };
-
+  
   const botonIngresar = async () => {
     setEsperandoRespuesta(true);
 
     try {
-      // 1. Obtenemos las credenciales reales de la API
-      const { token, idPersona } = await validarPersona(documentoIngresado, contrasenaIngresada);
-
-      // 🎯 MODIFICACIÓN CRÍTICA: Guardamos el Token e ID Persona que el _layout necesita para reactivar la agenda
-      if (token && idPersona) {
-        await AsyncStorage.setItem("token", token);
-        await AsyncStorage.setItem("idPersona", idPersona.toString());
-      }
-
-      await AsyncStorage.setItem("username", documentoIngresado.toString());
-      await AsyncStorage.setItem("password", contrasenaIngresada.toString());
+      // 1. La API valida, obtiene los datos y guarda TODO en AsyncStorage internamente
+      await validarPersona(documentoIngresado, contrasenaIngresada);
       
+      // 2. Tareas secundarias del login
       setNotificationCount(10);
       
-      // 🚀 Movemos de pantalla: el layout ahora sí tiene el token en mano para empezar a descargar
+      // 🚀 Movemos de pantalla de forma segura
       router.replace("/home-estudiante");
     }
     catch (error: any) {
       console.error("Error login:", error);
-      Alert.alert("Error al iniciar sesión", "Asegurate de ingresar el formato correcto de tu usuario. Este puede ser:\n\"0-DNI\" o \"DNI\".");
+      Alert.alert(
+        "Error al iniciar sesión", 
+        "Asegurate de ingresar el formato correcto de tu usuario. Este puede ser:\n\"0-DNI\" o \"DNI\"."
+      );
     } finally {
       setEsperandoRespuesta(false);
     }
