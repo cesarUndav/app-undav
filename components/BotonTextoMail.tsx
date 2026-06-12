@@ -23,7 +23,7 @@ export default function BotonTextoMail({
   mail,
   asunto = '',
   cuerpo = '',
-  verticalPadding = 12,
+  verticalPadding,
   fontSize,
   fontColor = 'white',
   color = '#6a6c9c',
