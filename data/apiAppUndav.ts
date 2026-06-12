@@ -70,14 +70,14 @@ export interface EventoAgenda {
   horario: string;
   ubicacion_nombre: string; 
   modalidad: string;
-  fecha?: string;           // Examen (YYYY-MM-DD o ISO string)
-  dow_semana?: number;      // 0 (Domingo) a 6 (Sábado) para cursadas periódicas
+  fecha?: string;           
+  dow_semana?: number;      
 }
 
 export interface EventoCalendarioAcademico {
   id: number;
   titulo: string;
-  fecha_inicio: string;     // Devuelve la fecha como string (ej: "2026-06-05 03:00:00+00")
+  fecha_inicio: string;     
   fecha_fin: string;
   feriado: boolean | number;
   activo: boolean | number;
@@ -96,9 +96,9 @@ export interface RegistroAPI {
 
 export interface NoticiaAPI {
   id: number;
-  nombre: string;       // El título de la noticia
-  contenido: string;    // El cuerpo/descripción de la noticia
-  fecha_creado: string; // Timestamp de la base de datos
+  nombre: string;       
+  contenido: string;    
+  fecha_creado: string; 
   activo: boolean;
 }
 
@@ -128,20 +128,68 @@ const api = axios.create({
   timeout: 15000,
 });
 
-// Interceptor para debugging de peticiones salientes
-api.interceptors.request.use(config => {
+// 🔄 MODIFICADO: Inyectar automáticamente el token fresco en cada petición saliente
+api.interceptors.request.use(async (config) => {
   console.log(`➡️ [${config.method?.toUpperCase()}] URL: ${config.baseURL}${config.url}`);
+  
+  const token = await SecureStore.getItemAsync("token");
+  if (token && config.headers) {
+    config.headers.Authorization = `Bearer ${token}`;
+  }
+  
   return config;
+}, error => {
+  return Promise.reject(error);
 });
 
-// Interceptor para debugging de respuestas entrantes
+// 🔄 MODIFICADO: Interceptor de respuestas para capturar el 401 de forma silenciosa
 api.interceptors.response.use(
   response => {
     console.log(`⬅️ STATUS: ${response.status}`);
     return response;
   },
-  (error: AxiosError) => {
+  async (error: AxiosError) => {
+    const requestOriginal = error.config as any;
     console.log(`❌ ERROR INTERCEPTOR: ${error.message} - Status: ${error.response?.status}`);
+
+    // Si el error es 401 (Unauthorized) y no estamos atrapados en un bucle de reintentos
+    if (error.response?.status === 401 && requestOriginal && !requestOriginal._yaReintentado) {
+      requestOriginal._yaReintentado = true; // Flag de control para evitar bucles infinitos
+
+      try {
+        console.log("🔄 [API] Token expirado detectado. Intentando re-autenticación silenciosa...");
+        
+        const usuarioGuardado = await SecureStore.getItemAsync("username");
+        const claveGuardada = await SecureStore.getItemAsync("password");
+
+        if (!usuarioGuardado || !claveGuardada) {
+          console.warn("⚠️ [API] No se encontraron credenciales guardadas en el dispositivo.");
+          await Logout();
+          return Promise.reject(error);
+        }
+
+        // Solicitamos un par de credenciales/token nuevos a la API PHP utilizando los datos guardados
+        const nuevaData = await validarPersonaYTraerData(usuarioGuardado, claveGuardada);
+        
+        // Guardamos las nuevas llaves de acceso
+        await guardarSesion(nuevaData.token, nuevaData.idPersona, usuarioGuardado, claveGuardada);
+        console.log("💾 [API] Sesión renovada con éxito en segundo plano.");
+
+        // Modificamos la cabecera de la petición original con el nuevo token reactivado
+        if (requestOriginal.headers) {
+          requestOriginal.headers.Authorization = `Bearer ${nuevaData.token}`;
+        }
+
+        // Re-ejecutamos de manera transparente para el usuario
+        return api(requestOriginal);
+
+      } catch (errorDeRenovacion) {
+        console.error("❌ [API] Error crítico al intentar refrescar la sesión:", errorDeRenovacion);
+        await Logout(); // Forzamos deslogueo si las credenciales cambiaron o el servidor murió
+        return Promise.reject(errorDeRenovacion);
+      }
+    }
+
     return Promise.reject(error);
   }
 );
@@ -178,7 +226,6 @@ export function UsuarioEsAutenticado(): boolean { return infoBaseUsuarioActual.i
 export async function validarPersona(usuario: string, clave: string) {
   const { token, idPersona } = await validarPersonaYTraerData(usuario, clave);
   
-  // 🎯 Enviamos todo junto aquí, centralizando el almacenamiento
   await guardarSesion(token, idPersona, usuario, clave);
 
   setVisitante(false);
@@ -211,9 +258,7 @@ export async function validarPersonaYTraerData(
 
 export async function ObtenerDatosBaseUsuarioConToken(token: string, personaId: number): Promise<void> {
   try {
-    const response = await api.get(`/persona/${personaId}`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    const response = await api.get(`/persona/${personaId}`);
 
     const datos = response.data;
     const prop = datos.propuestas;
@@ -236,14 +281,10 @@ export async function ObtenerDatosBaseUsuarioConToken(token: string, personaId: 
 }
 
 export async function ObtenerMateriasConPlan(): Promise<Plan> {
-  // 🔄 CAMBIADO A SECURE STORE
-  const token = await SecureStore.getItemAsync("token");
   const planId = infoBaseUsuarioActual.propuestas[infoBaseUsuarioActual.indicePropuestaSeleccionada].plan_version;
 
   try {
-    const response = await api.get(`/propuesta/${planId}/plan`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    const response = await api.get(`/propuesta/${planId}/plan`);
     return response.data as Plan;
   } catch (err: any) {
     throw new Error("Error obteniendo plan de materias");
@@ -251,16 +292,11 @@ export async function ObtenerMateriasConPlan(): Promise<Plan> {
 }
 
 export async function ObtenerAnalitico(): Promise<any> {
-  // 🔄 CAMBIADO A SECURE STORE
-  const token = await SecureStore.getItemAsync("token");
   const personaId = infoBaseUsuarioActual.idPersona;
-
   if (!personaId) throw new Error("No hay un usuario autenticado para consultar analítico");
 
   try {
-    const response = await api.get(`/persona/${personaId}/analitico`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    const response = await api.get(`/persona/${personaId}/analitico`);
     return response.data;
   } catch (err: any) {
     throw new Error("Error al obtener la historia académica / analítico");
@@ -268,16 +304,11 @@ export async function ObtenerAnalitico(): Promise<any> {
 }
 
 export async function ObtenerTramites(): Promise<any> {
-  // 🔄 CAMBIADO A SECURE STORE
-  const token = await SecureStore.getItemAsync("token");
   const personaId = infoBaseUsuarioActual.idPersona;
-
   if (!personaId) throw new Error("No hay un usuario autenticado para consultar analítico");
 
   try {
-    const response = await api.get(`/item-contacto`, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    const response = await api.get(`/item-contacto`);
     return response.data;
   } catch (err: any) {
     throw new Error("Error al obtener la historia académica / analítico");
@@ -285,13 +316,8 @@ export async function ObtenerTramites(): Promise<any> {
 }
 
 export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalendarioAcademico[]> {
-  // 🔄 CAMBIADO A SECURE STORE
-  const token = await SecureStore.getItemAsync("token");
-
   try {
-    const response = await api.get("/eventos", {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    const response = await api.get("/eventos");
     return response.data as EventoCalendarioAcademico[];
   } catch (err: any) {
     throw new Error("Error al obtener la lista de eventos desde el servidor");
@@ -300,19 +326,8 @@ export async function ObtenerEventosCalendarioAcademico(): Promise<EventoCalenda
 
 export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
   try {
-    // 🔄 CAMBIADO A SECURE STORE
-    const token = await SecureStore.getItemAsync("token");
-
-    if (!token) {
-      console.warn("⚠️ [ObtenerNoticiasAPI] No se envió la petición: El token está vacío o no se ha iniciado sesión.");
-      return [];
-    }
-
     const response = await api.get("/noticias", {
-      headers: { 
-        "Authorization": `Bearer ${token}`,
-        "Cache-Control": "no-cache"
-      }
+      headers: { "Cache-Control": "no-cache" }
     });
 
     return response.data as NoticiaAPI[];
@@ -330,18 +345,14 @@ export async function ObtenerNoticiasAPI(): Promise<NoticiaAPI[]> {
 }
 
 export async function ObtenerRegistrosAPI(): Promise<RegistroAPI[]> {
-  // 🔄 CAMBIADO A SECURE STORE
-  const token = await SecureStore.getItemAsync("token");
-
   try {
-    const response = await api.get("/registros", {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
+    const response = await api.get("/registros");
     return response.data as RegistroAPI[];
   } catch (err: any) {
     throw new Error("Error al obtener los registros desde la API PHP");
   }
 }
+
 // ==========================================
 // --- SESIÓN Y LOGOUT ---
 // ==========================================
@@ -353,7 +364,6 @@ export async function guardarSesion(
   clave?: string
 ): Promise<void> {
   try {
-    // 🎯 Guardamos de manera encriptada y segura
     await SecureStore.setItemAsync("token", token);
     await SecureStore.setItemAsync("idPersona", personaId.toString());
     
@@ -372,14 +382,10 @@ export async function Logout() {
   };
 
   try {
-    // Borramos selectivamente las claves de SecureStore
     await SecureStore.deleteItemAsync("token");
     await SecureStore.deleteItemAsync("idPersona");
     await SecureStore.deleteItemAsync("username");
     await SecureStore.deleteItemAsync("password");
-    
-    // Si usabas AsyncStorage para otras cosas (ej. modo oscuro), usas clear o remueves lo demás.
-    // await AsyncStorage.clear(); 
   } catch (err) {
     console.error("Error al limpiar SecureStore en Logout:", err);
   }
@@ -408,18 +414,13 @@ export function enModoOscuro(): boolean { return modoOscuro; }
 
 export async function ObtenerJsonString(url: string): Promise<string> {
   try {
-    // 🔄 CAMBIADO A SECURE STORE
-    const token = await SecureStore.getItemAsync("token");
     let endpoint = url.replace(URL_BASE || '', '');
     
     if (!endpoint.startsWith('/')) {
       endpoint = '/' + endpoint;
     }
     
-    const response = await api.get(endpoint, {
-      headers: { "Authorization": `Bearer ${token}` }
-    });
-
+    const response = await api.get(endpoint);
     return JSON.stringify(response.data);
   } catch (err: any) {
     console.error("Error en ObtenerJsonString:", err.message);

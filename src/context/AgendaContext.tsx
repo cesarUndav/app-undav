@@ -1,11 +1,10 @@
 // src/context/AgendaContext.tsx
 
-import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
+import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo, useRef } from 'react';
 import { EventoAgenda, cargarEventosAcademicos, listaFuturo } from '@/data/agenda';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import * as SecureStore from 'expo-secure-store'; 
 
-// 🎯 Mantenemos AsyncStorage para los eventos (JSONs potencialmente grandes)
 const obtenerStorageKey = (idUsuario: string) => `@eventos_personalizados_${idUsuario}`;
 
 interface AgendaContextType {
@@ -30,9 +29,11 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
     const [eventosPersonalizados, setEventosPersonalizados] = useState<EventoAgenda[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
-
-    // Estado para almacenar el ID o Legajo del usuario actual y saber qué clave usar
     const [idUsuarioActual, setIdUsuarioActual] = useState<string | null>(null);
+
+    // 🛡️ BANDERAS DE CONTROL NATURALEZA MUTABLE (Evitan renders y llamadas paralelas)
+    const peticionEnCurso = useRef(false);
+    const ultimoUsuarioCargado = useRef<string | null>(null);
 
     const actualizarListaCombinada = useCallback((personales: EventoAgenda[]) => {
         const academicos = listaFuturo();
@@ -44,49 +45,60 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
             setEventosFuturos([]);
             setEventosPersonalizados([]);
             setIdUsuarioActual(null);
+            ultimoUsuarioCargado.current = null;
             return;
         }
 
-        // Ahora busca el token encriptado en SecureStore
         const tokenExistente = await SecureStore.getItemAsync('token');
         if (!tokenExistente) {
             console.log("⚠️ [AgendaContext] Intento de petición abortado: No se detectó token físico.");
             setEventosFuturos([]);
             setEventosPersonalizados([]);
             setIdUsuarioActual(null);
+            ultimoUsuarioCargado.current = null;
             return;
         }
 
+        const idUsuario = await SecureStore.getItemAsync('idPersona') || 'generico';
+
+        // 🛡️ CORTOCIRCUITO 1: Si ya estamos buscando datos O si el usuario ya está cargado en memoria, abortamos.
+        if (peticionEnCurso.current || ultimoUsuarioCargado.current === idUsuario) {
+            return;
+        }
+
+        // Bloqueamos la entrada para futuros renders simultáneos
+        peticionEnCurso.current = true;
         setIsLoading(true);
         setError(null);
         
         try {
             console.log("📅 [AgendaContext] Credenciales validadas. Sincronizando datos...");
-
-            const idUsuario = await SecureStore.getItemAsync('idPersona') || 'generico';
             setIdUsuarioActual(idUsuario);
+            ultimoUsuarioCargado.current = idUsuario;
 
-            // Cargar eventos usando a chave específica deste usuário (via AsyncStorage normal)
             const claveUsuario = obtenerStorageKey(idUsuario);
             const localesRaw = await AsyncStorage.getItem(claveUsuario);
             const localesParseados: EventoAgenda[] = localesRaw ? JSON.parse(localesRaw) : [];
             setEventosPersonalizados(localesParseados);
 
-            // Cargar eventos desde a API PHP
+            // Petición HTTP pesada a la API PHP
             await cargarEventosAcademicos();
             
-            // Fusión final
             const academicos = listaFuturo();
             setEventosFuturos([...academicos, ...localesParseados]);
 
         } catch (err: any) {
             console.error("❌ Error crítico en Context:", err?.message || err);
             setError("No se pudieron cargar los eventos.");
-            if (eventosFuturos.length === 0) setEventosFuturos([]);
+            // Si falla, permitimos que pueda reintentar limpiando la marca del último cargado
+            ultimoUsuarioCargado.current = null; 
+            setEventosFuturos([]);
         } finally {
             setIsLoading(false);
+            // Liberamos el candado de concurrencia
+            peticionEnCurso.current = false; 
         }
-    }, [usuarioAutenticado, eventosFuturos.length]);
+    }, [usuarioAutenticado]); // ⚡ OPTIMIZACIÓN: Removido 'eventosFuturos.length'. Evita que la función mute.
 
     const agregarEvento = useCallback(async (nuevoEvento: EventoAgenda) => {
         if (!idUsuarioActual) return;
@@ -102,7 +114,6 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
         }
     }, [eventosPersonalizados, idUsuarioActual, actualizarListaCombinada]);
 
-    // 📝 [UPDATE] Con clave dinámica (AsyncStorage para a lista)
     const editarEvento = useCallback(async (eventoEditado: EventoAgenda) => {
         if (!idUsuarioActual) return;
         try {
@@ -131,6 +142,7 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
         }
     }, [eventosPersonalizados, idUsuarioActual, actualizarListaCombinada]);
 
+    // Ejecución controlada del refetch
     useEffect(() => {
         refetchEventos();
     }, [usuarioAutenticado, refetchEventos]); 

@@ -1,24 +1,26 @@
 // app/generar-certificado.tsx
 
-import React, { useState } from 'react';
-import { View, StyleSheet, Alert, TextInput, Platform, ScrollView } from 'react-native';
+import React, { useState, useEffect } from 'react';
+import { View, StyleSheet, Alert, TextInput, Platform, ScrollView, ActivityIndicator } from 'react-native';
 import * as Print from 'expo-print';
 import * as Sharing from 'expo-sharing'; 
 import DateTimePicker from '@react-native-community/datetimepicker';
 import { Picker } from '@react-native-picker/picker';
+import AsyncStorage from '@react-native-async-storage/async-storage'; 
+import { useRouter } from 'expo-router';
 
-// Componentes de tu Toolkit de Diseño
+// Componentes del Toolkit de Diseño
 import CustomText from '@/components/CustomText';
 import BotonTexto from '@/components/BotonTexto';
-import { negroAzulado, azulLogoUndav } from '@/constants/Colors';
+import { negroAzulado, azulLogoUndav, azulMedioUndav } from '@/constants/Colors';
 import { infoBaseUsuarioActual } from '@/data/apiAppUndav';
 import * as FileSystem from 'expo-file-system/legacy'; 
 import { Asset } from 'expo-asset';
 import FondoGradiente from '@/components/FondoGradiente';
-// 🎯 Referencia al asset local
-const logoUndavAsset = Asset.fromModule(require('../assets/images/logoundav.png')); 
 
+const logoUndavAsset = Asset.fromModule(require('../assets/images/logoundav.png')); 
 const linkCertificadoExamen = "https://docs.google.com/document/d/1NGOoRhWOAubZEhG0EzOjhquI1bIKpYwE/edit#heading=h.gjdgxs";
+const STORAGE_KEY_PROPUESTA = '@indice_propuesta_seleccionada'; 
 
 interface DatosCertificado {
   tipoExamen: string;
@@ -29,11 +31,41 @@ interface DatosCertificado {
 }
 
 export default function GeneradorCertificado() {
+  const router = useRouter(); 
   const [materiaInput, setMateriaInput] = useState('');
   const [tipoExamen, setTipoExamen] = useState<'parcial' | 'final'>('parcial');
   const [fechaSeleccionada, setFechaSeleccionada] = useState<Date | undefined>(undefined); 
   const [showDatePicker, setShowDatePicker] = useState(false);
-  const [indicePropuesta, setIndicePropuesta] = useState<number>(infoBaseUsuarioActual.indicePropuestaSeleccionada);
+  const [indicePropuesta, setIndicePropuesta] = useState<number>(0);
+  const [cargandoPreferencia, setCargandoPreferencia] = useState(true);
+
+  useEffect(() => {
+    const cargarPropuestaGuardada = async () => {
+      try {
+        const guardado = await AsyncStorage.getItem(STORAGE_KEY_PROPUESTA);
+        if (guardado !== null) {
+          const indexParsed = parseInt(guardado, 10);
+          if (infoBaseUsuarioActual?.propuestas && indexParsed < infoBaseUsuarioActual.propuestas.length) {
+            setIndicePropuesta(indexParsed);
+          }
+        }
+      } catch (error) {
+        console.error("❌ Error al cargar indice de propuesta:", error);
+      } finally {
+        setCargandoPreferencia(false);
+      }
+    };
+    cargarPropuestaGuardada();
+  }, []);
+
+  const manejarCambioCarrera = async (value: number) => {
+    setIndicePropuesta(value);
+    try {
+      await AsyncStorage.setItem(STORAGE_KEY_PROPUESTA, value.toString());
+    } catch (error) {
+      console.error("❌ Error al guardar el índice de la propuesta:", error);
+    }
+  };
 
   const onChangeFecha = (event: any, selectedDate?: Date) => {
     setShowDatePicker(Platform.OS === 'ios');
@@ -42,31 +74,22 @@ export default function GeneradorCertificado() {
     }
   };
 
-  // HELPER BASE64
   const fetchImageData = async (asset: Asset): Promise<string> => {
     try {
       if (!asset.localUri) {
         await asset.downloadAsync();
       }
       let uriLocal = asset.localUri || asset.uri;
-      const base64Data = await FileSystem.readAsStringAsync(uriLocal, {
-        encoding: 'base64',
-      });
-      if (!base64Data) return "";
-      return `data:image/png;base64,${base64Data}`;
+      const base64Data = await FileSystem.readAsStringAsync(uriLocal, { encoding: 'base64' });
+      return base64Data ? `data:image/png;base64,${base64Data}` : "";
     } catch (err) {
-      console.error("[LOG ❌] Error en fetchImageData:", err);
       return "";
     }
   };
 
-  // --- HTML DEL CERTIFICADO ---
   const generarHTMLCertificado = (datos: DatosCertificado, fechaEmisionTexto: string, esPlantillaVacia: boolean, urlLogo: string) => {
     const renderCampo = (valorReal: string) => 
-      esPlantillaVacia 
-        ? `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` 
-        : valorReal;
-
+      esPlantillaVacia ? `&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;` : valorReal;
     const carreraNombre = infoBaseUsuarioActual?.propuestas?.[indicePropuesta]?.nombre || "Carrera no especificada";
 
     return `
@@ -74,50 +97,24 @@ export default function GeneradorCertificado() {
         <html lang="es">
         <head>
             <meta charset="utf-8">
-            <title>Certificado de Evaluación UNDAV</title>
             <style>
             @page { size: A4; margin: 3cm 2.5cm 3cm 2.5cm; }
             body { font-family: 'Arial', sans-serif; color: #000000; line-height: 2; font-size: 12pt; }
-            
             .header-undav { margin-bottom: 50px; }
             .logo-institucional { height: 75px; width: auto; display: block; }
-            
-            .titulo-documento { text-align: center; font-size: 16pt; font-weight: bold; margin-top: 40px; margin-bottom: 50px; text-transform: uppercase; letter-spacing: 0.5px; }
+            .titulo-documento { text-align: center; font-size: 16pt; font-weight: bold; margin-top: 40px; margin-bottom: 50px; text-transform: uppercase; }
             .certifico-label { font-size: 13pt; font-weight: bold; margin-bottom: 30px; text-transform: uppercase; }
-            .cuerpo-texto { text-align: justify; text-indent: 0; font-size: 12pt; margin-bottom: 40px; }
-            
-            .campo-relleno { 
-                font-weight: bold; 
-                border-bottom: 1px solid #000000; 
-                padding-bottom: 0px; 
-                padding-left: 4px;
-                padding-right: 4px;
-                display: inline; 
-                vertical-align: baseline; 
-            }
-            
+            .cuerpo-texto { text-align: justify; font-size: 12pt; margin-bottom: 40px; }
+            .campo-relleno { font-weight: bold; border-bottom: 1px solid #000000; padding: 0 4px; display: inline; }
             .tabla-firmas { width: 100%; margin-top: 80px; border-collapse: collapse; }
             .col-firma { width: 50%; vertical-align: bottom; text-align: center; }
             .linea-punteada { border-top: 1px dashed #000; width: 85%; margin: 0 auto 8px auto; }
             .aclaracion { font-size: 10pt; color: #333333; line-height: 1.4; }
-            
-            .sello-recuadro { 
-              border: 1px dashed #999; 
-              width: 130px; 
-              height: 130px; 
-              margin: 0 auto; 
-              line-height: 130px; 
-              text-align: center; 
-              font-size: 10pt; 
-              color: #666; 
-              text-transform: uppercase; 
-            }
+            .sello-recuadro { border: 1px dashed #999; width: 130px; height: 130px; margin: 0 auto; line-height: 130px; text-align: center; font-size: 10pt; color: #666; text-transform: uppercase; }
             </style>
         </head>
         <body>
-            <div class="header-undav">
-              <img src="${urlLogo}" class="logo-institucional" alt="Logo UNDAV" />
-            </div>
+            <div class="header-undav"><img src="${urlLogo}" class="logo-institucional" /></div>
             <div class="titulo-documento">Certificado de Evaluación</div>
             <div class="certifico-label">CERTIFICO:</div>
             <div class="cuerpo-texto">
@@ -125,30 +122,20 @@ export default function GeneradorCertificado() {
             Legajo Nº <span class="campo-relleno">${renderCampo(infoBaseUsuarioActual.legajo)}</span>, 
             DNI <span class="campo-relleno">${renderCampo(infoBaseUsuarioActual.documento)}</span>, estudiante de la Universidad de Avellaneda,
             ha rendido el examen <span class="campo-relleno">${renderCampo(datos.tipoExamen.charAt(0).toUpperCase() + datos.tipoExamen.slice(1))}</span> correspondiente a la asignatura 
-            <span class="campo-relleno">${renderCampo(datos.materia)}</span>
-            de la carrera <span class="campo-relleno">${renderCampo(carreraNombre)}</span>, 
-            el día <span class="campo-relleno">${renderCampo(datos.diaExamen)}</span> 
-            del mes de <span class="campo-relleno">${renderCampo(datos.mesExamen)}</span> del año <span class="campo-relleno">${datos.anioExamen}</span>.
+            <span class="campo-relleno">${renderCampo(datos.materia)}</span> de la carrera <span class="campo-relleno">${renderCampo(carreraNombre)}</span>, 
+            el día <span class="campo-relleno">${renderCampo(datos.diaExamen)}</span> del mes de <span class="campo-relleno">${renderCampo(datos.mesExamen)}</span> del año <span class="campo-relleno">${datos.anioExamen}</span>.
             </div>
-            <div class="presentacion-nota">A solicitud del interesado y para ser presentado ante QUIEN CORRESPONDA se expide el presente.</div>
-            
             <table class="tabla-firmas">
             <tr>
-                <td class="col-firma">
-                <div class="sello-recuadro">Sello UNDAV</div>
-                </td>
-                <td class="col-firma">
-                <div class="linea-punteada"></div>
-                <div class="aclaracion"><strong>Firma autorizada</strong><br>(docente a cargo de la asignatura)</div>
-                </td>
+                <td class="col-firma"><div class="sello-recuadro">Sello UNDAV</div></td>
+                <td class="col-firma"><div class="linea-punteada"></div><div class="aclaracion"><strong>Firma autorizada</strong><br>(docente a cargo)</div></td>
             </tr>
             </table>
         </body>
         </html>
     `;
   };
-
-  // --- MANEJADOR DE GENERACIÓN ---
+  
   const compilarPDF = async (esPlantillaVacia: boolean) => {
     let nombreMateriaFinal = materiaInput.trim();
 
@@ -158,46 +145,33 @@ export default function GeneradorCertificado() {
         return;
       }
       if (!fechaSeleccionada) {
-        Alert.alert("Campo Obligatorio", "Por favor, seleccioná la fecha en la que se rindió la evaluación.");
+        Alert.alert("Campo Obligatorio", "Por favor, seleccioná la fecha de la evaluación.");
         return;
       }
     }
 
     const mesesAño = ['Enero', 'Febrero', 'Marzo', 'Abril', 'Mayo', 'Junio', 'Julio', 'Agosto', 'Septiembre', 'Octubre', 'Noviembre', 'Diciembre'];
-    
     const objetoFecha = fechaSeleccionada || new Date();
     const diaExamen = String(objetoFecha.getDate()).padStart(2, '0');
     const mesExamen = mesesAño[objetoFecha.getMonth()];
     const anioExamen = String(objetoFecha.getFullYear());
 
-    // Capitalización Prolija de la Materia
     const conectores = ['de', 'del', 'en', 'y', 'para', 'la', 'los', 'las'];
     const materiaCapitalizada = nombreMateriaFinal
       .toLowerCase()
       .split(' ')
-      .map((palabra, idWord) => {
-        if (conectores.includes(palabra) && idWord !== 0) {
-          return palabra;
-        }
-        return palabra.charAt(0).toUpperCase() + palabra.slice(1);
-      })
+      .map((palabra, idWord) => (conectores.includes(palabra) && idWord !== 0) ? palabra : palabra.charAt(0).toUpperCase() + palabra.slice(1))
       .join(' ');
 
     const datosFinales: DatosCertificado = {
       tipoExamen: tipoExamen,
       materia: materiaCapitalizada || "Materia no especificada",
-      diaExamen,
-      mesExamen,
-      anioExamen
+      diaExamen, mesExamen, anioExamen
     };
 
     const hoy = new Date();
     const textoFechaEmision = `${hoy.getDate()} de ${mesesAño[hoy.getMonth()]} de ${hoy.getFullYear()}`;
-    
-    const diaIngresadoStr = String(objetoFecha.getDate()).padStart(2, '0');
-    const mesIngresadoStr = String(objetoFecha.getMonth() + 1).padStart(2, '0');
-    const fechaIngresadaFilename = `${diaIngresadoStr}-${mesIngresadoStr}-${objetoFecha.getFullYear()}`;
-
+    const fechaIngresadaFilename = `${String(objetoFecha.getDate()).padStart(2, '0')}-${String(objetoFecha.getMonth() + 1).padStart(2, '0')}-${objetoFecha.getFullYear()}`;
     const materiaArchivo = esPlantillaVacia ? "SIN MATERIA" : materiaCapitalizada.toUpperCase();
     const nombreFinalDelArchivo = `Certificado Examen ${infoBaseUsuarioActual.nombreCompleto} ${materiaArchivo} ${fechaIngresadaFilename}.pdf`;
 
@@ -207,46 +181,54 @@ export default function GeneradorCertificado() {
       const { uri } = await Print.printToFileAsync({ html: htmlContenido, base64: false });
       
       if (await Sharing.isAvailableAsync()) {
-        await Sharing.shareAsync(uri, {
-          mimeType: 'application/pdf',
-          dialogTitle: nombreFinalDelArchivo, 
-          UTI: 'com.adobe.pdf'
-        });
+        await Sharing.shareAsync(uri, { mimeType: 'application/pdf', dialogTitle: nombreFinalDelArchivo, UTI: 'com.adobe.pdf' });
       } else {
         Alert.alert("Error", "Compartir no está disponible en este dispositivo.");
       }
     } catch (error: any) {
-      console.error("[LOG ❌] Error en compilarPDF:", error);
-      Alert.alert("Error Técnico", error?.message || "No se pudo procesar el archivo PDF.");
+      Alert.alert("Error Técnico", error?.message || "No se pudo procesar el PDF.");
     }
   };
 
+  const irAlPlanoDeAtencion = () => {
+    router.push({
+      pathname: '/planos',
+      params: {
+        building: 'PineyroA',
+        floor: 'PB',              
+        zoneId: 'aula2' 
+      }
+    });
+  };
+
+  if (cargandoPreferencia || !infoBaseUsuarioActual?.propuestas || infoBaseUsuarioActual.propuestas.length === 0) {
+    return (
+      <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
+        <ActivityIndicator size="large" color={azulMedioUndav} />
+      </View>
+    );
+  }
+
   return (
     <FondoGradiente>
-        <ScrollView style={styles.cardFormulario}>
-
-          {/* Selector de Carrera Universitaria Real */}
-          <CustomText weight="bold" style={styles.labelInput}>
-            Carrera:
-          </CustomText>
+      <ScrollView showsVerticalScrollIndicator={false}>
+        
+        {/* 📋 TARJETA DE FORMULARIO */}
+        <View style={styles.cardFormulario}>
+          <CustomText weight="bold" style={styles.labelInput}>Carrera:</CustomText>
           <View style={styles.contenedorPickerSelect}>
             <Picker
                 selectedValue={indicePropuesta}
-                onValueChange={(itemValue) => setIndicePropuesta(Number(itemValue))}
+                onValueChange={(itemValue) => manejarCambioCarrera(Number(itemValue))}
                 style={styles.pickerEstilo}
                 dropdownIconColor={azulLogoUndav}
             >
-                {infoBaseUsuarioActual?.propuestas?.map((p, index) => (
-                <Picker.Item 
-                    key={p.propuesta || index} 
-                    label={p.nombre} 
-                    value={index} 
-                />
+                {infoBaseUsuarioActual.propuestas.map((p, index) => (
+                  <Picker.Item key={p.propuesta || index} label={p.nombre} value={index} />
                 ))}
             </Picker>
           </View>
 
-          {/* Campo Incondicional y Obligatorio de Asignatura / Materia */}
           <CustomText weight="bold" style={styles.labelInput}>
             Nombre de la Asignatura: <CustomText style={{color: 'red'}}>*</CustomText>
           </CustomText>
@@ -258,7 +240,6 @@ export default function GeneradorCertificado() {
             onChangeText={setMateriaInput}
           />
 
-          {/* Tipo Examen */}
           <CustomText weight="bold" style={styles.labelInput}>
             Tipo de Evaluación: <CustomText style={{color: 'red'}}>*</CustomText>
           </CustomText>
@@ -274,11 +255,9 @@ export default function GeneradorCertificado() {
             </Picker>
           </View>
 
-          {/* Selector de Fecha */}
           <CustomText weight="bold" style={styles.labelInput}>
             Fecha de la Evaluación: <CustomText style={{color: 'red'}}>*</CustomText>
           </CustomText>
-          
           <View style={styles.contenedorFechaPicker}>
             <BotonTexto 
               label={fechaSeleccionada ? `Fecha: ${fechaSeleccionada.toLocaleDateString('es-AR')}` : "Seleccionar Fecha"}
@@ -295,60 +274,87 @@ export default function GeneradorCertificado() {
               onChange={onChangeFecha}
             />
           )}
-        </ScrollView>
-
-        <View style={styles.contenedorAcciones}>
-          <BotonTexto 
-            label="Descargar certificado"
-            color={azulLogoUndav}
-            onPressFunction={() => compilarPDF(false)}
-          />
-
-          <BotonTexto 
-            label="Descargar sin rellenar datos"
-            color='#666'
-            onPressFunction={() => compilarPDF(true)}
-          />
-          
-          <BotonTexto
-            label="Ver en Google Drive"
-            styleExtra={{ borderBottomRightRadius: 20 }} 
-            url={linkCertificadoExamen}
-          />
         </View>
+
+        {/* 💡 TARJETA INSTRUCTIVA (UI Contextualizada y Prolija) */}
+        <View style={styles.cardInstrucciones}>
+          <CustomText weight="bold" style={styles.tituloInstrucciones}>
+            ¿Cómo completar el trámite?
+          </CustomText>
+          
+          <View style={styles.filaPaso}>
+            <View style={styles.circuloNumeroCustom}><CustomText weight="bold" style={styles.textoNumeroCustom}>1</CustomText></View>
+            <CustomText style={styles.textoPaso}>Descargá e <CustomText weight="bold">imprimí</CustomText> el documento PDF.</CustomText>
+          </View>
+
+          <View style={styles.filaPaso}>
+            <View style={styles.circuloNumeroCustom}><CustomText weight="bold" style={styles.textoNumeroCustom}>2</CustomText></View>
+            <CustomText style={styles.textoPaso}>Hacelo <CustomText weight="bold">firmar</CustomText> por el docente a cargo.</CustomText>
+          </View>
+
+          <View style={styles.filaPaso}>
+            <View style={styles.circuloNumeroCustom}><CustomText weight="bold" style={styles.textoNumeroCustom}>3</CustomText></View>
+            <View style={{ flex: 1, gap: 6 }}>
+              <CustomText style={styles.textoPaso}>Presentalo para ser <CustomText weight="bold">sellado</CustomText> en la oficina de atención al estudiante.</CustomText>
+            </View>
+          </View>
+                <BotonTexto 
+                  label="Ver oficina en el plano"
+                  color="#E67E22"
+                  styleExtra={styles.botonPlanoIntegrado}
+                  onPressFunction={irAlPlanoDeAtencion}
+                />
+        </View>
+
+      </ScrollView>
+
+      {/* 🚀 CONTENEDOR DE ACCIONES PRINCIPALES */}
+      <View style={styles.contenedorAcciones}>
+        <BotonTexto 
+          label="Descargar certificado"
+          color={azulLogoUndav}
+          onPressFunction={() => compilarPDF(false)}
+        />
+
+        <BotonTexto 
+          label="Descargar plantilla vacía"
+          color='#555'
+          onPressFunction={() => compilarPDF(true)}
+        />
+        
+        <BotonTexto
+          label="Ver certificado en Google Drive"
+          styleExtra={{ borderBottomRightRadius: 20 }} 
+          url={linkCertificadoExamen}
+        />
+      </View>
     </FondoGradiente>
   );
 }
 
 const styles = StyleSheet.create({
-  cardFormulario: { backgroundColor: '#FFFFFF', borderBottomRightRadius: 15, paddingHorizontal: 15, paddingVertical: 5, marginBottom: 15, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.1, shadowRadius: 4, elevation: 3 },
-  labelInput: { fontSize: 14, color: negroAzulado, marginBottom: 5, marginTop: 5 },
-  contenedorPickerSelect: { 
-    borderWidth: 1, 
-    borderColor: '#CCC', 
+  cardFormulario: { backgroundColor: '#FFFFFF', borderRadius: 15, paddingHorizontal: 15, paddingVertical: 15, marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.08, shadowRadius: 4, elevation: 2, gap: 10 },
+  labelInput: { fontSize: 13, color: negroAzulado },
+  contenedorPickerSelect: { borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 8, backgroundColor: '#FAFAFA', overflow: 'hidden', height: 42, justifyContent: 'center' },
+  pickerEstilo: { width: '100%', color: '#333', backgroundColor: 'transparent', ...Platform.select({ android: { height: 55, marginTop: -3 }, ios: { height: 42 } }) },
+  textInput: { borderWidth: 1, borderColor: '#E0E0E0', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15, color: '#333', backgroundColor: '#FAFAFA' },
+  contenedorFechaPicker: { alignItems: 'flex-start', width: '100%'},
+  botonPicker: { backgroundColor: azulLogoUndav, paddingHorizontal: 10, borderRadius: 8, height: 45 },
+  
+  // Estilos de la Tarjeta Instructiva de Pasos
+  cardInstrucciones: { backgroundColor: '#F4F7FA', borderRadius: 15, padding: 15, marginBottom: 10, borderWidth: 1, borderColor: '#E2E8F0', shadowColor: '#000', shadowOffset: { width: 0, height: 1 }, shadowOpacity: 0.05, shadowRadius: 3, elevation: 1 },
+  tituloInstrucciones: { fontSize: 15, color: azulLogoUndav, marginBottom: 12, textTransform: 'uppercase', letterSpacing: 0.3 },
+  filaPaso: { flexDirection: 'row', alignItems: 'flex-start', marginBottom: 12, gap: 10 },
+  circuloNumeroCustom: { width: 22, height: 22, borderRadius: 11, backgroundColor: azulMedioUndav, justifyContent: 'center', alignItems: 'center', marginTop: 2 },
+  textoNumeroCustom: { color: '#FFF', fontSize: 12 },
+  textoPaso: { fontSize: 13.5, color: '#4A5568', lineHeight: 19, flex: 1 },
+  botonPlanoIntegrado: { 
+    alignSelf: 'flex-start', // Mantiene el botón a la izquierda sin estirarse
+    paddingHorizontal: 12, 
+    height: 45, 
+    marginTop: 6,            // Margen superior para separarlo del paso 3 de forma prolija
     borderRadius: 8, 
-    marginBottom: 10, 
-    backgroundColor: '#FAFAFA', 
-    overflow: 'hidden',
-    height: 42, 
-    justifyContent: 'center', 
+    shadowOpacity: 0 
   },
-  pickerEstilo: { 
-    width: '100%', 
-    color: '#333',
-    backgroundColor: 'transparent',
-    ...Platform.select({
-      android: {
-        height: 55,
-        marginTop: -3, 
-      },
-      ios: {
-        height: 42,
-      },
-    }),
-  },
-  textInput: { borderWidth: 1, borderColor: '#CCC', borderRadius: 8, paddingHorizontal: 12, paddingVertical: 10, fontSize: 15, color: '#333', marginBottom: 20, backgroundColor: '#FAFAFA' },
-  contenedorFechaPicker: { alignItems: 'flex-start', marginBottom: 10, width: '100%' },
-  botonPicker: { backgroundColor: azulLogoUndav, paddingHorizontal: 20, borderRadius: 8 },
-  contenedorAcciones: { gap: 5 }
+  contenedorAcciones: { gap: 6, paddingTop: 5 }
 });

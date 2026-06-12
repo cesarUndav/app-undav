@@ -17,7 +17,7 @@ export default function BotonTextoTelefono({
   label,
   centered = false,
   tel,
-  verticalPadding = 12,
+  verticalPadding,
   fontSize,
   fontColor = 'white',
   color = "#556",

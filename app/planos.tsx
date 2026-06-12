@@ -1,8 +1,9 @@
 
 // planos.tsx
 
-import React, { useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { View, StyleSheet } from 'react-native';
+import { useLocalSearchParams } from 'expo-router'; // Escucha de parámetros
 
 import PlanHeader from '../components/plan-area/PlanHeader';
 import SearchModal from '../components/SearchModal';
@@ -19,6 +20,9 @@ import { usePlanosDerived } from '../hooks/planos/usePlanosDerived';
 import { usePlanosTutorial } from '../hooks/planos/usePlanosTutorial';
 
 export default function Planos() {
+  // 🔄 Capturamos los parámetros de navegación si es que existen
+  const { building: paramBuilding, floor: paramFloor, zoneId: paramZoneId } = useLocalSearchParams();
+
   // --- Estados básicos ---
   const [building, setBuilding] = useState<'' | BuildingKey>('');
   const [showMenu, setShowMenu] = useState(false);
@@ -26,7 +30,6 @@ export default function Planos() {
   const [floorIndex, setFloorIndex] = useState(0);
   const [selectedZoneId, setSelectedZoneId] = useState<string | null>(null);
   const [showSearchModal, setShowSearchModal] = useState(false);
-
   // Conexiones
   const [showConnections, setShowConnections] = useState(false);
 
@@ -75,6 +78,32 @@ export default function Planos() {
     setShowRooms(false);
   };
 
+// NUEVO EFECTO: Intercepta el redireccionamiento externo de oficinas/aulas
+  useEffect(() => {
+    if (paramBuilding && paramFloor && paramZoneId) {
+      const bk = paramBuilding as BuildingKey;
+      const floorKey = paramFloor as FloorKey;
+      const zoneId = paramZoneId as string;
+
+      if (!edificios || !edificios[bk]) return;
+
+      // 1. Seteamos edificio y piso de inmediato para que el SVG empiece a cargar
+      setBuilding(bk);
+      const fi = edificios[bk].floors.findIndex(f => f.key === floorKey);
+      setFloorIndex(fi >= 0 ? fi : 0);
+      
+      // Limpiamos selección previa temporalmente para forzar el re-enfoque
+      setSelectedZoneId(null); 
+      setShowRooms(false);
+      setShowMenu(false);
+
+      // 2. ⚡ ESPERAMOS al siguiente "tick" de React para clavar el ID de la zona
+      // Esto hace que PlanArea detecte un cambio de zona REAL sobre el mapa ya montado y dispare su auto-zoom
+      setTimeout(() => {
+        setSelectedZoneId(zoneId);
+      }, 50); 
+    }
+  }, [paramBuilding, paramFloor, paramZoneId]);
   return (
     <View style={styles.container}>
       {/* Header */}

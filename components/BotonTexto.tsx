@@ -32,7 +32,7 @@ export default function BotonTexto({
   openInsideApp = true,
   tryLogin = false,
   color = azulMedioUndav,
-  verticalPadding = 12,
+  verticalPadding = 10,
   fontSize = 14,
   fontColor = 'white',
   noBackground = false,
@@ -61,8 +61,8 @@ export default function BotonTexto({
   // Corrección de estilos dinámicos basados en noBackground
   const dynamicContainerStyle: ViewStyle = {
     backgroundColor: noBackground ? 'transparent' : color,
-    paddingTop: verticalPadding + 3,
-    paddingBottom: verticalPadding - 1,
+    paddingTop: verticalPadding + 2,
+    paddingBottom: verticalPadding - 3,
     // Si NO tiene fondo, usualmente no lleva sombra. Si tiene fondo, se le aplica la sombra.
     ...(!noBackground ? getShadowStyle(6) : {}), 
   };

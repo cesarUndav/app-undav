@@ -4,12 +4,15 @@ import 'react-native-gesture-handler';
 
 import { Slot, usePathname, useRouter } from 'expo-router';
 import React, { useEffect, useState } from 'react';
-import { Platform, StatusBar, ActivityIndicator, View } from 'react-native';
+import { Platform, View, ActivityIndicator } from 'react-native';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
 import { setBackgroundColorAsync } from 'expo-system-ui';
 import * as SecureStore from 'expo-secure-store'; 
+
+// 🌟 Importamos la StatusBar avanzada de Expo que congela los estilos nativos
+import { StatusBar as ExpoStatusBar } from 'expo-status-bar';
 
 import {
   visitante as visitanteGlobal,
@@ -52,7 +55,8 @@ export default function Layout() {
   useEffect(() => {
     const prepararApp = async () => {
       if (Platform.OS === 'android') {
-        await setBackgroundColorAsync(azulMedioUndav);
+        // Fijamos el contenedor nativo en blanco de entrada
+        await setBackgroundColorAsync('#FFFFFF');
       }
 
       try {
@@ -62,20 +66,16 @@ export default function Layout() {
         if (token && personaIdStr) {
           const personaId = parseInt(personaIdStr, 10);
 
-          // 1. Hidratamos primero la API global
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
           setVisitante(false);
           
-          // 2. Modificamos los estados locales de acceso en la misma tanda
           setEsVisitante(false);
           setUsuarioAutenticado(true);
 
-          // 3. Dejamos que los estados se asienten antes de apagar el Loader
           setTimeout(() => {
             setSesionVerificada(true);
             setIsReady(true);
             
-            // Redirección controlada post-asentamiento
             if (pathName === '/' || pathName.startsWith('/login')) {
               router.replace('/home-estudiante');
             }
@@ -110,16 +110,12 @@ export default function Layout() {
     prepararApp();
   }, []);
 
-  // 2. Protección global de rutas privadas (Sincronizada con variables globales inmediatas)
+  // 2. Protección global de rutas privadas
   useEffect(() => {
-    // Si todavía está leyendo SecureStore, congelamos cualquier redirección automática
     if (!sesionVerificada || !isReady) return;
 
-    // 🎯 Clave de la corrección: En lugar de confiar en el estado local atrasado (esVisitante),
-    // usamos la verdad absoluta e inmediata de la API (visitanteGlobal).
     let visitanteActual = visitanteGlobal;
 
-    // Sincronización en caliente si el cambio vino desde la pantalla de Login manual
     if (pathName === '/home-estudiante' && !visitanteGlobal) {
       if (esVisitante) setEsVisitante(false);
       if (!usuarioAutenticado) setUsuarioAutenticado(true);
@@ -136,7 +132,6 @@ export default function Layout() {
     }
   }, [pathName, sesionVerificada, esVisitante, usuarioAutenticado, isReady]);
 
-  // Loader inicial de protección.
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
@@ -150,12 +145,15 @@ export default function Layout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TutorialProvider>
-        {/* Usamos el estado local sincronizado */}
         <AgendaProvider usuarioAutenticado={usuarioAutenticado}>
           <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
-            <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
+            
+            {/* 🛡️ BLINDAJE ULTRAESTÁTICO NATIVO: 
+                'style="dark"' fuerza iconos oscuros (para fondo blanco).
+                'translucent={false}' le dice a Android que no monte componentes por detrás.
+                Esto intercepta cualquier petición tardía de la Agenda y clava la barra en blanco permanentemente. */}
+            <ExpoStatusBar style="dark" backgroundColor="#FFFFFF" translucent={false} />
 
-            {/* 🎯 Pasamos la verdad directa de la API para evitar desajustes en el primer render */}
             <AppShell esVisitante={visitanteGlobal}>
               <Slot />
             </AppShell>
