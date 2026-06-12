@@ -1,5 +1,8 @@
+//hooks/useValidarSesion.ts
+
 import { useState, useEffect } from 'react';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+// 🔄 CAMBIADO: Reemplazamos AsyncStorage por SecureStore
+import * as SecureStore from 'expo-secure-store'; 
 
 export function useValidarSesion() {
   const [estaCargandoSesion, setEstaCargandoSesion] = useState(true);
@@ -8,11 +11,11 @@ export function useValidarSesion() {
   useEffect(() => {
     const chequearToken = async () => {
       try {
-        const token = await AsyncStorage.getItem("token");
+        const token = await SecureStore.getItemAsync("token");
         // Si el token existe y no está vacío, la sesión es válida
         setTieneSesion(!!token); 
       } catch (error) {
-        console.error("Error al validar el token en el hook:", error);
+        console.error("Error al validar el token en el hook (SecureStore):", error);
         setTieneSesion(false);
       } finally {
         setEstaCargandoSesion(false);

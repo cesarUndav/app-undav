@@ -1,6 +1,4 @@
 // app/_layout.tsx
-// Layout raíz de Expo Router. Inicializa la app, verifica la sesión, aplica providers globales y renderiza la pantalla actual.
-
 import 'fast-text-encoding';
 import 'react-native-gesture-handler';
 
@@ -11,7 +9,7 @@ import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useFonts, Montserrat_400Regular, Montserrat_700Bold } from '@expo-google-fonts/montserrat';
 import { setBackgroundColorAsync } from 'expo-system-ui';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; 
 
 import {
   visitante as visitanteGlobal,
@@ -58,98 +56,91 @@ export default function Layout() {
       }
 
       try {
-        const token = await AsyncStorage.getItem('token');
-        const personaIdStr = await AsyncStorage.getItem('idPersona');
+        const token = await SecureStore.getItemAsync('token');
+        const personaIdStr = await SecureStore.getItemAsync('idPersona');
 
         if (token && personaIdStr) {
           const personaId = parseInt(personaIdStr, 10);
 
+          // 1. Hidratamos primero la API global
           await ObtenerDatosBaseUsuarioConToken(token, personaId);
-
           setVisitante(false);
+          
+          // 2. Modificamos los estados locales de acceso en la misma tanda
           setEsVisitante(false);
           setUsuarioAutenticado(true);
 
-          if (pathName === '/' || pathName.startsWith('/login')) {
-            router.replace('/home-estudiante');
-          }
+          // 3. Dejamos que los estados se asienten antes de apagar el Loader
+          setTimeout(() => {
+            setSesionVerificada(true);
+            setIsReady(true);
+            
+            // Redirección controlada post-asentamiento
+            if (pathName === '/' || pathName.startsWith('/login')) {
+              router.replace('/home-estudiante');
+            }
+          }, 0);
+
         } else {
           setVisitante(true);
           setEsVisitante(true);
           setUsuarioAutenticado(false);
+          setSesionVerificada(true);
+          setIsReady(true);
 
           if (pathName === '/') {
             router.replace('/login');
           }
         }
       } catch (error) {
-        console.error('❌ [Sesión] Error al verificar sesión:', error);
+        console.error('❌ [Sesión] Error al verificar sesión en SecureStore:', error);
 
         setVisitante(true);
         setEsVisitante(true);
         setUsuarioAutenticado(false);
+        setSesionVerificada(true);
+        setIsReady(true);
 
         if (pathName === '/') {
           router.replace('/login');
         }
-      } finally {
-        setSesionVerificada(true);
-        setIsReady(true);
       }
     };
 
     prepararApp();
   }, []);
 
-  // 2. Protección global de rutas privadas.
+  // 2. Protección global de rutas privadas (Sincronizada con variables globales inmediatas)
   useEffect(() => {
-    if (!sesionVerificada) return;
+    // Si todavía está leyendo SecureStore, congelamos cualquier redirección automática
+    if (!sesionVerificada || !isReady) return;
 
-    let visitanteActual = esVisitante;
+    // 🎯 Clave de la corrección: En lugar de confiar en el estado local atrasado (esVisitante),
+    // usamos la verdad absoluta e inmediata de la API (visitanteGlobal).
+    let visitanteActual = visitanteGlobal;
 
-    /**
-     * Caso especial:
-     * Si el usuario acaba de loguearse y fue enviado a home-estudiante,
-     * sincronizamos el estado local del layout con la variable global existente.
-     *
-     * Esto mantiene compatibilidad con el flujo actual sin hacer todavía
-     * un refactor profundo hacia SessionContext.
-     */
+    // Sincronización en caliente si el cambio vino desde la pantalla de Login manual
     if (pathName === '/home-estudiante' && !visitanteGlobal) {
-      setEsVisitante(false);
-      setUsuarioAutenticado(true);
+      if (esVisitante) setEsVisitante(false);
+      if (!usuarioAutenticado) setUsuarioAutenticado(true);
       visitanteActual = false;
     }
 
-    /**
-     * Si el usuario vuelve al flujo de login, apagamos el estado autenticado.
-     */
     if (esRutaLogin(pathName)) {
-      setUsuarioAutenticado(false);
+      if (usuarioAutenticado) setUsuarioAutenticado(false);
     }
 
-    /**
-     * Solo bloqueamos rutas explícitamente declaradas como privadas.
-     * Las pantallas públicas para visitantes no necesitan token.
-     */
     if (esRutaPrivada(pathName) && visitanteActual) {
-      console.log(`🛑 [Seguridad Global] Bloqueado intento de navegación a ${pathName} sin credenciales.`);
+      console.log(`🛑 [Seguridad Global] Bloqueado intento de navegación a ${pathName}. (Visitante: ${visitanteActual})`);
       router.replace('/login');
     }
-  }, [pathName, sesionVerificada, esVisitante, router]);
+  }, [pathName, sesionVerificada, esVisitante, usuarioAutenticado, isReady]);
 
   // Loader inicial de protección.
   if (!isReady || !fontsLoaded || !sesionVerificada) {
     return (
       <GestureHandlerRootView style={{ flex: 1 }}>
-        <View
-          style={{
-            flex: 1,
-            justifyContent: 'center',
-            alignItems: 'center',
-            backgroundColor: '#FFFFFF',
-          }}
-        >
+        <View style={{ flex: 1, justifyContent: 'center', alignItems: 'center', backgroundColor: '#FFFFFF' }}>
           <ActivityIndicator size="large" color={azulMedioUndav} />
         </View>
       </GestureHandlerRootView>
@@ -159,11 +150,13 @@ export default function Layout() {
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <TutorialProvider>
+        {/* Usamos el estado local sincronizado */}
         <AgendaProvider usuarioAutenticado={usuarioAutenticado}>
           <SafeAreaView style={{ flex: 1, backgroundColor: '#FFFFFF' }}>
             <StatusBar backgroundColor="#FFFFFF" barStyle="dark-content" />
 
-            <AppShell esVisitante={esVisitante}>
+            {/* 🎯 Pasamos la verdad directa de la API para evitar desajustes en el primer render */}
+            <AppShell esVisitante={visitanteGlobal}>
               <Slot />
             </AppShell>
           </SafeAreaView>

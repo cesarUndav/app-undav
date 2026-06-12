@@ -3,8 +3,9 @@
 import React, { createContext, useContext, useState, useEffect, ReactNode, useCallback, useMemo } from 'react';
 import { EventoAgenda, cargarEventosAcademicos, listaFuturo } from '@/data/agenda';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import * as SecureStore from 'expo-secure-store'; 
 
-// 🎯 En lugar de una constante estática, usamos una función que genera la clave basada en el ID del usuario
+// 🎯 Mantenemos AsyncStorage para los eventos (JSONs potencialmente grandes)
 const obtenerStorageKey = (idUsuario: string) => `@eventos_personalizados_${idUsuario}`;
 
 interface AgendaContextType {
@@ -30,7 +31,7 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
     const [isLoading, setIsLoading] = useState(false);
     const [error, setError] = useState<string | null>(null);
 
-    // 🎯 Estado para almacenar el ID o Legajo del usuario actual y saber qué clave usar
+    // Estado para almacenar el ID o Legajo del usuario actual y saber qué clave usar
     const [idUsuarioActual, setIdUsuarioActual] = useState<string | null>(null);
 
     const actualizarListaCombinada = useCallback((personales: EventoAgenda[]) => {
@@ -46,7 +47,8 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
             return;
         }
 
-        const tokenExistente = await AsyncStorage.getItem('token');
+        // Ahora busca el token encriptado en SecureStore
+        const tokenExistente = await SecureStore.getItemAsync('token');
         if (!tokenExistente) {
             console.log("⚠️ [AgendaContext] Intento de petición abortado: No se detectó token físico.");
             setEventosFuturos([]);
@@ -61,25 +63,21 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
         try {
             console.log("📅 [AgendaContext] Credenciales validadas. Sincronizando datos...");
 
-            // 🎯 Paso 1: Obtener el identificador único del usuario (Legajo/DNI/ID) que guardaste al hacer login
-            // (Asegurate de que al loguearse guardes este dato en AsyncStorage, ej: AsyncStorage.setItem('usuario_id', '12345'))
-            const idUsuario = await AsyncStorage.getItem('usuario_id') || 'generico';
+            const idUsuario = await SecureStore.getItemAsync('idPersona') || 'generico';
             setIdUsuarioActual(idUsuario);
 
-            // 🎯 Paso 2: Cargar eventos usando la clave específica de ESTE usuario
+            // Cargar eventos usando a chave específica deste usuário (via AsyncStorage normal)
             const claveUsuario = obtenerStorageKey(idUsuario);
             const localesRaw = await AsyncStorage.getItem(claveUsuario);
             const localesParseados: EventoAgenda[] = localesRaw ? JSON.parse(localesRaw) : [];
             setEventosPersonalizados(localesParseados);
 
-            // Paso 3: Cargar eventos desde la API PHP
+            // Cargar eventos desde a API PHP
             await cargarEventosAcademicos();
             
-            // Paso 4: Fusión final
+            // Fusión final
             const academicos = listaFuturo();
             setEventosFuturos([...academicos, ...localesParseados]);
-            
-            setIsLoading(false); 
 
         } catch (err: any) {
             console.error("❌ Error crítico en Context:", err?.message || err);
@@ -90,7 +88,6 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
         }
     }, [usuarioAutenticado, eventosFuturos.length]);
 
-    // 📥 [CREATE] Con clave dinámica
     const agregarEvento = useCallback(async (nuevoEvento: EventoAgenda) => {
         if (!idUsuarioActual) return;
         try {
@@ -105,7 +102,7 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
         }
     }, [eventosPersonalizados, idUsuarioActual, actualizarListaCombinada]);
 
-    // 📝 [UPDATE] Con clave dinámica
+    // 📝 [UPDATE] Con clave dinámica (AsyncStorage para a lista)
     const editarEvento = useCallback(async (eventoEditado: EventoAgenda) => {
         if (!idUsuarioActual) return;
         try {
@@ -120,7 +117,6 @@ export const AgendaProvider: React.FC<AgendaProviderProps> = ({ children, usuari
         }
     }, [eventosPersonalizados, idUsuarioActual, actualizarListaCombinada]);
 
-    // 🗑️ [DELETE] Con clave dinámica
     const eliminarEvento = useCallback(async (id: string) => {
         if (!idUsuarioActual) return;
         try {
