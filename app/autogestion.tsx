@@ -5,9 +5,7 @@ import React from 'react';
 import BotonTexto from '../components/BotonTexto';
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import BotonTextoSIU from '@/components/BotonTextoSIU';
-import BotonTextoMail from '@/components/BotonTextoMail';
 import DropdownSeccion from '@/components/DropdownSeccion';
-import BotonTextoTelefono from '@/components/BotonTextoTelefono';
 
 const linkSelloInstitucional = "https://docs.google.com/forms/d/e/1FAIpQLSc2InEWA3-Xzr0ixrTwDpDIopLAzpYr4D8u2UcEr3PJpeJE3g/viewform";
 
@@ -52,7 +50,7 @@ export default function Autogestion() {
           <BotonTexto
             label="Tutorial de Inscripción a Carreras"
             openInsideApp
-            url="https://undav.edu.ar/index.php?idcateg=5"
+            route="/preinscripcion"
           />
           <BotonTextoSIU
             label="Oferta de Comisiones"

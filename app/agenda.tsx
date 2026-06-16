@@ -1,61 +1,68 @@
 // app/agenda.tsx
 
-import React, { useState, useEffect } from 'react';
-import { View, StyleSheet, TouchableOpacity, ActivityIndicator } from 'react-native';
+import React, { useState, useEffect, useCallback } from 'react';
+import { View, StyleSheet, TouchableOpacity } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
-import { router, useLocalSearchParams } from 'expo-router';
+import { useLocalSearchParams } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 
 import CustomText from '../components/CustomText';
-import {
-  EventoAgenda,
-  listaEnCurso as obtenerListaEnCurso,
-  listaFuturo as obtenerListaFuturo,
-  listaPasado as obtenerListaPasado,
-  obtenerEventoConId,
-} from '../data/agenda';
-
+import { EventoAgenda, obtenerEventoConId } from '../data/agenda';
 import { useAgenda } from '../src/context/AgendaContext';
 
-import AgendaItem from '@/components/AgendaItem';
-import FondoScrollGradiente from '@/components/FondoScrollGradiente';
-import { azulClaro, azulLogoUndav, azulMedioUndav, negroAzulado } from '@/constants/Colors';
+import SubVistaLista from '@/components/agenda/SubVistaLista';
+import SubVistaCalendario from '@/components/agenda/SubVistaCalendario';
+import ModalEvento from '@/components/ModalEvento';
+
+import { azulLogoUndav, azulMedioUndav, azulClaro } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
-import DropdownSeccion from '@/components/DropdownSeccion';
-import AgendaItemEditable from '@/components/AgendaItemEditable';
-import ModalEvento from '@/components/ModalEvento'; // 🎯 IMPORTE MODULAR
 
-const filterBtnColor = azulMedioUndav;
+import { listaCompleta, cargarEventosAcademicos, eventoAgendaToFechaString } from '../data/agenda';
 
-export default function Agenda() {
+type TipoVista = 'lista' | 'calendario';
+
+export default function AgendaMaestra() {
   const { isLoading, error, refetchEventos } = useAgenda();
   const insets = useSafeAreaInsets(); 
   const { editId } = useLocalSearchParams<{ editId?: string }>();
 
+  // 🌟 Control de la Vista Activa (Alternador Local sin Router Historial)
+  const [vistaActiva, setVistaActiva] = useState<TipoVista>('lista');
+
+  // Filtros globales unificados
   const [mostrarFiltros, setMostrarFiltros] = useState(false);
   const [mostrarFeriados, setMostrarFeriados] = useState(true);
   const [mostrarPersonalizados, setMostrarPersonalizados] = useState(true);
   const [mostrarAcademicos, setMostrarAcademicos] = useState(true);
 
-  // Estados del nuevo Modal compartido
+  // Estados del Modal Compartido
   const [modalVisible, setModalVisible] = useState(false);
   const [eventoSeleccionado, setEventoSeleccionado] = useState<EventoAgenda | null>(null);
+  const [fechaSeleccionada, setFechaSeleccionada] = useState<Date>(new Date());
 
-  function puedeMostrarEvento(evento: EventoAgenda): boolean {
+  const [actividadesPorFecha, setActividadesPorFecha] = useState<{[fecha: string]: any[]}>({});
+  const [loadingCalendario, setLoadingCalendario] = useState(true);
+
+  // Función evaluadora compartida (Se pasa memorizada como prop)
+  const puedeMostrarEvento = useCallback((evento: EventoAgenda): boolean => {
     if (evento.esFeriado) return mostrarFeriados;
     if (evento.id.startsWith('p')) return mostrarPersonalizados;
     return mostrarAcademicos;
-  }
+  }, [mostrarFeriados, mostrarPersonalizados, mostrarAcademicos]);
 
   const abrirModalAgregar = () => {
     setEventoSeleccionado(null);
     setModalVisible(true);
   };
 
-  const abrirModalEditar = (id: string) => {
-    const ev = obtenerEventoConId(id);
-    if (!ev) return;
-    setEventoSeleccionado(ev);
+  const abrirModalEditar = (idOrEvento: string | EventoAgenda) => {
+    if (typeof idOrEvento === 'string') {
+      const ev = obtenerEventoConId(idOrEvento);
+      if (!ev) return;
+      setEventoSeleccionado(ev);
+    } else {
+      setEventoSeleccionado(idOrEvento);
+    }
     setModalVisible(true);
   };
 
@@ -65,59 +72,61 @@ export default function Agenda() {
     }
   }, [editId, isLoading]);
 
-  function mostrarLista(lista: EventoAgenda[]) {
-    const listaFiltrada = lista.filter(puedeMostrarEvento);
+  useEffect(() => {
+  const prepararDatosCalendario = async () => {
+    try {
+      await cargarEventosAcademicos();
+      const todosLosEventos = listaCompleta();
+      const actividadesTemp: { [fecha: string]: any[] } = {};
 
-    if (listaFiltrada.length === 0) {
-      return <CustomText weight="bold" style={styles.title}>No hay eventos de este tipo</CustomText>;
+      todosLosEventos.forEach((evento, idx) => {
+        if (!evento.fechaInicio || !evento.fechaFin) return;
+        const fIni = `${new Date(evento.fechaInicio).getFullYear()}-${String(new Date(evento.fechaInicio).getMonth() + 1).padStart(2, '0')}-${String(new Date(evento.fechaInicio).getDate()).padStart(2, '0')}`;
+        const fFin = `${new Date(evento.fechaFin).getFullYear()}-${String(new Date(evento.fechaFin).getMonth() + 1).padStart(2, '0')}-${String(new Date(evento.fechaFin).getDate()).padStart(2, '0')}`;
+        const sufijo = evento.id.startsWith('p') ? `-p-${idx}` : `-${idx}`;
+
+        if (fIni === fFin) {
+          if (!actividadesTemp[fIni]) actividadesTemp[fIni] = [];
+          actividadesTemp[fIni].push({ id: `e${sufijo}`, title: evento.titulo, body: eventoAgendaToFechaString(evento), esFeriado: evento.esFeriado, descripcion: evento.descripcion, eventoOriginal: evento });
+        } else {
+          if (!actividadesTemp[fIni]) actividadesTemp[fIni] = [];
+          actividadesTemp[fIni].push({ id: `e${sufijo}-ini`, title: `[Inicio] ${evento.titulo}`, body: eventoAgendaToFechaString(evento), esFeriado: evento.esFeriado, descripcion: evento.descripcion, eventoOriginal: evento });
+          if (!actividadesTemp[fFin]) actividadesTemp[fFin] = [];
+          actividadesTemp[fFin].push({ id: `e${sufijo}-fin`, title: `[Fin] ${evento.titulo}`, body: eventoAgendaToFechaString(evento), esFeriado: evento.esFeriado, descripcion: evento.descripcion, eventoOriginal: evento });
+        }
+      });
+      setActividadesPorFecha(actividadesTemp);
+    } catch (e) {
+      console.error(e);
+    } finally {
+      setLoadingCalendario(false);
     }
+  };
 
-    return listaFiltrada.map((evento, index) => {
-      const esUltimo = index === listaFiltrada.length - 1;
-      const extraStyle = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
-
-      if (evento.id.startsWith('p')) {
-        return (
-          <AgendaItemEditable
-            key={evento.id}
-            evento={evento}
-            onPressEdit={abrirModalEditar}
-            styleExtra={extraStyle}
-          />
-        );
-      }
-      return <AgendaItem key={evento.id} evento={evento} styleExtra={extraStyle} />;
-    });
-  }
+  prepararDatosCalendario();
+}, [isLoading]); // Reacciona cuando el contexto termina su carga inicial
 
   return (
     <>
-      <FondoScrollGradiente>
-        {isLoading ? (
-          <ActivityIndicator size="large" color={azulLogoUndav} style={styles.loading} />
-        ) : error ? (
-          <CustomText weight="bold" style={styles.title}>Error al cargar los eventos: {error}</CustomText>
-        ) : mostrarAcademicos || mostrarPersonalizados || mostrarFeriados ? (
-          <>
-            <DropdownSeccion titulo="EN CURSO" styleContenido={styles.dropdownContenido} inicialmenteAbierto>
-              {mostrarLista(obtenerListaEnCurso())}
-            </DropdownSeccion>
-
-            <DropdownSeccion titulo="PRÓXIMO" styleContenido={styles.dropdownContenido} inicialmenteAbierto>
-              {mostrarLista(obtenerListaFuturo().filter((e) => !obtenerListaEnCurso().includes(e)))}
-            </DropdownSeccion>
-
-            <DropdownSeccion titulo="FINALIZADO" styleContenido={styles.dropdownContenido} inicialmenteAbierto={false}>
-              {mostrarLista(obtenerListaPasado())}
-            </DropdownSeccion>
-          </>
+      {/* RENDERIZADO CONDICIONAL DE SUB-VISTAS*/}
+        {vistaActiva === 'lista' ? (
+          <SubVistaLista 
+            isLoading={isLoading}
+            error={error}
+            puedeMostrarEvento={puedeMostrarEvento}
+            onAbrirEditar={abrirModalEditar}
+          />
         ) : (
-          <CustomText weight="bold" style={styles.title}>No hay ningún tipo de evento seleccionado en los filtros.</CustomText>
+          <SubVistaCalendario 
+            puedeMostrarEvento={puedeMostrarEvento}
+            onAbrirEditar={abrirModalEditar}
+            fechaSeleccionada={fechaSeleccionada}
+            setFechaSeleccionada={setFechaSeleccionada}
+          />
         )}
-      </FondoScrollGradiente>
 
-      {/* BOTONERA FLOTANTE COMPLETA */}
-      <View style={[stylesFlotante.floatingBox, { bottom: insets.bottom + 60 + 16 }]}>
+      {/* BOTONERA FLOTANTE */}
+      <View style={[stylesFlotante.floatingBox, { bottom: insets.bottom + 76 }]}>
         {mostrarFiltros && (
           <View style={stylesFlotante.filterOptionsParent}>
             <CustomText weight="bold" style={stylesFlotante.filterHeader}>FILTRAR VISTA</CustomText>
@@ -149,47 +158,49 @@ export default function Agenda() {
         )}
 
         <View style={stylesFlotante.botonesColumna}>
-          <TouchableOpacity onPress={abrirModalAgregar} style={[styles.openBtn, styles.addButton]}>
+          {/* Botón Añadir */}
+          <TouchableOpacity onPress={abrirModalAgregar} style={[stylesFlotante.openBtn, stylesFlotante.addButton]}>
             <Ionicons name="add" size={28} color="#fff" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => setMostrarFiltros(!mostrarFiltros)} style={[styles.openBtn, mostrarFiltros ? stylesFlotante.openBtnActive : null]}>
+          {/* Botón Filtros */}
+          <TouchableOpacity onPress={() => setMostrarFiltros(!mostrarFiltros)} style={[stylesFlotante.openBtn, mostrarFiltros ? { backgroundColor: '#e74c3c' } : null]}>
             <Ionicons name={mostrarFiltros ? "close" : "filter"} size={26} color="#fff" />
           </TouchableOpacity>
 
-          <TouchableOpacity onPress={() => router.push('/calendario')} style={[styles.openBtn, { backgroundColor: azulLogoUndav }]}>
-            <Ionicons name="calendar" size={28} color="#fff" />
+          {/* 🌟 BOTÓN DE CONMUTACIÓN DE VISTA (Reemplaza router.push) */}
+          <TouchableOpacity 
+            onPress={() => setVistaActiva(vistaActiva === 'lista' ? 'calendario' : 'lista')} 
+            style={[stylesFlotante.openBtn, { backgroundColor: azulLogoUndav }]}
+          >
+            <Ionicons name={vistaActiva === 'lista' ? "calendar" : "list"} size={28} color="#fff" />
           </TouchableOpacity>
         </View>
       </View>
 
-      {/* MODAL COMPARTIDO */}
+      {/* MODAL COMPARTIDO ÚNICO */}
       <ModalEvento 
         visible={modalVisible}
         onClose={() => setModalVisible(false)}
-        onRefresh={refetchEventos}
+        onRefresh={() => {
+          refetchEventos();
+        }}
+        fechaPorDefecto={fechaSeleccionada}
         eventoAEditar={eventoSeleccionado}
       />
     </>
   );
 }
 
-// Se mantienen idénticos tus estilos originales de agenda...
 const stylesFlotante = StyleSheet.create({
   floatingBox: { position: 'absolute', right: 16, zIndex: 10, flexDirection: 'row', alignItems: 'flex-end', justifyContent: 'flex-end' },
   botonesColumna: { flexDirection: 'column', alignItems: 'center', justifyContent: 'flex-end', gap: 10 },
   filterOptionsParent: { backgroundColor: '#ffffff', borderRadius: 20, padding: 8, marginRight: 12, width: 200, gap: 6, ...getShadowStyle(6) },
   filterHeader: { fontSize: 11, color: '#8e8e93', letterSpacing: 1, marginBottom: 6, textAlign: 'center', borderBottomWidth: 1, borderBottomColor: '#f2f2f7', paddingBottom: 6 },
   filterOption: { flexDirection: 'row', alignItems: 'center', paddingVertical: 10, paddingHorizontal: 12, borderRadius: 12, width: '100%' },
-  optionActive: { backgroundColor: filterBtnColor },
+  optionActive: { backgroundColor: azulMedioUndav },
   optionInactive: { backgroundColor: '#f2f2f7' },
   filterOptionText: { fontSize: 14, marginLeft: 10, flex: 1 },
-  openBtnActive: {},
-});
-const styles = StyleSheet.create({
-  loading: { marginTop: 50 },
-  title: { fontSize: 16, color: negroAzulado, alignSelf: 'center', textAlign: 'center' },
-  dropdownContenido: { gap: 4 },
   openBtn: { backgroundColor: azulClaro, borderRadius: 30, width: 56, height: 56, justifyContent: 'center', alignItems: 'center', ...getShadowStyle(4) },
   addButton: { backgroundColor: 'green' },
 });
