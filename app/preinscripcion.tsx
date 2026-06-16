@@ -3,6 +3,7 @@
 import React from 'react';
 import { StyleSheet, TouchableOpacity, View } from 'react-native';
 import { router } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 
 import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import CustomText from '@/components/CustomText';
@@ -24,8 +25,13 @@ const PREINSCRIPCION_URL = 'https://academica.undav.edu.ar/preinscripcion/';
 const CONVALIDACION_URL =
   'https://www.argentina.gob.ar/educacion/tramites/convalidar-titulo-secundario-de-paises-con-convenio';
 
-const MAPA_SEDE_PINEYRO =
-  'https://www.google.com/maps/search/?api=1&query=Isleta%201940%2C%20Pi%C3%B1eyro%2C%20Avellaneda';
+const SEDE_PINEYRO = {
+  nombre: 'Sede Piñeyro',
+  direccion: 'Mario Bravo 1460 esq. Isleta, Piñeyro',
+  maps: 'https://maps.app.goo.gl/4mJxbwrwD9WPGrjx6',
+  latitud: -34.6687001,
+  longitud: -58.3986248,
+};
 
 const documentacionPresencial = [
   'Formulario de preinscripción completo y firmado.',
@@ -48,10 +54,23 @@ export default function Inscripciones() {
     router.push('/calendario-academico-visitante');
   };
 
+  const irASedePineyro = () => {
+    router.push({
+      pathname: '/sede-mapa',
+      params: {
+        nombre: SEDE_PINEYRO.nombre,
+        direccion: SEDE_PINEYRO.direccion,
+        maps: SEDE_PINEYRO.maps,
+        lat: SEDE_PINEYRO.latitud,
+        lng: SEDE_PINEYRO.longitud,
+      },
+    });
+  };
+
   return (
     <FondoScrollGradiente>
       <View style={styles.header}>
-        <CustomText style={styles.descripcion} weight='bold'>
+        <CustomText style={styles.descripcion} weight="bold">
           Información para ingresar a carreras de grado, pregrado y propuestas a
           distancia de la Universidad Nacional de Avellaneda.
         </CustomText>
@@ -105,10 +124,27 @@ export default function Inscripciones() {
             url={PREINSCRIPCION_URL}
           />
 
-          <BotonTexto
-            label="Ver ubicación de Sede Piñeyro"
-            url={MAPA_SEDE_PINEYRO}
-          />
+          <TouchableOpacity
+            style={styles.sedeCard}
+            onPress={irASedePineyro}
+            activeOpacity={0.85}
+          >
+            <View style={styles.sedeIconContainer}>
+              <Ionicons name="location-outline" size={22} color="white" />
+            </View>
+
+            <View style={styles.sedeTextContainer}>
+              <CustomText weight="bold" style={styles.sedeTitle}>
+                Ver ubicación de Sede Piñeyro
+              </CustomText>
+
+              <CustomText style={styles.sedeDescription}>
+                Abrir mapa y datos de la sede
+              </CustomText>
+            </View>
+
+            <Ionicons name="chevron-forward" size={20} color={azulLogoUndav} />
+          </TouchableOpacity>
 
           <BotonTexto
             label="Ver trámite de convalidación de título extranjero"
@@ -263,5 +299,43 @@ const styles = StyleSheet.create({
   botonCalendarioTexto: {
     fontSize: 15,
     color: 'white',
+  },
+  sedeCard: {
+    backgroundColor: 'white',
+    paddingVertical: 10,
+    paddingHorizontal: 12,
+    flexDirection: 'row',
+    alignItems: 'center',
+    borderWidth: 1,
+    borderColor: '#ddd',
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 22,
+  },
+  sedeIconContainer: {
+    width: 36,
+    height: 36,
+    backgroundColor: azulMedioUndav,
+    alignItems: 'center',
+    justifyContent: 'center',
+    marginRight: 12,
+    borderTopLeftRadius: 0,
+    borderTopRightRadius: 0,
+    borderBottomLeftRadius: 0,
+    borderBottomRightRadius: 12,
+  },
+  sedeTextContainer: {
+    flex: 1,
+  },
+  sedeTitle: {
+    fontSize: 15,
+    color: azulLogoUndav,
+    marginBottom: 1,
+  },
+  sedeDescription: {
+    fontSize: 12,
+    lineHeight: 16,
+    color: grisTexto,
   },
 });
