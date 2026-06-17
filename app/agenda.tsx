@@ -122,6 +122,8 @@ export default function AgendaMaestra() {
             onAbrirEditar={abrirModalEditar}
             fechaSeleccionada={fechaSeleccionada}
             setFechaSeleccionada={setFechaSeleccionada}
+            actividadesPrecargadas={actividadesPorFecha}
+            loadingPrecargado={isLoading}
           />
         )}
 

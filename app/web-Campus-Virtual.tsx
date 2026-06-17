@@ -1,10 +1,9 @@
-import { infoBaseUsuarioActual } from "@/data/apiAppUndav";
-import AsyncStorage from "@react-native-async-storage/async-storage";
 import React, { useEffect, useRef, useState } from "react";
 import { WebView } from "react-native-webview";
 import type { WebView as WebViewType } from "react-native-webview";
+import * as SecureStore from 'expo-secure-store';
 
-const delayMs = 500;
+const delayMs = 200;
 const IdCampoUsername = "username";
 const IdCampoPassword = "password";
 
@@ -16,30 +15,56 @@ export default function LoginWebView() {
 
   useEffect(() => {
     const loadCredentials = async () => {
-      const user = (await AsyncStorage.getItem("campusUser")) || "";
-      const pass = (await AsyncStorage.getItem("campusPass")) || "";
-      setCredentials({ user, pass });
-
-      // También podemos chequear si ya estaba logueado
-      const logged = (await AsyncStorage.getItem("campusIsLoggedIn")) === "true";
-      setIsLoggedIn(logged);
+      try {
+        const user = (await SecureStore.getItemAsync("campusUser")) || "";
+        const pass = (await SecureStore.getItemAsync("campusPass")) || "";
+        setCredentials({ user, pass });
+      } catch (e) {
+        console.error("Error cargando llaves seguras", e);
+      }
     };
 
     loadCredentials();
   }, []);
 
   const handleLoadEnd = () => {
+    // Nos aseguramos de tener las credenciales cargadas desde el almacenamiento seguro antes de actuar
     if (!hasInjected && credentials.user && credentials.pass) {
       setHasInjected(true);
 
       const jsToInject = `
         (function() {
-          const user = document.getElementById('${IdCampoUsername}');
-          const pass = document.getElementById('${IdCampoPassword}');
-          if (user && pass) {
-            user.value = '${credentials.user}';
-            pass.value = '${credentials.pass}';
-            document.forms[0].submit();
+          const userField = document.getElementById('${IdCampoUsername}');
+          const passField = document.getElementById('${IdCampoPassword}');
+          
+          // 📝 ESCENARIO A: Si existen los campos, completamos el formulario normal
+          if (userField && passField) {
+            userField.value = '${credentials.user}';
+            passField.value = '${credentials.pass}';
+            const form = document.querySelector('form') || document.forms[0];
+            if (form) form.submit();
+            return;
+          }
+
+          // 🔐 ESCENARIO B: Ya hay sesión (Aviso: "Actualmente ha iniciado sesión como...")
+          // Intentamos cazar el botón Cancelar nativo de Moodle por estructura o texto
+          let btnCancelar = document.querySelector('a[href*="cancel=1"]') || 
+                            document.querySelector('.singlebutton form input[type="submit"]');
+
+          if (!btnCancelar) {
+            // Intento por descarte buscando la palabra exacta en elementos interactivos
+            btnCancelar = Array.from(document.querySelectorAll('a, input, button')).find(el => {
+              const texto = el.textContent || el.value || '';
+              return texto.toLowerCase().includes('cancelar');
+            });
+          }
+
+          // Si encontramos el botón físico de cancelar, lo clickeamos de inmediato
+          if (btnCancelar) {
+            btnCancelar.click();
+          } else {
+            // Salvavidas: si Moodle cambió drásticamente el HTML, redirigimos por código al Home
+            window.location.href = "https://ead.undav.edu.ar/my/";
           }
         })();
         true;
@@ -51,14 +76,18 @@ export default function LoginWebView() {
     }
   };
 
-  // Detecta cambios en la navegación para verificar si el login fue exitoso
+  // Detecta cambios en la navegación para verificar si el login fue exitoso o ya existía
   const handleNavigationStateChange = (navState: any) => {
     const { url } = navState;
-    // en base a donde nos redirija el sitio:
-    if (!url.includes("/login/") && !isLoggedIn) {
+    
+    // Si la URL no incluye "/login/" y pertenece a la UNDAV, estamos en zona segura de alumnos
+    if (!url.includes("/login/") && url.includes("ead.undav.edu.ar") && !isLoggedIn) {
       setIsLoggedIn(true);
-      AsyncStorage.setItem("campusIsLoggedIn", "true");
-      // opcional, redirijo a Mis Aulas
+      SecureStore.setItemAsync("campusIsLoggedIn", "true").catch(err => 
+        console.error("Error guardando estado de sesión", err)
+      );
+      
+      // Aseguramos redirección directa hacia "Mis Aulas" (el home de materias)
       webViewRef.current?.injectJavaScript(`window.location.href = "https://ead.undav.edu.ar/my/"; true;`);
     }
   };
@@ -68,7 +97,7 @@ export default function LoginWebView() {
       source={{ uri: "https://ead.undav.edu.ar/login/index.php" }}
       ref={webViewRef}
       javaScriptEnabled
-      domStorageEnabled
+      domStorageEnabled // Obligatorio para guardar las cookies de sesión que evitan volver a pedir login
       onLoadEnd={handleLoadEnd}
       onNavigationStateChange={handleNavigationStateChange}
     />

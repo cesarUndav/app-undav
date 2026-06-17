@@ -5,9 +5,9 @@ import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-nati
 import CustomText from '@/components/CustomText';
 import ListaItem from '@/components/ListaItem';
 import LoadingWrapper from '@/components/LoadingWrapper';
-import { negroAzulado, azulLogoUndav, azulMedioUndav, celesteSIU, azulClaro } from '@/constants/Colors';
+import { negroAzulado, azulLogoUndav, azulMedioUndav, celesteSIU } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
-import { EventoAgenda, listaCompleta, cargarEventosAcademicos, eventoAgendaToFechaString } from '@/data/agenda';
+import { EventoAgenda, eventoAgendaToFechaString } from '@/data/agenda';
 import FondoGradiente from '../FondoGradiente';
 
 export type Actividad = {
@@ -61,86 +61,30 @@ export default function SubVistaCalendario({
   const diaHoy = new Date();
   const hoyStr = DateToISOStringNoTime(diaHoy);
 
-  const [loading, setLoading] = useState(true);
-  const [actividadesPorFecha, setActividadesPorFecha] = useState<{ [fecha: string]: Actividad[] }>({});
+  // 🌟 ESTADOS INTERNOS ALIGERADOS (Consumen directamente de las Props)
   const [cantidadActividadesPorFecha, setCantidadActividadesPorFecha] = useState<{ [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } }>({});
   const [listaActividadesDiaSeleccionado, setListaActividadesDiaSeleccionado] = useState<Actividad[]>([]);
   const [tituloPagina, setTituloPagina] = useState('');
   const [mesAnioActual, setMesAnioActual] = useState({ mes: diaHoy.getMonth(), anio: diaHoy.getFullYear() });
 
-  const cargarTodoElMes = async () => {
-    setLoading(true);
-    try {
-      await cargarEventosAcademicos();
-      const todosLosEventos = listaCompleta();
-      const actividadesTemp: { [fecha: string]: Actividad[] } = {};
-
-      todosLosEventos.forEach((evento, idx) => {
-        if (!evento.fechaInicio || !evento.fechaFin) return;
-
-        const fechaIniStr = DateToISOStringNoTime(new Date(evento.fechaInicio));
-        const fechaFinStr = DateToISOStringNoTime(new Date(evento.fechaFin));
-        
-        const idSufijo = evento.id.startsWith('p') ? `-p-${idx}` : `-${idx}`;
-
-        if (fechaIniStr === fechaFinStr) {
-          if (!actividadesTemp[fechaIniStr]) actividadesTemp[fechaIniStr] = [];
-          actividadesTemp[fechaIniStr].push({
-            id: `e${idSufijo}`,
-            title: evento.titulo,
-            body: eventoAgendaToFechaString(evento),
-            esFeriado: evento.esFeriado,
-            descripcion: evento.descripcion,
-            eventoOriginal: evento
-          });
-        } else {
-          if (!actividadesTemp[fechaIniStr]) actividadesTemp[fechaIniStr] = [];
-          actividadesTemp[fechaIniStr].push({ 
-            id: `e${idSufijo}-ini`, 
-            title: `[Inicio] ${evento.titulo}`, 
-            body: eventoAgendaToFechaString(evento), 
-            esFeriado: evento.esFeriado,
-            descripcion: evento.descripcion,
-            eventoOriginal: evento
-          });
-
-          if (!actividadesTemp[fechaFinStr]) actividadesTemp[fechaFinStr] = [];
-          actividadesTemp[fechaFinStr].push({ 
-            id: `e${idSufijo}-fin`, 
-            title: `[Fin] ${evento.titulo}`, 
-            body: eventoAgendaToFechaString(evento), 
-            esFeriado: evento.esFeriado,
-            descripcion: evento.descripcion,
-            eventoOriginal: evento
-          });
-        }
-      });
-
-      setActividadesPorFecha(actividadesTemp);
-    } catch (err) {
-      console.error(err);
-    } finally {
-      setLoading(false);
-    }
-  };
-
-
+  // 🔄 1. Sincroniza los indicadores numéricos (burbujas rojas) con la prop precargada y los filtros globales
   useEffect(() => {
     const nuevasCantidades: { [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } } = {};
-    for (const f in actividadesPorFecha) {
-      const listaDelDia = (actividadesPorFecha[f] || []).filter(act => puedeMostrarEvento(act.eventoOriginal));
+    for (const f in actividadesPrecargadas) {
+      const listaDelDia = (actividadesPrecargadas[f] || []).filter(act => puedeMostrarEvento(act.eventoOriginal));
       if (listaDelDia.length > 0) {
         nuevasCantidades[f] = { cantidad: listaDelDia.length, color: 'rojo' };
       }
     }
     setCantidadActividadesPorFecha(nuevasCantidades);
-  }, [actividadesPorFecha, puedeMostrarEvento]);
+  }, [actividadesPrecargadas, puedeMostrarEvento]);
 
+  // 🔄 2. Sincroniza la lista inferior de actividades diarias con la prop precargada y los filtros globales
   useEffect(() => {
     const fSeleccionadaSegura = fechaSeleccionada instanceof Date ? fechaSeleccionada : new Date();
     const fechaStr = DateToISOStringNoTime(fSeleccionadaSegura);
     
-    const actividadesDelDia = (actividadesPorFecha[fechaStr] ?? []).filter(act => puedeMostrarEvento(act.eventoOriginal));
+    const actividadesDelDia = (actividadesPrecargadas[fechaStr] ?? []).filter(act => puedeMostrarEvento(act.eventoOriginal));
 
     const nombreDia = IndexToDiaString(fSeleccionadaSegura.getDay());
     const mensajeDia = `${nombreDia} ${fSeleccionadaSegura.getDate()}`;
@@ -161,7 +105,7 @@ export default function SubVistaCalendario({
 
     setTituloPagina(tituloPaginaDia);
     setListaActividadesDiaSeleccionado(actividadesDelDia);
-  }, [fechaSeleccionada, actividadesPorFecha, mesAnioActual.mes, mesAnioActual.anio, puedeMostrarEvento]);
+  }, [fechaSeleccionada, actividadesPrecargadas, mesAnioActual.mes, mesAnioActual.anio, puedeMostrarEvento]);
 
   const cambiarMes = (delta: number) => {
     let nuevoMes = mesAnioActual.mes + delta;
@@ -187,10 +131,11 @@ export default function SubVistaCalendario({
     <View key={`empty-${i}`} style={styles.diaCelda} />
   ));
 
-return (
+  return (
     <FondoGradiente>
       <View style={styles.flexMaestro}>
-        <LoadingWrapper loading={loading}>
+        {/* 🌟 Usamos la prop de carga directa que envías desde el padre */}
+        <LoadingWrapper loading={loadingPrecargado}>
           <View style={styles.contenedorCalendario}>
             <View style={styles.encabezadoMes}>
               <TouchableOpacity onPress={() => cambiarMes(-1)}><Text style={styles.flecha}>{'←'}</Text></TouchableOpacity>
@@ -244,7 +189,7 @@ return (
 
         <View style={styles.contentContainer}>
           <ScrollView contentContainerStyle={styles.listaContainer} showsVerticalScrollIndicator={false}>
-            {listaActividadesDiaSeleccionado.length === 0 && !loading ? (
+            {listaActividadesDiaSeleccionado.length === 0 && !loadingPrecargado ? (
               <CustomText weight="bold" style={styles.noEventsTitle}>
                 No hay eventos que coincidan con los filtros
               </CustomText>
