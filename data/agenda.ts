@@ -7,15 +7,6 @@ import {
   parsearFechaPHP // 🌟 IMPORTADO: Usamos la función global centralizada
 } from "./apiAppUndav";
 
-// Exportamos un tipo que representa el objeto Evento tal como viene de la API.
-export type EventoAPIFlask = {
-  id: number; 
-  titulo: string;
-  fecha_inicio: string; 
-  fecha_fin: string; 
-  feriado: boolean; 
-};
-
 export type EventoAgenda = {
   id: string;
   titulo: string;

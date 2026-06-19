@@ -44,7 +44,7 @@ export default function useNotificationPolling({
 
     const ejecutarSincronizacion = async () => {
       try {
-        console.log('🔄 [Polling] Consultando novedades en el servidor Flask...');
+        console.log('🔄 [Polling] Consultando novedades en el servidor de Noticias...');
 
         // 1. Descargamos la realidad actual del servidor.
         const noticiasServidor = await cargarNoticias();
