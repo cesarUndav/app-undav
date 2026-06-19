@@ -7,7 +7,6 @@
     "icon": "./assets/images/favicon.png",
     "scheme": "undavapp",
     "userInterfaceStyle": "automatic",
-    "owner": "cesarvacirca",
     "splash": {
       "image": "./assets/images/splash.png",
       "resizeMode": "contain",
@@ -29,13 +28,14 @@
       "package": "ar.edu.undav.appundav",
       "permissions": [
         "INTERNET",
-        "ACCESS_NETWORK_STATE"
+        "ACCESS_NETWORK_STATE",
+        "android.permission.RECORD_AUDIO",
+        "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
       "blockedPermissions": [
         "android.permission.RECORD_AUDIO",
         "android.permission.MODIFY_AUDIO_SETTINGS"
       ],
-      
       "//": "🌟 ADICIONADO: Configuración de la barra inferior para modo Edge-to-Edge",
       "navigationBar": {
         "backgroundColor": "#FFFFFF",
@@ -54,7 +54,7 @@
         {
           "image": "./assets/images/splash.png",
           "resizeMode": "cover",
-          "backgroundColor": "#FFFFFF" 
+          "backgroundColor": "#FFFFFF"
         }
       ],
       "expo-secure-store",
@@ -78,8 +78,9 @@
       "router": {},
       "env": "production",
       "eas": {
-        "projectId": "6eb0eac1-5bed-4156-a09d-a919920381c3"
+        "projectId": "ea4c2dc3-ca73-4290-ba16-140fe500c6ea"
       }
-    }
+    },
+    "owner": "appmobile-undav-team"
   }
 }
