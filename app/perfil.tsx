@@ -16,8 +16,10 @@ import FondoGradiente from '@/components/FondoGradiente';
 import { Logout, infoBaseUsuarioActual } from '@/data/apiAppUndav';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { exportarDatosAgenda } from '@/utils/exportador';
-import BotonTexto from '@/components/BotonTexto';
 import { listaCompleta } from '@/data/agenda';
+import { scaleFont } from '@/utils/scaling';
+
+const fontSize = scaleFont(13);
 
 type TextItem = {
   type: 'text';
@@ -96,16 +98,17 @@ export default function Configuracion() {
           type: 'text',
           label: 'Legajo: ' + infoBaseUsuarioActual.legajo,
         },
+
+        {
+          type: 'text',
+          label: infoBaseUsuarioActual.email,
+        },
         {
           type: 'dropdown',
           label: 'Mis Propuestas Educativas',
           content: infoBaseUsuarioActual.propuestas.map(
             (p) => `${p.nombre}: ${p.regular === 'S' ? 'Regular' : 'NO Regular'}`
           ),
-        },
-        {
-          type: 'text',
-          label: infoBaseUsuarioActual.email,
         },
         {
           type: 'separator',
@@ -257,15 +260,15 @@ const styles = StyleSheet.create({
     marginVertical: -10,
   },
   textItem: {
-    fontSize: 14,
+    fontSize: fontSize,
     color: '#0b254a',
   },
   linkItem: {
-    fontSize: 14,
+    fontSize: fontSize,
     color: '#0b5085',
   },
   actionItem: {
-    fontSize: 14,
+    fontSize: fontSize,
     color: '#d9534f',
   },
   separator: {
@@ -277,7 +280,7 @@ const styles = StyleSheet.create({
     marginBottom: 0,
   },
   dropdownIcon: {
-    fontSize: 22,
+    fontSize: scaleFont(22),
   },
   dropdownLine: {
     paddingLeft: 16,

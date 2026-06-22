@@ -6,6 +6,7 @@ import CustomText from './CustomText';
 import { azulMedioUndav } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { useRouter } from 'expo-router';
+import { scaleFont } from '@/utils/scaling';
 
 type BotonTextoProps = {
   label: string;
@@ -13,6 +14,7 @@ type BotonTextoProps = {
   route?: string;
   url?: string;
   openInsideApp?: boolean;
+  openInsideAppForced?: boolean;
   tryLogin?: boolean;
   color?: string;
   verticalPadding?: number;
@@ -30,10 +32,11 @@ export default function BotonTexto({
   route,
   url,
   openInsideApp = true,
+  openInsideAppForced = false,
   tryLogin = false,
   color = azulMedioUndav,
-  verticalPadding = 10,
-  fontSize = 14,
+  verticalPadding = scaleFont(9),
+  fontSize = scaleFont(13),
   fontColor = 'white',
   noBackground = false,
   bold = true,
@@ -50,7 +53,7 @@ export default function BotonTexto({
       return;
     }
     else if (url) {
-      if (openInsideApp && Platform.OS !== 'android') {
+      if ( (openInsideApp && Platform.OS !== 'android') || openInsideAppForced) {
         router.push(`/webview/${encodeURIComponent(url)}?tryLogin=${tryLogin}`);
       } else {
         Linking.openURL(url).catch(() => console.warn('No se pudo abrir el enlace:', url));

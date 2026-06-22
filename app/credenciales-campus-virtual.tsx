@@ -11,6 +11,7 @@ import FondoGradiente from '@/components/FondoGradiente';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import * as SecureStore from 'expo-secure-store'; // 🔐 Importación de SecureStore
 import { grisBorde, grisPlaceholder } from '@/constants/Colors';
+import { scaleFont } from '@/utils/scaling';
 
 type InputItem = {
   type: 'input';
@@ -125,7 +126,7 @@ const styles = StyleSheet.create({
     padding: 10,
     borderBottomWidth: 1,
     borderBottomColor: grisBorde,
-    fontSize: 16,
+    fontSize: scaleFont(14),
     color: '#0b254a',
     fontFamily: 'Montserrat_400Regular',
   },

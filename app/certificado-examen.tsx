@@ -12,7 +12,7 @@ import { useRouter } from 'expo-router';
 // Componentes del Toolkit de Diseño
 import CustomText from '@/components/CustomText';
 import BotonTexto from '@/components/BotonTexto';
-import { negroAzulado, azulLogoUndav, azulMedioUndav } from '@/constants/Colors';
+import { negroAzulado, azulLogoUndav, azulMedioUndav, grisPlaceholder } from '@/constants/Colors';
 import { infoBaseUsuarioActual } from '@/data/apiAppUndav';
 import * as FileSystem from 'expo-file-system/legacy'; 
 import { Asset } from 'expo-asset';
@@ -235,7 +235,7 @@ export default function GeneradorCertificado() {
           <TextInput
             style={styles.textInput}
             placeholder="Ej: Trabajo Social Comunitario I"
-            placeholderTextColor="#999"
+            placeholderTextColor={grisPlaceholder}
             value={materiaInput}
             onChangeText={setMateriaInput}
           />

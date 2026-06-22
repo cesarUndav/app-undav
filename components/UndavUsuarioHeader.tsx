@@ -12,6 +12,7 @@ import {
 import { azulClaro, azulLogoUndav, azulMedioUndav, grisBorde } from '@/constants/Colors';
 import { Ionicons } from '@expo/vector-icons';
 import AsyncStorage from '@react-native-async-storage/async-storage'; // 🎯 Importamos AsyncStorage
+import { scaleFont } from '@/utils/scaling';
 
 const STORAGE_KEY = '@preferencia_info_oculta';
 
@@ -122,7 +123,7 @@ export const undavHeaderStyles = StyleSheet.create({
   },
   userText: {
     lineHeight: 18,
-    fontSize: 14,
+    fontSize: scaleFont(13),
     color: modoOscuro ? '#fff' : azulLogoUndav,
     textAlign: 'right',
   },

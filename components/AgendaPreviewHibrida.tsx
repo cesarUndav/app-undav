@@ -13,6 +13,10 @@ import AgendaItemEditable from './AgendaItemEditable';
 
 // 🎯 IMPORTAMOS EL HOOK DEL CONTEXTO GLOBAL
 import { useAgenda } from '@/src/context/AgendaContext';
+import { scaleFont } from '@/utils/scaling';
+
+const fontSizeTitulos = scaleFont(13);
+const fontSizeCuerpo = scaleFont(13);
 
 export default function AgendaPreview() {
   const router = useRouter();
@@ -169,7 +173,7 @@ const styles = StyleSheet.create({
   },
   agendaTitle: {
     color: azulClaro,
-    fontSize: 15,
+    fontSize: fontSizeTitulos,
     alignSelf: 'center',
     paddingBottom: 8,
     paddingTop: 10,
@@ -200,7 +204,7 @@ const styles = StyleSheet.create({
   },
   agendaBtnText: {
     color: '#fff',
-    fontSize: 15,
+    fontSize: fontSizeTitulos,
     paddingVertical: 8,
     textAlign: 'center',
   },
@@ -216,12 +220,12 @@ const styles = StyleSheet.create({
   },
   loadingText: {
     color: azulClaro,
-    fontSize: 14,
+    fontSize: fontSizeCuerpo,
   },
   noEventsText: {
     textAlign: 'center',
     color: 'gray',
-    fontSize: 13,
+    fontSize: fontSizeCuerpo,
     paddingVertical: 20,
   }
 });

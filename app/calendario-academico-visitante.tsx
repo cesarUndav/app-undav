@@ -17,21 +17,27 @@ export default function Agenda() {
     return !evento.esFeriado && !evento.id.startsWith('p');
   }
 
-  function mostrarLista(lista: EventoAgenda[]) {
-    const listaFiltrada = lista.filter(puedeMostrarEvento);
+function mostrarLista(lista: EventoAgenda[]) {
+  // 1. Revisa cuántos eventos llegan del servidor/contexto
+  console.log("EVENTOS RECIBIDOS DESDE EL CONTEXTO:", lista.length, lista);
 
-    if (listaFiltrada.length > 0) {
-      return listaFiltrada.map((evento) => (
-        <AgendaItem key={evento.id} evento={evento} />
-      ));
-    }
+  const listaFiltrada = lista.filter(puedeMostrarEvento);
 
-    return (
-      <CustomText weight="bold" style={styles.title}>
-        No hay eventos de este tipo
-      </CustomText>
-    );
+  // 2. Revisa cuántos sobrevivieron al filtro de feriados y la letra 'p'
+  console.log("EVENTOS QUE PASARON EL FILTRO:", listaFiltrada.length);
+
+  if (listaFiltrada.length > 0) {
+    return listaFiltrada.map((evento) => (
+      <AgendaItem key={evento.id} evento={evento} />
+    ));
   }
+
+  return (
+    <CustomText weight="bold" style={styles.title}>
+      No hay eventos de este tipo
+    </CustomText>
+  );
+}
 
   return (
     <FondoGradiente >
@@ -54,7 +60,7 @@ export default function Agenda() {
 
         <View style={styles.buttonContainer}>
           <BotonTexto
-            route="/calend.-academico-resoluciones"
+            url="https://undav.edu.ar/index.php?idcateg=129"
             label="Resoluciones Calendario Académico"
           />
         </View>

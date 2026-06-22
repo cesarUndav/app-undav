@@ -149,6 +149,7 @@ export default function Inscripciones() {
           <BotonTexto
             label="Ver trámite de convalidación de título extranjero"
             url={CONVALIDACION_URL}
+            openInsideAppForced
           />
         </>
       </DropdownSeccion>

@@ -14,6 +14,7 @@ import FondoGradiente from '@/components/FondoGradiente';
 import { modoOscuro, setDarkMode } from '@/data/apiAppUndav';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { useRouter } from 'expo-router';
+import { scaleFont } from '@/utils/scaling';
 
 // Tipado de ítems de configuración
 type TextItem = {
@@ -54,6 +55,8 @@ type ConfigItem =
 interface ConfigSection {
   data: ConfigItem[];
 }
+
+const fontSize = scaleFont(15);
 
 export default function Configuracion() {
   const router = useRouter();
@@ -176,15 +179,15 @@ const styles = StyleSheet.create({
     paddingVertical: 8,
   },
   textItem: {
-    fontSize: 15,
+    fontSize: fontSize,
     color: '#0b254a',
   },
   linkItem: {
-    fontSize: 15,
+    fontSize: fontSize,
     color: '#0b5085',
   },
   actionItem: {
-    fontSize: 15,
+    fontSize: fontSize,
     color: '#d9534f',
   },
   separator: {

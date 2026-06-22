@@ -12,6 +12,7 @@ import {
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { enModoOscuro } from '@/data/apiAppUndav';
 import { azulLogoUndav } from '@/constants/Colors';
+import { scaleFont } from '@/utils/scaling';
 
 type AgendaItemProps = {
   evento: EventoAgenda;
@@ -52,10 +53,10 @@ export const AgendaItemStyles = StyleSheet.create({
     ...getShadowStyle(4),
   },
   eventTitle: {
-    fontSize: 13,
+    fontSize: scaleFont(12),
   },
   eventDate: {
-    fontSize: 13,
+    fontSize: scaleFont(12),
     marginTop: 0,
   },
 });

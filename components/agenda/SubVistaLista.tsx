@@ -4,9 +4,10 @@ import FondoScrollGradiente from '@/components/FondoScrollGradiente';
 import DropdownSeccion from '@/components/DropdownSeccion';
 import AgendaItem from '@/components/AgendaItem';
 import AgendaItemEditable from '@/components/AgendaItemEditable';
-import { azulLogoUndav, negroAzulado } from '@/constants/Colors';
+import { azulLogoUndav, grisPlaceholder, negroAzulado } from '@/constants/Colors';
 import { EventoAgenda, listaEnCurso, listaFuturo, listaPasado } from '@/data/agenda';
 import CustomText from '@/components/CustomText';
+import { scaleFont } from '@/utils/scaling';
 
 interface SubVistaListaProps {
   isLoading: boolean;
@@ -21,7 +22,7 @@ export default function SubVistaLista({ isLoading, error, puedeMostrarEvento, on
     const listaFiltrada = lista.filter(puedeMostrarEvento);
 
     if (listaFiltrada.length === 0) {
-      return <CustomText weight="bold" style={styles.titleNoEvents}>No hay eventos de este tipo</CustomText>;
+      return <CustomText weight="bold" style={styles.titleNoEvents}>No hay eventos que coincidan con los filtros</CustomText>;
     }
 
     return listaFiltrada.map((evento, index) => {
@@ -61,10 +62,11 @@ export default function SubVistaLista({ isLoading, error, puedeMostrarEvento, on
     </FondoScrollGradiente>
   );
 }
+const fontSizeBase = scaleFont(14);
 
 const styles = StyleSheet.create({
   loading: { marginTop: 50 },
-  title: { fontSize: 16, color: negroAzulado, alignSelf: 'center', textAlign: 'center' },
-  titleNoEvents: { fontSize: 14, color: '#8e8e93', padding: 12, textAlign: 'center' },
+  title: { fontSize: fontSizeBase, color: negroAzulado, alignSelf: 'center', textAlign: 'center' },
+  titleNoEvents: { fontSize: fontSizeBase, color: grisPlaceholder, padding: 12, textAlign: 'center' },
   dropdownContenido: { gap: 4 },
 });

@@ -11,6 +11,7 @@ import {
 } from 'react-native';
 import CustomText from './CustomText';
 import { getShadowStyle } from '@/constants/ShadowStyle';
+import { scaleFont } from '@/utils/scaling';
 
 type ListaItemProps = {
   title: string;
@@ -32,8 +33,8 @@ export default function ListaItem({
   backgroundColor = '#fff',
   titleColor = '#000',
   subtitleColor = '#000',
-  fontSize = 13,
-  paddingVertical = 8,
+  fontSize = scaleFont(12),
+  paddingVertical = scaleFont(8),
   paddingHorizontal = 15,
   styleExtra,
   editable = false,      // Por defecto no es presionable

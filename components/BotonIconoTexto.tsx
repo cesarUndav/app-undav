@@ -10,6 +10,7 @@ import {
 } from 'react-native';
 import CustomText from './CustomText';
 import { azulClaro, grisBorde, grisTexto } from '@/constants/Colors';
+import { scaleFont } from '@/utils/scaling';
 
 type BotonIconoTextoProps = {
   label: string;
@@ -26,7 +27,7 @@ export default function BotonIconoTexto({
   label,
   funcionOnPress,
   Icon,
-  iconSize = 55,
+  iconSize = 50,
   iconColor = azulClaro,
   iconTextColor = grisTexto,
   backgroundColor = '#fff',
@@ -66,7 +67,7 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
   },
   buttonBoxIconParent: {
-    height: '72%',
+    height: '68%',
     justifyContent: 'flex-end',
   },
   buttonOutline: {
@@ -82,6 +83,6 @@ const styles = StyleSheet.create({
   },
   buttonText: {
     textAlign: 'center',
-    fontSize: 10,
+    fontSize: scaleFont(10),
   },
 });

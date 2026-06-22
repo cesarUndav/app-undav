@@ -3,11 +3,12 @@
 import React, { useState, useEffect } from 'react';
 import { View, StyleSheet, ScrollView, Text, TouchableOpacity } from 'react-native';
 import CustomText from '@/components/CustomText';
-import ListaItem from '@/components/ListaItem';
+import AgendaItem from '@/components/AgendaItem';
+import AgendaItemEditable from '@/components/AgendaItemEditable';
 import LoadingWrapper from '@/components/LoadingWrapper';
 import { negroAzulado, azulLogoUndav, azulMedioUndav, celesteSIU } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
-import { EventoAgenda, eventoAgendaToFechaString } from '@/data/agenda';
+import { EventoAgenda } from '@/data/agenda';
 import FondoGradiente from '../FondoGradiente';
 
 export type Actividad = {
@@ -61,13 +62,11 @@ export default function SubVistaCalendario({
   const diaHoy = new Date();
   const hoyStr = DateToISOStringNoTime(diaHoy);
 
-  // 🌟 ESTADOS INTERNOS ALIGERADOS (Consumen directamente de las Props)
   const [cantidadActividadesPorFecha, setCantidadActividadesPorFecha] = useState<{ [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } }>({});
   const [listaActividadesDiaSeleccionado, setListaActividadesDiaSeleccionado] = useState<Actividad[]>([]);
   const [tituloPagina, setTituloPagina] = useState('');
   const [mesAnioActual, setMesAnioActual] = useState({ mes: diaHoy.getMonth(), anio: diaHoy.getFullYear() });
 
-  // 🔄 1. Sincroniza los indicadores numéricos (burbujas rojas) con la prop precargada y los filtros globales
   useEffect(() => {
     const nuevasCantidades: { [fecha: string]: { cantidad: number; color: 'azul' | 'rojo' } } = {};
     for (const f in actividadesPrecargadas) {
@@ -79,7 +78,6 @@ export default function SubVistaCalendario({
     setCantidadActividadesPorFecha(nuevasCantidades);
   }, [actividadesPrecargadas, puedeMostrarEvento]);
 
-  // 🔄 2. Sincroniza la lista inferior de actividades diarias con la prop precargada y los filtros globales
   useEffect(() => {
     const fSeleccionadaSegura = fechaSeleccionada instanceof Date ? fechaSeleccionada : new Date();
     const fechaStr = DateToISOStringNoTime(fSeleccionadaSegura);
@@ -134,7 +132,6 @@ export default function SubVistaCalendario({
   return (
     <FondoGradiente>
       <View style={styles.flexMaestro}>
-        {/* 🌟 Usamos la prop de carga directa que envías desde el padre */}
         <LoadingWrapper loading={loadingPrecargado}>
           <View style={styles.contenedorCalendario}>
             <View style={styles.encabezadoMes}>
@@ -196,22 +193,32 @@ export default function SubVistaCalendario({
             ) : (
               listaActividadesDiaSeleccionado.map((actividad, index) => {
                 const esUltimo = index === listaActividadesDiaSeleccionado.length - 1;
-                const estiloExtra = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
-                const colorTitulo = actividad.esFeriado ? "#6CACE4" : undefined;
-                
-                const subtituloFormateado = actividad.descripcion 
-                  ? `${actividad.descripcion}\n${actividad.body}`
-                  : actividad.body;
+                const extraStyle = esUltimo ? { borderBottomRightRadius: 20 } : undefined;
+
+                // Combinamos el evento original con el título formateado de inicio/fin del calendario
+                const eventoParaRenderizar: EventoAgenda = {
+                  ...actividad.eventoOriginal,
+                  titulo: actividad.title,
+                  descripcion: actividad.descripcion,
+                };
+
+                // Evaluamos si el ID original indica que es un evento personalizado
+                if (actividad.eventoOriginal?.id?.startsWith('p')) {
+                  return (
+                    <AgendaItemEditable
+                      key={actividad.id}
+                      evento={eventoParaRenderizar}
+                      onPressEdit={() => onAbrirEditar(actividad.eventoOriginal)}
+                      styleExtra={extraStyle}
+                    />
+                  );
+                }
 
                 return (
-                  <ListaItem
+                  <AgendaItem
                     key={actividad.id}
-                    title={actividad.title}
-                    subtitle={subtituloFormateado}
-                    titleColor={colorTitulo}
-                    styleExtra={estiloExtra}
-                    editable={actividad.id.startsWith('e-p')}
-                    onPress={() => onAbrirEditar(actividad.eventoOriginal)}
+                    evento={eventoParaRenderizar}
+                    styleExtra={extraStyle}
                   />
                 );
               })
@@ -232,7 +239,8 @@ const styles = StyleSheet.create({
     paddingTop: 10 
   },
   contenedorCalendario: { borderRadius: 10, backgroundColor: "#fff", ...getShadowStyle(4) },
-  encabezadoMes: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: azulMedioUndav, padding: 8, borderTopLeftRadius: 10, borderTopRightRadius: 10 },  textoMes: { fontSize: 16, fontWeight: 'bold', color: "#fff", textAlign: "center" },
+  encabezadoMes: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', backgroundColor: azulMedioUndav, padding: 8, borderTopLeftRadius: 10, borderTopRightRadius: 10 },
+  textoMes: { fontSize: 16, fontWeight: 'bold', color: "#fff", textAlign: "center" },
   flecha: { fontSize: 20, color: "#fff", paddingHorizontal: 10 },
   filaDiasSemana: { flexDirection: 'row', justifyContent: 'space-around', paddingVertical: 6, backgroundColor: azulMedioUndav },
   textoDiaSemana: { flex: 1, textAlign: 'center', color: "#fff", fontWeight: 'bold' },
@@ -243,7 +251,7 @@ const styles = StyleSheet.create({
   seleccionado: { backgroundColor: celesteSIU, borderRadius: 999, borderWidth: 3, borderColor: azulLogoUndav, zIndex: 2 },
   indicador: { position: 'absolute', bottom: 0, right: 0, borderRadius: 999, paddingHorizontal: 6, paddingVertical: 1 },
   textoIndicador: { color: "#fff", fontSize: 11, fontWeight: 'bold' },
-  listaContainer: { gap: 4, paddingBottom: 100 }, // Espacio para que el botón flotante no tape contenido
+  listaContainer: { gap: 4, paddingBottom: 100 }, 
   title: { fontSize: 16, color: negroAzulado, marginHorizontal: 10, textAlign: 'center', flex: 1 },
   noEventsTitle: { fontSize: 14, color: '#8e8e93', textAlign: 'center', marginVertical: 20 },
   titleContainer: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between', paddingVertical: 8 },
