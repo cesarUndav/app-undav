@@ -21,6 +21,7 @@ import {
 } from '../lib/searchRooms';
 
 import { searchModalStyles as s } from '../theme/mapStyles';
+import { grisPlaceholder } from '@/constants/Colors';
 
 interface Props {
   visible: boolean;
@@ -53,10 +54,10 @@ export default function SearchModal({
       <View style={s.container}>
         <View style={s.searchRow}>
           <TextInput
+            placeholderTextColor={grisPlaceholder}
             value={query}
             onChangeText={setQuery}
             placeholder="Buscar (ej: Aula 101, Laboratorio, Departamento)"
-            placeholderTextColor="#94a3b8"
             autoCorrect={true}
             autoCapitalize="none"
             spellCheck={true}

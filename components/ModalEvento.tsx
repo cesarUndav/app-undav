@@ -7,7 +7,7 @@ import DateTimePicker from '@react-native-community/datetimepicker';
 
 import CustomText from './CustomText';
 import OcultadorTeclado from './OcultadorTeclado';
-import { azulLogoUndav, grisBorde, negroAzulado } from '@/constants/Colors';
+import { azulLogoUndav, grisBorde, grisPlaceholder, negroAzulado } from '@/constants/Colors';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import { 
   agregarEventoPersonalizado, 
@@ -122,6 +122,7 @@ export default function ModalEvento({ visible, onClose, onRefresh, eventoAEditar
             </CustomText>
 
             <TextInput
+              placeholderTextColor={grisPlaceholder}
               style={stylesP.input}
               multiline
               placeholder="Título"
@@ -130,6 +131,7 @@ export default function ModalEvento({ visible, onClose, onRefresh, eventoAEditar
             />
 
             <TextInput
+              placeholderTextColor={grisPlaceholder}
               style={stylesP.input}
               multiline
               placeholder="Descripción"

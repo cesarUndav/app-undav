@@ -121,8 +121,8 @@ export default function Configuracion() {
         },
         {
           type: 'link',
-          label: 'Ajustes',
-          onPress: () => router.push('/ajustes'),
+          label: 'Credenciales Campus Virtual',
+          onPress: () => router.push('/credenciales-campus-virtual'),
         },
         {
           type: 'separator',

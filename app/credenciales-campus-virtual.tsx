@@ -10,7 +10,7 @@ import {
 import FondoGradiente from '@/components/FondoGradiente';
 import { getShadowStyle } from '@/constants/ShadowStyle';
 import * as SecureStore from 'expo-secure-store'; // 🔐 Importación de SecureStore
-import { grisBorde } from '@/constants/Colors';
+import { grisBorde, grisPlaceholder } from '@/constants/Colors';
 
 type InputItem = {
   type: 'input';
@@ -94,6 +94,7 @@ export default function AjustesCredencialesCampus() {
           keyExtractor={(item, index) => `${item.type}-${index}`}
           renderItem={({ item }) => (
             <TextInput
+              placeholderTextColor={grisPlaceholder}
               style={styles.textInput}
               placeholder={item.label}
               value={item.value}

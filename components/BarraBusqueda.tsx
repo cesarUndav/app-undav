@@ -1,6 +1,6 @@
 import React from 'react';
 import { View, TextInput, StyleSheet } from 'react-native';
-import { negroAzulado } from '@/constants/Colors';
+import { grisPlaceholder, negroAzulado } from '@/constants/Colors';
 
 type Props = {
   value: string;
@@ -12,9 +12,9 @@ export default function BarraBusqueda({ value, onChangeText, placeholder = "Busc
   return (
     <View style={styles.container}>
       <TextInput
+        placeholderTextColor={grisPlaceholder}
         style={styles.input}
         placeholder={placeholder}
-        placeholderTextColor="#999"
         value={value}
         onChangeText={onChangeText}
       />

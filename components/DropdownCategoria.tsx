@@ -9,7 +9,7 @@ import {
 } from 'react-native';
 import CustomText from './CustomText';
 import { Ionicons } from '@expo/vector-icons';
-import { grisBorde, negroAzulado } from '@/constants/Colors';
+import { grisBorde, grisPlaceholder, negroAzulado } from '@/constants/Colors';
 
 export type Categoria = {
   nombre: string;
@@ -98,6 +98,7 @@ const DropdownCategorias: React.FC<DropdownCategoriasProps> = ({
           {agregando ? (
             <View style={styles.agregarBox}>
               <TextInput
+                placeholderTextColor={grisPlaceholder}
                 value={nuevoNombre}
                 onChangeText={setNuevoNombre}
                 placeholder="Nombre categoría"

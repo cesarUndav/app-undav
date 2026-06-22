@@ -20,7 +20,7 @@ import { Ionicons } from '@expo/vector-icons';
 import {
   validarPersona,
 } from "@/data/apiAppUndav";
-import { azulLogoUndav, negroAzulado } from "@/constants/Colors";
+import { azulLogoUndav, grisPlaceholder, grisTexto, negroAzulado } from "@/constants/Colors";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { setNotificationCount } from "@/data/notificaciones";
 import BotonTexto from "@/components/BotonTexto";
@@ -168,6 +168,7 @@ useEffect(() => {
 
           <View style={{gap: 10, flex: 1.1, justifyContent:"flex-start"}}>
             <TextInput
+              placeholderTextColor={grisPlaceholder}
               id="usuario"
               style={styles.inlineInputField}
               value={documentoIngresado}
@@ -182,6 +183,7 @@ useEffect(() => {
 
             <View>
               <TextInput
+                placeholderTextColor={grisPlaceholder}
                 id="password"
                 style={[styles.inlineInputField, {paddingRight: 48}]}
                 value={contrasenaIngresada}
